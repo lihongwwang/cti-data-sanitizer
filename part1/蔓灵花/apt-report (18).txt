@@ -1,0 +1,357 @@
+﻿2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+幽影长存：蔓灵花组织近期攻击活动分析
+原创 红雨滴团队 奇安信威胁情报中心 2023-08-02 14:10 发表于四川
+
+团伙背景
+
+蔓灵花组织，又称为BITTER，是一支据称有南亚背景的高级持久性威胁
+（APT）组织。自2013年11月起，该组织开始活跃，并主要专注于巴基斯坦
+和中国两国。其攻击目标主要包括政府部门、电力行业、军工业相关单位，
+其意图是窃取敏感资料。奇安信内部跟踪编号为APT-Q-37。
+
+直到2016年，国外安全厂商Forcepoint首次披露了蔓灵花组织的存在
+[1]，之前一直未被发现。根据该组织所使用的远程访问工具(RAT)的网络通
+信标头，Forcepoint将其命名为“BITTER”。同年，奇安信威胁情报中心在国
+内发现了相关攻击，并将其命名为“蔓灵花”。
+
+自从被曝光后，该组织就修改了数据包结构，不再以“BITTER”作为数据
+包的标识。至此，蔓灵花正式浮出水面，随着其攻击活动不断被发现披露，
+蔓灵花组织的全貌越来越清晰。
+
+该组织具有强烈的政治背景，主要针对巴基斯坦、中国两国，2018年也
+发现了其针对沙特阿拉伯的活动[2]，其攻击瞄准政府部门、电力、军工业相
+关单位，意图窃取敏感资料，2019年还加强了对我国进出口相关的攻击。
+
+有意思的是，在多份报告中均有指出，蔓灵花组织跟疑似南亚某国的多
+个攻击组织，包括摩诃草（Patchwork）、魔罗桫、肚脑虫（donot）等存
+在着千丝万缕的关系。这显示出蔓灵花组织在南亚地区的复杂网络关联。
+
+概述
+
+奇安信威胁情报中心红雨滴团队一直以来都在对全球各大APT组织进行
+追踪，在对南亚相关APT组织进行追踪时我们发现蔓灵花组织近期非常活
+跃，本文内容仅是对过去一段时间内蔓灵花组织的攻击手法做一个分享，揭
+示其攻击手段、目标和动机，为相关机构提供有效的安全建议。
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 1/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+自2021年3月《“Operation Magichm”浅谈蔓灵花组织的CHM文件投
+放与后续操作》[3]一文发布以来，蔓灵花组织一直都在吃老本，鱼叉式钓鱼
+邮件投递恶意chm文件屡试不爽，下图为前文披露时的攻击全流程。
+
+而在今年，蔓灵花还是以鱼叉式钓鱼邮件投递恶意压缩包，压缩包里面
+通常为恶意chm文件，有时也会在压缩包里面搭载带漏洞的office文件。其
+整个攻击流程图如下所示：
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 2/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+可以发现蔓灵花还是擅用chm文件来创建计划任务来获取后续，并且后
+续msi文件是有选择性的进行下发，而在msi文件中通常搭载蔓灵花最新的攻
+击武器wmRAT，该攻击武器近两年才被披露，并不断扩展更新，现已支持十
+多种远控指令。
+
+在威胁狩猎过程中，我们捕获的部分诱饵邮件如下所示：
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 3/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+压缩包中通常为恶意chm文件。
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 4/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+当然，有时也会有携带漏洞的xlsx文件。
+
+利用已知的公式编辑器漏洞来创建计划任务，下载后续msi文件。
+
+另外我们还发现了蔓灵花利用PowerPoint单击鼠标事件创建计划任务的
+新方式。
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 5/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+MSI文件
+
+蔓灵花创建的计划任务通常定时15到20分钟请求一次C2，下载后续载
+荷，在请求时通常会带上计算机名和用户名，这会在后台为受害者建立起一
+个文件夹，后续通过FTP的方式向指定受害者目录下上传msi文件[4]。
+
+近期我们观察到蔓灵花投放两种类型的msi木马，捕获的样本信息如下：
+
+MD5 类型
+d7c3e044df73127776a5bd Microsoft Installer(MSI)
+4cd031de30
+19db308f6e83593824cc91 Microsoft Installer(MSI)
+2aad18e3b4
+
+   其中d7c3e044df73127776a5bd4cd031de30使用系统msiexec.exe执
+行后，会在Local目录下释放并执行最新版本的wmRAT，使用7zip可以看到
+wmRAT被打包在其中。
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 6/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+而19db308f6e83593824cc912aad18e3b4则在%temp%目录下释放f
+iles.cab文件，然后解压该文件，里面包含白程序MSOutlookServices.exe
+和恶意文件OLMAPI32.dll，同样，使用7zip可以看到被打包在msi文件中。
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 7/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+样本分析
+
+wmRAT
+
+蔓灵花的wmRAT于2022年被首次披露，披露时远控指令只有16个，并
+且有一半的指令无实际功能，这表明蔓灵花组织正在积极开发该远控木马。
+
+本次捕获的wmRAT新增网络连接性嗅探。
+
+另外远控指令增加到22个，但同样保留了部分无实际功能的指令。
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 8/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+其执行的部分远控指令如下表所示：
+
+指令 功能
+5 发送截屏数据到服务器
+6 接收文件数据
+8 从服务器接收信息，寻找指定文件处理后发送至服务器
+10 打开指定的URL，并获取文件
+11 查找指定目录文件，并进行操作
+13 搜索指定目录文件，将文件信息发送至服务器
+15 获取信息上传，包括计算机名、用户名、磁盘占用率等
+16 使用powershell执行命令、创建管道获取数据等
+20 关闭指定文件流
+21 向指定文件流中写入数据
+23 打开指定文件流，并向服务器传输数据
+26 发送文件数据到远程服务器，并计算发送进度
+
+   
+
+Backdoor
+
+该msi样本被我们从蔓灵花的基础设施officedocuments.info所捕获，
+下载时被命名为msos.msi，其利用白加黑的加载机制绕过杀软的监控。
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 9/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+其利用微软签名的Outlook冲突说明相关程序cnfnot32.exe作为白程
+序，来加载恶意的OLMAPI32.dll。
+
+OLMAPI32.dll与常规木马不一样的是，使用RPC与服务端进行交互。另
+外，该木马近期被友商详细分析过，这里我们仅做一些补充，不进行详细分
+析。
+
+其收集的信息包括以下内容：
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 10/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+Host Name OS Name OS Version
+OS Build Typ Registered Owner RegisteredOrganization
+e
+Product ID Install Date System Manufacturer
+System Mode System type Processor(s)
+l
+BiosVersion BIOSVENDOR BIOS Date
+Boot Device System Locale Input Locale
+Time zone TotalPhysicalMemory AvailablePhysicalMemory
+Virtual Memo Virtual Memory: Avai Virtual Memory: In Use
+ry: Max Size lable
+PageFileLoca Domain
+tion
+
+创建计划任务实现持久化
+
+利用RPC来进行通信，通信端口为443端口
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 11/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+其支持的远控指令如下：
+
+指令 功能
+ID 标识受害者
+INF 上传收集的信息
+DWN 下载
+RUN 执行指定文件
+DLY 休眠
+CMD 执行远程指令
+
+   
+
+溯源关联
+
+通过在样本库中进行同源搜索，我们发现了与上述Backdoor同一批次的
+样本，样本大小、结构、创建时间等均一致，唯一不同的是C2有所变化。
+
+MD5 C2
+09a9e1b03f7d7de4340bc5f9e656b79 msdata.ddns.net
+8
+893060bff7da03f5555ecc9931d0c700 outlook-updates.ddns.net
+a6ee959ce128421317f8d97f9f312c78 msoutllook.ddns.net
+
+   
+总结
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 12/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+通过追踪发现，蔓灵花组织近期活动十分猖獗，其通过社会工程学建立
+立足点，擅于运用计划任务获取后续载荷。值得一提的是其利用受害者信息
+建立对应目录，对感兴趣的受害者才会下发后续载荷，有效隔绝绝大部分研
+究员的分析，这也是为什么狩猎到蔓灵花组织的恶意chm文件，访问其基础
+设施，下载回来的msi文件总是0kb的根本原因。另外蔓灵花组织也在尝试更
+新武器库，使用新木马来获取更多的收益。
+
+应对APT组织的攻击是一项复杂而艰巨的任务，需要组织和个人采取综
+合性的网络安全措施，包括加强网络防御、定期漏洞修补、人员培训以识别
+威胁、使用先进的安全工具和持续监控等。
+
+防护建议
+
+奇安信威胁情报中心提醒广大用户，谨防钓鱼攻击，切勿打开社交媒体
+分享的来历不明的链接，不点击执行未知来源的邮件附件，不运行标题夸张
+的未知文件，不安装非正规途径来源的APP。做到及时备份重要文件，更新
+安装补丁。
+
+若需运行，安装来历不明的应用，可先通过奇安信威胁情报文件深度分
+析平台（https://sandbox.ti.qianxin.com/sandbox/page）进行判别。目
+前已支持包括Windows、安卓平台在内的多种格式文件深度分析。
+
+目前，基于奇安信威胁情报中心的威胁情报数据的全线产品，包括奇安
+信威胁情报平台（TIP）、天擎、天眼高级威胁检测系统、奇安信NGSOC、
+奇安信态势感知等，都已经支持对此类攻击的精确检测。
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 13/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+部分IOC
+
+MD5
+5c3c496869eab67c5742d522f9b35743
+2fb6ffb8bd8861943893127d2956749b
+9081f304fa2cc059a501e27aed2b31eb
+e19dda58beebac867b334fe6bb3f9853
+aa3fdb9b07a6dd926a7d5d4f9ce2a824
+513b13ec23c08becdde6befb2cba0de7
+86b57b0ec360f45331fc5e4eb5c99611
+9cee927ab9dbfcee1105f6164d4c517e
+95968f3597d61251724f22a6bbeb3dd7
+a4c3fa2f91090cff7eb3933ec1442200
+47bf243e41009b660a4610c84af835e9
+485b6e2bef303251789827d7829e3a3e
+ba068724f569d98d56fcfb473449c8df
+067d2b13cd93a3c202f601f399926ae2
+4ed5d896869949b42e55fcb579e2c689
+8b15c4a11df2deea9ad4699ece085a6f
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 14/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+cce89f4956a5c8b1bec82b21e371645b
+edcd2d0c8e43f48c853788cf32f78653
+1b0748d7ed0bbfbdaa039c2cd0bd2d8e
+79a0285313c1f0f4b6369c4a0469244d
+515be466eca3c803be66e40c3a84f778
+c3e0e2dda8485e56bfcf26b36ada4da5
+5c2c1a1fe951591402c36c1a5a240612
+f7d293e1ef4181cfb08c9e0a81795eba
+a7e8d75eae4f1cb343745d9dd394a154
+5df9468112e21c712474483793537aed
+a6ee959ce128421317f8d97f9f312c78
+893060bff7da03f5555ecc9931d0c700
+09a9e1b03f7d7de4340bc5f9e656b798
+ 
+URL
+http://officedocuments.info/live/msos.msi
+https://bluelotus.mail-gdrive.com/Services.msi
+
+C2
+deriksystemspartens.com
+daveonenewtestpanel.com
+novasapothecary.com
+farleysmxpph.com
+folkmusicstreams.com
+xiuxonlinehost.com
+vsetmediasvc.com
+uxmesysconsole.com
+grounpackcluepik.com
+devqrytoprar.net
+erswuniconsharing.com
+outlook-services.ddns.net
+msoutllook.ddns.net
+outlook-updates.ddns.net
+msdata.ddns.net
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 15/16
+
+
+
+2024/1/19 11:43 幽影长存：蔓灵花组织近期攻击活动分析
+
+bluelotus.mail-gdrive.com
+officedocuments.info
+ 
+
+参考链接
+
+[1].https://www.forcepoint.com/blog/x-labs/bitter-targeted-attack-a
+gainst-pakistan
+[2].https://unit42.paloaltonetworks.com/multiple-artradownloader-v
+ariants-used-by-bitter-to-target-pakistan/
+[3].https://ti.qianxin.com/blog/articles/%22operation-magichm%22:
+CHM-file-release-and-subsequent-operation-of-BITTER-organizatio
+n/
+[4].https://ti.qianxin.com/blog/articles/operation-tejas-a-dead-elep
+hant-curled-up-in-the-kunlun-mountains/
+
+https://mp.weixin.qq.com/s/HVhXyIB4sKuG6dDwwe4Pcw 16/16

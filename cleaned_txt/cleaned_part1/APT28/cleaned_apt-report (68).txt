@@ -1,0 +1,31 @@
+Microsoft says Russian APT28 espionage group hit Democratic Institutions in Europe
+
+Microsoft says Russian APT28 group carried out multiple cyberattacks on democratic institutions in Europe between September and December 2018.
+
+Microsoft revealed that hackers belonging to the cyber espionage group APT28 (aka Fancy Bear, Pawn Storm, Sofacy Group, Sednit, and STRONTIUM) launched several attacks on democratic institutions in Europe between September and December 2018.
+
+The tech giant revealed that 104 accounts belonging to organization employees in Belgium, France, Germany, Poland, Romania, and Serbia, were hit by Russian cyber spied cyber-espionage group APT28.
+
+The APT28 group has been active since at least 2007 and it has targeted governments, militaries, and security organizations worldwide. The group was involved also in the string of attacks that targeted 2016 Presidential election.
+
+According to a report published by Symantec in October, the group was actively conducting cyber espionage campaigns against government and military organizations in Europe and South America.
+
+Starting in 2017 and continuing into 2018, the APT28 group returned to covert intelligence gathering operations in Europe and South America.
+
+According to Microsoft, APT28 hackers the attacks were extended to think tanks and non-profit organizations working on topics related to democracy, electoral integrity, and public policy. All the victims of the Russian state-sponsored hackers are in contact with government officials.
+
+“Microsoft has recently detected attacks targeting employees of the German Council on Foreign Relations, The Aspen Institutes in Europe and The German Marshall Fund.” reads the post published by Microsoft.
+
+“MSTIC continues to investigate the sources of these attacks, but we are confident that many of them originated from a group we call Strontium. The attacks occurred between September and December 2018.”
+
+The list of the victims for the recent attacks include employees of the German Council on Foreign Relations, The Aspen Institutes in Europe and The German Marshall Fund.
+
+Hackers are launching spear-phishing attacks in the attempt of stealing employee credentials and deliver malware. Phishing emails use malicious URLs and spoofed email addresses that look legitimate.
+
+Microsoft’s report doesn’t surprise, in August 2018 the company spotted a hacking campaign targeting 2018 midterm elections, also in that case experts attributed the attacks to Russia-linked APT28 group.
+
+“Consistent with campaigns against similar U.S.-based institutions, attackers in most cases create malicious URLs and spoofed email addresses that look legitimate. These spearphishing campaigns aim to gain access to employee credentials and deliver malware.” continues Microsoft.
+
+“The attacks we’ve seen recently, coupled with others we discussed last year, suggest an ongoing effort to target democratic organizations. They validate the warnings from European leaders about the threat level we should expect to see in Europe this year.”
+
+Microsoft notified each of these organizations that were hit by the hackers and announced a variety of technical measures to protect its customers from these attacks.

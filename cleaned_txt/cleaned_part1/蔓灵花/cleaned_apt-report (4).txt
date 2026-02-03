@@ -1,0 +1,245 @@
+The Bitter End:
+Unraveling Eight Years of Espionage Antics – Part Two
+
+By Abdallah Elshinbary and Jonas Wagner in collaboration with Proofpoint's Nick Attfield and Konstantin Klinger.
+
+This is a two-part blog series, detailing research undertaken in collaboration with Proofpoint. Part one of this blog series can be found on their website here.
+
+Key findings
+Bitter's malware has significantly evolved since 2016, moving from basic downloaders to more capable RATs. The group primarily uses simple and home-grown payloads delivered via their infection chain, rather than relying on advanced anti-analysis techniques within the payloads itself.
+Their diverse toolset shows consistent coding patterns across malware families, particularly in system information gathering and string obfuscation. This strongly suggests a common developer base.
+Several of their recent malware families continue to undergo active development in 2025, with new variants appearing in recent campaigns.
+
+Payload Arsenal
+In this second part of our blog series on the Bitter espionage group, we turn our focus to the engine of their operations: a diverse and continually evolving payload arsenal. Since their first known malware surfaced in 2016, Bitter's toolset has expanded from basic downloaders to sophisticated backdoors and full-featured Remote Access Trojans (RATs). This section dissects the technical capabilities, evolutionary paths, and shared development traits of Bitter's malware, offering insights for detection, attribution and a comprehensive understanding of their operational sophistication.
+
+Our exploration will proceed chronologically through each malware family, detailing its core functionality, distinctive code patterns, obfuscation techniques, command-and-control (C2) communication, and any identified variants. This analysis draws from both OSINT sources and our own research. We offer new insights on novel variants of MuuyDownloader, BDarkRAT and MiyaRAT, the latter two being observed in campaigns that Proofpoint documented in the first part of the blog post series.
+
+Key to Bitter's mode of operation is their reliance on the infection chain for payload delivery during hands-on activities, rather than employing complex anti-analysis measures or packers within the malware itself.
+
+Across their arsenal, we observe consistent code patterns, notably in how they gather system information and decode obfuscated strings using simple character addition or subtraction. It's also noteworthy that some malware families exhibit code pattern variations between different versions while retaining identical core functionality.
+
+A central theme revealed by our analysis is Bitter's sustained use of a core suite of custom-developed tools in C/C++ and .NET. These tools frequently undergo iterative development, marked by significant shifts in obfuscation strategies and C2 communication protocols over the years. Furthermore, we will present evidence of shared development methodologies across malware families that might otherwise appear distinct, pointing to a cohesive development effort. These discernible patterns not only fingerprint the group's modus operandi but also highlight their resourcefulness and evolution throughout their extensive operational history.
+
+By providing a granular dissection of Bitter's payloads, we aim to give the most comprehensive insights to date into the actors tradecraft and equip defenders with a deeper understanding of the threats posed by this group. Such insights are crucial for crafting more effective detection signatures and for anticipating and tracking their future tactical shifts.
+
+ArtraDownloader
+
+The first known family used by Bitter is ArtraDownloader. First appearing in 2016 and received its name in 2019 based on a PDB string found within the samples. ArtraDownloader is a simple downloader written in C++.
+
+The downloader starts by collecting system information, which includes username, computer name, and the operating system. This collected information is then used to generate a victim’s unique identifier.
+
+The unique identifier and collected system information is then encoded (by adding 1 to each byte) and sent to the C2 server. After the initial C2 request, ArtraDownloader expects a response containing the identifier "DFCB=". This identifier allows it to extract an encoded payload filename. ArtraDownloader then sends another C2 request to download the payload, saves it to disk, and executes it using ShellExecuteA.
+
+ArtraDownloader establishes persistence on the victim's machine by copying itself to a hardcoded path and adding its new location to the Run registry key.
+
+Important strings are obfuscated with a simple encoding algorithm where each character is decoded by subtracting 1.
+
+Two additional variants of ArtraDownloader were discovered in the wild. These variants primarily differ in their string obfuscation methods and HTTP request formats.
+
+In the second variant, strings are decoded by subtracting 3 from each character, rather than 1 as in the first variant.
+
+Like the original variant, this version collects similar system information, encodes it by adding 1 to each byte, then transmits it to the C2 server using a different format. This variant also expects a different identifier ("AXE: #") from the C2 server to extract the payload name.
+
+The third variant uses a string decoding method that subtracts 13 from each character.
+
+This variant collects various system information, but unlike the other two variants, it doesn’t encode the payload sent to the C2 server. The third variant also expects a distinct identifier ("Yes file") from the C2 server to extract the payload name.
+
+ArtraDownloader has been observed deploying a simple keylogger, WSCSPL backdoor and a .NET RAT known as BDarkRAT.
+
+Keylogger
+
+Bitter has been known to deploy a simple C++ keylogger module in different campaigns. The keylogger creates paths for two log files in the "%APPDATA" directory.
+
+The keylogger then starts a new thread to set up a hook for monitoring keyboard input events. It also has the capability to capture clipboard contents. The keystrokes are encoded by adding 20 to each character before being written to a temporary log file.
+
+Once the temporary log file reaches 1KB in size, its contents are transferred to a permanent log file. The temporary file is then deleted and recreated to continue capturing new data.
+
+Strings are obfuscated with a simple encoding algorithm where each character is decoded by subtracting 13.
+
+The keylogger lacks exfiltration capabilities, requiring deployment alongside another module (such as the WSCSPL backdoor) to handle the exfiltration of collected logs.
+
+WSCSPL Backdoor
+
+WSCSPL is a backdoor written in C that emerged in 2016 as ArtraDownloader's next-stage payload. Like ArtraDownloader, the backdoor collects system information including username, computer name, and operating system.
+
+The collected information is concatenated and encoded before sending it to the C2 server. WSCSPL receives a numerical value from the C2 server that indicates which command to execute. The backdoor supports several commands, each executed in its own thread, notably:
+Getting the machine information
+Getting drives info
+Downloading and executing files
+Executing remote commands
+
+Strings are obfuscated and encoded with a simple algorithm, which decodes them by adding 34 to each character.
+
+BDarkRAT
+
+BDarkRAT is a .NET RAT first discovered in 2019 that Bitter group continues to use today. The RAT begins by gathering basic system information such as username, operating system, and MAC address. A hardcoded version number is appended to the collected information before sending it to the C2 server in order to register new victims.
+
+BDarkRAT includes standard RAT capabilities such as executing shell commands, downloading files, and managing files on the compromised system.
+
+The configuration for the RAT is hardcoded in plain text, with the C2 address in hex-encoded form.
+
+The RAT contains a hardcoded encryption key (stored in the config field NetworkKey) used to encrypt network packets with a simple XOR operation before sending to the C2 server.
+
+A newer variant of BDarkRAT expanded its capabilities to include screen capture and PowerShell command execution. They also shifted from using a descriptive name for each C2 command in the initialization function to numerical values, but the function names still explain the functionality of each C2 command.
+
+This variant collects less system information compared to the previous version, and no longer includes the RAT's version number.
+
+In this variant, the C2 address is now encrypted instead of just hex-encoded.
+
+The encryption algorithm for the C2 address is AES-256-CBC, where the key and IV are derived via the PBKDF2 algorithm.
+
+In early 2025, Proofpoint discovered another BDarkRAT variant. While this variant shared the same new capabilities as the one discovered in 2024, it reverted to using hex-encoded C2 addresses like the older variant.
+
+BDarkRAT has been given several names by the community, including SplinterRAT. These different names likely emerged due to varying .NET namespaces found in different samples in the wild.
+
+However, we believe that BDarkRAT is likely the most accurate name for this RAT, as reported in 2023, since many code components from its early versions were derived from DarkAgentRAT, an open-source .NET RAT from 2011.
+
+The initialisation of C2 commands represents one of the key code similarities between BDarkRAT and DarkAgentRAT.
+
+Additionally, the encryption for network packets matches BDarkRAT exactly, even using identical function names.
+
+Since BDarkRAT is based on an open-source RAT, it was essential to identify its unique functions that don't exist in the open-source version. Using our native function retrohunt capabilities, we quickly verified which functions would make suitable candidates for YARA rule generation.
+
+MuuyDownloader
+
+In 2021, Bitter switched from ArtraDownloader to a new downloader called MuuyDownloader (also known as ZxxZ downloader). Like ArtraDownloader, it is written in C++ and has a similar implementation.
+
+MuuyDownloader begins by gathering system information (username, computer name, and operating system) and transmits it to the C2 server in encrypted form. The collected information is separated using the delimiter "ZxxZ".
+
+After receiving the payload name from the C2 server, MuuyDownloader builds the payload path and appends ".exe" to the filename. The C2 server sends the payload with its first PE header byte missing, likely to evade network detection. MuuyDownloader writes the 0x4D byte to the target file, appends the downloaded payload, and executes it using ShellExecuteA.
+
+Strings are encrypted with a simple XOR algorithm where each string has its own encryption key.
+
+Other variants of MuuyDownloader have been identified featuring slight modifications to their string obfuscation and HTTP request formats.
+
+The second variant implements a modified string encoding algorithm that subtracts 5 from each character and strips asterisk characters from the decoded output.
+
+This variant uses a dollar sign instead of "ZxxZ" as the separator for system information.
+
+The third variant implements a string decryption algorithm similar to the first variant but uses a single XOR key to decrypt all strings.
+
+This variant also includes two different payload formats for system information.
+
+Instead of using ShellExecuteA, this variant executes the next-stage payload using CreateProcessA.
+
+During our investigations, we discovered a new sample from Bitter that we believe, with medium-high confidence, is a new variant of MuuyDownloader.
+
+This variant decrypts strings using a combination of single-byte XOR operations and character addition.
+
+Like previous variants, it collects comparable system information using a similar payload format. The key difference is that this variant Base64-encodes the system information before C2 transmission.
+
+Like other variants, this version fetches the next-stage payload using a blocking stream rather than recv.
+
+MuuyDownloader has been found to also download a simple keylogger (similar to the one dropped by ArtraDownloader), and two different .NET RATs called BDarkRAT and AlmondRAT.
+
+AlmondRAT
+
+AlmondRAT, another .NET RAT discovered in 2022, is deployed by the Bitter group and shares similar functionality with BDarkRAT. The RAT starts by collecting and transmitting system information, including username and operating system details, to the C2 server.
+
+The RAT includes standard functionality for directory listing, file transfer (both upload and download), and shell command execution.
+
+In another variant of AlmondRAT, strings such as the C2 address and commands are stored in an encrypted format.
+
+String encryption uses AES-256-CBC encryption, with the key and initialization vector (IV) derived through the PBKDF2 algorithm. The decryption code is identical to the one used in BDarkRAT.
+
+WmRAT
+
+WmRAT is a C++ RAT first observed in 2022 and later seen in 2024 campaigns documented by Proofpoint. The RAT starts by decrypting some strings (including the C2 address) before calling its main function. After that, it connects to the C2 server and starts receiving commands.
+
+In case no command is received, the RAT collects system information such as the the username, computer name, and operating system. The collected information is then sent to the C2 server and the RAT waits for C2 commands.
+
+WmRAT supports basic capabilities such as capturing screenshots, stealing files, and executing PowerShell commands. The C2 commands are numerical values where each number represents a specific functionality.
+
+Almost all strings in WmRAT are encrypted, and they are decrypted using character subtraction in some cases and addition in other cases.
+
+WmRAT also employs some kind of anti-analysis by creating a number of junk threads. The threads loop for 1000 times just to get basic machine information. This is possibly done to generate noise in the logs of the victim’s environment.
+
+It also frequently calls the Sleep function throughout the code as an evasion technique.
+
+During our investigation into WmRAT, we observed numerous samples in the wild reported by different sources. Our native code diffing capabilities enabled us to quickly cluster samples and identify shared code functions. This helped us identify different variants and guided our YARA rule creation workflow by pinpointing unique code.
+
+ORPCBackdoor
+
+ORPCBackdoor is a C++ backdoor that emerged in 2022. The backdoor initially collects various system details including the username, computer name, operating system, and running processes.
+
+ORPCBackdoor implements basic C2 functionality, including file downloads from the C2 server and shell command execution.
+
+The backdoor communicates with the C2 server using the RPC protocol.
+
+The C2 commands and many other strings are hex-encoded and decoded in batches during runtime.
+
+In 2023, a new group called "Mysterious Elephant" (also known as "APT-K-47") was using ORPCBackdoor to target victims linked to Pakistan's foreign affairs. This variant is identical to its 2022 version, with only the C2 address being different.
+
+MiyaRAT
+
+MiyaRAT is another RAT written in C++, first observed in 2024. The RAT initially connects to its C2 server using a hardcoded port. It then collects basic system information, including the username, computer name, and operating system details.
+
+The C2 address is decrypted through a simple subtraction operation, where the characters of a hardcoded key are subtracted from the encrypted value. The system information is concatenated and sent to the C2 server using a pipe character ("|") to separate the values.
+
+MiyaRAT features multiple command capabilities, including shell command execution, file deletion, screenshot capture, and directory enumeration.
+
+In a variant discovered by Proofpoint in late 2024, the RAT appends its version number to the system information payload, whereas the first variant stored this information in the PDB string.
+
+Unlike the first variant of MiyaRAT, this variant encrypts all C2 communication by XORing each byte with a hardcoded single-byte key before transmission.
+
+In May 2025, Proofpoint discovered a new MiyaRAT variant. This version (v5.0) maintains nearly identical functionality to its predecessor, with minor modifications. One notable change is its expanded use of the character subtraction algorithm for string decryption, still utilizing a hardcoded binary key.
+
+This variant employs single-byte XOR encryption for C2 communication, though it implements the encryption differently than previous variants. While the C2 commands are now obfuscated with only their first characters visible, the variant maintains the same functionality and command set as before.
+
+While the code's functionality remains identical, the implementation changes make it more difficult to create detection signatures based on code patterns. A string-based YARA rule was able to detect most MiyaRAT variants, however it failed to detect the latest variant (v5.0) due to the newly obfuscated strings. Threatray's detection capabilities, which are based on code reuse algorithms, allowed us to easily detect it by finding structural similarities with past MiyaRAT variants.
+
+KiwiStealer
+
+KiwiStealer is a simple file stealer first discovered in late 2024. The stealer starts by gathering the computer name and username. It also retrieves the current system time, which will be used later to check the last modification time of files on the machine.
+
+The computer name and username are then appended to the C2 path (which is decrypted at runtime) and sent to the C2 server while exfiltrating files from the victim’s machine.
+
+KiwiStealer searches through a predefined list of directories to gather files.
+
+The stealer only exfiltrates files that are smaller than 50MB and have been modified within the past year. It searches for files with these extensions: .z7, .txt, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .pdf, .rtf, .jpg, .zip, .rar, .apk, .neat, .err, .eln, .ppi, .er9, .azr, .pfx, .ovpn
+
+The stealer writes the collected file paths and their last modification timestamps to a log file at C:\ProgramData\winlist.log
+After that, the stealer reads the log file and exfiltrates the collected files.
+
+The C2 address and other strings are encoded through a combination of string reversal and a modified Caesar cipher (ROT2).
+
+KugelBlitz
+
+KugelBlitz is a shellcode loader discovered in late 2024. The loader loads shellcode into memory from a file specified via command line. If no file is specified, it defaults to run.bin.
+
+The shellcode loading process is straightforward: it allocates memory for the shellcode using VirtualAlloc, reads the file content into the allocated memory, and executes it.
+
+Proofpoint observed Bitter using KugelBlitz to deploy the Havoc C2 framework during hands-on activities. See Part 1 over at Proofpoint's blog for more details.
+
+Shared Payload TTPs
+
+Across Bitter's diverse and evolving malware arsenal, several consistent TTPs emerge, painting a clearer picture of the group's development practices and operational playbook. These shared characteristics not only aid in identifying Bitter's handiwork but also suggest a common origin or shared development resources for their tools.
+
+Consistent Information Gathering
+
+A striking commonality across almost all of Bitter's malware families is the method used for initial victim system reconnaissance.  The malware routinely gathers a standard set of details:
+Computer Name: To identify the specific machine.
+Username: To identify the active user.
+Operating System Details: Typically extracted from the ProductName registry value.
+
+This consistent pattern of collecting Computer Name, Username, and OS information is evident in malware like ArtraDownloader, WSCSPL Backdoor, MuuyDownloader, WmRAT, MiyaRAT and Kugelblitz, indicating a standardized approach to initial system fingerprinting.
+
+Evolution of Encoding and Encryption
+
+Older malware families, such as early versions of ArtraDownloader, Keylogger, and WSCSPL Backdoor, predominantly relied on simple character addition or subtraction for encoding and decoding important strings. MuuyDownloader, WmRAT and MiyaRAT also rely on a very similar character subtraction pattern.
+
+As their tools evolved, Bitter incorporated simple XOR encryption. This is notably seen in MuuyDownloader (where each string might have its own unique key, or a single key is used for all strings in other variants), BDarkRAT (using a hardcoded key for network packets), and later variants of MiyaRAT (for C2 communication).
+
+The two .NET families, BDarkRAT and AlmondRAT both employ AES-256-CBC encryption. The key and Initialization Vector for are derived using the PBKDF2 algorithm. The implementation is exactly the same for both families.
+
+Code Pattern Variations and Iterative Development
+
+While core functionalities often remain the same, several malware families exhibit variations in their code patterns across different versions. This is particularly evident in:
+
+C2 Payload Construction: ArtraDownloader and MuuyDownloader show different methods of concatenating or formatting the data sent to the C2 server in their various iterations
+
+String Decryption Routines: Even when the underlying cryptographic logic is similar (e.g., character subtraction or XOR), the specific implementation of the decryption functions can vary between variants of ArtraDownloader, MuuyDownloader, and MiyaRAT.  For example, MiyaRAT v5.0, while functionally identical to its predecessor, featured tweaked code patterns for string decryption and C2 XORing, making signature-based detection more challenging.
+
+Conclusion
+With this collaborative research we have provided a comprehensive dissection of Bitter (TA397)  group's sustained espionage operations spanning over eight years. Through Proofpoint’s analysis of extensive telemetry and Threatray’s in-depth malware analysis, we have illuminated the group's evolving TTPs, from their initial access methodologies and hands-on-keyboard activity to their diverse and custom-developed payload arsenal. Our findings reveal consistent operational patterns, shared development practices across their malware families, and distinct infrastructure characteristics that, when combined with observed targeting and lure strategies, lead us to jointly assess that Bitter (TA397) is highly likely a state-backed threat actor tasked with intelligence gathering in the interests of the Indian government. By sharing these detailed insights, YARA rules, and indicators of compromise, we aim to empower the global cybersecurity community to better detect, mitigate, and ultimately disrupt Bitter (TA397).

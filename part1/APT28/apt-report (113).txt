@@ -1,0 +1,131 @@
+﻿2018/12/14 Breadcrumbs Of CIA And DNC Hackers Left At The Same Chinese Company
+
+3,567 views | Mar 9, 2018, 12:00pm
+
+Breadcrumbs Of CIA And DNC
+Hackers Left At The Same Chinese
+Company
+
+Thomas Brewster Forbes Staff
+Security
+I cover crime, privacy and security in digital and physical forms.
+
+Are American and Russian hackers sitting on the same server in China? Fresh evidence hints at a
+possibly unprecedented event in cyberespionage. (Photo by Olivier Doulier - Pool/Getty Images)
+
+At the turn of the year, deep in the digital bowels of a Chinese aerospace and
+military conglomerate, a computer server had some unwelcome guests who'd left
+their belongings behind. Not clothing, keys, or wallets, but cyberespionage tools
+believed to have been created by intelligence agencies of the United States and
+Russia.
+
+That's what Colorado native Kurt Baumgartner, a researcher at Moscow-based
+Kaspersky (yes, the same cybersecurity company the U.S. government has banned
+over fears of links to the Kremlin), came across in his research this winter. It
+marks one of the more astonishing finds in his career, not just because it's rare
+evidence of Americans and Russians sharing the same space on one Chinese
+computer. The tools were also linked to both the CIA and the same Kremlin-
+backed hacking group believed by the U.S. government to have hacked the
+Democratic National Committee (DNC), known widely as Fancy Bear.
+
+The tools believed to belong to the CIA were silent data sniffers, passively
+collecting information, though it's unclear just what was siphoned off,
+Baumgartner told Forbes ahead of his talk at the Kaspersky Analyst Summit in
+
+https://www.forbes.com/sites/thomasbrewster/2018/03/09/cia-russian-hackers-on-same-china-server-says-kaspersky/#6fc9b09259a3 1/3
+
+
+
+2018/12/14 Breadcrumbs Of CIA And DNC Hackers Left At The Same Chinese Company
+
+Cancun on Friday. Kaspersky refers to the CIA-linked group as the
+Lamberts, whilst researchers at Symantec have previously dubbed the same
+hackers the Longhorn crew. The snooping programs were tied back to code
+released by Wikileaks in its Vault 7 files.
+
+As for Fancy Bear, which Kaspersky calls Sofacy, it left a handful of its known
+modules - keyloggers, file stealers, remote access software - on the Chinese
+server, said Baumgartner. The allegedly Russian spies used a kind of encryption
+that has only ever been used by them, as far as researchers are aware, hence the
+ability for Baumgartner to attribute to Fancy Bear. "This is a unique situation -
+we've never seen overlap, never seen Sofacy attacking the same system as a
+Lambert," he added. Kaspersky isn't revealing the name of the company, though
+did say it manufactures aerospace and air defense technologies.
+
+But what isn't clear is whether the CIA and Kremlin-linked hacker crews had
+separately breached the same Chinese server, or if one was borrowing the code of
+the other. "It’s a bit of a mystery," the Kaspersky researcher added. He
+hypothesized that both had breached a vulnerable web application sitting on the
+server, though he declined to name which one.
+
+YOU MAY ALSO LIKE
+
+The CIA declined to comment on the Kaspersky findings. Russia has previously
+denied responsibility for the DNC hack.
+
+Olympic attacks too?
+
+As Baumgartner watched Fancy Bear attack organizations across Asia, one of his
+colleagues, Vitaly Kamluk, had also seen possible activity at a recent major event -
+- the Winter Olympics. Looking at the Olympics Destroyer attacks, which were
+believed to be responsible for taking out Wi-Fi and broadcasting systems during
+the opening ceremony in South Korea, Kamluk spotted some hints Fancy Bear
+could've been involved.
+
+Kamluk said the company had received warnings about destructive malware
+targeting Olympics systems and infrastructure run by companies helping run the
+Games, as hackers sought to wipe files and cause havoc. And it appeared the
+attackers spreading that malware had used similar infrastructure, including VPN
+and hosting services, to previous Fancy Bear efforts. The Washington Post had
+also recently reported on the claims of U.S. intelligence officials that Russia was
+responsible for the hacks and had tried to make it appear North Korea was to
+blame. But, Kamluk admitted, it was far from certain Fancy Bear was involved in
+an attack that incorporated a so-called "false flag" effort, designed to make
+attribution as difficult as possible.
+
+https://www.forbes.com/sites/thomasbrewster/2018/03/09/cia-russian-hackers-on-same-china-server-says-kaspersky/#6fc9b09259a3 2/3
+
+
+
+2018/12/14 Breadcrumbs Of CIA And DNC Hackers Left At The Same Chinese Company
+
+"The attribution of professional cyberattacks is not only getting difficult, it's
+getting impossible," Kamluk said Thursday ahead of his presentation at the
+Cancun event. "It's attribution hell...
+
+"We've seen those tiny traits that were used previously by a Sofacy actor... To say
+this is Sofacy behind it, we need more time to pass."
+
+Nevertheless, it'd be a surprise if Russian hackers weren't active around the
+Winter Olympics. In February, Dmitri Alperovitch, co-founder and CTO at
+CrowdStrike, told Forbes he'd seen some indications Fancy Bear had targeted the
+Olympics, but rather than trying to cause destruction as in the previously-
+documented attacks, it was following its typical modus operandi of quietly
+carrying out espionage operations.
+
+I cover security and privacy for Forbes. I’ve been breaking news and writing
+features on these topics for major publications since 2010. As a freelancer, I
+worked for The Guardian, Vice Motherboard, Wired and BBC.com, amongst
+many others. I was named BT Security Journalist o... MORE
+
+Got a tip? Get me on Signal on +447837496820 or use SecureDrop to tip anyone
+at Forbes. Email at TBrewster@forbes.com or tbthomasbrewster@gmail.com
+for PGP mail.
+
+112,330 views | Oct 17, 2018, 10:00am
+
+Choosing Control Over A Big Stake:
+What The Founder Of Spikeball
+Learned By Walking Away From
+$500K
+
+Katherine Love Forbes Staff
+Leadership Strategy
+I curate and create content focused on careers and leadership.
+
+I am assistant editor on the Forbes Leadership team, curating content about C­
+suites, careers and education. Previously at Forbes, I produced content for
+Bankable, mobile devices, eBooks and Opinion. Before that, I interned with
+Rolling Stone and the Center for Strategic and... MORE
+
+https://www.forbes.com/sites/thomasbrewster/2018/03/09/cia-russian-hackers-on-same-china-server-says-kaspersky/#6fc9b09259a3 3/3

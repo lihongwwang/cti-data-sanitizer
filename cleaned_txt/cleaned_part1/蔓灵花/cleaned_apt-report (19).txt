@@ -1,0 +1,140 @@
+随着各安全厂商对于APT组织及其应用武器的分析越来越彻底，各活跃APT组织自去年底都开始更新自己的攻击武器库，甚至有组织完全放弃了去年的一整套攻击方法，使用新的攻击方法，因此给分析团队对攻击者组织的确定带来了一定困难，这符合一般网络攻防活动对抗的发展规律，防御和攻击在对抗中一起螺旋上升。
+
+我们会持续对各组织的新攻击武器进行分析和总结，继上一篇《PatchWork新攻击武器报告》分析了我们捕获的PatchWork组织新武器后，本文我们继续分享Bitter组织的新攻击工具。
+
+01 Bitter组织基本信息
+
+Bitter，也被称为蔓灵花，是一个疑似来源于南亚的高级威胁组织。自 2013年以来，一直属于活跃状态，该组织行动目标主要是巴基斯坦、孟加拉国和沙特阿拉伯的能源、工程和政府部门。
+
+去年全年我们捕获到该组织相关钓鱼攻击200+次，捕获相关仿冒诱导文档60+，根据去年捕获情况来看，该组织攻击依然延续与以往相似的常态化热点攻击。Bitter组织针对行业主要集中在航空航天、军工、大型企业、国家政务、部分高校。
+
+02 武器基本信息
+
+样本来源 持续追踪
+
+SHA-256 DD53768EB7D5724ADEB58796F986DED3C9B469157A1A1757D80CCD7956A3DBDA
+
+武器名称 ORPCBackdoor
+
+武器类型 后门程序
+
+针对平台 Windows
+
+03 武器功能模块图
+
+04 武器功能综述
+
+近期，404高级威胁情报团队在对Bitter组织的持续追踪过程中发现其武器库中出现了一款新型DLL后门，原始名称为OLEMAPI32.DLL，产品名称为Microsoft Outlook，本次发现的后门使用的通讯方式较为独特，与该组织其他武器相比较，本次发现的后门通讯方式采用RPC与服务端交互。
+
+根据已有信息来看，此次新发现的后门极有可能针对Outlook用户群体，为方便后续追踪狩猎及区分，故据此特征我们将其命名为ORPCBackdoor。
+
+01
+ORPCBackdoor功能描述
+
+本次捕获的ORPCBackdoor共计17个导出函数，相关导出函数名称如下所示：
+
+GetFileVersionInfoA
+GetFileVersionInfoByHandle
+GetFileVersionInfoExW
+GetFileVersionInfoSizeA
+GetFileVersionInfoSizeExW
+GetFileVersionInfoSizeW
+GetFileVersionInfoW
+VerFindFileA
+VerFindFileW
+VerInstallFileA
+VerInstallFileW
+VerLanguageNameA
+VerLanguageNameW
+VerQueryValueA
+VerQueryValueW
+GetFileVersionInfoByHandleEx(void)
+DllEntryPoint
+
+从导出函数来看ORPCBackdoor使用了version.dll模版,version.dll是一个Windows操作系统的动态链接库文件，它主要用于管理可执行文件或者DLL文件的版本信息。故我们有理由猜测ORPCBackdoor使用DLL劫持技术，采用白加黑方式用于达到一定的免杀效果，由于调用该DLL的情况较多，我们暂时无法准确确定Bitter组织此次采用的白文件具体是哪一款。
+
+其中ORPCBackdoor恶意入口有两处，第一处为GetFileVersionInfoBy-HandleEx(void)导出函数，第二处为DllEntryPoint。
+
+ORPCBackdoor从设计思路来看可分为两个模块，分别为初始化模块和交互模块，整体硬编码字符采用HEX字符串保存，例如“SYSTEM INFORMATION \n”字符在ORPCBackdoor中保存的字符为"53595354454D20494E464F524D4154494F4E205C6E"，该方式可略微达到阻碍反检测以及对抗分析等目的，根据ORPCBackdoor所支持的功能，我们可以推断出该后门处于感染链前端，用于为后续行动提供基础环境。
+
+初始化模块描述
+
+初始化模块内包含多个功能模块。多个模块配合完成与服务端交互执行的前期工作，前期工作包括了字符解析、首次运行测验、持久化、本机信息收集、C2在线检测等方面，各部分内容详述如下：
+
+a) 字符初始化
+本 文 前 面 有 提 及 ORPCBackdoor 内 置 的 关 键 字 符 均 采 用 TOHEXStr 的 方 式 保 存 ， 在 运 行 过 程 中 ORPCBackdoor会将即将使用的字符经进行解码。根据后门中的上下文调用来看，加密的字符中还包含了服务端下发的命令。
+
+b) 持久化
+ORPCBackdoor通过判断文件是否存在来防止多次持久化创建，在进行持久化创建前，ORPCBackdoor会判断同路径下是否存在ts.dat文件，当文件不存在时ORPCBackdoor才会创建持久化，持久化创建方式采用COM调用TaskScheduler CLSID，计划任务名称为Microsoft Update，创建完成后创建ts.dat文件。
+
+c) 初始信息收集
+初始信息收集三个部分数据，分别是进程列表、系统信息、用户信息，相关信息收集非常详尽，除基本信息外还会收集OS Build Type、Registered Owner、Install Date等信息。
+
+d) 交互初始化
+交互初始化与持久化模块类似，同样通过判断文件是否存在从而防止与服务端同时多进程交互，判断逻辑为判断ProgramData路径下是否存在$cache.dat文件，如果文件存在ORPCBackdoor将不会与服务端建立连接，否则初始RPC调用，ProtSeq采用ncacn_ip_tcp。如果在尝试RPC调用后服务端无数据返回则休眠5分钟后继续尝试，当服务端返回命令后进入交互模块。
+
+交互模块描述
+交 互 模 块 与 常 见 的 命 令 处 理 逻 辑 相 似 ， 通 过 多 层 if-else 来 解 析 服 务 端  执 行 并 完 成 指 定 功 能 ， ORPCBackdoor所支持的功能并不算多，主要为Get- Shell，其余包含一些文件处理、上传下载执行等操作。
+
+ORPCBackdoor相关执行及对应功能描述如下：
+
+ID
+ID 指 令 所 对 应 的 功 能 较 为 少 见 ， 其 功 能 是 将 服 务 端 下 发 的 一 段 0xF 大 小 的 数 据 暨 15 位 数 字 （ eg: 818040900140701），保存在本地%ProgramData%/$tmp.txt文件中，根据该指令及前面代码流程中未出现ClientID相关生成操作，故我们猜测此步操作用于赋予受害者ID用于区分不同受害者。
+
+INF
+INF指令用于上传在初始化模块-初始信息收集子模块中所收集的详尽本机信息。
+
+DWN
+DWN指令所对应的模块属于精心设计过的功能模块，功能为下载文件，根据对代码的分析来看，DWN功能模块设计的较为健壮，其支持向服务端反馈每一步操作是否成功或错误原因，从而完成既定目标流程，由于ORPCBackdoor属于感染连前部分故此模块的稳定性极为重要。
+
+RUN
+RUN指令用于执行指定文件，使用WinExecAPI启动文件。
+
+DLY
+DLY指令为休眠指令，休眠服务端指定时长后再次运行。
+
+CMD
+CMD指令为ORPCBackdoor核心指令，功能为GetShell，其所使用的处理逻辑为，解析服务端所下发的Shell指令，获取到服务端下发的Shell指令后进行指令拼接，拼接格式为cmd.exe /c |服务端下发的指令|>> c:\Users\Public\cr.dat。
+
+后续通过WinExec()API执行该条指令，执行完成后将cr.dat的内容发送至服务端，后续删除cr.dat文件从而达到一次与服务端Shell交互效果。
+
+在分析过程中我们捕获到服务端首先会下发systeminfo命令再次获取系统信息紧接着第二条指令为whoami。
+
+通过对ORPCBackdoor整体分析我们可以得出以下结论，ORPCBackdoor后门是一款较为精简且设计较为成熟的后门程序。
+
+无论是对自身字符的处理，抛弃常用常见的Socket调用转而使用RPC调用，为规避终端检测所采用的version.dll劫持模板，还是域名、程序、描述等整体一致性，都可以看出本次攻击行动算的上是一次经过精心设计策划的行动，同时为了防止自身暴露还使用了新型攻击武器从而变更了其惯用的TTP。
+
+02
+样本细节描述
+
+左侧为正常version.dll右侧为ORPCBackdoor
+
+通过文件判断是否进行持久化流程
+
+主机当前运行的进程信息收集
+
+详尽的系统信息收集
+
+服务端指令初始化
+
+RPC初始化
+
+生成ClientID
+
+生成的ClientID
+
+上传前期收集的系统信息
+
+文件下载模块
+
+RUN指令-运行指定程序
+
+休眠模块
+
+核心模块-Shell模块
+
+服务端下发的命令一
+
+服务端下发的命令二
+
+通过NdrClientCall2API收发服务端消息

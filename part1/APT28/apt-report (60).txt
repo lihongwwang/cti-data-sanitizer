@@ -1,0 +1,926 @@
+﻿2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+Menu
+
+ThreatVector > Research & Intelligence
+
+ by The Cylance Threat Research Team | August 28, 2019
+
+Inside the APT28 DLL Backdoor Blitz
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 1/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+This blog post is a follow-up to Flirting With IDA and APT28, where we
+covered generating IDA Pro signatures to identify and eliminatMe ebennuign
+library code. In doing so, we can focus our attention on the bespoke code
+responsible for defining the implant’s behavior.
+
+This time around we perform a deep dive into the same APT28 sample by
+analyzing its capabilities and providing insight into its features.
+
+Overview
+
+Hash:
+B40909AC0B70B7BD82465DFC7761A6B4E0DF55B894DD42290E3F72CB4280FA44
+File Type: Windows x64 DLL
+PE Compilation Timestamp: 4th July 2018 14:38:54
+ 
+
+Figure 1: APT28 sample details
+
+Analysis reveals the implant is a multi-threaded DLL backdoor that gives the
+threat actor (TA) full access to, and control of, the target host. When
+commanded by C2, the implant can upload or download files, create
+processes, interact with the host via a command shell and connect to C2
+according to a defined sleep/activity schedule.
+
+As covered in Part 1, the implant is written in C++ and statically linked
+against OpenSSL and the Poco C++ framework. Since the file is packaged as
+a DLL, the intention would be to inject it into a long-running process that is
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 2/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+granted Internet access (such as a NetSvc service group) or one having local
+firewall permissions. We do not believe this DLL is intended toM oepenruate as a
+module for a larger tool.
+
+Entry Point
+
+Malicious code entry occurs via the DllMain export. The implant’s first task is
+to load the legitimate Microsoft npmproxy.dll found in
+“c:\windows\system32”. With this loaded, the addresses of the five implant
+exports, “DllCanUnloadNow”, “DllGetClassObject”, “DllRegisterServer”,
+“DllUnregisterServer” and “GetProxyDllInfo” are set to the addresses of the
+same, benign exports found in the Microsoft DLL.
+
+The reason for this is unconfirmed, but most likely serves a defensive
+measure to evade end point protection that scans export addresses looking
+for code changes (when compared to a predetermined signature database),
+or against a database of known-malicious code. Perhaps by setting its own
+exports to those of the benign copy, the implant is attempting to remain
+undetected:
+
+Figure 2: Substitution of PE export addresses
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 3/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+With export addresses replaced, a thread is launched to execute the main
+code path. Within this, a second thread is launched responsiblMe feonr suend and
+receive operations with C2. A global variable forms the basis of inter-thread
+synchronization for processing of C2 messages.
+
+Mutex
+
+The primary thread’s first task is the creation of a Globally Unique ID (GUID)
+mutex “1b8232f6-6806-4733-901d-62bf3ef33e6c”. The GUID string can
+be found as plain text within the binary, offering a potential (albeit trivially
+replaceable) IoC. As is customary, if mutex creation fails the sample
+terminates with no further action taken.
+
+Machine Fingerprint
+
+Following mutex creation, the implant generates a unique CRC-32 host
+fingerprint using the primary network interface’s ethernet (MAC) address,
+the host name, and Windows version string. The final CRC-32 result is then
+XOR’d with fixed constant 0x64113. The generated host fingerprint is used
+later to build the C2 beacon URL, and presumably identifies the implant’s
+malicious use on each infected machine.
+
+Command-and-Control (C2)
+
+The main communication protocol with the C2 server is RSA encrypted,
+Base64 encoded JSON exchanged over HTTPS (TLS, port 443), or as fallback,
+on plain HTTP using port 80. During our analysis the implant did not attempt
+to use any other application protocols.
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 4/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+The user-agent string for HTTP requests is populated from either the return
+value of the “ ObtainUserAgentString” API call, or if that fails, aM haerndu-coded
+alternate (see IoCs below).
+
+Support for egress proxy servers is included through a call to
+“ WinHttpGetIEProxyConfigForCurrentUser”. The result is parsed and supplied
+to the Poco framework’s “ HTTPClientSession::setProxyConfig” prior to C2
+activity.
+
+A 1024-bit RSA key pair is embedded within the implant and used to encrypt
+and decrypt communication between host and C2. The private key decrypts
+inbound traffic while the public key encrypts outbound. No stream cipher(s)
+or session keys are negotiated.
+
+The initial HTTPS beacon to “malaytravelgroup[.]com” is a GET request
+consisting of a randomly selected URL path concatenation, together with a
+query string containing the parameter split count, the XOR constant
+0x64113 (also used when generating the host CRC-32), and the computed
+CRC-32 fingerprint. The query string is padded with random data to prevent
+ad-hoc analysis and finally Base64 encoded:
+
+Field Name Bytes Value Comment
+
+1 - 1 1-254 Parameter split count as ASCII value.
+
+2 “aid” 4 0x64113 XOR constant used when generating host CRC-32.
+Possibly a unique implant ID.
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 5/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+3 “bid” 4 variable CRC-32 host fingerprint.
+Menu
+
+Table 1: C2 beacon query parameters
+
+The URL path component is built as one to three strings (“/” separated),
+generated from a set of encrypted string tables. The decrypted versions are
+provided in the Appendix.
+
+The Base64 encoded data is split into a random number of parameters and
+padded as a means of obfuscation. The query parameter’s names are
+randomly generated using 1-4 upper/lower case characters:
+
+Name Value Explanation
+
+<rand_str> <2_rand_chars> + Specifies the number of parameters across which
+b64(<n>) the beacon data is split
+
+<rand_str_1> <2_rand_chars> + Value contains first part of encoded data, preceded
+b64(<rand_byte> + by 2 random characters
+
+<data_part_1>)
+
+<rand_str_2> <2_rand_chars> + Value contains second part of encoded data,
+b64(<rand_byte> + preceded by 2 random characters
+
+<data_part_2>)
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 6/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+... ... ...
+Menu
+
+<rand_str_n> <2_rand_chars> + Value contains last part of encoded data, preceded
+b64(<rand_byte> + by 2 random characters
+
+<data_part_n>)
+
+Table 2: Query parameter deconstruction
+
+Examples of beacon request URLs:
+
+GET /pricing/training/news/?
+GPFi=mLMg&CYlp=Tj9RNBBg%3D%3D&JOM=uJfgAz9Zpw
+
+GET /forum/feedback/switch/?
+LnY=YNA&D=TH%2FRM%3D&rMuo=BFXUEG&cs=bkqgA%3D&HZql=bXgTP1mnA%3D
+HTTP/1.1
+
+GET /activity/?
+FLVE=JNA&Y=vKYxNB&F=Hg6wY%3D&Slq=QBuAAz&ux=lSGfWacA%3D%3D
+HTTP/1.1
+
+Figure 3: Beacon URL examples
+
+Using the first example in Figure 3, the first query parameter indicating the
+beacon data split count would be Base64 decoded as:
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+                        GPFi=mLMg >> b64_decode(Mg) >>0x32 ("2")
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 7/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+All successive query parameters have the first two characters removed prior
+to Base64 decoding. The first byte of the decoded result is theMn ednisucarded to
+arrive at the final value:
+
+                        CYlp=Tj9RNBBg== >> b64_decode(9RNBBg==) >> F5 13 41
+06
+                        JOM=uJfgAz9Zpw >> b64_decode(fgAz9Zpw)  >> 7E 00 33 F5
+9A 70
+
+0x00064113 >> XOR constant/implant ID
+0x709AF533>> Host CRC-32 fingerprint
+
+Once the beacon is received and decoded, the next phase of interaction is to
+issue commands that drive the implant’s functions, such as the provision of
+an activity schedule/sleep interval limiting implant activity.
+
+Domain Generation Algorithm (DGA)
+
+The primary C2 domain of “malaytravelgroup[.]com” is used for the initial
+beacon. Like all sensitive strings, it is XOR encoded and revealed only when
+needed.
+
+The implant also contains a Linear Congruential Generator (LCG) based
+algorithm for generating what appear to be backup C2 domain names.
+Curiously the implementation is 100% deterministic owing to the use of a
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 8/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+fixed seed value (0xC31) as shown in Figure 4. Every invocation of the DGA
+will produce the same five domains: Menu
+
+schooltillhungryprocess[.]com
+reasonwithusefulpolicy[.]com
+streetunderrelevantpeople[.]com
+experiencewithweakkid[.]com
+systembeforeniceparent[.]com
+
+Figure 4: Encoded C2 servers
+
+Once the domains are generated, they are XOR encoded. The LCG
+implementation can be seen here, together with its constant seed value:
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 9/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+Menu
+
+Figure 5: DGA LCG using fixed seed value
+
+ Domain names are generated as the concatenation of 4 string-table
+lookups from 3 encrypted string tables. Table 3 is referenced twice during
+generation. The Top-Level Domain (TLD) suffix is hardcoded to “.com”.
+
+Table Number of strings
+
+1 99
+
+2 31
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 10/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+3 149
+Menu
+
+Table 3: String table sizes for domain generation
+
+Assuming the continued adoption of a four-part domain name, the LCG
+would be capable of generating millions of unique permutations. The reason
+for limiting its output to the same five, irrespective of date, time, host
+identity, or other input variable is unclear. A copy of the decrypted string
+tables is provided in the Appendix.
+
+By manually decreasing the delay between check-in attempts, we
+accelerated the amount of C2 activity generated by the implant. Curiously,
+during a 24-hour observation window, no attempts were made to
+communicate with the generated domains. Different reachability scenarios
+were tested, ranging from malformed responses to unreachable IP
+addresses. At no point did the implant generate any DNS or HTTP traffic
+relating to the generated domains.
+
+It’s conceivable the backup domains are accessed via HTTP 302 redirects
+issued by the primary site, but this would seemingly defeat the purpose of
+having primary and backup domains to cater for failure, migration, or
+shutdown. It’s also possible the generated C2 domains are active only for
+certain implant commands such as file upload or download.
+
+Lacking any evidence for their direct use, we can speculate the generated
+domains may be operating as a honeypot. Access to them from any Internet
+addresses would immediately be considered “suspicious” by virtue of their
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 11/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+hidden existence only within the implant code. The source of such requests
+could be directly attributable to threat researchers or analystsM inevnesutigating
+the implant’s inner workings.
+
+Functions
+
+The implant lacks any modularity and is therefore limited to eight functions.
+Each function is invoked from C2 by supplying a value from which a known
+CRC-32 is calculated. The computed CRC-32 value serves as a key or look-
+up to execute the corresponding function.
+
+Parameters for each backdoor supported function are supplied with each
+command and detailed in Table 4:
+
+CRC-32 Function Parameters Description
+
+15512FB9 Spawn process file_name, Spawn a process using the supplied
+file_path, args arguments.
+
+76BCDC67 Create file file_name, Creates a file with the supplied body, i.e.
+file_path, body file is pushed (downloaded) from C2. Files
+
+have the DOS hidden attribute set by
+default.
+
+B21CEBD4 Delete file/folder file_name, Deletes file or folder. Optional recursive
+file_path, parameter for folder and contents deletion.
+recursive
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 12/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+406C9E35 Launch shell start, stop, Launches COMSPEC (cmd.exe) shell. Stdin,
+status, bash stdout, stderr Mreleanyeud over main C2
+
+channel.
+
+72E99D37 Read file file_name, Read a file, i.e. upload to C2.
+file_path
+
+04365407 Set C2 check-in timeout Sets the interval between C2 check-in.
+interval Default is 3 hours.
+
+99598005 Set C2 check- day_of_month,Sets day of month/week and hour that
+in/activity day_of_week, implant should attempt to reach C2.
+schedule hour, Default setting is 0 for all values, meaning
+
+no exclusions; check-in would therefore be
+every 3 hours – the default sleep interval.
+
+1E46EC18 Get status None Returns Build_Id of implant, Computer_Id,
+information Full_Info. Details of last command and
+
+status (success/fail).
+
+Table 4: Implant functions
+
+The shell capability is perhaps the most interesting, giving the operators a
+full-duplex, interactive COMSPEC (cmd.exe) session, with stdin (input),
+stdout, and stderr (output returned by commands) redirected over the
+HTTPS C2 channel. Commands to the shell are issued by the TA with the
+resulting output being returned almost immediately.
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 13/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+Despite the shell pipe creation taking place in (as identified by IDA
+signatures) the Poco framework’s “SMTPChannel” constructoMr, tehne uimplant
+makes no use of SMTP as a transport. The “bash” parameter, synonymous
+with Linux environments, hints at a multi-platform capability. However, in
+this instance it is used to send commands to the shell by writing the
+accompanying value to stdin. Windows 10 does offer a Linux Subsystem
+that would make a bash shell available, but we have no evidence to suggest
+this is what the operators are installing or using:
+
+Figure 6: Implant function dispatch
+
+String Encryption
+
+Thirteen unique XOR keys are used throughout the implant for runtime
+decoding of sensitive strings. Each implant function (as listed in Table 4) is
+provided with its own XOR key, as are general C2, URL/HTTP, and RSA
+related operations:
+
+Key: Used during:
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 14/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+F226E34F0B64528CF0 Embedded RSA key decryption
+Menu
+
+371F41ABE4C8880BC1 URL/HTTP related operations
+
+40A521B0866411BAC4 General string decryption key
+
+EFEA221C400E2D1227 C2 messaging
+
+82EF8E95992055B6B5 C2 messaging
+
+4F840D589769 Create process function
+
+6EFEAF1AAA6932 Create file/download function
+
+59938EF1C8EFBA79B Delete file/folder function
+
+722C1B76 Shell handler function
+
+1F4582D80B Read file/upload function
+
+6A39E0FC68D6 Set C2 check-in interval function
+
+A24B726DFD Set C2 activity schedule function
+
+597EB47AAD Get host/install info function
+
+We use cookies to provide you a relevant user experience, anaTlayzbel eo u5r :t XraOffRic,  eanndc oprdoivnidge/ dsoecciaold minegdi ak efeyastures. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 15/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+Conclusion
+Menu
+
+Analysis shows the implant carries a feature set designed to provide the
+fundamental capabilities of a backdoor: file download, upload, remote
+command execution, and interactive shell access.
+
+Comparing the functions of this implant to published descriptions of APT-
+28’s “x-tunnel”, we find no tunneling, proxying, or VPN-like capabilities. It
+also lacks credential harvesting, network service scanning, or Windows
+registry manipulation. Given the lack of modularity only an updated version
+could provide these features. The alternative (and perhaps more likely)
+scenario would be for such capabilities to exist in subsequent tools
+downloaded and executed by this implant.
+
+Indicators of Compromise (IoCs)
+
+SHA256:
+
+b40909ac0b70b7bd82465dfc7761a6b4e0df55b894dd42290e3f72cb4280fa44
+
+C2 beacon domain:
+
+malaytravelgroup[.]com
+
+DGA domains:
+
+schooltillhungryprocess[.]com
+reasonwithusefulpolicy[.]com
+
+We use cookies to provide you a relevant usesrt reexpeetruienndcee,r arenalelyvzaen otupr etroapfflice, [a.]ncdo pmrovide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 16/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+experiencewithweakkid[.]com
+systembeforeniceparent[.]com Menu
+
+Mutex:
+
+1b8232f6-6806-4733-901d-62bf3ef33e6c
+
+Hard-coded User-Agent string:
+
+“Mozilla/5.0 (Windows NT 6.3; WOW64; rv:28.0) Gecko/20100101
+Firefox/28.0”
+
+Yara Signature
+
+rule apt28_backdoor_cls
+{
+            strings:
+            $st1 = "AES_256_poco" ascii
+                       $st2 = "TEncryption" ascii
+                       $st3 = "shell" ascii
+            condition:
+                       all of them
+}
+
+rule apt28_backdoor_crc32
+{
+               strings:
+
+We use cookies to provide you a releva n  t   u  s  e  r   e x  p  e  r i e  n  c e  ,  $anxaolyr1ze =o u{r  4tr8af 8ficB, a 0n7d  p3ro9v 4id8e  s0oCci a7l 5m e3dAia 4fe4a t8uBre s7. 0Re 0a8d  M4oCr e8B Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 17/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+38 4D 85 C0 74 2E 45 85 E4 74 29 }                                      
+               condition: Menu
+               $xor1
+}
+
+Appendix
+
+Decrypted String Tables:
+
+Table 1 Table 2 Table 3
+
+different at street
+used on company
+
+important in part
+every to system
+large into number
+
+available from world
+popular before case
+lonely until work
+basic till party
+
+known about girl
+various for house
+difficult of woman
+several with life
+unite by people
+
+historical after year
+hot since day
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+useful during way
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 18/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+mental between thing
+scare near Menu child
+
+additional nearby group
+emotional behind time
+
+old across area
+political above problem
+similar over place
+healthy under hand
+financial below service
+medical along school
+
+traditional round guy
+former around country
+entire past point
+strong through week
+actual relationship
+
+significant end
+successful word
+electrical family
+expensive fact
+pregnant head
+intelligent month
+interesting information
+
+poor power
+happy change
+
+responsible question
+cute business
+
+helpful development
+recent home
+
+We use cookies to provide you a relevant user experienwceil,l ianngalyze our traffic, and provide social media features. Read More side Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 19/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+nice night
+wonderful Menu money
+impossible eye
+
+serious interest
+huge book
+rare teacher
+
+visible air
+typical court
+
+competitive water
+critical manager
+
+desperate form
+immediate food
+
+aware ca
+educational moment
+
+environmental level
+global room
+decent car
+
+relevant story
+accurate market
+capable effect
+
+dangerous idea
+dramatic opportunity
+efficient result
+powerful use
+foreign study
+hungry job
+friendly name
+
+psychological report
+We use cookies to provide you a relevant user experiensceev, earnealyze our traffic, and provide social media features. Read More body Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 20/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+suitable law
+numerous Menu face
+sufficient authority
+unusual friend
+anxious parent
+cultural minute
+curious door
+famous minister
+
+pure road
+comprehensive rate
+
+obvious line
+careful hour
+
+impressive war
+unhappy mother
+
+acceptable right
+aggressive office
+
+boring person
+inner reason
+
+eastern view
+sudden term
+
+reasonable period
+strict centre
+weak morning
+civil project
+
+research
+figure
+
+society
+history
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More city Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 21/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+police
+Menu kind
+
+million
+community
+
+need
+tree
+price
+team
+game
+father
+
+kid
+student
+support
+program
+
+health
+field
+man
+
+example
+quality
+control
+action
+
+process
+position
+
+education
+age
+
+course
+type
+
+manner
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More order Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 22/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+decision
+Menu industry
+
+mind
+condition
+
+paper
+bank
+
+century
+activity
+
+table
+sense
+
+building
+experience
+
+staff
+language
+
+plan
+policy
+
+ 
+
+Table 6: C2 DGA Strings
+
+Table 1
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 23/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+news
+nwshp Menu
+section
+pagead
+
+ads
+forum
+
+general
+topic
+
+master
+explore
+features
+
+enterprise
+pricing
+article
+
+contact
+security
+about
+status
+blog
+
+training
+help
+
+feedback
+terms
+
+activity
+pricing
+switch
+
+Table 7: URL Path String Table
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 24/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+Menu
+
+Research & Intelligence
+
+About The Author
+
+The Cylance Threat Research Team
+The BlackBerry Cylance Threat Research team examines
+malware and suspected malware to better identify its abilities,
+
+function and attack vectors. Threat Research is on the frontline of
+information security and often deeply examines malicious software, which
+puts us in a unique position to discuss never-seen-before threats.
+Author's Bio
+
+Get the ThreatVector Newsletter
+Enter your email address Subscribe
+
+S U G G E S T E D  R E A D I N G
+
+Mirai Botnet Spawns Echobot Malware
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 25/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+Why Jack Daniel is Strangely Optimistic about the Future
+of Cybersecurity Menu
+
+InSecurity Podcast: Adversarial Machine Learning and How
+AI is Enabling Resilience
+
+Why David Spark is the Ira Glass of the Cybersecurity
+Industry
+
+Commentary: The Desjardins Breach and the Rise of the
+Insider Threat
+
+InSecurity Podcast: The Thin Red Line – Lifting the Veil on
+Penetration Testing
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 26/27
+
+
+
+2019/8/29 Inside the APT28 DLL Backdoor Blitz
+
+Menu
+
+400 Spectrum Center Dr., Suite #900
+Irvine, CA 92618
+1-844-CYLANCE
+1-844-295-2623
+
+©2019 Cylance Inc. All Rights Reserved.
+
+We use cookies to provide you a relevant user experience, analyze our traffic, and provide social media features. Read More Got it
+
+https://threatvector.cylance.com/en_us/home/inside-the-apt28-dll-backdoor-blitz.html 27/27

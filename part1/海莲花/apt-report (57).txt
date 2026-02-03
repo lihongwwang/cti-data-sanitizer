@@ -1,0 +1,432 @@
+﻿2019/9/9 The Latest Sample Analysis of OceanLotus APT Attacks Against China - Antiy Labs | The Next Generation Anti-Virus Engine Innovator
+
+Facebook
+Twitter
+Dribbble
+LinkedIn
+Pintrest
+
+Home
+Products
+
+IEP
+PTD
+PTA
+PTA-mobile
+Comprehensive Solution
+Situational Awareness...
+AVL SDK for Mobile
+AVL SDK for Network
+Services and Supports
+
+Services
+High-level Threat Intelligence
+Security Monitoring and Analysis
+Audit and Test Service
+Emergency Response
+Security Consulting and Training
+Security Monitoring and Analysis
+
+Security Response
+Research
+Downloads
+
+Product Demos
+Free Tools
+
+About Us
+
+Menu
+
+Security Response
+The Latest Sample Analysis of OceanLotus APT Attacks Against China
+September 05, 2019 By Antiy PTA Team Security Response -
+
+1、Overview
+
+Since December 2018, Antiy CERT has captured a number of macro-enabled documents attack samples against Chinese users. These malicious documents forge the security
+detection results of the anti-virus software on the background of the blurred text, induce the victim to enable the malicious macro code, inject the Shellcode into the Word process
+itself, and finally decrypt and run the backdoor program in the memory. Based on an in-depth analysis of the back door, we find that the sample is from the OceanLotus[1] group. On
+May 27, 2015, Antiy released an analysis report on the group, which led to continuous industry attention to the group. In view of the attacks captured by Antiy at that time, it was
+discovered that the attacker used the commercial attack platform Cobalt Strike, and Antiy named it APT-TOCS (that is, the APT attack group with the help of CS platform). However,
+since the use of CS is only one of the feautures of the group, and lacks the geographical features of group naming, we have subsequently adopted the name "OceanLotus"
+introduced by Qihoo 360 Technology. The sample found in this study is very similar to the special back door of OceanLotus, exposed by ESET[2] in December 2018. By correlating
+the C2 of the backdoor sample, we have found more samples that spread the backdoor through a malicious self-extracting program. Some of the samples are aiming at China, while
+more are targeting at other countries such as Cambodia. The C2 of part of the self-extracting sample-propagating back door is directly connected to the known network infrastructure
+of the OceanLotus group. Based on the strong correlation between the dedicated backdoor and the network infrastructure, there is reason to believe that the attack actions
+associated with these samples are done by the APT group.
+
+2、 Sample Analysis
+
+2、1 Sample Label
+
+All of the relevant attack payloads are Word documents, but no vulnerabilities are exploited. Instead, malicious macro code is embedded in it, which triggers subsequent malicious
+behaviors and finally implants the backdoor to the target host. This is a popular way since the phase. In order to enable the victim to enable the macro code, the attacker induces the
+user to click on "enable content" in the body of the document through a deceptive paragraph to trigger malicious macro code execution. We list two intelligence tags of them from
+these samples:
+
+Table 2 1Malicious document 1
+
+Name Trojan/Win32.VB.dropper
+
+Supplementary
+Original file name recommendations for the company’s summary report
+
+in 2018.doc
+
+2.03
+Size
+
+MB (2,127,360 bytes)          
+
+Format Document/Microsoft.Word
+
+2018-12-26
+Creation time
+
+03:53:00
+
+2018-12-26
+Last modified time
+
+03:53:00
+
+Document creation
+Admin
+
+host name
+
+https://www.antiy.net/p/the-latest-sample-analysis-of-oceanlotus-apt-attacks-against-china/ 1/8
+
+
+
+2019/9/9 The Latest Sample Analysis of OceanLotus APT Attacks Against China - Antiy Labs | The Next Generation Anti-Virus Engine Innovator
+Code page Latin
+
+I
+
+2019-03-07
+VT First upload time
+
+04:44:06
+
+VT Detect results 10/55
+
+Table 2 2 Malicious document 2
+
+Virus name Trojan/Win32.VB.dropper
+
+2.94
+Size
+
+MB (3,083,776 bytes)
+
+Format Document/Microsoft.Word
+
+Creation time 2019-01-24 02:39:00
+
+Last modified time 2019-01-24 02:39:00
+
+Document creation
+Admin
+
+host name
+
+Latin
+Code page
+
+I
+
+2019-03-08
+VT First upload time
+
+06:47:27
+
+VT Detect results 10/59
+
+2、2 Technical Analysis
+
+The relevant document samples adopt social engineering skills, pretending to be the security test results of 360 anti-virus software, and inducing the victims to enable the attached
+malicious macro. The body contents are shown in Figure 2-1 and Figure 2-2.
+
+Figure 2-1 Screenshot of malicious document 1
+
+Figure 2-2 Screenshot of malicious document 2
+
+The malicious sample contains the obfuscated vb script. After the deobfuscate, the script is found to be:
+
+1. Copy the current file to the %temp% folder.
+
+https://www.antiy.net/p/the-latest-sample-analysis-of-oceanlotus-apt-attacks-against-china/ 2/8
+
+
+
+2019/9/9 The Latest Sample Analysis of OceanLotus APT Attacks Against China - Antiy Labs | The Next Generation Anti-Virus Engine Innovator
+2. Obtain and decrypt the second paragraph script and try to write to the registry ("HKEY_CURRENT_USER\Software\Microsoft\Office\14.0\Word\Security\AccessVBOM"). When
+this registry value is 1, it allows access and modification of the vb module of the document, as shown in the following figure:
+
+Figure 2-3 Read and modify the registry
+
+3. Open the copied document under %temp%, remove the existing vb module in the document, and write a new module (Figure 2-4):
+
+Figure 2-4 Modify the copied file
+
+4. Open the copied document and call the function "x_N0th1ngH3r3" in the vb module as shown in the following figure. After that, the malicious document displays a false message,
+as shown in Figure 2-5 and Figure 2-6.
+
+Figure 2-5 Call the vb function
+
+Figure 2-6 False message display
+
+The second paragraph script has many similarities with the first paragraph script. It decrypts the third paragraph script and get the ability to modify its own vb resources by setting
+the registry, then adds a third paragraph script to the document itself:
+
+https://www.antiy.net/p/the-latest-sample-analysis-of-oceanlotus-apt-attacks-against-china/ 3/8
+
+
+
+2019/9/9 The Latest Sample Analysis of OceanLotus APT Attacks Against China - Antiy Labs | The Next Generation Anti-Virus Engine Innovator
+
+Figure 2-7 Main function of the second paragraph script (the script has been anti-obfuscated)
+
+The third paragraph script decrypts the Shellcode and injects it into the winword.exe process. The script entry function is still named "x_N0th1ngH3r3". This function can distinguish
+64-bit or 32-bit processes and perform process injection in an appropriate way:
+
+Figure 2-8 Preliminary preparation for 64-bit process injection
+
+Figure 2-9 Preliminary preparation for 32-bit process injection
+
+The code for the injection process is 908 KB (929,792 bytes). After in-depth analysis, it is found that the injected code will guide the final backdoor, which is exposed by ESET in
+December 2018[2].
+
+The original name of the backdoor program is "{A96B020F-0000-466F-A96D-A91BBF8EAC96}.dll", see the figure below:
+
+https://www.antiy.net/p/the-latest-sample-analysis-of-oceanlotus-apt-attacks-against-china/ 4/8
+
+
+
+2019/9/9 The Latest Sample Analysis of OceanLotus APT Attacks Against China - Antiy Labs | The Next Generation Anti-Virus Engine Innovator
+Figure 2-10 Backdoor program information in memory
+
+The backdoor is first initialized, and loads the resource section RCData into the memory, then decrypts the configuration data and the library file:
+
+Figure 2-11 RC4 encrypted data contained in the backdoor resource section
+
+The data contents it decrypts are as follows:
+
+Figure 2-12 Configuration data and library files decrypted in memory
+
+The contents from top to bottom in Figure 2-12 represent:
+
+1. The location of the registry:
+
+HKEY_CURRENT_USER\Software\App\AppX70162486c7554f7f80f481985d67586d\Application
+
+HKEY_CURRENT_USER\Software\App\AppX70162486c7554f7f80f481985d67586d\DefaultIcon
+
+The key values of the two registries store the unique UUID that the backdoor C2 returns to the victim host as the session ID, taking the actual debugging as an example: 32034d33-
+aecc-47d4-9dcd-f0e56063087f.
+
+2. Httpprov library file. It is used to support the mode of HTTP/HTTPS/SOCKS to communicate with C2 and statically link with libcurl.
+
+After the initialization is completed, the backdoor starts to communicate with the C2 available in the C2 list via the POST mode of HTTP protocol. The User Agent of HTTP
+communication is: ‘Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)’.
+
+Figure 2-13 Hard-coded User Agent for backdoor to communicate with C2
+
+3. The backdoor will generate a fingerprint for the victim host. Its functions include: process operation, registry operation, obtaining hard disk information, local file operation,
+releasing and executing program, memory injection, etc., which doesn’t change much from the previous version exposed by ESET[2]. As shown in the figure below, case 0x1 moves
+files, case 0x3 gets hard disk information, and cases 0, 2, 4, and 5 also include: 0xe file traversal, 0xf deletes file, 0x12 creates folders, 0x13 deletes folders.
+
+https://www.antiy.net/p/the-latest-sample-analysis-of-oceanlotus-apt-attacks-against-china/ 5/8
+
+
+
+2019/9/9 The Latest Sample Analysis of OceanLotus APT Attacks Against China - Antiy Labs | The Next Generation Anti-Virus Engine Innovator
+
+Figure 2-14 Backdoor instruction branch
+
+The captured OceanLotus sample has been improved to a certain extent in terms of technical means, it uses macro code for Shellcode injection, and the whole process of payload
+delivery are without files. It can be seen that the OceanLotus organization is still actively updating its attack methods, and trying to conceal itself more successfully, in order that it
+can lurk in the victim machine for a longer time.
+
+3、Correlation Analysis
+
+When analyzing the backdoor C2’s unique resolution IP: 45.122.***.***, we notice that the IP is used as a C2 connection by a malicious self-extracting program "AcroRd32.exe"
+disguised as the main program of Adobe Reader:
+
+Figure 3-1 The self-extracting program associated with backdoor C2
+
+The RAR self-extracting program is uploaded with the file name of “Li Jianxiang (Resume).exe”, and the last modification time is close to the malicious document 1, and its icon is
+disguised as Adobe Reader. After running, it uses the "regsvr32" command to register and run the malicious control, and then opens the Chinese PDF document prompted to be
+encrypted. Since the password is not obtained at that time, the body content is not known, but it seems that the PDF document is not malicious.
+
+Figure 3-2 The self-extracting sample of the attack against China in December 2018 are associated with C2
+
+Through sample correlation, we find a self-extracting sample that uses the same method to attack Cambodia and other countries in an earlier time:
+
+Figure 3-3 The same attack method was used in sample of the attack against Vietnam in July 2018
+
+Figure 3-4 Malicious samples uploaded on VirusTotal platform in August 2018 used the same technique as Cambodia to upload via the webpage
+
+https://www.antiy.net/p/the-latest-sample-analysis-of-oceanlotus-apt-attacks-against-china/ 6/8
+
+
+
+2019/9/9 The Latest Sample Analysis of OceanLotus APT Attacks Against China - Antiy Labs | The Next Generation Anti-Virus Engine Innovator
+
+Figure 3-5 Samples of the same technique was used to attack unknown targets in January 2019
+
+All the relevant self-extracting samples found so far have icons disguised as Adobe Reader, Office, pictures, etc., and file names of some samples disguised as "AcroRd32.exe",
+"Excel.exe", "WinWord.exe", etc.:
+
+Figure 3-6 Icon camouflage of the self-extracting program sample
+
+The pictures and Word documents are normal files, aiming to distract the victim’s attention from the successful operation of a malicious payload.
+
+The malicious OCX control contained in all self-extracting samples is to decrypt and call the final backdoor in memory. We compare all extracted backdoor samples with the
+backdoor released by malicious documents in Section 2 and find that they are highly consistent with each other, so we can basically confirm that they have the same source. C2 of
+some backdoors is connected to the network infrastructure of the known OceanLotus organization: 154.16.***.***. This IP has been repeatedly exposed by several security vendors
+[3] for long-term maintenance and use of the OceanLotus organization.
+
+4、Summary
+
+Based on the above analysis, recently, the OceanLotus organization still remains active. It launches attacks against users in China and many countries in Southeast Asia. By
+releasing malicious macro documents and self-extracting programs, it eventually spreads the special backdoor of OceanLotus organization to achieve long-term control and
+information theft. Analysis of the characteristics of the backdoor weapons and network infrastructure used, (some of the backdoors are directly connected to the known network
+infrastructure of OceanLotus organization), suggests that the samples are from the OceanLotus organization.
+
+As we pointed out earlier in the "2018 Cyber Threat Annual Report (pre-release)", the current effect of "forcing APT attack organizations to restrain themselves by analysis and
+exposure" has been greatly reduced. It is a testimony that the relevant attacker continues to use the C2 infrastructure address after it has been exposed. On the one hand, it makes
+us give up the naive idea of “a deliberate act as a warning to the opponent, and the opponent will retreat about thirty miles as a condition for peace”. On the other hand, it also
+increases the exposure of the attack behavior of an advanced threat actor with general ability, which provides certain opportunities and conditions for the investigation and analysis
+and further hunting.
+
+Antiy’s product system realizes full-format recognition and deep resolution, compound document disassembly and macro extraction through the long-term independent research and
+development of the AVL SDK “next-generation anti-virus engine”. Intelligent Endpoint Protection System(IEP) implements detection and interception on multiple defense points on
+the host side. Persistent Threat Detection System(PTD) implements the attack behavior detection and load capture detection on the traffic side. The unknown files found in each link
+can be linked to PTA sandbox for analysis, and threat intelligence rules will be output, then it can better deal with attack risks of similar levels when deployed in a network system
+with good manageability. Customers of Antiy’s existing products can conduct further risk traceability checks by subscribing to the “Advanced Threat Traceability Package”. However,
+when faced with higher level attacks, the tactical situational awareness platforms with actual combat operation are further required to realize global accusation, control enemy
+situation and coordinate response.
+
+Appendix I: References
+
+        [1] 安天：⼀例针对中⽅机构的准APT攻击中所使⽤的样本分析
+        https://www.antiy.com/response/APT-TOCS.html
+
+        [2] ESET：OceanLotus Old techniques, new backdoor 
+        https://www.welivesecurity.com/wp-content/uploads/2018/03/ESET_OceanLotus.pdf
+
+        [3] 疑似“海莲花”组织早期针对国内⾼校的攻击活动分析
+        https://ti.360.net/blog/articles/oceanlotus-targets-chinese-university/
+
+Comments ()
+
+1. Comments are closed.
+
+Search
+Search for:  Search
+
+Archives
+September 2019
+August 2019
+July 2019
+January 2019
+December 2018
+November 2018
+September 2018
+March 2018
+February 2018
+January 2018
+October 2017
+July 2017
+May 2017
+February 2017
+January 2017
+December 2016
+November 2016
+July 2016
+
+https://www.antiy.net/p/the-latest-sample-analysis-of-oceanlotus-apt-attacks-against-china/ 7/8
+
+
+
+2019/9/9 The Latest Sample Analysis of OceanLotus APT Attacks Against China - Antiy Labs | The Next Generation Anti-Virus Engine Innovator
+April 2016
+March 2016
+February 2016
+January 2016
+December 2015
+September 2015
+June 2015
+May 2015
+April 2015
+November 2014
+October 2014
+September 2014
+February 2014
+August 2013
+June 2013
+May 2013
+February 2013
+January 2013
+December 2012
+November 2012
+October 2012
+September 2012
+July 2012
+February 2012
+January 2012
+December 2011
+November 2011
+June 2011
+March 2011
+February 2011
+October 2010
+September 2009
+August 2005
+September 2004
+December 2002
+
+ 
+
+About Us
+
+Antiy Labs is a vender of antivirus engine and solution, providing the best-in-breed antivirus engine and next generation antivirus services for confronting PC malware and
+mobile malware.
+
+Know more.
+
+News
+
+Security Response
+
+The Latest Sample Analysis of OceanLotus APT Attacks Against China
+Report on Attacks Launched by International Organizations of Black Industry to Target Some Financial Practitioners in East Asian Countries
+Analysis of Recent Chinese Phishing Email Attacks
+Analysis of the Attack of Mobile Devices by OceanLotus
+
+Services
+
+High-level Threat Intelligence
+Security Monitoring and Analysis
+Audit and Test Service
+Emergency Response
+Security Consulting and Training
+Security Monitoring and Analysis
+
+Products
+
+IEP
+PTD
+PTA
+PTA-mobile
+Comprehensive Solution
+Situational Awareness...
+AVL SDK for Mobile
+AVL SDK for Network
+
+© 2018 Antiy Labs. All rights reserved. 安天官⽹ | 安天实验室
+
+https://www.antiy.net/p/the-latest-sample-analysis-of-oceanlotus-apt-attacks-against-china/ 8/8

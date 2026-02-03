@@ -1,0 +1,86 @@
+By Carlos Diaz and Leandro Costantino on May 19, 2021
+
+In our last blog about defense capabilities, we outlined the five efficacy objectives of Security Operations, that are most important for a Sec Ops; this blog will focus on Visibility.
+
+The MITRE Engenuity ATT&CK® Evaluation (Round3) focused on the emulation of Carbanak+FIN7 adversaries known for their prolific intrusions impacting financial targets which included the banking and hospitality business sectors. The evaluation’s testing scope lasted 4 days – 3 days were focused on detection efficacy with all products set to detect/monitor mode only, and the remaining day focused on protection mode set for blocking events. This blog showcases the breadth and depth of our fundamental visibility capabilities across the 3 days of detection efficacy.
+
+It is important to note that while the goal of these evaluations by MITRE Engenuity is not to rank or score products, our analysis of the results found that McAfee’s blue team was able to use MVISION EDR, complemented by McAfee’s portfolio, to obtain significant visibility, achieving:
+
+Visibility
+Scenario Evaluation Scope
+
+Outcome
+
+Across all 10 Major
+Scenario –
+
+Steps (Attack 100%
+Carbanak
+
+Phases)
+
+Across all 10 Major
+Scenario –
+
+Steps (Attack 100%
+FIN7
+
+Phases)
+
+The evaluation when tracked by Sub-steps shows McAfee having 174 sub-steps with a total 87% visibility.
+
+Going Miles-Wide
+When you seek to defend enterprises, you need to assess your portfolio and ensure it can go the distance by spanning across the endpoint and its diverse context, as well as network visibility stemming from hostile activity executed on the target system. More importantly, your portfolio must closely track the adversary across kill-chain phases (miles-wide) to keep up with their up-tempo. The more phases you track, the better you will be able to orient your defenses in real-time.
+
+Scenario 1 – Carbanak
+The Carbanak emulation consisted of an attack with 10 Major Steps (Kill Chain Phases) on day one, and our portfolio provided visibility across every phase. In these 10 phases, MITRE conducted 96 substeps to emulate the behaviors aligned to the known TTPs attributed to the Carbanak adversary.
+
+McAfee MITRE Engenuity ATT&CK Evaluation 3 Results 
+
+Scenario 2 – FIN7
+The FIN7 emulation consisted of an attack with 10 Major Steps (Kill Chain Phases) on day two, and our portfolio provided visibility across every phase. In these 10 phases, MITRE conducted 78 substeps to emulate the behaviors aligned to the known TTPs attributed to the FIN7 adversary.
+
+McAfee MITRE Engenuity ATT&CK Evaluation 3 Results
+
+Going Feet-Deep
+Tracking the adversary across all phases of the attack (miles-wide) is significantly strong, but to be really effective at enterprise defense, you also need to stay deep within their operating environment and interpret their movements within and across your systems through different approaches (feet-deep). At McAfee, we design our visibility sensors across defensible components to anticipate where adversaries will interact with the system, consequently tracing their activities with diverse data sources (context) that enrich our portfolio. This not only let us track their intentions, but also discover impactful outcomes as they execute hostile actions (sub-steps).
+
+Defensible Components and Telemetry acquired during the evaluation.
+
+If a product is configured differently you can obtain information from each Defensible Component, but this represents telemetry acquired based on the config during the evaluation (not necessarily evidence that was accepted).
+
+Visibility By McAfee Data Sources /
+Defensible Components
+Scenario 1 – Carbanak
+
+Of the 96 Sub-Steps emulating Carbanak, our visibility coverage extends from more than 10 unique data sources including the automated interception of scripted source code used in the attacks by our EDR sandbox integration with the DXL fabric.
+
+McAfee MITRE Engenuity ATT&CK Evaluation 3 Results
+
+Scenario 2 – FIN7
+Of the 78 Sub-Steps emulating FIN7, our visibility coverage extends from more than 10 unique data sources providing higher context in critical phases with Systems/Api Calls Monitoring to preserve the user’s security awareness as advanced behaviors aim for in-memory approaches conducted by the adversary.
+
+McAfee MITRE Engenuity ATT&CK Evaluation 3 Results
+
+Visibility By McAfee Product
+Acquiring data from sensors is fundamental, however to be effective at security outcomes, your portfolio needs to essentially spread its deep coverage of data sources to balance the security visibility blue-teamers need as the progression of the attack is tracked through each phase.
+
+This essential capability provides the blue-teamer a balance of contextual awareness from detection technologies (EDR and SIEM), and decisive disruption of impactful behaviors from protection products (ENS, DLP, ATD, NSP) oriented to neutralize the adversary’s actions on objectives. 
+In every phase of the attack, McAfee protection fused with detection products would successfully neutralize the adversary and afford blue teamers rich contextual visibility for investigations needing context before and after the block would have occurred.
+
+Scenario 1 – Carbanak
+
+McAfee MITRE Engenuity ATT&CK Evaluation 3 Results
+
+This chart clearly shows how ENS (in observe mode) would have prevented a successful attack, blocking the Initial Breach, protecting the customers from further damage. For the scope of the evaluation, it’s also important to remark how the products interacted by providing telemetry on each step.
+
+Scenario 2 – FIN7
+
+McAfee MITRE Engenuity ATT&CK Evaluation 3 Results
+
+In the impactful kill-chain phase of “steal payment data”, the DLP product kicks into prevention, while being complemented by the ATD sandbox intercepting the payload that attempts to steal the information, as well as EDR having contextual information within the kill-chain for offline investigations the blue teamer needs.
+
+Visibility Efficacy
+Here, we covered the essentials of visibility and how to determine the power of having a strong telemetry foundation, not only as individual sensors or defensible components that provide information, but when analyzed and contextualized, we enable the next level of actionability required to prioritize cases with enriched detections.
+
+Stay tuned for the next blog series explaining how detections were supported by this telemetry where we produced 274 detections that have more than 2 data sources.

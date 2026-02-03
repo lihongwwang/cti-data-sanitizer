@@ -1,0 +1,80 @@
+Introduction
+A new variant of the infamous APT28 Lojax (aka Double-Agent) has been discovered by the MalwareLab researchers. It is the latest version of the well-known rootkit Double-Agent, previously analyzed by ESET researchers.
+The behavior of the Lojax sample seems to be similar to the previous versions and exploits the legitimate “Absolute Lojack” software to grant its persistence on the infected system. Lojack is an anti-theft and localization software developed by Absolute Software Corporation and it is pre-installed in the BIOS image of several Lenovo, HP, Dell, Fujitsu, Panasonic, Toshiba and Asus machines. In the past, this software was known as “Computrace”.
+Despite it’s legitimate purposes, the Absolute Lojack software acts like a rootkit (more precisely as a bootkit): its BIOS component forces the writing of a small agent named “rpcnetp.exe” into the system folder. The agent periodically contacts the Absolute server and sends to it the current machine’s position.
+The control flow of the Lojack software is detailed in the following figure:
+Figure 1. Lojack control flow (Source:ESET)
+The analysis performed links the sample to the notorious russian group APT28, also known as “Fancy Bear” or “Sofacy”. The sample, in fact, triggers the Lojax YARA rule defined by Arbor Networks allowing to classify it as Double-Agent. 
+The APT28 Group has trojanized the “rpcnetp.exe” agent to spread it as fake update of the legitimate software. However, the propagation vector is not clear yet.
+
+Technical Analysis
+The size of the malicious artifact is the same of the legitimate one, so the only manipulation seems to the modification of the C2C address, in according with other firms that previously analyzed the malware.
+Hash Sha256: 6d626c7f661b8cc477569e8e89bfe578770fca332beefea1ee49c20def97226e
+Names rpcnetp.exe
+Digital Signature –
+First Submission 2018-11-05
+Lojack Double-Agent 
+Notes
+File size: 17 KB
+When it starts, the malware copies itself into a new DLL: the final file is the same of the initial one except for some header flags. After this, Lojax searches some components belonging to the legitimate software that should be already installed into the machine, with whom tries to establish a connection via RPC channel. If the Absolute Lojack components are not found, the malware kills itself.
+Hash Sha256: aa5b25c969234e5c9a8e3aa7aefb9444f2cc95247b5b52ef83bf4a68032980ae
+Names rpcnetp.dll
+Digital Signature –
+First Submission 2018-11-05
+Double-Agent 
+Notes
+File size: 17 KB
+Through a static analysis of the sample we have discovered a new C2 address, unknown to the community and to the threat intelligence platforms until now. This address, ciphered using XOR encryption with a single byte key 0xB5, was hidden in the section “.cdata”. 
+After the decryption of the address, the result is “regvirt.com”, as shown in the below figure:
+Figure 2. Encrypted string analysis
+Domain “regvirt.com”
+The domain has been registered on 10th Oct 2017 by “Tibor Kovacs” (tiborkovacsr@protonmail.com) and it’s handled by the “Shinjiru Technology Sdn Bhd” provider. The username part of the mailbox contains the same name and surname found in the Registrant name, with the addition of a terminal “r” tiborkovacsr, its not clear if this letter could be a clue usable to focus the investigation to an hypothetical profile of the registrant.
+Registrant Name: Tibor Kovacs 
+Registrant Organization: 
+Registrant Street: Vezer u 43   
+Registrant City: Budapest 
+Registrant State/Province: Budapest 
+Registrant Postal Code: 1141 
+Registrant Country: HU 
+Registrant Phone: +36.361578632154 
+Registrant Phone Ext: 
+Registrant Fax: 
+Registrant Fax Ext: 
+Registrant Email: tiborkovacsr@protonmail.com
+The domain hosts inactive inactive subdomains, such as mail.regvirt.com pointing to the localhost address 127.0.0.1. Also, it has resolved to a different ip address 209.99.40.226 during the 16th Oct 16 07th Nov time period, this address is related the Confluence Network ISP: that ip has been blacklisted for limited time by abuse.ch, between 2017-09-18 and 2017-10-19, and have been reported as malicious by the abuseipdb on december 2017. Other malicious activities related to the cybercrime threat actors have been reported through the ransomware tracker platform, where the ip is associated to several Locky ransomware distribution domains back in 2016. However, all the possible reported misuse of the ip address does not apparently match the regvirt.com’s resolution time period.
+The 46.21.147.71 ip address, instead, has been resolved since the first registration of the “regvirt.com” domain back in 2017. This network destination has been reported as command and control server of altered CompuTrace/Lojack’s software, part of the APT28 arsenal. The report published by the UK’s National Cyber Security Center on October 2018 states this implant have been used to modify system memory and maintain persistence on compromised hosts in the long run.
+Time-period between 2017-10-17 and 2018- Time-period between 2018-10-16 and
+Domain
+11-13 2018-11-07
+46.21.147.71 DEDICATED-SERVERS
+NL (Eureka Solutions Sp. z o.o. PL) 209.99.40.226 TX1-CONFLUENCE-4 AE
+regvirt.com (Confluence Networks Inc.)
+regvirt.com MX mail.regvirt.com
+www.regvirt.com www.regvirt.com CNAME regvirt.com
+mail.regvirt.com mail.regvirt.com A 127.0.0.1
+
+Mitigation
+Despite the presence of the UEFI “Secure Boot”, this malware could execute itself because it replaces only the “rpcnetp.exe” component. Anyhow, the MalwareLab researchers advise to keep enabled the UEFI Secure Boot and keep always updated the Operative System and the anti-malware solution.
+
+Indicator of Compromise
+C2:
+regvirt[.com
+mail.regvirt[.com
+www.regvirt[.com
+hxxp:// www.regvirt[.com
+YARA Rule
+rule rpcnetp { 
+meta: 
+   description = "Yara Rule for Lojack Double-Agent" 
+   author = "Cybaze-Yoroi" 
+   last_updated = "2018-11-13" 
+   tlp = "white" 
+   category = "informational" 
+strings: 
+$a1 = {50 61 74 68 73 5C 69 65 78 70 6C 6F 72 65 2E 65 78 65} 
+$a2 = {D1 E0 F5 8B 4D 0C 83 D1 00 8B EC FF 33 83 C3 04} 
+$b1 = "rpcnetp exe" 
+$b2 = {00 48 1A B5 E5 9B A0 26 F2 C7 D0 D2 C3 DC C7 C1 9B D6 DA D8 B5 B5 B5 B5 B5 B5 B5 B5 B5 0A 02 07 10 06 06 00} 
+condition: 
+        1 of ($b*) and $a1 and $a2 
+}

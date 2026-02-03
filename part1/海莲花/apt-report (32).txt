@@ -1,0 +1,210 @@
+﻿BOTNET DNSMON DDOS PASSIVEDNS MARAI HTTP81
+
+6 MAY 2021 / BOTNET
+
+“双头龙”源自海莲花组织？
+我们的双头龙blog发布后引起了较大反响，除了媒体转载，一些安
+全同行还纷纷在我们blog下面留言和提问，其中5月4号的一则留言
+提到双头龙跟海莲花（OceanLotus）样本的C2行为有联系： 
+
+ 
+留言所提到的样本为一个zip打包文件，2016年就已出现。该zip可
+以解压出多个文件，那个名为 Noi dung chi tiet（对应中文 详细信
+
+息 ）的Mach-O格式可执行文件即是海莲花样本。对比分析显示该
+样本确实与双头龙样本存在多个相似之处，所以它们或许可以解开
+双头龙的身世之谜：它极可能是海莲花的Linux版本。本文主要从2
+进制代码层面介绍这些相似点。
+
+相似点1：C2会话建立函数
+Linux常见的域名解析函数为gethostbyname()，但双头龙使用了相
+对小众的getaddrinfo()函数，C2域名的解析和会话建立都在一个函
+数中完成，而海莲花样本中也存在一个模式类似的相同功能的函
+
+数，2者的函数对比如下：
+
+
+
+能看出来它们不但功能相同，对sprintf()和getaddrinfo()的使用方
+式也几乎一模一样。此外，双头龙和海莲花都使用了单独的数据结
+
+构来保存C2会话信息，比如socket fd, 是否active, timeout等，而且
+它们的数据结构也很相似。
+
+这些相似性是是2者存在关联的第一个证据。
+
+相似点2：上线包构造手法
+双头龙和海莲花的网络数据包都是由 Head,Key,Payload三部分组成，
+
+其中Head是必须的，长度为82字节，而Key和Payload则是可选
+的。Head中的关键字段包括：
+
+偏移1，DWORD类型，存放一个magic；
+
+偏移9，DWORD类型，存放Payload长度；
+
+偏移13，WORD类型，存放Key长度；
+
+偏移15，DWORD类型，存放消息码。
+
+双头龙通过一个单独的函数初始化上线包的Head：
+
+
+
+海莲花样本中也存在1个专门初始化上线包Head的函数： 
+ 
+这个函数先调用malloc()函数为上线包动态分配内存，接下来依次
+调用time()/srand()/rand()函数生成一个随机字符然后赋给上线包
+的第一个字段，剩下的大片代码就是用多个常量对其余字段逐一赋
+
+值，所以该函数最明显的特点就是用多个常量初始化上线包。
+
+
+
+另外，双头龙和海莲花都为上线包分配了消息码，并且都是
+
+0x2170272： 
+
+ 
+该函数没有内存分配和随机生成字符的代码，整个函数都是用多个
+
+常量逐一赋值上线包的具体字段，这一点跟双头龙一模一样。此
+最终产生的上线包也非常相似，双头龙上线包如下： 
+外，在1、24和75这三个偏移处海莲花跟双头龙共享了同样的字段
+值，尤其是偏移为1处的magic都为 0x3B91011，这很难用巧合来形
+
+容，所以大大增加了这两段代码同源的概率。
+
+
+
+ 
+下面是 PAN 2017年分析出的海莲花上线包： 
+
+双头龙解密后的上线包如下所示： 
+
+ 
+下面是PAN分析报告里的海莲花明文上线包： 
+
+ 
+可以看到它们的明文结构一样，关键字段值基本相同。
+
+相似点3：均存在rotate函数
+
+
+
+双头龙和海莲花都存在一个我们称之为“rotate()”的函数，用于加/
+解密，双头龙的rotate函数如下： 
+
+海莲花版本： 
+
+
+
+两相对比不难发现它们的共同点：
+
+1. 均接受3个参数。
+
+2. 原型相同，其中第1参数为实际的rotate对象，第2个参数为
+长度字段，第3个参数起控制作用。
+
+在实际使用中，例如在加密上线包的过程中，可以看到，双头龙和
+
+海莲花使用了一样的参数。 
+
+相似点4：相同的指令码
+双头龙和海莲花都用 DWORD类型的指令码 来指定消息的功能，并且共
+
+享了多个语义相同的指令码，部分有特色的指令如下表所示：
+
+CMD FUNCTION
+
+0x18320e0 Upload device Info
+
+
+
+CMD FUNCTION
+
+0x2170272 Register
+
+0x1B25503 execute function from a plugin(a aynamic library)
+
+0x1532e65 execute function from a plugin(a aynamic library)
+
+0x25D5082 execute function from a plugin(a aynamic library)
+
+这种相似显然不能用巧合来解释了，这是它们代码同源的极强证
+
+据。
+
+总结
+双头龙与MAC版的海莲花木马虽然是用不同语言实现的，但是它们
+在功能和消息格式设计上的相似，在具体实现上的雷同，已经不
+
+能用巧合来解释了。从目前的线索来看，双头龙极大可能是由海莲
+
+化组织开发的Linux后门木马，很可能就是Linux版本的海莲花。
+
+感谢社区提供的各种线索，让我们一起 Make Cyber Security Great Ag
+
+ain。
+
+引用
+https://unit42.paloaltonetworks.com/unit42-new-improved-
+macos-backdoor-oceanlotus/
+
+Alex.Turing Read More
+Read more posts by this author.
+
+
+
+Comments Community 🔒 Privacy Policy 1 Login
+
+ Recommend t Tweet f Share Sort by Newest
+
+Start the discussion…
+
+LOG IN WITH OR SIGN UP WITH DISQUS ?
+
+Name
+
+Be the first to comment.
+
+✉ Subscribe d Add Disqus to your siteAdd DisqusAdd
+
+BOTNET
+— 360 Netlab Blog - Network Security RotaJakiro, the Linux
+
+Research Lab at 360 — version of the OceanLotus
+Botnet On Apr 28, we published our
+
+RotaJakiro backdoor blog, at that time,
+we didn’t have the answer for a very
+important question, what is this
+
+RotaJakiro, the Linux version of the backdoor exactly for? We asked the
+OceanLotus community
+
+Threat Alert: New update from Sysrv-
+hello, now infecting victims‘
+
+webpages to push malicious exe to
+end users
+
+威胁快讯：Sysrv-hello再次升级，通
+过感染网页文件提高传播能力
+
+See all 81 posts → 4 MIN READ
+
+
+
+SYSRV
+
+Threat Alert: New update from Sysrv-hello, now infecting
+victims‘ webpages to push malicious exe to end users
+Overview From the end of last year to now, we have see the uptick of the mining botnet
+families. While new families have been popping up, some old ones are get frequently
+updated.
+
+3 MIN READ
+
+360 Netlab Blog - Network Security Research Lab at 360 © 2021
+Latest Posts Twitter Ghost

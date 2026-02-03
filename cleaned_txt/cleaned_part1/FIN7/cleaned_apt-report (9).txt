@@ -1,0 +1,159 @@
+概述
+
+FIN7是一个具有俄语背景出于非法经济犯罪目的的黑客组织，自2013年活跃至今，其主要攻击目标为欧美地区的金融、零售、酒店等行业。FIN7在历史攻击活动中展现出对javascript、powershell等类型攻击载荷的青睐，而且其曾使用Carbanak武器库。FIN7与具有相似背景相同非法敛财目的的FIN4、FIN5、FIN6、FIN8、FIN10均存在紧密联系。
+
+微步情报局长期追踪俄语背景APT组织，监测发现，今年7月下旬开始，FIN7对某目标发起多次鱼叉邮件攻击，深入分析攻击事件，有如下发现：
+
+鱼叉邮件投递攻击诱饵为发票申请相关，xlsx诱饵由攻击样本释放，多起攻击事件中使用的诱饵完全一致，疑似使用相同模板生成的泛化攻击样本。
+
+原始攻击样本均为xll文件类型（Excel扩展插件），且针对攻击目标主机环境为装有32位office excel的64位Windows操作系统。核心载荷为内存C++ JssLoader木马。
+
+详情
+
+攻击样本均为Excel扩展插件xll类型，此类型文件携带Excel图标，双击时由Excel进程加载执行。
+
+xll文件执行后，将会释放xlsx诱饵文档并打开。所捕获xll样本释放诱饵文档相同，内容为发票申请相关。
+
+攻击工具分析
+
+Xll文件攻击介绍
+
+xll文件是Microsoft Office Excel产品的一种扩展插件，其本质是pe-dll文件，带有excel-xll专属图标，文件默认打开加载方式为Excel进程加载。
+
+Excel加载xll后，会根据定义的xll接口调用xll文件的导出函数。其中两个接口函数很突出：xlAutoOpen和xlAutoClose。一旦加载项被激活或停用，这些函数就会分别被调用。这些函数可用于加载恶意代码，类似于经典VBA宏中的Auto_Open和Auto_Close方法。xll文件的一个缺点是它们只能由Excel以正确的位数加载。例如，64 位 XLL 只能由 64 位版本的Excel加载。32 位版本也是如此。因此，恶意软件作者必须依赖安装在受害者机器上的 Excel 版本。与VBA宏一样，Excel将警告用户执行加载项引起的安全问题。在这方面，与VBA宏相比，它对恶意软件没有优势。
+
+FIN7 xll JssLoader分析
+
+攻击者鱼叉邮件投递的xll载荷由Excel进程默认加载，xll!xlAutoOpen内存装在执行第一段shellcode（x86_xll_loader），然后挂起64为位系统进程wermgr.exe，通过天堂之门技术在32位Excel进程中内存执行x64shellcode（x64_Injecter），x64_shellcode进一步将最终的核心载荷（x64_coreloader）注入wermgr.exe，然后恢复挂起进程执行。x64_coreloader收集用户及主机信息C&C上线，请求执行C&C下发的功能插件，可支持ps1\vbs\js\exe\dll\shellcode等多种类型载荷加载，可支持不落地内存执行。
+
+以August 10, 2022.xll为例展开分析，样本信息如下:
+
+文件名称
+August 10, 2022.xll
+
+MD5 1e12ac069c1898ffe271ebdfcbd689c1
+
+SHA1 5c7b4da950b0f1845b38ef1aa11ca41b4731c766
+
+SHA256 b08e713196b712c42da2df9da7836d270306065fbf6d4720f25d80e4104daf
+
+38
+
+文件类型 Win32 DLL
+
+文件大小 472.00 KB (483328 bytes)
+
+编译时间 2022-07-27 18:41:01 UTC
+
+C&C https://essentialsmassageanddayspa.com
+
+功能说明 JssLoader，可加载\下载执行譬如js、vbs、ps1、exe、dll、shellcode等多种类型攻击payload，可针对outlook邮箱实现邮件窃取、规则修改。
+
+按照上述执行流程拆解成如下的x86_xll_loader、x64_Injecter、x64_coreloader以及后续的攻击插件四个阶段展开分析。
+
+(1) x86_xll_loader
+
+xll文件恶意代码调用入口。
+
+shellcode加载执行。
+
+调用GetNativeSystemInfo，判断是否为x64系统。
+
+使用Wow64DisableWow64FsRedirection关闭64位系统下32位文件子系统的重定向，获取x64目标进程wermgr.exe。
+
+挂起创建。
+
+heaven's gate引导执行x64 shellcode。
+
+上述代码将引导执行位于0x00000000004d0000处的64位代码指令，dump该段shellcode使用ida进行x64反编译，heaven's gate跳段过程使用ecx传递一个0x20字节的参数。
+
+分析该0x20字节参数，其结构如下：
+
+typedef struct _diystruct {
+    int64_t* lppayload;// 用于进程注入的下一阶段shellcode地址Injectshell
+    int64_t payloadsize;// Injectshell大小
+    int64_t hDstProcess;// 目标进程wermgr.exe进程句柄
+    int64_t hDstThread;// 目标进程wermgr.exe主线程句柄
+}diystruct,*lpdiystruct;
+
+（2）x64_Injecter
+
+用于下阶段注入的shellcode通过lpdiystruct->lppayload参数传入0x00000000004d0000开始的x64加载shellcode。
+
+dump 分析 0x00000000004d0000 处 的 shellcode ， 其 逻 辑 如 下 ， 将 lpdiystruct->lppayload 拷 贝 至 wermgr.exe 空 间 ， 然 后 修 改 劫 持 wermgr.exe->AddressOfEntryPoint执行注入的shellcode。
+
+通过硬编码写入wermgr.exe->AddressOfEntryPoint，劫持wermgr.exe执行堆中ret_addr处的注入代码。
+
+（3）x64_coreloader
+
+继续分析注入wermgr.exe的shellcode。注入shellcode先加载所需dll模块及其导出函数地址。
+
+C&C 交 互 之 前 ， 先 解 密 uri 参 数 及 C&C 地 址 。 解 密 的 参 数 用 于 标 识 中 马 主 机 身 份 ， 形 如 /?id=userdomain+username&type=a ， 其 中 userdomain为主机所属域名称，username为用户名称。
+
+其中频繁使用的字符串解密函数如下，该函数通过传入一个索引值，在全局的字符串数组中获取索引位置的字符串，然后通过自定义base64算法进行解码（base64_list="+zPCJkVSH2Y6GKMUQ7mqaIT3nfwoxN0rv/9guXsDbLdil8h5OWAtBy1jFEeRZ4cp"）。
+
+可通过自定义base64解码进行base64解码。收集主机及用户信息，封装成Json格式，然后进行base64编码，用于C&C上线。
+
+使用WMI系统接口获取信息如下：
+
+调试环境收集信息如下：
+
+经分析，收集信息包括主机名称、域名称、systeminfo、进程列表、桌面文件列表、主机域关系等。封装json格式如下：
+
+进行C&C上线，User Agent ：curl/7.78.0，essentialsmassageanddayspa.com:443。
+
+上线数据包如下：
+AAAAAA==\nAAAAAA==\n+base64(collectinfo)。
+
+InternetReadFile获取C&C载荷，读取载荷数据，进入RAT分发。
+
+对C&C载荷的处理主要为针对多种文件类型的加载，如javascript、vbscript、powershell等脚本类攻击载荷，exe、dll、shellcode等二进制类型攻击载荷，加载方式可选择落地加载或直接内存加载。除此之外，还可以通过C&C指令实现持久化、文件下载功能，最后同样是最重要的是该木马可根据C&C下发配置数据实现针对Outlook邮箱的定向攻击行为，如邮件数据收集、收件规则修改。
+
+C&C交互过程中，存在部分攻击载荷需要落地，落地目录均为%Appdata%\[DicName]\[Filename]。目录名及文件名的命名方式为从自定义base64解码的列表中随机选取3-4个单词进行组合。使用脚本可解码该列表。列表总共包含49个单词元素。
+
+加载落地载荷：
+%AppData%\fragrantpriorityattitude\fragrantweekdecorative.js。
+
+加载落地powershell文件：
+
+%Appdata%\classroomfaintshark\harmfulachievedelay.txt。
+
+根据C&C下发指令，注册表设置名为“VideoCodecs”的自启项。
+
+进行outlook邮件操作之前，先获取所需的mapi32.dll导出函数。
+
+使用MAPI获取用户outlook邮件。
+
+Malwarebytes 在 对 该 样 本 分 析 中 提 到 ， 该 木 马 还 可 提 供 邮 件 规 则 修 改 功 能 ， 代 码 实 现 与 GitHubXRules 项 目（https://github.com/FSecureLABS/XRulez）存在相似之处。通过修改邮件规则可实现针对特定邮件的定向处理或执行恶意文件，攻击者理论上可通过outlook客户端实现持久化驻留。疑似outlook规则添加代码如下：
+
+从base64解码的全局字符串也可以观察到邮件配置及规则操作的痕迹。
+
+（4）Plugin_dotnet_loader
+
+当前调试分析过程中暂未上述阶段的插件下发行为，不过，据malwarebytes报告中提到存在一个.Net的加载器插件。我们获取该样本展开分析。
+该木马原始文件名称Application.exe,伪装成“ WMI Perfomance Memory 64”工具，于2022/7/26 18:20:47 UTC编译。
+
+木马由宿主程序带参运行，参数“9bc3e37fea059e1”。
+
+运行期间将静态字符串数据写入%tmp%目录，数据经过循环膨胀，落地文件约133MB，该行为目的不明，疑似用于WMI工具的合规性为伪装。
+
+进行C&C配置初始化。C&C：https://bamadora[.]com/。
+
+收集主机及用户信息。
+
+自启动目录创建指向Application.exe的lnk文件，带参加载，用于持久化。后续将脱离宿主程序独立运行。
+
+C&C上线进行数据请求。
+
+根据C&C返回特定数据进行相应的载荷加载执行，该部分同x64_coreloader中提到的功能点基本相似，不赘叙。
+
+关联分析
+
+JssLoader 是 FIN7 经 常 使 用 的 一 款 集 信 息 收 集 、 多 类 型 插 件 下 载 / 加 载 功 能 于 一 体 的 中 期 渗 透 插 件 ， 样 本 分 析 过 程 中 提 及 的 形 如“id=WALKERPCWALKERPC&type=a”的uri参数以及用户和主机信息收集功能实现中用到的json格式中的名称元素字符串等与历史事件完全一致，都可以作为归因至FIN7的强关联证据，此部分不展开描述。
+
+基于上述分析，我们尝试从样本及网络资产角度进行拓线分析：
+
+Xll类型的jssloader较历史样本的改进之处在于，核心代码经过多层shellcode封装，通过字符串加密以及动态API获取淡化攻击指纹。可从两个代码实现提取样本指纹：自定义base64算法+字符串提取，信息收集部分json特征+API调用特征。
+
+从 样 本 侧 C&C 上 线 特 征 来 看 ， 形 如 “https://essentialsmassageanddayspa[.]com/?id=userdomain+username&type=a” 的 格 式 较 为 固
+定，其中userdomain为主机所属域名称，username为用户名称。

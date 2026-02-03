@@ -1,0 +1,191 @@
+﻿2024/12/10 10:21 APT-C-08（蔓灵花）组织新型攻击组件分析报告
+
+APT-C-08（蔓灵花）组织新型攻击组件分析报告
+原创 高级威胁研究院 360威胁情报中心 2024年12月09日 17:54 北京
+
+APT-C-08
+   蔓灵花
+
+APT-C-08（蔓灵花）是一个拥有南亚地区政府背景的APT组织，近几年来持续对南亚周边
+国家进行网络攻击活动，攻击目标涉及政府、军工、高校和驻外机构等企事业单位组织。
+
+近期，360安全大脑监测到多起蔓灵花组织通过投递内部携带有chm恶意文档的压缩
+包附件的钓鱼邮件，诱导用户打开其中的chm文档，利用计划任务周期性回传受影响用户
+的机器名及用户名并同时下发后续攻击组件。
+
+ 一、攻击流程  
+
+蔓灵花组织通过投递内部携带有chm恶意文档的压缩包附件的钓鱼邮件，诱导用户打开其
+中的chm文档，利用计划任务周期性回传受影响用户的机器名及用户名，当远端服务器验证回
+传信息后，通过响应请求将后续恶意脚本下发给受影响机器并执行，从而实现后续攻击组件的
+下发与执行。    
+
+其攻击流程图如下图1-1所示：
+
+图 攻击流程      
+
+在 本 次 的 攻 击 活 动 中 ， 我 们 捕 获 到 了 蔓 灵 花 组 织 使 用 的 新 型 的 攻 击 组 件 ， 分 别 是
+Shellcode 加 载 器 与 文 件 收 集 器 。 因 其 都 有 pdb 路 径 ， 故 我 们 将 其 命 名 为
+KugelBlitz_ShellCode_Loader与Kiwi2.0。
+
+同时，我们获取到了蔓灵花组织下发的后续恶意脚本，如下图所示：
+
+https://mp.weixin.qq.com/s/EudqDzM0RA5q_EbeOIWS8g 1/6
+
+
+
+2024/12/10 10:21 APT-C-08（蔓灵花）组织新型攻击组件分析报告
+
+该脚本将通过curl从远端服务器上下载dune64.bin和shl.tar.gz，利用系统程序tar将
+shl.tar.gz包解压，且执行时传入命令行参数为dune64.bin。恶意样本shl.exe同样带有pdb，
+其实际为ShellCode加载器——即加载远端下载的dune64.bin。    
+
+ 二、详细分析 
+
+1.样本分析
+
+1) Kiwi2.0
+
+MD5 fd5f2cf4b8df27f27dc2e6bddc1a7b2e
+路径 c:\programdata\kiwizig.exe
+类型 PE EXE64
+PDB X:\Resource\VSRepo2\Kiwi2.0\Kiwi\x64\Release\Kiwi.pdb
+
+该样本属于文件信息收集器，在样本启动后首先将会创建命令行互斥量“rabadaisunique”
+以防止多开，在执行中动态解密相关字符串，其解密算法采用字符串反转+变种凯撒密码的组
+合。    
+
+该样本获取了当前机器名与用户名，接着打开文件C:\ProgramData\date.txt读取其内
+容 ， 该 内 容 将 会 设 定 之 后 收 集 文 件 信 息 时 指 定 要 收 集 的 文 件 时 间 范 围 。 删 除 文 件
+C:\ProgramData\winlist.log。    
+
+https://mp.weixin.qq.com/s/EudqDzM0RA5q_EbeOIWS8g 2/6
+
+
+
+2024/12/10 10:21 APT-C-08（蔓灵花）组织新型攻击组件分析报告
+
+之 后 开 始 遍 历 查 找 C:\users\ 用 户 名
+\AppData\Roaming\Microsoft\Windows\Templates目录下文件及遍历整个驱动器收集文
+件信息，其主要策略为：
+
+a) 收集带有如下后缀名的文件
+
+.z7 .txt .doc .docx .xls
+.xlsx .ppt .pptx .pdf .rtf
+.jpg .zip .rar .apk .neat
+.err .eln .ppi .er9 .azr
+.pfx .ovpn
+
+b) 不收集文件名以“~$”开头的文件
+
+c) 不收集文件大小大于50000000字节大小的文件
+
+d) 不收集文件最后修改时间超过一年的文件    
+
+https://mp.weixin.qq.com/s/EudqDzM0RA5q_EbeOIWS8g 3/6
+
+
+
+2024/12/10 10:21 APT-C-08（蔓灵花）组织新型攻击组件分析报告
+
+接 着 将 收 集 到 的 文 件 路 径 、 文 件 最 后 修 改 时 间 以 一 行 一 个 的 格 式 写 入 文 件
+C:\ProgramData\winlist.log，然后连接ebeninstallsvc[.]com:80，将上述收集到的文件信
+息 及 其 文 件 内 容 回 传 到 远 端 服 务 器 上 ， 回 传 地 址 为 ：
+“http://ebeninstallsvc[.]com/uplh4ppy.php?mn=机器名_用户名”
+
+上传完成后，将该文件路径和文件最后修改时间写入C:\ProgramData\uprise.log文件
+中。另外值得注意的是，在该样本中有关的错误日志会写入文件C:\ProgramData\err.txt中。
+
+2) KugelBlitz _ShellCode_Loader   
+
+MD5 88c9cfcf76a94c34b85eb1f07b197ffe
+路径 c:\programdata\shl.exe
+类型 PE EXE64
+PDB C:\Users\DOMS\KugelBlitz\VSRepos\DEV\ShellCode_Loader\x64\Relea
+
+se\ShellCode_Loader.pdb
+
+ 该样本属于Shellcode加载器，其工作依赖命令行参数。该样本启动后会从命令行参数中
+打开读取指定的文件，并申请内存执行。
+
+https://mp.weixin.qq.com/s/EudqDzM0RA5q_EbeOIWS8g 4/6
+
+
+
+2024/12/10 10:21 APT-C-08（蔓灵花）组织新型攻击组件分析报告
+
+在本次攻击活动中，我们捕获到的攻击载荷多为开源远控Havoc，其载荷配置如下所
+示：    
+
+在本次攻击活动中，蔓灵花组织的攻击手法与历史依旧相似。不同之处在于相较于历史上
+通常下发执行恶意msi样本，本次则更换为了ShellCode加载器加载远端下载的开源远控
+Havoc。
+
+ 三、溯源分析  
+
+通过投递chm文档诱导用户打开是蔓灵花组织惯用的“敲门”手法，在回传URL方面与历史
+依旧高度相似，依然采用将机器名与用户名用‘_’分割。
+
+在持久化方面，依然会通过chm文档内嵌恶意命令来实现，在计划任务中将受影响用户的
+机器名和用户名回传，并下发恶意脚本执行，在恶意脚本中又利用诸如curl、tar等系统命令来
+下载执行恶意组件。
+
+ 四、防范排查建议 
+
+基于对本次报告中提到的攻击流程进行分析，我们认为可以从以下几个方向排查设备是否
+存在被感染的痕迹：
+
+1.排查设备是否存在与相关C2服务器通联记录。
+
+2.排查设备是否存在上文提到的可疑计划任务及相关路径下是否存在可疑PE文件。
+
+3.建议将文件夹选项中“显示隐藏文件、文件夹和驱动器”选项勾选，将“隐藏已知文件类型
+的扩展名”选项取消勾选。 
+
+          
+
+附录 IOC
+
+Hash: 
+
+fd5f2cf4b8df27f27dc2e6bddc1a7b2e
+
+88c9cfcf76a94c34b85eb1f07b197ffe
+
+551946ef51f09df63feea377335a211f
+
+ac808a0f7eaea2b267e68b56ec868d60
+
+C2&URL：
+
+http://ebeninstallsvc[.]com/uplh4ppy.php
+
+https://www.sporcketngearforu[.]com/dune64.bin
+
+https://mp.weixin.qq.com/s/EudqDzM0RA5q_EbeOIWS8g 5/6
+
+
+
+2024/12/10 10:21 APT-C-08（蔓灵花）组织新型攻击组件分析报告
+
+https://www.sporcketngearforu[.]com/shl.tar.gz
+
+http://www.goalvaidclub[.]com/oct24.bin
+
+http://www.goalvaidclub[.]com/shl.tar.gz
+
+173.46.80[.]38:80
+
+72.18.215[.]108:443
+
+团队介绍
+
+TEAM INTRODUCTION
+
+360高级威胁研究院
+360高级威胁研究院是360政企安全集团的核心能力支持部门，由360资深安全专家组成，专注于高级威胁的发
+现、防御、处置和研究，曾在全球范围内率先捕获双杀、双星、噩梦公式等多起业界知名的0day在野攻击，独家
+披露多个国家级APT组织的高级行动，赢得业内外的广泛认可，为360保障国家网络安全提供有力支撑。
+
+https://mp.weixin.qq.com/s/EudqDzM0RA5q_EbeOIWS8g 6/6

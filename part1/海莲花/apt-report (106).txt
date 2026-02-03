@@ -1,0 +1,232 @@
+﻿2018/12/14 安全威胁情报
+
+“海莲花”团伙再活动，微步在线做出最新动向分析
+安全威胁情报 2017‑09‑02
+
+TAG：高级可持续攻击、APT32、海莲花、越南、中国、柬埔寨
+TLP：白（可公开发布）
+日期：2017‑09‑02
+
+概要
+
+近日，微步在线通过狩猎系统捕获到多份包含恶意宏的Office文档，分析这些恶意文档涉及的相关样本、基础设施和攻击手
+法，我们判断背后的攻击者是APT32（海莲花）组织。主要发现有： 
+
+· 最新情报分析表明，近期APT32 组织的攻击活动仍在持续进行，中国、柬埔寨和越南等国家的相关机构极有可能遭受
+到了APT32的定向攻击。
+
+· 经过相关的样本分析发现，此次攻击活动中APT32使用过微软的OneDrive云服务来托管相关木马，这与近期APT团伙
+利用正常服务从事恶意攻击的特点相符，需特别关注。
+
+· 微步在线通过对相关样本、IP和域名的溯源分析，共提取31条相关IOC，可用于威胁情报检测。微步在线的威胁情报平
+台（TIP）、威胁情报订阅、API等均已支持此次攻击事件和团伙的检测。
+
+详情
+
+微步在线通过狩猎系统捕获到两个包含恶意宏的doc文档，通过对相关样本、基础设施和攻击手法进行分析，我们判断这
+两个文档在近期APT32针对中国的攻击活动中被用作初始感染载体。
+
+以捕获的样本为基础，使用微步在线的关联分析平台关联出更多属于APT32，包含恶意宏的Office文件。其中有个名
+为“Result Voting.xls”的测试诱饵文档，文档内容使用高棉语制作，疑似是针对柬埔寨进行攻击的前期测试诱饵。还有一
+个名为“HD_me_infect.doc “的测试诱饵文档，该文档内容使用越南语制作，推测可能针对的是越南语用户。
+
+样本分析
+
+相关样本
+
+微步在线通过狩猎系统、云沙箱和关联分析平台发现了一批最新的APT32相关的诱饵文件和相关样本。这其中的诱饵文
+件都是包含恶意宏的doc或xls格式的Office文档，在具体的攻击活动中被用作初始感染载体。部分诱饵文件、相关样本和
+其相关的恶意域名和IP的关系见下表：
+样本（SHA256） 相关恶意域名/IP  
+7c2b7593bcabdb253ebcf4905367d6760f53ac118edb70a305502ef11a63ec12 chinanetworkvub.info  
+b6242d27c437a44b670c7a9a8a6bd2a92f6c4d66615310fadad146605d73e600 lawph.info  
+6b2a24e2818efff0e4571ae24f1aaffb9745c8b1426bfa57e6a7c067a7a074f8 lawph.info  
+a87a14347dfa87128a5e5eb85067dbb6aac9d28484c08923c55c36ab1a3a99fa msofficecloud.org  
+a70e7d11fb221210b50691d2904712313bc94370dd7893bf1bf4501018a112a9 blog.panggin.org 
+
+yii.yiihao126.net  
+chinanetworkvub.info 
+
+4331c18483950c9a48a71a9b1d9b26ad1e2216d170898c22494900c8fc5e36dd womenofchina.info  
+185.64.104.229
+system.galaburner.info 
+
+9d57ce4d1578fe7b3651a98b41a62888a1b228d6152acfd3b5c3e0b4c81c77ad mx.powergala.info 
+smtp.galamower.com  
+help.galaspot.net
+
+   
+
+执行流程分析
+
+https://mp.weixin.qq.com/s?__biz=MzI5NjA0NjI5MQ%3D%3D&idx=1&mid=2650164408&sn=a5abc26a34f4f21c20619146686670bf 1/7
+
+
+
+2018/12/14 安全威胁情报
+
+从捕获的诱饵文件中提取宏进行分析，发现恶意宏会创建两个计划任务，其中一个计划任务最终会从远程服务器下载并
+
+运行商业的Cobalt Strike BEACON后门，另一个计划任务则会利用PowerShell最终部署一些APT32特有的后门。执行流
+程如下图：
+
+示例分析
+
+以诱饵样本7c2b7593bcabdb253ebcf4905367d6760f53ac118edb70a305502ef11a63ec12为例：
+1. 该样本是一个包含恶意宏的doc文档。在感染之后，恶意宏会为两个后门创建两个命名的计划任务，以实现后门的本
+地驻留。
+
+1. 第一个计划任务名为 “Scheduled Defrags”，通过加载原始任务XML文件创建，该任务的创建时间被伪造为2016年
+6月2日。该计划任务每隔38分钟运行一次“mshta.exe”以执行恶意vbs脚本，vbs脚本会调用“powershell.exe“执行
+从http://chinanetworkvub.info:80/global/asian.jpg下载的恶意PowerShell脚本。
+
+“Scheduled Defrags” 1
+
+“Scheduled Defrags” 2
+1.下载的PowerShell脚本中包含一个shellcode版的后门。该后门包含进程、文件以及注册表管理，获取系统信息和创建
+反弹shell等功能，使用blog.panggin.org和yii.yiihao126.net作为C2。
+
+2.第二个计划任务名为“Windows Scheduled Maintenance”，该计划任务会启动一个COM小程序每隔24分钟下载并执
+行托管在远程服务器上的Meterpreter载荷。Meterpreter载荷会加载并配置Cobalt Strike BEACON，BEACON使用
+Safebrowsing可扩展的C2配置文件进行通信以实现网络流量的融合。
+
+https://mp.weixin.qq.com/s?__biz=MzI5NjA0NjI5MQ%3D%3D&idx=1&mid=2650164408&sn=a5abc26a34f4f21c20619146686670bf 2/7
+
+
+
+2018/12/14 安全威胁情报
+
+“Windows Scheduled Maintenance” 1
+
+而另一个诱饵（b6242d27c437a44b670c7a9a8a6bd2a92f6c4d66615310fadad146605d73e600）则最终部署了另
+外一个APT32特有的后门。该诱饵部署的后门具备收集系统信息、与文件系统交互、加载和执行其他模块，以及结束进
+程 和 反 反 汇 编 等 功 能 ， 该 后 门 使 用 system.galaburner.info 、 mx.powergala.info 、 smtp.galamower.com 和
+help.galaspot.net 作 为 C2 。 而 截 至 报 告 发 布 时 间 ， 样 本 中 相 关 下 载 链 接
+
+（http://lawph.info/download/images/user.gif）依然存活，说明相关攻击活动仍在继续，如下图：
+
+溯源分析
+
+使用微步在线的关联分析平台和黑客画像系统对示例诱饵文件进行关联和溯源分析，发现诱饵文件最早在中国被发现，
+
+而诱饵文件包含的宏、宏实现的功能、部署后门的方式都与APT32此前使用过的基本完全一致。使用微步在线的
+x.threatbook.cn平台检索示例诱饵文件包含的恶意域名chinanetworkvub.info，发现攻击者在2017年3月23日注册了该
+域名，并且使用了隐私保护。
+
+使用x.threatbook.cn平台和黑客画像系统blog.panggin.org和yii.yiihao126.net进行关联分析，发现二者也曾在APT32针
+对中国的相关攻击活动中被使用过。
+
+https://mp.weixin.qq.com/s?__biz=MzI5NjA0NjI5MQ%3D%3D&idx=1&mid=2650164408&sn=a5abc26a34f4f21c20619146686670bf 3/7
+
+
+
+2018/12/14 安全威胁情报
+
+此 外 ， 使 用 x.threatbook.cn 平 台 对 system.galaburner.info 、 mx.powergala.info 、 smtp.galamower.com 和
+help.galaspot.net进行关联分析，发现它们是在同一个域名服务商上注册，且注册时间相同。
+域名 当前IP 域名有效期 注册邮箱  
+system. 
+galaburner.info 1.1.1.1 2016/7/14‑2018/7/14 josephgaze@gmx.com  
+mx. 
+powergala.info 1.1.1.1 2016/7/14‑2018/7/14 josephgaze@gmx.com  
+smtp.galamower.com 193.169.245.31 2016/7/14‑2018/7/14 隐私保护  
+help.galaspot.net 193.169.245.31 2016/7/14‑2018/7/14 隐私保护  
+     
+
+而使用微步在线的云沙箱和关联分析平台对system.galaburner.info、smtp.galamower.com和help.galaspot.net进行进
+一步的关联分析，发现这几个域名同样被其他恶意程序用作C2，部分样本见下表。
+SHA256 文件名  
+ef68cfad4cdae58624d12ff97ae00e68aafae9e6f33f3bd23dffc37869a1e578 Cursif.ttf  
+e7c855161c6240beb0dec7b8209df8289be22eb9665cf71cf76228472c9de8
+b5 Excel.exe  
+023a4f500af9aac9960066a96fb0d811e4e25df7d9d564b3d0cc899b7c2bb5 Install.RobotoSlab‑Font.ex
+b3 e  
+   
+
+这些恶意程序在美国和菲律宾等地被发现，发现时的文件名多与字体相关。根据发现地区等信息，我们推测APT32可能
+同时在攻击其他目标，且在攻击过程中可能利用了 “找不到字体”或“字体损坏”等进行社工攻击。使用微步在线的黑客画
+像系统对此类攻击手法进行关联分析，发现此前APT32曾使用过此类攻击手法。而使用微步在线的追踪溯源系统对这些
+恶意程序的传播源头进行分析，发现这些恶意程序有的曾被托管在微软的OneDrive云服务器上，比如某恶意程序曾通过
+下图中的链接被下载。
+
+此外，通过微步在线的狩猎系统和关联分析平台，我们还捕获到几个武器化阶段的测试诱饵文档。其中一个名为“Result
+Voting.xls”（投票结果），最早于2017年4月13日被发现。该文档使用高棉语（柬埔寨母语）制作，标题为“2017年马德
+望公社/桑加特选举结果表”，内容与投票结果有关。还有一个名为“HD_me_infect.doc”的武器化阶段的测试诱饵文件，
+该文档内容使用越南语制作。根据这些诱饵文件中包含的恶意或测试URL，以及文档包含的语言和内容，我们判断
+APT32可能是在进行相关测试，准备对柬埔寨和越南语用户发起攻击。
+
+综上，我们判断中国的相关机构在近期遭到过APT32的定向攻击，且攻击活动仍在持续，而柬埔寨和越南等国家的相关
+机构则极有可能遭到过APT32的定向攻击。
+
+附录
+
+关于海莲花
+
+海莲花(OceanLotus)，称为APT32，是越南背景的黑客组织。该组织自2012年4月开始攻击中国的海事机构、海域建设
+部门、科研院所和航运企业。如今，其正在对多个行业的私营企业进行入侵，并针对外国政府，异议人士和记者。该团
+
+伙主要使用邮件钓鱼和水坑攻击，诱饵文件通常与目标高度相关，早期多使用后缀名欺骗和图标伪装进行诱导。
+
+https://mp.weixin.qq.com/s?__biz=MzI5NjA0NjI5MQ%3D%3D&idx=1&mid=2650164408&sn=a5abc26a34f4f21c20619146686670bf 4/7
+
+
+
+2018/12/14 安全威胁情报
+
+恶意域名/IP
+
+chinanetworkvub.info
+lawph.info
+blog.panggin.org
+womenofchina.info
+system.galaburner.info
+mx.powergala.info
+smtp.galamower.com
+help.galaspot.net
+yii.yiihao126.net
+listpaz.com
+bull.pengpi.net
+dez.raizpox.com
+msofficecloud.org
+108.170.20.88
+185.64.104.229
+185.141.27.116
+193.169.244.213
+
+Hash
+
+7c2b7593bcabdb253ebcf4905367d6760f53ac118edb70a305502ef11a63ec12
+a70e7d11fb221210b50691d2904712313bc94370dd7893bf1bf4501018a112a9
+4331c18483950c9a48a71a9b1d9b26ad1e2216d170898c22494900c8fc5e36dd
+b6242d27c437a44b670c7a9a8a6bd2a92f6c4d66615310fadad146605d73e600
+9d57ce4d1578fe7b3651a98b41a62888a1b228d6152acfd3b5c3e0b4c81c77ad
+ef68cfad4cdae58624d12ff97ae00e68aafae9e6f33f3bd23dffc37869a1e578
+e7c855161c6240beb0dec7b8209df8289be22eb9665cf71cf76228472c9de8b5
+023a4f500af9aac9960066a96fb0d811e4e25df7d9d564b3d0cc899b7c2bb5b3
+e13cd452c0d9b8fa1a6f3a3b8722e35870efa0bec90bedf4eb757a9fe4c0c27b
+6b2a24e2818efff0e4571ae24f1aaffb9745c8b1426bfa57e6a7c067a7a074f8
+a87a14347dfa87128a5e5eb85067dbb6aac9d28484c08923c55c36ab1a3a99fa
+16fdb8f388f5a8737130d952f752fc9201ffde8549ae583c7582ab01147d171d
+82369d8e376beb0c26d93e16f9794139163ce14e394d113a84a40f96bcde0cbb
+45243bd5eb94718bcc0b36d941989d9e2d8c9329c059c3e537513e7fa21e0f5a
+
+邮箱
+
+josephgaze@gmx.com
+socialnetmake@gmail.com
+
+关于我们：
+
+https://mp.weixin.qq.com/s?__biz=MzI5NjA0NjI5MQ%3D%3D&idx=1&mid=2650164408&sn=a5abc26a34f4f21c20619146686670bf 5/7
+
+
+
+2018/12/14 安全威胁情报
+
+https://mp.weixin.qq.com/s?__biz=MzI5NjA0NjI5MQ%3D%3D&idx=1&mid=2650164408&sn=a5abc26a34f4f21c20619146686670bf 6/7
+
+
+
+2018/12/14 安全威胁情报
+
+https://mp.weixin.qq.com/s?__biz=MzI5NjA0NjI5MQ%3D%3D&idx=1&mid=2650164408&sn=a5abc26a34f4f21c20619146686670bf 7/7

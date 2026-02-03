@@ -1,0 +1,600 @@
+﻿2024/5/22 10:06 APT32常用诱饵文件分析
+
+APT32常用诱饵文件分析
+山石网科情报中心 山石网科安全技术研究院 2024-05-21 16:59 广东
+
+1  事件概述 
+
+随着越来越多个人隐私和重要数据通过各种办公软件存储在电子文档中，针对办公
+软件的攻击事件不断发生，各种办公软件安全问题日趋严重！
+
+办公软件存在安全问题的根本原因在于其文档格式解析和执行存在缺陷，即软件安
+全漏洞。
+
+本文将通过研究海莲花组织(APT32)针对Office软件进行恶意攻击的三个样本，总
+结其技术特征，分析Office文档漏洞的主要利用手法，并提供防御与检测建议。
+
+No.1  组织介绍
+
+APT32，是一个长期针对中国及其他东亚国家进行攻击的APT组织。攻击领域涉及
+政府机构，政府部门，医疗卫生，国防，通信等等，常用手法包括白利用、DLL劫持、
+多阶段加载、混淆加密等等。
+
+No.2  攻击手法
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 1/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+将包含恶意代码的程序打包成自解压文件，伪装成word文档，通过网络钓鱼、社会
+工程等，诱使受害者打开。
+
+打开后，弹出诱饵文档窗口，在后台加载恶意程序。
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 2/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 3/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+2  样本一：白利用 
+
+sha256: dbde2b710bee38eb3ff1a72b673f756c27faa45d5c38cbe0f8a5dfccb16c18ba
+
+No.1  攻击背景
+
+攻击手法
+
+伪装成word文档，通过社会工程学诱导受害者点击执行，通过白利用方法绕过安全
+检测，加载恶意程序。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 4/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+如上所示，攻击者将携带签名的白文件、恶意DLL、加密后的代码文件打包成自解
+压格式的诱饵文档，诱使受害者打开。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 5/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 6/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+诱饵文档被执行后会释放所有文件，并且执行“MicrosoftUpdate.exe”，通过白文
+件利用的方法，加载恶意的SoftwareUpdateFilesLocalized.dll。恶意DLL读取加密的
+shellcode 文 件 -SoftwareUpdateFiles.local 并 将 恶 意 的 shellcode 注 入
+MicrosoftUpdate.exe中。
+
+No.2  TTPs
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 7/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 8/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+样本关联分析拓扑
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 9/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 10/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+No.3  详细分析
+
+静态分析
+
+DIE打开后，可以看出它是一个压缩文件，包括4个文件，2个目录
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 11/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+分析白文件MicrosoftUpdate.exe，可以看到其导入表中并未包含恶意dll——
+SoftwareUpdateFilesLocalized
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 12/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+动态调试
+
+DLL侧加载
+
+跟踪DLL的加载，程序通过ntdll.ZwMapViewOfSection将导入表中的DLL映射到
+内 存 中 ， 而 恶 意 的 SoftwareUpdateFilesLocalized.dll 存 放 于 程 序 目 录
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 13/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+~\SoftwareUpdateFiles.Resources\en.lproj\SoftwareUpdateFilesLocalized.dll
+下，可以推测其利用了DLL侧加载技术。
+
+如下图所示：其在SoftwareUpdatefiles.10002F44通过LoadLibraryW加载进入
+内存
+
+Shellcode加载之反射型DLL注入
+
+攻击者从内存而非磁盘向指定进程注入DLL的技术，相比之下更为隐蔽，不需要硬
+盘文件和Windows加载程序的辅助，因而逃离了一般检测软件、系统程序的监控。
+
+实现流程
+
+1.  获取目标进程的句柄
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 14/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+2.  内存分配空间，注入shellcode
+
+3.  加载所需系统DLL
+
+4.  重构导入表
+
+5.  打开进程，进入DLL入口点，执行注入的恶意代码
+
+具体分析如下，用IDA静态分析加载的恶意DLL，找到sub_10001020函数，可以
+看到其通过VirtualAlloc函数重新分配内存空间，并加载shellcode
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 15/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+进入sub_100010c0中，异或解密算法如下所示，通过密钥String循环解密
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 16/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 17/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+使用x64dbg，可以看到内存中加载的SoftwareupdatefilesLocalized.local内容
+如下所示
+
+经过解密算法后，shellcode恢复如下
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 18/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+反汇编后结果如下
+
+然后，通过LoadLibraryExW函数确定系统DLL的位置，导入所需DLL
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 19/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+在 Local\Temp 目 录 下 ， 创 建 New Text Document.doc 诱 饵 文 档 ， 使 用
+WINWORD.EXE进程打开
+
+使用RtlMoveMemory，VirtualAlloc重新分配内存空间
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 20/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+Shellcode执行
+
+最 后 ， 执 行 其 注 入 的 恶 意 代 码 ， 这 是 一 个 DenseRAT 木 马 程 序 ， 尝 试 连 接
+tripplekill.mentosfontcmb.com的46405端口，由于端口已失效，连接失败。
+
+反调试技术
+
+动态调试过程中，可以发现其使用了Sleep长延时函数
+
+No.4  yara规则
+
+针对该样本， 其主要行为特征如下，可以以此为方向，提取静态特征，编写yara规
+则进行检测。
+
+1.  DLL侧链加载技术：如何辨别加载的DLL是否为恶意的
+
+2.  异或解密算法：Xor特征
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 21/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+3.  DLL反射型注入技术：注入特征
+
+Xor解密特征检测
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 22/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 23/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+进程注入
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 24/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 25/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+3  样本二：OCX控件漏洞 
+
+sha256:58e294513641374ff0b42b7c652d3b4a471e8bde8664a79311e4244be0546df4
+
+No.1  攻击背景
+
+OCX(对象链接和嵌入用户控件)遵循OLE标准，基于ActiveX技术，被设计来支持混
+合文档文档(声音、动画)，即查即用。然而，由于控件开发设计应用多元自由，极易受
+到黑客恶意攻击，不断有相关漏洞被披露。
+
+攻击手法
+
+如下图所示，伪装成Word文档的自解压程序，包括一个word文档和一个ActiveX
+控件。通过自解压命令行参数，调用regsvr32.exe运行ActiveX控件，加载恶意的OCX
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 26/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+文件，导致在内存中自加载后门模块，加载完成后与C2建立连接，接收控制指令。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 27/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 28/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+No.2  TTPs
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 29/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 30/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+No.3  详细分析
+
+静态分析
+
+使用DIE查看OCX文件，发现只导入了Kernel.dll，导出DllRegisterServer。可以
+推测其他函数是动态加载的。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 31/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+动态分析
+
+恶意代码载入
+
+自 解 压 后 ， 创 建 regsvr32.exe 进 程 ， 运 行 命 令  ”/s /i {bb31f5a0-a119-4667-
+ba38-3cf4ceee97bf}.ocx "
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 32/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+OCX分析
+
+通过LoadResource加载OCX文件中恶意的shellcode，调用RtlAllocateHeap在
+内存中分配空间，将恶意的shellcode分配到内存中。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 33/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+然后通过多重循环解密，解密出配置信息、域名以及所需的DLL，跳转进入后门模
+块。
+
+最后创建WINWORD.exe，释放并执行诱饵文档
+
+后门模块分析
+
+通过DnsQueryEx查询域名
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 34/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+调用ws2_32.dll.sendto进行UDP通信，查询域名
+
+查询注册表，收集主机信息
+
+加载rasadhlp.dll, cryptsp.dll模块，加密数据，生成传输密钥
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 35/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+通过WinHttpOpen发送HTTP请求
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 36/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+通过CreateRemoteThreadEx在远程进程中创建线程，试图建立连接
+
+No.4  yara规则
+
+针对该样本，主要是检测ocx文件中，是否存在shellcode。可以基于shellcode的
+特征，编写yara规则进行检测：
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 37/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+shellcode常见特征：
+
+1.  使用PIC技术
+
+2.  常用POP，call 指令
+
+3.  常用LoadLibrary等函数
+
+4.  需要识别执行位置
+
+5.  需要查找Kernel.dll并解析
+
+4  样本三：RTF的OLE对象漏洞 
+
+sha256: e7f997778ca54b87eb4109d6d4bd5a905e8261ad410a088daec7f3f695bb8189
+
+No.1  攻击背景
+
+RTF(Rich Text Format)，即富文本格式，是微软公司为进行文本和图像信息格式
+交换而制定。
+
+RTF 文 件 并 不 支 持 任 何 宏 语 言 ， 但 可 以 通 过 \object 控 制 字 支 持 OLE 对 象 以 及
+Macintosh Edition Manager订阅者对象。
+
+OLE(object linking and embedding)，即对象链接和嵌入，是一种面向对象的技
+术，允许在程序之间链接和嵌入对象数据，从而建立复合文档。微软 MS Office 97-
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 38/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+2003 的各种文件格式 （DOC、RTF、XLS 和 PPT 等）都采用 OLE 技术存储文件规
+范。通过该规范，一个文件不仅可以包含文本，还可以包括图形、电子表格、甚至声音
+视频信息。
+
+安全隐患
+
+RTF 文件可以划分成文件头和文档区两部分，文件头和文档区都由控制字和控制符
+组成。控制符由一个反斜线\跟随单个 非字母字符组成。控制符不需要分隔符。控制字
+是 RTF用来 标记管理文档信息的一种特殊格式的命令，其语法格式为：\字母序列<分
+隔符>。主要是根据控制字对RTF文件进行解析。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 39/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 40/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+然而，RTF在解析对象类型时，需要调用公共控件或动态链接库去解析对象数据。
+而\objectdata等对象数据字段属于可存数据区域。在这些区域中，可以构造溢出数
+据，甚至恶意代码，从而触发 OLE 对象漏洞。
+
+攻击手法
+
+将rtf文件伪装成word文档，利用了CVE_2017_11882漏洞——EQNEDT32.EXE进
+程在读入包含MathType的ole数据时，在拷贝公式字体名称时没有对名称长度进行校
+验，从而造成栈缓冲区溢出，载入恶意代码。
+
+No.2  TTPs
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 41/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 42/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 43/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+No.3  详细分析
+
+静态分析
+
+通过DIE打开，可以看到该文件本质上是一个RTF文件。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 44/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+通过IDA查看，可以发现其嵌入了一个object对象且存在异常数据，判断此处存在
+OLE对象漏洞
+
+可以看到攻击者使用了\objupdate技巧，这可以使得嵌入对象在显示前就进行更
+新。即用户不需要点击该对象就能完成对象的加载
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 45/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+动态分析
+
+首先dump出其Object对象，找到其栈溢出地址。
+
+shellcode分析
+
+通过栈溢出漏洞跳转到shellcode后，获取临时temp文件夹路径，将源文件内容复
+制过去并执行
+
+遍历文件目录，通过检测vmGuestLibJava.dll检测虚拟机
+
+如果不在虚拟机中，就会释放一系列Dll文件，
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 46/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+然后加载执行shellcode
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 47/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 48/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+这 段 Shellcode 解 密 出 一 个 PE 文 件 并 映 射 到 内 存 中 ， dump 出 来 后 发 现 是
+{A96B020F-0000-466F-A96D-A91BBF8EAC96}.dll，这个dll为“海莲花”组织使用，
+通过网络连接域名如下：
+
+No.4  yara规则
+
+针对该样本，可以考虑从缓冲区溢出漏洞、嵌入shellcode两个特征出发，进行静
+态检测
+
+1. 缓冲区溢出漏洞：针对rtf文件的object对象，检测其objdata数据是否符号规
+范。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 49/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+2. 嵌入shellcode：同样本二。基于shellcode特征进行检测：PIC技术，识别执行
+位置，call/pop指令，loadLibrary等函数，查找并解析kernel32.dll等
+
+5  关于山石网科情报中心 
+
+山石网科情报中心，涵盖威胁情报狩猎运维和入侵检测与防御团队。 山石网科情报
+中心专注于保护数字世界的安全。以情报狩猎、攻击溯源和威胁分析为核心，团队致力
+于预防潜在攻击、应对安全事件。山石网科情报中心汇集网络安全、计算机科学、数据
+分析等专家，多学科融合确保全面的威胁分析。我们积极创新，采用新工具和技术提升
+分析效率。团队协同合作，分享信息与见解，追求卓越，为客户保驾护航。无论是防范
+未来威胁还是应对当下攻击，我们努力确保数字世界安全稳定。其中山石网科网络入侵
+检测防御系统，是山石网科公司结合多年应用安全的攻防理论和应急响应实践经验积累
+的基础上自主研发完成，满足各类法律法规如 PCI、等级保护、企业内部控制规范等要
+求。
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 50/51
+
+
+
+2024/5/22 10:06 APT32常用诱饵文件分析
+
+https://mp.weixin.qq.com/s/U1yCvZry3VAxIjF36q82WA 51/51

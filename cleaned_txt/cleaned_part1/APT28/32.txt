@@ -1,0 +1,23 @@
+APT28组织通过mockbin API获取敏感信息
+
+01 攻击描述
+
+近期疑似APT28攻击组织发起了一轮窃密活动，其特点是利用mockbin API获取受害者的敏感信息。山石网科情报中心获取了一批活动样本。分析显示攻击者通过自定义的Nishang脚本窃取NTLM哈希值，受害者执行脚本后会请求属于攻击者的mockbin API并发送这些信息。
+
+02 简要分析
+
+攻击起始于一个恶意LNK文件。受害者执行该文件后将启动一个隐藏的powershell窗口，然后从指定的url下载一个恶意powershell脚本并执行它。其中用于托管恶意脚本的webhook.site是一个常用的web测试网站。
+
+下载的powershell脚本是一个经过修改的Nishang脚本。Nishang是一个常用于渗透测试的powershell脚本合集，原脚本可用于获取用户的NTLM哈希值。修改后的脚本在获取NTLM哈希值后将携带哈希值向属于攻击者的mockbin API发起请求。
+
+mockbin.org也是一个常用web测试网站，可以记录发出的请求。攻击者可在服务端查看被泄露的NTLM哈希。然后攻击者可暴力破解NTLM哈希获取受害者的密码。
+
+山石情报中心已收录相关样本，用户可以在山石网科威胁情报中心云瞻中查看相关IOC信息。
+
+04 失陷指标
+
+https[:]//mockbin[.]org/bin/de22e2a8-d2af-4675-b70f-e42f1577da6e
+https[:]//webhook[.]site/33128548-0eda-4e2b-bf89-7b1b225ecb9f
+022d01e7007971f5a5096c4f2f2b2aa4
+1e2a320658ba5b616eae7a3e247f44a6
+358d9271b8e207e82dafe6ea67c1d198

@@ -1,0 +1,290 @@
+﻿2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+(http://blog.nsfocus.net/)
+
+APT技术观察——APT与隐写术
+ 13 days ago (http://blog.nsfocus.net/apt-technology-observation-apt-and-steganography/)  伏影实验室 (http://blog.nsfocus.net/author/fuying-lab/)
+
+( )
+
+  阅读： 207
+近期披露的APT组织攻击活动中，我们发现部分组织频繁使⽤⼀项历史悠久的信息隐藏技术——隐写术。这些隐写术的实现或复杂或简单，但都有效地增加了攻击的隐匿性与强度。
+
+⽂章⽬录 
+
+前⾔
+
+关于隐写术
+
+APT组织使⽤的隐写术
+海莲花（OceanLutus）与图像隐写
+Dukes（APT29）与图像隐写
+ScarCruft（APT37）与图像隐写
+⽩⾦（Platinum）与⽂本隐写
+
+参考链接
+
+关于伏影实验室
+
+关于绿盟威胁情报中⼼
+
+前⾔
+ 作为有⾼度攻击能⼒的团伙代表，APT组织有时会使⽤⼀些⾮常规的攻击技术。近期披露的APT组织攻击活动中，我们发现部分组织频繁使⽤⼀项历史悠久的信息隐藏技术——隐写术。这些
+隐写术的实现或复杂或简单，但都有效地增加了攻击的隐匿性与强度。
+
+关于隐写术
+隐写术（Steganography）⼀词来源于特⾥特⽶乌斯的⼀本讲述密码学与隐写术的著作Steganographia，该书书名源于希腊语，意为“隐秘书写”。
+
+计算机领域涉及的隐写术载体⼗分⼴泛，⽂本信息、图像信息、⾳频和视频信息都可以成为隐藏信息的载体，我们只需要将需隐藏的信息拆散并⽤固定的格式覆写⾄信息载体中，就可以实现在
+
+欺骗⼈类感官的同时传递信息。这些隐写术配合⼀定复杂度的加密技术，即可在相当程度上保证端到端信息传递的隐蔽性，因此该技术经常出现在灰⾊、⿊⾊领域以及⽹络攻防对抗当中。
+
+APT组织使⽤的隐写术
+海莲花（OceanLutus）与图像隐写
+我们先来看⼀下⼤名鼎鼎的海莲花组织在2018年10⽉的⼀次攻击中使⽤的隐写术技术。
+
+该次攻击的原始载荷是⼀个名为mcvsocfg.dll的动态链接库⽂件，该⽂件模仿McAfee旗下同名⽂件的导出表，使⽤⽩利⽤的⽅式将⾃身加载运⾏。当受害者打开同⽬录下的安全程序mcods.exe
+时，该dll中的恶意代码被调⽤执⾏。
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 1/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+Dll⽂件包含以下导出表：
+
+导出表中所有函数都执⾏同样的恶意代码，读取system.ini⽂件并以此解密隐写术图像中的信息：
+
+隐写术图像在dll同⽬录下，名为x5j3trra.Png：
+
+阅读关键代码可发现，该程序将png图像每个像素RGB值的低位拼合成⼀个字节，再将所有字节组合为加密字节串：
+
+此处dwARGB值在内存中遵循BGRA的字节排列，因此每个像素的隐藏信息提取过程如下（以图⽚头部像素0xFF4586E2为例）：
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 2/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+以上提取结果为0xB5，即图像的此像素中隐藏了值为0xB5的单字节信息。
+
+通过以上⽅式，程序将隐藏在png图像中的加密字节串提取出来，之后使⽤AES-CBC和异或解密出最终载荷：
+
+该最终载荷为多层shellcode加载器形式的DenesRAT⽊⻢，详细分析可参⻅由伏影实验室发布的《海莲花（APT32）组织 DenesRAT⽊⻢与相关攻击链分析》。
+
+在这次攻击中，海莲花组织使⽤了最常⻅的隐写术⼿法——图⽚像素低位隐写，这样的⼿段⽣成的图像⾜以欺骗⼈类的视觉；再通过有⼀定难度的加密⽅式，使得安全⼈员即使获取到了包含隐
+写信息的图像也⽆法还原出攻击载荷，⼤⼤增加了攻击流程的隐匿性。
+
+Dukes（APT29）与图像隐写
+同样的⼿段出现在APT组织Dukes的攻击流程中。在最近由ESET披露的攻击活动中，Dukes使⽤的攻击载荷PolyglotDuke与RegDuke在C&C通信阶段使⽤了图像隐写术作为隐匿⼿段。这些载
+荷使⽤的隐写⽅式与上⽂所述海莲花隐写术基本相同，在png图像每个像素RGB值的低位中存放了1字节的信息，且完整信息同样是使⽤AES加密的密⽂，唯⼀不同点在于取⽤的RGB像素位与
+最终拼接顺序。该隐写⽅式取⽤的RGB通道位置、位数及组合⽅式示例如下：
+
+同时，ESET的报告中展示了以下隐写图像：
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 3/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+由此可以看出，该类隐写技术⼏乎不会对图像的可视性带来影响。
+
+使⽤图像隐写，Dukes的C&C服务器可以向种植了PolyglotDuke或RegDuke后⻔的主机发送可执⾏⽂件载荷。
+
+ScarCruft（APT37）与图像隐写
+⽆独有偶，韩国APT组织ScarCruft在今年的攻击活动中也利⽤了隐写术图像。
+
+该攻击事件在19年5⽉被发现，整个攻击过程包括多个阶段与载荷，其中使⽤隐写术的攻击载荷名为fastuserswitchingcompatibility.dll，伪装成Fast User Switching Compatibility服务安装⾄系统
+服务中。该伪造服务在启动时会执⾏ServiceMain函数，装载主要恶意代码：
+
+图中所示线程主要功能为从下载服务器下载下⼀阶段载荷，之后解密载荷并注⼊⾄winlogon.exe中执⾏。值得注意的是，该下载载荷和解密载荷的过程使⽤了图⽚隐写，图像名为images.Png:
+
+该png图像在常规数据块IHDR、PLTE、IDAT、IEND以外，末尾还加⼊了⼀个⾃定义的数据块SIGN，与前4字节组成标志位SELFSIGN：
+
+通过该标志位定位加密字符串位置后，程序使⽤xor逻辑进⾏解密，异或键为0x49：
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 4/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+解密后的攻击载荷为ROKRAT后⻔，其主要功能为窃取⽤户主机信息并上传⾄指定云服务中（Box, Dropbox, Pcloud, Yandex）。该后⻔会被植⼊到winlogon.exe进程中。
+
+该次攻击事件中，ScarCruft组织使⽤了图⽚隐写更直接的⼿法，即直接将加密数据植⼊图像数据末尾。该⼿法优点在于可以在同等⼤⼩的图像中塞⼊更多隐藏信息，⽽缺点在于数据整体暴露
+在合法⽂件结构以外，容易被静态检测⼿段检测。
+
+⽩⾦（Platinum）与⽂本隐写
+卡巴斯基在今年5⽉的报告中提到， APT组织Platinum也在使⽤隐写术传递载荷。
+
+与海莲花和ScarCruft不同，Platinum使⽤了⽂本隐写术。卡巴斯基报告中提到了两种⽂本隐写术⼿法：关键词隐写和空⽩隐写。这两种⽂本隐写⽅式的思路截然相反，关键词隐写将内容隐藏
+在可⻅字符中，空⽩隐写则将之隐藏⾄不可⻅部分。
+
+报告中提到的关键词隐写部分如下：
+
+该html⽂件的28⾏到37⾏语句中包含四个属性：bgcolor、align、colspan、rowspan。由于html对属性的顺序不敏感，这些属性的位置可以随意调换，Platinum正是利⽤了这⼀点来传递信息。
+简单计算可知，这四个属性组成的四进制数据有24种不同的排列，可指代0⾄0x17的⼗六进制数据，因此⼀⾏携带的隐藏信息量超过了4bit。
+
+空⽩隐写则如下所示：
+
+位于⽂件943~947⾏的隐写内容由空格键（0x20）和制表键（0x9）组成，因此对阅读者不可⻅。由关键词隐写我们可以联想到，该部分的隐写内容是⼆进制数据，事实也正是如此。然⽽，由
+于⼆进制数据能够装载的信息很有限，常规数据⼀般需要经过压缩来获得更⼩的⼆进制空间。卡巴斯基报告指出，该处的⼆进制数据是由ICE算法压缩的（http://www.darkside.com.au/snow/
+(http://www.darkside.com.au/snow/)）。
+
+ 从Platinum组织使⽤的隐写术中可以发现，隐写术的本质是将⼆进制数据转为其他进制数据并放⼊合适的载体中。因此，隐写术的载体可以是现代计算机⽹络中任何信息载体形式，攻击者是
+否使⽤隐写术更多取决于载体是否易于传播以及转换后信息是否⾜够隐蔽。
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 5/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+参考链接
+https://threatvector.cylance.com/en_us/home/report-oceanlotus-apt-group-leveraging-steganography.html (https://threatvector.cylance.com/en_us/home/report-oceanlotus-apt-group-
+leveraging-steganography.html)
+
+https://www.welivesecurity.com/2019/10/17/operation-ghost-dukes-never-left/ (https://www.welivesecurity.com/2019/10/17/operation-ghost-dukes-never-left/)
+
+https://securelist.com/scarcruft-continues-to-evolve-introduces-bluetooth-harvester/90729/ (https://securelist.com/scarcruft-continues-to-evolve-introduces-bluetooth-harvester/90729/)
+
+https://securelist.com/platinum-is-back/91135/ (https://securelist.com/platinum-is-back/91135/)
+
+http://www.darkside.com.au/snow/ (http://www.darkside.com.au/snow/)
+
+关于伏影实验室
+
+伏影实验室专注于安全威胁研究与监测技术，包括但不限于威胁识别技术，威胁跟踪技术，威胁捕获技术，威胁主体识别技术。研究⽬标包括：僵⼫⽹络威胁，DDOS对抗，WEB对抗，流⾏
+服务系统脆弱利⽤威胁、身份认证威胁，数字资产威胁，⿊⾊产业威胁 及 新兴威胁。通过掌控现⽹威胁来识别⻛险，缓解威胁伤害，为威胁对抗提供决策⽀撑。
+
+关于绿盟威胁情报中⼼
+绿盟威胁情报中⼼（NSFOCUS Threat Intelligence center, NTI）是绿盟科技为落实智慧安全2.0战略，促进⽹络空间安全⽣态建设和威胁情报应⽤，增强客户攻防对抗能⼒⽽组建的专业性安全
+研究组织。其依托公司专业的安全团队和强⼤的安全研究能⼒，对全球⽹络安全威胁和态势进⾏持续观察和分析，以威胁情报的⽣产、运营、应⽤等能⼒及关键技术作为核⼼研究内容，推出了
+
+绿盟威胁情报平台以及⼀系列集成威胁情报的新⼀代安全产品，为⽤户提供可操作的情报数据、专业的情报服务和⾼效的威胁防护能⼒，帮助⽤户更好地了解和应对各类⽹络威胁。
+
+⽂章分类： 威胁通报 (http://blog.nsfocus.net/category/threatalerts/) 
+⽂章关键词： APT (http://blog.nsfocus.net/tag/apt/), APT32 (http://blog.nsfocus.net/tag/apt32/), NSFOCUS (http://blog.nsfocus.net/tag/nsfocus/), Steganography
+(http://blog.nsfocus.net/tag/steganography/), 伏影实验室 (http://blog.nsfocus.net/tag/%e4%bc%8f%e5%bd%b1%e5%ae%9e%e9%aa%8c%e5%ae%a4/), 海莲花
+(http://blog.nsfocus.net/tag/%e6%b5%b7%e8%8e%b2%e8%8a%b1/), 隐写术 (http://blog.nsfocus.net/tag/%e9%9a%90%e5%86%99%e6%9c%af/) 
+转载请注明：“转⾃绿盟科技博客”： 原⽂链接 (http://blog.nsfocus.net/apt-technology-observation-apt-and-steganography/).
+⽂章收录：
+
+← 绿盟科技互联⽹安全威胁周报NSFOCUS-2019-43 【威胁通告】 Apache Solr远程命令执⾏漏洞 → (http://blog.nsfocus.net/apache-
+(http://blog.nsfocus.net/nsfocus-2019-43/) solr2019-10-31/)
+
+发表评论
+要发表评论，您必须先登录 (http://blog.nsfocus.net/wp-login.php?redirect_to=http%3A%2F%2Fblog.nsfocus.net%2Fapt-technology-observation-apt-and-
+steganography%2F)。
+
+绿盟科技博客精华⽂章
+
+学习⼿册：浅析DDoS的攻击及防御 (http://blog.nsfocus.net/analysis-ddos-attack-defense/)
+学习⼿册：盘点DDoS带来的误会 (http://blog.nsfocus.net/inventory-ddos-errors/)
+移动APP安全测试要点 (http://blog.nsfocus.net/mobile-app-security-security-test/)
+Dedecms远程写⽂件漏洞分析 (http://blog.nsfocus.net/dedecms-write-file-vuln/)
+【⼲货分享】XSS攻击进阶篇——那些年我们看不懂的XSS (http://blog.nsfocus.net/xss-advance/)
+
+两步邮件订阅，⽅便获取⽂章
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 6/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+欢迎订阅！现在已有6 705个朋友订阅了。
+在后续邮件的尾部，您可以退订及修改订阅内容。
+选择订阅组：
+
+ 最新⽂章
+ 技术分享
+ 漏洞分析
+ 运维安全
+ Web安全
+ 安全报告
+
+邮件 *
+⻢上订阅！
+
+绿盟科技博客功能
+
+注册 (http://blog.nsfocus.net/wp-login.php?action=register)
+登录 (http://blog.nsfocus.net/wp-login.php)
+⽂章RSS (Really Simple Syndication) (http://blog.nsfocus.net/feed/)
+评论RSS (Really Simple Syndication) (http://blog.nsfocus.net/comments/feed/)
+WordPress.org (https://cn.wordpress.org/)
+
+绿盟科技博客⽂章标签
+
+绿盟科技 (http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80/)   漏洞
+(http://blog.nsfocus.net/tag/%e6%bc%8f%e6%b4%9e/)   远程代码执⾏漏洞
+(http://blog.nsfocus.net/tag/%e8%bf%9c%e7%a8%8b%e4%bb%a3%e7%a0%81%e6%89%a7%e8%a1%8c%e6%bc%8f%e6%b4%9e/)   绿盟科技漏洞
+库 (http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e6%bc%8f%e6%b4%9e%e5%ba%93/)   NSFOCUS
+(http://blog.nsfocus.net/tag/nsfocus/)   EnglishVersion (http://blog.nsfocus.net/tag/englishversion/)   DDoS (http://blog.nsfocus.net/tag/ddos/)   技术博客
+(http://blog.nsfocus.net/tag/%e6%8a%80%e6%9c%af%e5%8d%9a%e5%ae%a2/)   远程代码执⾏
+(http://blog.nsfocus.net/tag/%e8%bf%9c%e7%a8%8b%e4%bb%a3%e7%a0%81%e6%89%a7%e8%a1%8c/)   云安全
+(http://blog.nsfocus.net/tag/%e4%ba%91%e5%ae%89%e5%85%a8/)   威胁情报
+(http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81%e6%83%85%e6%8a%a5/)   ⽹络安全
+(http://blog.nsfocus.net/tag/%e7%bd%91%e7%bb%9c%e5%ae%89%e5%85%a8/)   威胁 (http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81/)   物联⽹安全
+(http://blog.nsfocus.net/tag/%e7%89%a9%e8%81%94%e7%bd%91%e5%ae%89%e5%85%a8/)   ⾼危漏洞
+(http://blog.nsfocus.net/tag/%e9%ab%98%e5%8d%b1%e6%bc%8f%e6%b4%9e/)   绿盟科技博客
+(http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e5%8d%9a%e5%ae%a2/)   威胁通告
+(http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81%e9%80%9a%e5%91%8a/)   rsa2018 (http://blog.nsfocus.net/tag/rsa2018/)   安全会议
+(http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e4%bc%9a%e8%ae%ae/)   安全周报
+(http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e5%91%a8%e6%8a%a5/)   ddos攻击事件
+(http://blog.nsfocus.net/tag/ddos%e6%94%bb%e5%87%bb%e4%ba%8b%e4%bb%b6/)   DDoS攻击
+(http://blog.nsfocus.net/tag/ddos%e6%94%bb%e5%87%bb/)   云计算 (http://blog.nsfocus.net/tag/%e4%ba%91%e8%ae%a1%e7%ae%97/)   ⼤数据
+(http://blog.nsfocus.net/tag/%e5%a4%a7%e6%95%b0%e6%8d%ae/)   勒索软件
+(http://blog.nsfocus.net/tag/%e5%8b%92%e7%b4%a2%e8%bd%af%e4%bb%b6/)   安全意识
+(http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e6%84%8f%e8%af%86/)   恶意软件
+(http://blog.nsfocus.net/tag/%e6%81%b6%e6%84%8f%e8%bd%af%e4%bb%b6/)   物联⽹
+(http://blog.nsfocus.net/tag/%e7%89%a9%e8%81%94%e7%bd%91/)   漏洞分析
+(http://blog.nsfocus.net/tag/%e6%bc%8f%e6%b4%9e%e5%88%86%e6%9e%90/)   态势感知
+(http://blog.nsfocus.net/tag/%e6%80%81%e5%8a%bf%e6%84%9f%e7%9f%a5/)  
+
+最新⽂章
+
+【威胁通告】Squid多个⾼危漏洞预警通告 (http://blog.nsfocus.net/cve-2019-12526-cve-2019-18679-cve-2019-18678/)
+【威胁通告】开源压缩库Libarchive代码执⾏漏洞（CVE-2019-18408） (http://blog.nsfocus.net/cve-2019-18408/)
+绿盟科技互联⽹安全威胁周报NSFOCUS-2019-44 (http://blog.nsfocus.net/nsfocus-2019-44/)
+⽹络安全威胁⽉报NSFOCUS-2019-10 (http://blog.nsfocus.net/nsfocus-2019-10/)
+Jenkins 路由解析及沙箱绕过漏洞分析报告(上) (http://blog.nsfocus.net/jenkins-routing-resolution-and-sandbox-bypass-vulnerability-analysis-report/)
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 7/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+【威胁通告】Apache Solr Velocity远程代码执⾏漏洞处置⼿册 (http://blog.nsfocus.net/ns-2019-0046/)
+【威胁通告】 Apache Solr远程命令执⾏漏洞 (http://blog.nsfocus.net/apache-solr2019-10-31/)
+APT技术观察——APT与隐写术 (http://blog.nsfocus.net/apt-technology-observation-apt-and-steganography/)
+绿盟科技互联⽹安全威胁周报NSFOCUS-2019-43 (http://blog.nsfocus.net/nsfocus-2019-43/)
+Splinter新APT攻击⼯具透析 (http://blog.nsfocus.net/splinters-new-apt-attack-tool-dialysis/)
+
+友情链接
+
+绿盟科技官⽹ (http://www.nsfocus.com.cn)
+绿盟威胁情报中⼼NTI (https://nti.nsfocus.com/)
+
+绿盟科技博客读者群
+
+© 2017 NSFOCUS Corporation (http://www.nsfocus.com), all rights reserved.
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 8/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 9/10
+
+
+
+2019/11/11 APT技术观察——APT与隐写术 | 绿盟科技博客
+
+blog.nsfocus.net/apt-technology-observation-apt-and-steganography/ 10/10

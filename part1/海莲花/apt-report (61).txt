@@ -1,0 +1,312 @@
+﻿2019/6/21 奇安信威胁情报中⼼
+
+返回	TI	主⻚
+
+RESEARCH
+数	 据	 驱	 动	 安	 全
+
+海莲花组织使⽤新技术⼿段攻击越南某环保组织
+2019-06-20	By	红⾬滴团队	 |	事件追踪
+
+海莲花（OceanLotus），是⼀个据称越南背景的APT组织。该组织最早于2015年5⽉被天眼实验室（奇安信威胁情报中⼼红⾬滴团队的前身）所揭露并命名，其攻击
+活动最早可追溯到2012	年4⽉，攻击⽬标包括中国海事机构、海域建设部⻔、科研院所和航运企业，后扩展到⼏乎所有重要的组织机构，并持续活跃⾄今。
+
+红⾬滴（@RedDrip7）团队⼀直对海莲花团伙的活动保持⾼强度的跟踪，在近期发布了重磅报告《海莲花团伙对中南半岛国家攻击活动的总结：⽬标、⼿法及技术演
+进》后，再次发现⼀起针对越南攻击，该活动主要针对⼀名越南环保⼈⼠，攻击过程中使⽤了新的恶意载荷以及恶意软件，在此我们披露了此次攻击活动的细节与安全业
+
+界⼀起完善关于海莲花这个团伙的拼图。
+
+诱饵分析
+
+本次投放的样本是越南语诱饵的zip压缩包
+
+Thông	tin	về	chuyên	đề	môi	trường_Nhờ	anh	Đặng	Vũ	Lượng	tư	vấn	thêm.zip
+
+从压缩包内容来看，分别是以越南语”插图”命名的三幅图⽚，分别表现出越南⽬前河边垃圾众多，⼯⼚四处排烟，臭⽔沟全是垃圾的场景。此情此景，令⼈作呕。同时
+也更加明确，实⾏垃圾强制分类的重要性。
+
+除了图⽚外，主要的攻击样本便是名为Van	nan	moi	truong	Viet	Nam	hien	nay	va	giai	phap	khac	phuc	hau	qua_Phuong	huong	trong	thoi	gian	toi的hta脚本
+
+翻译后为：越南⽬前的环境问题和克服后果的解决⽅案
+
+可⻅，⽆论是从压缩包的诱饵名称，还是作为攻击样本的诱饵名称，都符合攻击环保⼈⼠Dang	Vu	Luong的场景。
+
+因此我们将本次攻击，定性为:	海莲花组织攻击越南环保⼈⼠
+
+样本分析
+
+海莲花本次的样本执⾏流程⼤致为：
+
+1.	 hta样本解密并加载后续的附加数据
+2.	 释放adobe	reader的⽩利⽤⽂件，加载后会连接C2通信 
+
+载荷分析
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 1/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+hta脚本进⾏过混淆处理，处理⽅式会把字符串中的“,”，“.”，“	”分别替换成“+”，“/”，“=”：
+
+图2.1	混淆后的hta脚本
+通过⼀些特征可⻅，该脚本使⽤cactusTorch框架⽣成的（https://github.com/mdsecactivebreach/CACTUSTORCH），其⾸先会解密出Loader模块，通过Loader模
+
+块解密附加数据，并在内存中执⾏解密后的shellcode：
+
+图2.2	内存中加载Loader
+向Loader的“X”函数传递的参数如下：
+
+WinShusWenTun.X	(	1632689155	,31529	,194,1292962	)
+
+各个参数的意义如下表：
+
+参数名 参数值 意义
+
+参数1 163268915（0x6150DC03） 4字节key，只是⽤前3个字节（0x03,0xdc,0x50）
+
+参数2 31529 Script末尾的位置，也就是附加数据的开始位置
+
+参数3 194 释放的docx⽂件的名字的⻓度
+
+参数4 1292962 附加数据的⻓度
+
+⽽第⼆个参数就是附加数据的开始位置：
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 2/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图2.3	hta⽂件后⾯的附加数据
+Loader分析
+解密出来的Loader的模块名为L.dll，该dll的功能主要是解密并加载hta后⾯的附加数据：
+
+图2.4	Loader的⼀些函数
+X函数主要是加密和加载shellcode的；解密算法是base64后再和key单字节循环异或，⽽key是由参数传递⽽来：
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 3/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图2.5	L.dll的X函数
+这⾥的key为1632689155（0x6150DC03），从算法看只⽤前3个字节（0x03,0xdc,0x50）逐字节异或解密：
+
+图2.6	L.dll的Dec解密函数
+然后把解密后的数据在内存中执⾏起来：
+
+图2.7	L.dll的B函数
+Loader执⾏的shellcode的功能主要是释放⽂件并实现持久化，从代码特征可⻅，海莲花经常使⽤该shellcode发起攻击。
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 4/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图2.8	海莲花常⽤到的shellcode
+Shellcode在内存中加载起来后，执⾏shellcode后其会在内存中加载dll⽂件
+
+图2.9	shellcode内存中加载dll
+后续的释放⽂件都存放在资源中，从资源数据中通过RtlCompressBuffer解压出要释放的PE⽂件：
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 5/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图2.10	获取解压API的地址
+资源名为0x65和0x66，如图所示，若0x65资源不存在则其会去获取0x66的资源数据。
+
+图2.11	获取资源数据
+获取的资源数据如下，包括⽂件名、⽂件⼤⼩和压缩后的数据：
+
+图2.12	资源中的原始数据
+然后获取system32、Program	File和Windows⽬录下的exe和dll⽂件名，插⼊到数组⾥，然后随机⽣成⼀个随机数，在数组⾥随机选中⼀个⽂件，获取该⽂件的⽂件
+
+名和⽂件描述，并分别作为释放的exe的⽂件名和恶意代码释放的所处⽂件夹名： 
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 6/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图2.13	获取指定⽬录的⽂件名
+如果随机选中rasman.dll，就会获取这个的⽂件描述作为恶意代码释放到的所处⽂件夹的名字，这⾥就是创建Remote	Access	Connection	Manger⽂件夹，⽤于放置
+
+恶意代码。
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 7/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图2.14	rasman.dll的⽂件说明
+如果选中的⽂件的“⽂件说明”字段为空，这会使⽤默认的⽂件夹名“NLS_000001”：
+
+图2.15⽂件说明字段为空的处理 
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 8/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+在下列2个⽂件夹中（“Program	Files”、“%appdata%”）创建⼦⽬录（名字为随机选择的“⽂件说明”内容），如果“Program	Files”下⽆权限创建⽬录的话，会在
+“%appdata%”下创建⽬录：
+
+图2.16	创建⼦⽬录的处理函数
+然后把资源中解密出来的10个⽂件释放到新建的⽬录中；这次释放的⽬录名为：“C:Program	FilesRemote	Access	Connection	Manager”，该⽬录是根据从随机选择
+
+的⽂件中取的“⽂件说明”字段创建。
+
+exe⽂件的名字为随机选中的⽂件的名字。
+
+rasman.db3为要加载的shellcode。
+
+图2.17	释放的⽂件
+然后会写进注册表run项进⾏⾃启动，实现持久化。
+
+同时会在Temp下新建⼀个空的docx⽂件，然后打开，让受害者以为打开的是⼀个docx的⽂件：
+
+Thong	tin	chi	tiet	nhung	san	pham	can	dat	hang	qua	shop	zero	waste_Bao	gia	chi	tiet	san	pham.docx
+
+图2.18	新建的空的docx⽂件
+翻译后意思为“有关产品的详细信息，需要供应商的详细零废物价格表”
+
+英⽂翻译：The	details	information	about	products	need	order	shop	zero	waste	details	price	list
+
+Dropper分析
+释放的rasman.exe是adobe的正常⽂件：Adobe	3D	Utility：
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 9/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图3.1	rasman.exe的版本信息
+rasman.exe会默认加载同⽬录下的dll，包括AGM.dll、BIB.dll、CoolType.dll和ACE.dll，是典型的⽩利⽤：
+
+图3.2	rasman.exe的导⼊表信息
+该4个dll的代码是⼀样的，是被劫持的dll，会被rasman.exe的⽩程序默认加载，虽然4个dll都有被执⾏dllmain的机会，但是唯⼀加载下⼀阶段payload的dll是
+
+CoolType.dll，因为攻击者设计了⼀个flag变量，来控制是否需要加载下⼀阶段payload：
+
+MD5 ⽂件名 ⼤⼩ flag 备注
+
+9ca638aeb4ce87936b1a993ef8e285fa ACE.dll 11441Kb 0x8F 填充了⽆⽤数据的Loader，不加载shellcode⽂件
+
+0a9d3ffff6083a015ab72117cba84fe0 AGM.dll 11441Kb 0x8F 填充了⽆⽤数据的Loader，不加载shellcode⽂件
+840c754098c473faff6fd22ddb8163b7 BIB.dll 11441Kb 0x6D 填充了⽆⽤数据的Loader，不加载shellcode⽂件
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 10/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+a8ff3e6abe26c4ce72267154ca604ce3 rasman.db3 910Kb shellcode⽂件，⽂件名随机
+
+e84927bc7e4bef6af8daf8640d95325e rasman.exe 246Kb pdf⽩⽂件，⽂件名随机
+
+d7c72d9394dc6e519dbce21830eb37cb CoolType.dll 11441Kb 0x27 填充了⽆⽤数据的Loader，加载shellcode⽂件
+
+f5220efbe14b98ac06bc2cadef5c0f23 MSVCP80.dll 11441Kb 填充了⽆⽤数据的库函数
+
+321c4d24da35f39c4ab145b6cfc4da19 MSVCR80.dll 11441Kb 填充了⽆⽤数据的库函数
+
+AGM.dll的⼊⼝处代码可以看出，	2个if判断都不会进⼊，因为flag的值为0x8f，⼤于前两个判断，所以后续的payload不会被加载：
+
+图3.3	AGM.dll的DllMain函数
+⽽CoolType.dll的代码的flag为0x27，⼩于0x46，所以会进⼊到第⼀个if判断⾥⾯，执⾏fun_LoadExportFun函数：
+
+图3.4	CoolType.dll的DllMain函数
+fun_LoadExportFun的功能主要是覆盖exe的⼊⼝处的⼤⽚代码，循环插⼊配置中出现的垃圾代码，⼤⼩为0x20610字节，然后在最后⾯添加代码0xff、0x15，最终接
+
+上AGM_5的导出函数的地址，只为了最后执⾏加载shellcode的代码：
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 11/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图3.5	fun_LoadExportFun函数
+当程序回到exe的进程空间后，会跳回到fun_LoadExportFun函数所覆盖的代码区间⾥继续运⾏，并最终执⾏AGM_5的函数，这样做主要是为了避免被栈回溯到执⾏流
+
+程：
+
+图3.6	填充的⼤量平滑代码
+AGM_5被执⾏起来后，⾸先隐藏该进程的所有的⼦窗⼝，然后读取同⽬录下的同⽂件名的db3（这⾥为rasman.db3）后缀的⽂件，把读取到的内容加载到内存中执⾏
+
+起来：
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 12/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+图3.7	加载rasman.db3的shellcode
+加载的shellcode是海莲花的denis家族的恶意代码：
+
+图3.8	rasman.db3的内容
+然后会去连接udt.sophiahoule.com和攻击者建⽴C2通信，最终导致电脑被控制：
+
+图3.9	建⽴C2的数据包
+这次恶意代码的特点：
+
+1.	 在hta脚本末插⼊加密后的附加数据，避免多⽂件的形式存在
+2.	 释放的⽂件根据电脑上的⽂件名和⽂件描述随机命名⽂件名和⽬录名，避免被溯源取证⼈员轻松取到样本和轻松下规则。
+3.	 ⽩利⽤⽅式仅选择其中的⼀个dll⽂件，并⽤垃圾代码填充exe的⼊⼝内存空间再做函数跳转从⽽避免栈回溯
+4.	 ⽂件体积膨胀，以避免样本上传
+
+总结 
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 13/14
+
+
+
+2019/6/21 奇安信威胁情报中⼼
+
+海莲花组织⽆论是针对国内外进⾏攻击，其投放诱饵的⼿段、载荷变化、⽊⻢免杀技术，甚⾄是回连域名资产均在不停地演进变化，体现了⾮常强⼤的对抗能⼒和攻击
+
+意志。由于⼤多数APT团伙的跨国特性，我们很难从解决⼈的问题出发从根源上消除威胁，因此对于APT攻击跟踪和对抗将⻓期存在，我们所能做的只有不断提升⾃身的发
+现和遏制能⼒，从技术上压倒对⼿。
+
+⽬前，奇安信集团全线产品已经⽀持对本次活动的海莲花的攻击检测。
+
+IOC
+诱饵⽂件
+
+0dd468ee3a4ec0f6f84473bd8428a1e1
+
+Loader
+
+b28c80ca9a3b7deb09b275af1076eb55
+
+回连C2
+
+udt.sophiahoule.com
+
+ APT OCEANLOTUS APT32
+
+分享到： 
+
+ 	⾸⻚ 海莲花组织使⽤新技术⼿段攻击越南某环保组织	
+
+
+https://ti.qianxin.com/blog/articles/new-approaches-utilized-by-oceanLotus-to-target-vietnamese-environmentalist/ 14/14

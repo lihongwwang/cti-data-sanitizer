@@ -1,0 +1,326 @@
+APT组织BITTER近期攻击活动相关0DAY漏洞和木马分析
+
+一.     事件回顾
+2020年2月24日，某网络情报公司cyble发布了一篇名为Bitter APT Enhances Its Capabilities With Windows Kernel Zero-day Exploit的文章[①]，描述了ATP组织Bitter在近期
+攻击活动中，使用windows 0day漏洞CVE-2021-1732进行本地提权的行为。该报告同时分析了一个Bitter在近期使用的后门木马。
+
+经分析和整理，我们发现cyble报告中所述的CVE-2021-1732漏洞，实际上最早由安恒发现并披露[②]，并且cyble报告中的漏洞相关的图片内容也直接来自安恒的披露文章。
+cyble报告中提到的后门木马，则是由分析组织Shadow Chaser Group发现和披露[③]，该后门木马的本体程序已被Bitter组织多次使用，曾出现在2019~2020年的攻击活动中
+分别由绿盟科技[④]和奇安信[⑤]及多家其他厂商披露和分析。
+
+目前，CVE-2021-1732漏洞已出现在野利用程序，利用代码也已在github公布，但我们尚未发现该漏洞与上述后门木马的直接联系，cyble报告中也未体现。由后门木马的执
+逻辑推断，CVE-2021-1732漏洞可能出现在远程服务器保存的某一攻击组件当中。
+
+二.     漏洞分析
+
+2.1    情况简介
+
+CVE-2021-1732为微软2月月度更新中修复的漏洞，根据微软官方介绍该漏洞[⑥]为可利用。2021年3月5日在github上出现对于CVE-2021-1732的公开利用程序，经验证该
+可以在未打补丁的系统中实现漏洞利用。
+
+2.2    原理分析
+
+CVE-2021-1732是win32kfull.sys中的一个越界写漏洞，成功利用该漏洞可以实现本地提权。漏洞成因是在win32kfull!xxxCreateWindowEx回调
+xxxClientAllocWindowsClassExtraBytes时产生，通过混淆console窗口和一般窗口，该回调将导致内核对象的越界访问。
+
+该漏洞涉及的主要结构为WNDCLASSEX[⑦]，该结构的定义如下：
+
+typedef struct tagWNDCLASSEXA {
+
+  UINT      cbSize;
+
+  UINT      style;
+
+  WNDPROC   lpfnWndProc;
+
+  int       cbClsExtra;
+
+  int       cbWndExtra;
+
+  HINSTANCE hInstance;
+
+  HICON     hIcon;
+
+  HCURSOR   hCursor;
+
+  HBRUSH    hbrBackground;
+
+  LPCSTR    lpszMenuName;
+
+  LPCSTR    lpszClassName;
+
+  HICON     hIconSm;
+
+} WNDCLASSEXA, *PWNDCLASSEXA, *NPWNDCLASSEXA, *LPWNDCLASSEXA;
+
+其中cbWndExtra即为本漏洞涉及字段。
+
+       当通过win32kfull!xxxCreateWindowEX函数创建一个带扩展内存的窗口时，win32kfull!xxxCreateWindowEx会调用win32kfull!xxxClientAllocWindowClassExtraBytes引
+回调，并在用户态将窗口转换为console窗口。
+
+此时调用win32kfull!NtUserConsoleControl将改变pExtraBytes的值，pExtraBytes扩展内存的值有两种情况，分别为内存指针或该内存的内核偏移。其中console窗口在
+pExtraBytes中保存其在堆中的偏移，针对其他类型窗口保存的值为用户态扩展内存的指针。通过回调该窗口被转换为console窗口，创建窗口的函数将改变pExtraBytes的值
+户态指针。随后当再次调用时，该值被传到内核中，从而引起越界访问。
+
+针对该漏洞的触发，需要先对函数xxxClientAllocWindowClassExtraBytes进行hook并修改，从而在win32kfull!xxxClientAllocWindowClassExtraBytes回调前调用
+win32kfull!NtUserConsoleControl进而调用win32kfull!xxxConsoleControl修改pExtraBytes的值。
+
+漏洞触发流程图：
+
+2.3    调试过程
+
+判断extrabytes的值是否为0，此处poc设置为0x12af：
+
+不为0返回调用win32kfull!xxxClientAllocWindowClassExtraBytes分配内存：
+
+由于回调已经被hook的xxxClientAllocWindowClassExtraBytes：
+
+进入hook函数，通过extrabytes位判断是否为目标窗体：
+
+调用win32kfull!NtUserConsoleControl：
+
+并进而调用win32kfull!xxxConsoleControl：
+
+判断标志位，并设置poi(hConsoleWnd+0x28)+0x128为pExtraBytesDeskheap的偏移，poi(hConsoleWnd+0x28)+E8标志位为偏移寻址：
+
+之后继续手动调用win32kfull! NtCallbackReturn：
+
+将申请的pExtraBytesDeskheap的地址改为指定的地址，此处为0xffffff00：
+
+返回win32kfull!xxxCreateWindowEx得到返回值，已经被修改：
+
+随后继续调用win32kfull!xxxClientAllocWindowClassExtraBytes，此时窗口的pExtrabyte已经被设置成为了攻击者指定的值：
+
+检查标志位，计算偏移，并使用得到的地址指向的作为位返回值，这里由于指定的地址的值不存在最终造成越界访问：
+
+2.4    利用分析
+
+文件md5值为AC8A521A56ED5F4EF2004D77668C14D0，IDA加载显示的符号文件路径如下：
+C:\Users\Win10\source\repos\KSP_EPL\x64\Release\ConsoleApplication13.pdb
+
+程序主要流程的入口函数为sub_140006A30()，恶意行为在sub_140002570()中：
+
+遍历进程查找是否有卡巴斯基：
+
+判断当前环境是否为x64：
+
+获取RtlGetNtVersionNumbers、NtUserConsoleControl、NtCallbackReturn函数的地址：
+
+调用RtlGetNtVersionNumbers判断版本号是否大于16353（1709）和18204（1903），如果满足版本需求进入漏洞利用函数sub_140002080()：
+
+首先获取HmValidateHandle函数地址，并对User32!_xxxClientAllocWindowClassExtraBytes函数进行hook：
+
+随后注册两个窗体类，一个正常的，一个魔术类用于创建触发漏洞窗体：
+
+利用过程中，首先创建10个正常窗体，调用HMValidateHandle获取每个窗体的tagWND地址，随后删除后8个window只保留0号和1号。
+
+如果当前程序是64位，输入window 0的handle并修改WndExtra字段偏移。接着泄露window 0的内核tagWND地址。
+
+随后创建magicClass窗体，该窗体cbWndExtra为注册时的指定值，在创建过程中将会调用win32kfull!xxxClientAllocWindowClassExtraBytes回调函数，进入之前的hook函
+中。
+
+在hook函数中，首先检查cbWndExtra是否为magic字，并判断是否为64位程序，当都通过后调用NtUserConsolControl传入magic window的handle，改变其WndExtra为偏
+设置相关标志位。接着调用NtCallbackReturn并传入window 0的内核tagWND。当返回内核态后，magic window的WndExtra偏移将会修改为window 0 的内核tagWND偏移
+后实现对其的读写操作。
+
+magic window创建后，程序将通过设置magic window的WndExtra字段修改window 0 的内核tagWND。接着调用SetWindowLongW测试测试权限。
+
+测试通过后，调用SetWindowLongW修改window0的cbWndExtra为0xffffffff，使其有权限越界读写。接着修改window 1的类型为WS_CHILD，从而替换window 1的spmen
+
+伪造的spmenu。
+
+任意地址读权限通过函数GetMenuBarInfo获得，该程序通过使用tagMenuBarInfo.rcBar.left和tagMenuBarInfo.rcBar.top读取4字节。
+
+任意地址写通过window 0 和window 1以及Set WindowLongPtrA配合使用获取。
+
+完成获取读写权限后，程序从原始的spmenu中获取内核地址，接着搜索当前程序的EPROCESS结构。
+
+最终该程序遍历ActiveProcessLinks表获取SYSTEM进程的EPROCESS和当前进程EPROCESS的Token，进行替换实现提权。
+
+之后恢复window 0、window 1和magic window的参数完成所有操作。
+
+三.     木马分析
+
+3.1    初始载荷：7b64a739836c6b436c179eac37c446fee5ba5abc6c96206cf8e454744a0cd5f2
+
+该文件是WinRAR自解压文件，其运行后主要行为是：
+
+1. 释放并打开诱饵文档CICP Z9 Letter dated December 2020.docx
+
+2. 释放并运行恶意可执行文件dlhosts.exe
+
+3.2    诱饵文档：CICP Z9 Letter dated December
+2020.docx(a36b066fd9aaab9cc6619873dfeebef50240844d31b0b08dda13085becb9286d)
+
+该文档是用于伪装的诱饵文件，打开后显示无意义乱码，根据字符排布可知，该乱码信息完全由人工输入：
+
+3.3    主要载荷：dlhosts.exe(26b3c9a5077232c1bbb5c5b4fc5513e3e0b54a735c32ae90a6d6c1e1d7e4cc0f)
+
+该程序是一个简单的下载者木马，可以用于执行从CnC处下载的攻击组件。该下载者木马是Bitter组织的惯用木马，至少在2019年就已经出现。
+
+3.3.1  行为
+
+该木马在启动后首先对字符串进行解密，解密逻辑为逐字节减0xD：
+
+创建信号量7t56yr54r，保证进程的唯一性：
+
+随后，木马收集宿主机信息，用于构建上线通信请求。
+
+3.3.2  通信
+
+该木马与硬编码CnC地址82.221.136.27通信，发送信息，下载CnC处的攻击载荷并执行。
+
+该木马构建的首个HTTP请求中包含了收集到的宿主机信息，各参数字符及内容对应如下：
+
+参数名 参数内容
+
+a 主机名
+
+b 计算机名
+
+c 操作系统版本
+
+d 当前账户、MachineGuid
+
+e 固定标记”efgh”
+
+表格1主要载荷HTTP请求参数信息对应
+
+CnC服务器对该请求的响应分为两种情况。
+
+情况一：
+
+回复包正文中包括“Yes  le”字符串。
+
+此时木马程序会寻找回复包正文里使用”[“和”]”包裹的文件名关键字，随后发送HTTP GET请求，将http://82.221.136.27/RguhsT/RguhsT/目录下的文件名关键字对应的文件下
+至本地，作为exe文件运行。
+
+情况二：
+
+回复包正文中包括“No  le”字符串。
+
+此时木马会放弃该次HTTP通信，重复与CnC连接并发送初始HTTP请求的过程，直到进入情况一为止。
+
+3.4    后续载荷：持久化组件(b2d7336f382a22d5fb6899fc2bd87c7cd401451ecd6af8ccb9ea7dbbe62fc1b7)
+
+该文件是dlhost.exe曾经下载并使用过的攻击组件，用于将名为audiodq的程序设置为自启动项，其字符串解密逻辑与dlhost.exe木马程序相同：
+
+audiodq是一个简单的下载器程序，曾在Bitter组织早期的攻击活动中投入使用过，负责根据C2下发的任务，下载不同的模块到受感染机器中。我们尚未找到对应在本次的攻
+活动中的audiodq关联程序本体。
+
+3.5    后续载荷：间谍木马(d957239ba4d314e47de9748e77a229f4f969f55b3fcf54a096e7971c7f1bab7d)
+
+该文件是dlhost.exe曾经下载并使用过的攻击组件，是一种间谍木马，用于收集本机信息并上传收集到的信息，其字符串解密逻辑与其他木马程序相似，为逐字节加减运算。
+
+该木马会收集宿主机上各物理磁盘和可移动介质上的txt、ppt、pptx、pdf、doc、docx、xls、xlsx、zip、z7、rtf.txt、apk、jpg、jpeg后缀名类型的文件的路径和内容等信息
+并将这些信息分别发送给硬编码CnC地址72.11.134.216处。
+
+文件路径信息相关示例流量如下，其url参数部分携带了计算机名、MachineGuid、时间戳等内容：
+
+文件内容信息相关示例流量如下：
+
+3.6    后续载荷：RAT木马(78b16177d8c5b2e06622688a9196ce7452ca1b25a350daae8c4f12c2e415065c)
+
+该文件是dlhost.exe曾经下载并使用过的攻击组件，自称为Splinter，是使用C#编写的RAT木马程序。该程序同样曾在早期的Bitter攻击活动中出现过，伏影实验室曾对捕获到
+该程序进行了披露和分析（http://blog.nsfocus.net/splinters-new-apt-attack-tool-dialysis/）。新版程序中，Splinter疑似经历了一些版本迭代，优化了代码和功能。
+
+该实例连接的CnC地址为pichostfrm.net:58370：
+
+该实例协议结构与功能对应如下表：
+
+Packet Len(2 Meanings Plain Cyphered Params
+
+bytes) CmdCode(1byt CmdCode(1 byte)
+
+e)
+
+According to the Delete File 2 0xF4 FileLocation
+
+packet
+
+According to the FileMgr get drives 18 0xE4 NULL
+
+packet
+
+According to the FileMgr get Folders 19 0xE5 DirLocation
+
+packet
+
+According to the FileMgr Create File 20 0xE2 FileLocation/FileName
+
+packet
+
+According to the FileMgr Copy File 21 0xE3 FileLocation/New FileLocation
+
+packet
+
+According to the FileTransfer Begin 38 0xD0 File Id/File Name/File Destination/File
+
+packet Size/File Type
+
+According to the FileTransfer Data 39 0xD1 File Id/Length/Index/Total File Length/File
+
+packet Bytes
+
+According to the FileTransfer Complete 40 0xDE File Id
+
+packet
+
+According to the FileTransfer for 41 0xDF File Id/File Name/File Destination/File
+
+packet downloading start Size/File Type
+
+According to the Get Command 48 0xC6 command
+
+packet
+
+According to the Start Command Prompt 49 0xC7 NULL
+
+packet
+
+According to the Stop Command Prompt 50 0xC4 NULL
+
+packet
+
+According to the Connection Status 51 0xC5 NULL
+
+packet
+
+表格2RAT木马协议结构与功能对应表
+
+该 Splinter流量使用单字节异或加密，异或键为0xCA。
+
+相比早期版本，该Splinter示例精简掉了进程管理、剪贴板管理、获取CPU信息等功能，推测做出这些改变的原因为将其剥离至其他组件实现。
+
+四.     组织关联
+该报告中描述的漏洞CVE-2021-1732，最早出现在由安恒披露的某Bitter组织攻击组件[⑧]中，用于进行本地提权。
+
+该事件中的主要载荷dlhost.exe，曾被用于Bitter（蔓灵花）组织在2020年底的攻击行动[⑨]中，MD5值一致（25a16b0fca9acd71450e02a341064c8d）。
+
+因此本次攻击中的有效载荷实际上是使用winrar重新包装的老旧木马，推测其后续攻击过程与已有报告中的描述一致。
+
+五.     IoC
+
+CVE-2021-1732在野利用 914b6125f6e39168805fdf57be61cf20dd11acd708d7db7fa37ff75bf1abfc29
+
+初始载荷 7b64a739836c6b436c179eac37c446fee5ba5abc6c96206cf8e454744a0cd5f2
+
+诱饵文档 a36b066fd9aaab9cc6619873dfeebef50240844d31b0b08dda13085becb9286d
+
+主要载荷 26b3c9a5077232c1bbb5c5b4fc5513e3e0b54a735c32ae90a6d6c1e1d7e4cc0f
+
+后续载荷-持久化组件 b2d7336f382a22d5fb6899fc2bd87c7cd401451ecd6af8ccb9ea7dbbe62fc1b7
+
+后续载荷-间谍木马 d957239ba4d314e47de9748e77a229f4f969f55b3fcf54a096e7971c7f1bab7d
+
+后续载荷-RAT木马 78b16177d8c5b2e06622688a9196ce7452ca1b25a350daae8c4f12c2e415065c
+
+主要载荷CnC IP 82.221.136.27
+
+主要载荷CnC url hxxp://82.221.136.27///RguhsT/accept.php
+
+间谍木马CnC IP 72.11.134.216
+
+间谍木马CnC url hxxp://72.11.134.216/autolan.php
+
+RAT木马CnC domain pichostfrm.net:58370

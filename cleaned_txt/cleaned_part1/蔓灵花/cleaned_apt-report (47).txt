@@ -1,0 +1,162 @@
+苦象组织近期网络攻击活动及泄露武器分析
+
+概述
+2012年以来，安天针对印度方向的网络攻击进行了持续的跟踪与分析，追踪其攻击行动、溯源其幕后团伙，多年以来持续曝光相关攻击活动，震慑印方攻击组织。安天于2016年7月发布报告“白象的舞步——来自南亚次大陆的网络攻击”；2017年12月发布报告“潜伏的象群—来自印方的系列网络攻击组织和行动”；2019年5月发布报告“响尾蛇（SideWinder）APT组织针对南亚国家的定向攻击事件”；2020年1月发布报告“折纸行动：针对南亚多国军政机构的网络攻击”。
+印度网络攻击组织名称纷繁复杂，主要是因为网络安全厂商对印方的组织均有各自命名，比如安天首发并命名的“白象”组织，其他厂商也称为：HangOver、VICEROY TIGER、The Dropping Elephant、Patchwork、Chinastrats、摩诃草；卡巴斯基最早发现“响尾蛇”组织，其他厂商也称为：T-APT-04、SideWinder；ASERT首先披露的“肚脑虫”组织，其他厂商也称为：APT-C-35、DoNot Team、Lucky Elephant、SectorE02。
+本次报告涉及的攻击组织，安天在2017年“潜伏的象群”报告中曾披露过其苦酒行动，其他厂商也称为：BITTER、蔓灵花、APT-C-17、T-APT-04等，根据安天的“攻击组织中文命名规范”，结合其网络攻击活动和地缘政治特点，安天正式将该组织命名为“苦象”。经过长时间的观测发现，该组织近期十分活跃，目前发现多批次涉及钓鱼网站和投递载荷两类攻击活动：
+攻击者注册多个域名，架设钓鱼网站，对国内重要的机构单位进行邮箱钓鱼攻击。相关钓鱼网站地址构造特点和攻击目标符合2019年曝光过的苦象组织对国内钓鱼攻击的特点。
+攻击者将载荷存放于攻陷网站，通过投递快捷方式格式的攻击诱饵向目标的机器植入载荷（组织特有的.NET远控木马）。通过此前对苦象组织泄露的控制后台源码和载荷分析，我们大致还原了该组织其中一常用木马的后台控制细节。经分析比对，我们认为该攻击活动来自苦象组织。
+综上所述，安天CERT认为这一系列攻击应是苦象组织的近期攻击活动。本次系列相关攻击活动特征总结如下：
+事件要点 内容
+事件概述 苦象组织近期网络攻击活动
+攻击目标 中国、巴基斯坦等
+攻击手法 邮箱钓鱼、投递木马、利用攻陷网站
+攻击意图 窃密
+攻击时间 2020年中
+
+攻击活动分析
+从目前观测到的数据来看，攻击者的主要手段有钓鱼网站攻击和木马投递。
+钓鱼网站
+攻击者注册多个域名，通过下设若干子域名模仿国内诸多单位的官方域名，然后架设钓鱼网站钓取目标的邮箱账号密码。此次的子域名构造（如以maill.和maiil.开头）、模仿的目标等，皆符合2019年曝光过的苦象组织对国内钓鱼攻击的特点。
+受害者输入的账号密码会被传入服务器本地的php文件，最终到达攻击者手中：
+攻击者注册域名后，会建立大量子域名仿冒不同目标网站，部分已捕获仿冒域名如下表：
+域名 模仿对象
+maiil.***.tor.org.cn.owaauthlogon.com 中华人民共和国**部
+maiil.****.tor.org.cn.owaauthlogon.com 中华人民共和国****部
+mail.***.gov.cn.owaauthlogon.com 中华人民共和国**部
+mail.126.com.jspsessionindex.com 126邮箱
+mail.163.com.jspsessionindex.com 163邮箱
+maiil.sina.com.cn.auth98260.logonindexjsp.com 新浪邮箱
+maiil.*****.cn.coremail.jspsessionindex.com 中*科技国际贸易有限公司
+mail.********.cn.coremail.xt3.owaauthlogon.com 中国**技术国际控股有限公司
+maiil.*****.cn.coremail.xt5.jspsessionindex.com 中**进出口有限责任公司
+mail.**********.com.coremail.xt5.jspsessionindex.com 中国**工业贸易公司
+mail.****.cn.coremail.xt5.jspsessionindex.com 中国**工业贸易有限公司
+login.****.com.cn.jspsessionidrtgpdjifcnikrs.logonindexjsp.com 中国**对外工程有限公司
+mail.******.cn.coremail.xt5.logonindexjsp.com 中**网（北京）电子商务有限公司
+www.thesundayguardianlive.com.jspsessionindex.com 印度星期日卫报
+
+投递木马
+近期苦象组织常用的执行流程有：漏洞文档＋MSI程序、CHM文件+MSI程序等，此次也类似，采用LNK+ MSI程序手法。攻击者以未知手段（可能是鱼叉式钓鱼邮件、社交平台等）向目标投递一份RAR压缩包，包内包含恶意快捷方式“Income tax Savings for 2020-2021.lnk”：
+病毒名称 Trojan[LNK]/Downloader.LNK.Gen
+原始文件名 Income tax Savings for 2020-2021.lnk
+MD5 569D721E44E1A31A53AEAA0E514AD794
+文件大小 2.03 KB (2076 bytes)
+文件格式 Windows shortcut
+创建时间 2009:07:13 23:49:07+00:00
+压缩包存放时间 2020:08:31 15:08:07
+相对路径 ..\..\..\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+图标文件名 %ProgramFiles%\Windows Photo Viewer\PhotoAcq.dll
+VT检测结果 16/59
+快捷方式被点击运行后，会执行一段Powershell命令：
+这段Powershell负责加载运行原快捷方式的Description结构值，这个值以分号填充了多个无实际作用的字符串，最终执行的静默安装远程的恶意程序MsAulis.msi：
+MSI安装包MsAulis.msi包含木马程序MsAulis.exe，深入分析发现，MsAulis.exe属于已知的苦象组织特有.NET远控插件的最新版。
+“jg****.com”属于被攻陷网站，因目录开放，可以发现攻击者在上面挂载了许多载荷。这些载荷除了开源的Invoke-Mimikatz.ps1，也包括苦象组织已知家族的窃密、远控等插件。其中文件lg和lg2是网络日志，经过几天监控，目前发现少量巴基斯坦疑似受控IP，未发现国内受害者。
+文件名 功能
+lg2 新网络连接日志
+css.php 用于获取winsce
+Invoke-Mimikatz.ps1 开源密码获取工具Mimikatz
+lg 历史网络连接日志
+winess MSAService类插件
+msess MSAService类插件
+mtess MSAService类插件
+winesst winsvc类插件
+winsce.msi 打包后的winsce
+winsce 远控Loader程序
+MsAulis.msi 打包后的rkftl
+rkftl 新版MSAService类插件
+putty.php 获取putty.msi
+putty.msi 打包后的官方Puttty程序
+MSAServices MSAService类插件
+dlhost audiodq类插件
+logs.php 用于获取MsAulis.msi，已删除
+除了打包的快捷方式，近期也有苦象组织常用的自解压诱饵，诱饵最终向目标机器植入audiodq类木马：
+
+泄露武器分析
+后台架构
+2019年苦象组织某C2服务器存在一次对后台整站的打包，并挂载于网站某公开路径下，后被情报平台爬取到，造成源码泄露：
+经过分析，发现该打包文件是苦象组织常用木马的控制后台源码，整体架构比较简单，使用“Nginx+PHP+MySQL”搭建，并属于较早的版本，该后台主要负责完成对受控机的管理和功能插件下发，后台架构大致如下：
+文件 功能
+index.html 疑似被清空的登录页面
+index.php 登录窗口
+login.php 登录验证
+auth.php 新建会话
+cfg.php 数据库连接配置
+functions.php 获取受控机的总数、在线、离线、死亡统计
+stats.php 展示受控机的总数、在线、离线、死亡统计
+tasks.php 插件任务管理（状态、排队、删除）
+update.php 下发插件任务
+deletetasks.php 删除插件任务
+dwsl.php 读取serls.txt文件内容，作用未知
+与受控机通讯，记录发来的数据：
+accept.php a=主机名，b=计算机名，c=操作系统，d=硬件ID，e=任务标志
+返回"Yes file"+regdl插件的大小
+记录连接日志
+展示受控机信息（SNo、IP、Computer、User、Operating system、Last Seen）
+获取插件目录下的文件信息
+deletesystems.php 删除受控机
+error_log 报错日志
+logout.php 退出登录
+从源码整理出存放受控机信息和任务的数据库表结构（未获得数据库实例），猜测各项意义如下：
+已知表名 已知字段 意义（猜测）
+user userid | hwid | ip | computer | user | os | fseen | lseen 受控机器信息
+authPersons name | password 管理员账号密码
+ddos tasksid 疑似DDOS任务
+downloads id 插件清理记录
+tasks exename | tid | taskid 下发插件任务信息
+dlex tasksid 删除插件任务信息
+通过搭建环境，并模拟一台受控机器，这套源代码的运行效果从整体到细节，皆符合2019年苦象组织后台被曝光事件中展现的界面和功能。
+值得注意的是，源码中不仅泄露了攻击者的一对数据库登录凭证，还记录了攻击者一个默认时区位置：
+Asia/Kolkata — 加尔各答时区
+
+攻击插件
+目前收集到的插件超过20个，功能涵盖击键记录、文件窃密、远程控制等，其中某些远控插件参考自开源远控DarkAgent：
+插件 开发语言 主要功能
+audiodq Visual C/C++ 主要组件：信息搜集，接收指令等
+igfxsrvk Visual C/C++ 键盘记录器
+kill Visual C/C++ 持久化：添加注册表启动项
+regdl Visual C/C++ 持久化：添加注册表启动项
+rgdl Visual C/C++ 持久化：添加注册表启动项
+lsap / upmp Visual C/C++ 信息/文件上传
+lsapc Visual C/C++ 信息/文件上传
+lsapcr Visual C/C++ 信息/文件上传
+lsapip Visual C/C++ 信息/文件上传
+misis Visual C/C++ 文件加密上传
+dashost / spoolvs Visual C/C++ 远控能力：完成文件、进程等操作，通讯加密
+sessionmanagers .NET v2 远控能力：信息搜集，操作文件、进程等
+MSAService7 .NET v2 远控能力：信息搜集，操作文件、进程等
+MSAServices .NET v2 远控能力：信息搜集，操作文件、进程等
+MSAServicet .NET v4 远控能力：信息搜集，操作文件、进程等
+onedriveManager .NET v4 远控能力：信息搜集，操作文件、进程等
+MSAService .NET v4 远控能力：信息搜集，操作文件、进程等
+winsvc Visual C/C++ 远控能力：信息搜集，操作文件、进程等
+PuTTY Visual C/C++ 官方putty程序
+sht Visual C/C++ 执行命令
+sleep Visual C/C++ 关机
+
+后台伪装
+今年起，攻击活动的后台登录页面频繁变换模样。例如，某次后台打开后看似仅一张图片，实际通过鼠标点击中心的位置，会发现隐藏的账号密码输入框以及登录按钮：
+或者背景是Windows桌面图，点击“Continue to Login”进入实际登录页面：
+或者无伪装，背景是风景画，输入凭证后登录：
+
+威胁框架视角的攻击映射图谱
+本次系列攻击活动共涉及ATT&CK框架中的8个阶段18个技术点，具体行为描述如下表：
+ATT&CK阶段 具体行为
+初始访问 猜测攻击者通过鱼叉式邮件投递木马或钓鱼链接
+执行 利用命令和脚本解释器、诱导用户执行
+持久化 利用注册表启动项
+凭证访问 利用Hook记录击键、操作系统凭证转储
+发现 发现特殊文件和目录，发现安全软件、系统信息和用户
+收集 收集剪贴板数据
+命令与控制 使用自定义加密协议、数据回传前通过Base64编码、使用HTTP协议和不常用端口，使用远控
+数据渗出 数据传输前经自定义算法加密
+将涉及到的威胁行为技术点映射到ATT＆CK框架如下图所示：
+
+防范建议
+安天全线产品可以有效对抗上述威胁：
+安天智甲终端防御系统，通过安天AVL SDK反病毒引擎有效查杀相关威胁载荷，并通过黑白双控机制，全面强化服务器、关键工作站、SCADA等关键节点安全环境；通过内核级主防有效拦截邮件、浏览器、内存注射等攻击入口，以及修改MBR、修改注册表、建立内核模块、创建服务等持久化行为；通过威胁情报拦截主机对钓鱼站点的访问和实现既往攻击追溯；并通过分布式主机防火墙有效感知、拦截各种横向移动行为。
+安天铸岳资产安全运维平台通过大规模资产快速补丁分发和统一策略加固，减少系统暴露面，有效降低攻击成功率。
+安天捕风蜜罐可以有效捕获发现主动攻击探测和横向移动，并可以与引流设备配合使用。
+安天探海威胁监测系统可以在流量侧检测攻击活动和载荷投递，并捕获未知载荷与可疑网址。
+安天追影威胁分析系统，通过安天下一代检测引擎和沙箱结合，实现深度动静态分析，有效实现细粒度揭示攻击行为和威胁情报生产。
+安天威胁情报推送服务，为订阅客户提供按照相关标准或客户自定义格式的情报推送。主管部门和相关职能部门客户，可通过安天ATID威胁情报门户账号查询更多攻击关联信息，有效支撑威胁的关联分析与溯源。

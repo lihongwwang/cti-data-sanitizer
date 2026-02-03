@@ -1,0 +1,185 @@
+﻿2019/2/21 Microsoft: Russian APT28 group hit Democratic Institutions in EuropeSecurity Affairs
+
+MUST RHEHAoomDmeeN oC rtyhbC Keory rCebare'ismr Le aCzarri uCms yAbePeTr tw aragrCeftasyr Rebuessr ia AnwP ETantritfiea sDraeta B reaAcPhT  D eeDp aWteab Br Deiagictahl ID  D Heacekpin gWe Hback tivDisSmigeairtcah I.nl.. tIeDllige nce  
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+EXTENDED COOKIE POLICY  Contact me
+
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+Contact me
+
+   
+Microsoft says Russian APT28 espionage group hit
+
+Sponsored Content
+
+Democratic Institutions in Europe
+1. LUXURY LAST MINUTE TRIP DEALS a
+
+February 20, 2019  By Pierluigi Paganini
+
+2. MEDICARE PREMIUMS OF 2019 a
+
+Microsoft says Russian APT28 group carried 3. MEDICARE PART B COST FOR 2019 a
+
+out multiple cyberattacks on democratic 4. WORK FROM HOME a
+
+institutions in Europe between September and 5. BEST EUROPE DESTINATIONS a
+
+December 2018. 
+
+Microsoft revealed that hackers belonging to the cyber espionage group APT28 (aka Fancy
+Digging the Deep Web: Exploring the dark
+
+Bear, Pawn Storm, Sofacy Group, Sednit, and STRONTIUM) launched several attacks on democratic
+side of the web
+
+institutions in Europe between September and December 2018.
+
+The tech giant revealed that 104 accounts belonging to organization employees in Belgium, France,
+Germany, Poland, Romania, and Serbia, were hit by Russian cyber spied cyber-espionage group
+APT28.
+
+The APT28 group has been active since at least 2007 and it has targeted governments, militaries,
+and security organizations worldwide. The group was involved also in the string of attacks that +Pierluigi Paganini
+
+targeted 2016 Presidential election.
+Pierluigi Paganini is member of the
+
+According to a report published by Symantec in October, the group was actively conducting cyber ENISA (European Union Agency for
+espionage campaigns against government and military organizations in Europe and South America.
+https://securityaffairs.co/wordpress/81445/apt/apt28-institutions-europe.html 1/3
+
+
+
+2019/2/21 Microsoft: Russian APT28 group hit Democratic Institutions in EuropeSecurity Affairs
+Starting in 2017 and continuing into 2018, the APT28 group returned to covert intelligence gathering
+
+HHoommee  C ybCery Cbreimre Cri Cmybeer w arCfayreber  AwPTarfa Draeta B reaAcPhT  D eeDp aWteab Br Deiagictahl ID  ND Heetawcekopinrk gW ane dHb aIncfk otirvmDisamigtioitna  InSl teIeDclliugrei ntyc)e
+operations in Europe and South America.
+
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Se)cTuhrriteyat L Saoncdiaslc Naeptew oSrtkaskeh oTeldrreorrism
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+
+According to Microsoft, APT28 hackers the attacks were extended EXTEGNrDoEuDp ,C mOeOmKIbEe Pr OoLfI CCYybe rC Gon7tact me
+
+to think tanks and non-profit organizations working on topics related to democracy, electoral Workgroup of the Italian Ministry of
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+integrity, and public policy. All the victims of the Russian state-sponsored hackers are in contact with Foreign Affairs and International
+government officials. Contact me Cooperation, Director of the Master
+
+“Microsoft has recently detected attacks targeting employees of the German Council on Foreign in Cyber Security at the Link Campus
+
+Relations, The Aspen Institutes in Europe and The German Marshall Fund.” reads the post published University. He is also a Security
+
+by Microsoft. Evangelist, Security Analyst and
+
+Freelance Writer. Editor-in-Chief at
+“MSTIC continues to investigate the sources of these attacks, but we are confident that many of
+them originated from a group we call Strontium. The attacks occurred between September and "Cyber Defense Magazine",
+
+December 2018.” 
+Yoroi Blog
+
+The list of the victims for the recent attacks include employees of the German Council on Foreign
+Relations, The Aspen Institutes in Europe and The German Marshall Fund.
+
+Hackers are launching spear-phishing attacks in the attempt of stealing employee credentials and
+deliver malware. Phishing emails use malicious URLs and spoofed email addresses that look
+legitimate.
+
+Microsoft’s report doesn’t surprise, in August 2018 the company spotted a hacking campaign
+targeting 2018 midterm elections, also in that case experts attributed the attacks to Russia-linked
+APT28 group. 
+Microsoft.
+
+“Consistent with campaigns against similar U.S.-based institutions, attackers in most cases create
+malicious URLs and spoofed email addresses that look legitimate. These spearphishing campaigns
+aim to gain access to employee credentials and deliver malware.” continues Microsoft. Yoroi Blog
+
+“The attacks we’ve seen recently, coupled with others we discussed last year, suggest an ongoing
+effort to target democratic organizations. They validate the warnings from European leaders about
+the threat level we should expect to see in Europe this year.”
+
+Sponsored Content
+Microsoft notified each of these organizations that were hit by the hackers and announced a variety
+of technical measures to protect its customers from these attacks. 
+
+Ad
+
+Six Steps to Security Information and
+Event Management (SIEM) Success
+
+Visit Site
+
+Pierluigi Paganini
+
+(SecurityAffairs – APT28 group, cyberespionage)
+
+ APT28 group Hacking Intelligence Pierluigi Paganini Russia Security Affairs
+
+ 
+SHARE ON             
+
+https://securityaffairs.co/wordpress/81445/apt/apt28-institutions-europe.html 2/3
+
+
+
+2019/2/21 Microsoft: Russian APT28 group hit Democratic Institutions in EuropeSecurity Affairs
+
+HHoommee  C ybCery Cbreimre Cri Cmybeer w arCfayreber  AwPTarfa Draeta B reaAcPhT  D eeDp aWteab Br Dei
+ a
+gictahl ID  D Heacekpin gWe Hback tivDismigita Inl tIeDllige nce
+
+Pierluigi Paganini
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+
+HackingPier luigHi Paacgakntiinvi iiss mmemb er Ionf ttehell EigNeISnAc (Eeuro peaInn tUenrionne Atg eonfc yT fohr iNnegtwsork Laws and regulations  Malware  
+EXTENDED COOKIE POLICY  Contact me
+
+and Information Security) Threat Landscape Stakeholder Group and Cyber G7
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+Group, he is also a Security Evangelist, Security Analyst and Freelance Writer.
+Editor-in-Chief at "Cyber Defense Magazine", PierluiCgi ois nat caycbetr  smeceurity expert
+with over 20 years experience in the field, he is Certified Ethical Hacker at EC
+Council in London. The passion for writing and a strong belief that security is
+founded on sharing and awareness led Pierluigi to find the security blog
+"Security Affairs" recently named a Top National Security Resource for US.
+Pierluigi is a member of the "The Hacker News" team and he is a writer for
+some major publications in the field such as Cyber War Zone, ICTTF, Infosec
+Island, Infosec Institute, The Hacker News Magazine and for many other
+Security magazines. Author of the Books "The Deep Dark Web" and “Digital
+Virtual Currency and Bitcoin”.
+
+ 
+
+ PREVIOUS ARTICLE
+Expert released a PoC for a remote
+code execution flaw in mIRC App
+
+ 
+
+YOU MIGHT ALSO LIKE
+
+Sponsored Content
+ 
+
+Sponsored Content
+
+Expert released a PoC for a remote Sponsored Content
+
+code execution flaw in mIRC App
+North Korea’s Lazarus APT targets
+
+February 20, 2019  By Pierluigi Paganini
+Russian Entities
+
+February 20, 2019  By Pierluigi Paganini
+
+Copyright 2015 Security Affairs by Pierluigi Paganini All Right Reserved. Back to top 
+
+https://securityaffairs.co/wordpress/81445/apt/apt28-institutions-europe.html 3/3

@@ -1,0 +1,36 @@
+What is Tactical Threat Intelligence?
+
+This is the fourth blog in a series called, “What is Threat Intelligence?” The first blog in the series can be found here, the second on Strategic Intelligence can be found here, and the third on Operational Intelligence can be found here.
+
+Tactical Intelligence
+Tactical intelligence is the on-the-ground view, which describes granular, atomic indicators that are associated with known attacks. This is the most basic form of threat intelligence and is often used for machine-to-machine detection of threats, and for incident responders to search for specific known-bad artifacts in enterprise networks. These are your common “IOCs.”
+
+Tactical Intel for APT29
+
+628d4f33bd604203d25dbc6a5bb35b90
+2aabd78ef11926d7b562fd0d91e68ad3
+3d3363598f87c78826c859077606e514
+meek-reflect.appspot.com
+portal.sbn.co.th
+202.28.231.44
+hxxps://files.counseling[.]org/eFax/incoming/150721/5442.zip
+googleService.exe
+GoogleUpdate.exe
+acrotray.exe
+PCI\VEN_80EE&DEV_CAF
+
+Tactical Intel for Education Sector
+
+d9b7b0eda8bd28e8934c5929834e5006
+support@securitygrade[.]org
+46.244.4.37
+Fish love water!!!!!!!!
+Fish not love cat!!!!!!!
+parol
+
+Using Tactical Intelligence
+Tactical intelligence and IOCs are meant to historically document cyber attacks, serving both as a corpus of evidence (for compliance, law enforcement, investigations, legal purposes, and CYA’s for executives who need to withstand scrutiny on why their company got pwned) and also as reference material for analysts to interpret and extract context for use in defensive operations.
+
+IOCs come from bona fide incidents and malware and are provided to analysts at a tactical level to serve as examples of a particular threat, such as a particular malware sample, malware family, intrusion campaign, or threat actor. IOCs represent a small sample of known-bad things -- not all known-bad things -- and obviously, IOCs cannot find any unknown-bad things.
+
+Think of an IOC as a biological specimen in a laboratory. An invasive plant in the United States is captured and brought back to the lab. It is meant to be studied carefully, weighed and measured, dissected, classified and so forth. From this study, we may glean insights on where it came from, who created it, its role in the ecosystem, what makes it healthy, and what kills it. We may be able to figure out its perfect environment and use that knowledge to find other plants like it. We may be able to cut it apart and find out how it spreads so quickly. We might be able to use attributes of the plant to find other invasive plants. IOCs require the same study for application in cyber defense.

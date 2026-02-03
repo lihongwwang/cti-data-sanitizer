@@ -1,0 +1,44 @@
+A Vietnamese hacking group has been aggressively targeting multinational automotive companies in an apparent bid to support the country’s domestic auto industry, researchers who closely track the group told CyberScoop.
+
+Since February, the group known as APT32 sent malicious lures to between five and 10 organizations in the automotive sector, according to Nick Carr, senior manager at cybersecurity company FireEye.
+
+FireEye “assesses with moderate confidence” that APT32’s latest activity is in support of “the Vietnamese government’s stated domestic vehicle and auto part manufacturing goals,” Carr said.
+
+It is unclear how successful the operation has been. Carr declined to say whether the lures led to compromises of the automotive organizations’ networks. What is clear is that FireEye mobilized resources in response to the threat.
+
+“This is a little bit uncommon for [APT32] to do the industry-wide targeting,” he told CyberScoop. “And so, as a company we’ve been putting out more intelligence on our intel portal, and we’ve been circling the wagon to ensure that our customers are secure.”
+
+Vietnam wants its inchoate domestic auto industry to help propel the Southeast Asian country’s economic growth. With former soccer star David Beckham adding to the hype, Vietnam’s first completely-domestic car maker, VinFast, plans to deliver its first cars in September.
+
+APT32’s considerable hacking capabilities could help nurture its auto industry by, for example, gathering data on the competition.
+
+Tom Bonner, BlackBerry Cylance’s director of threat research, told CyberScoop he also had seen a recent uptick in the group’s targeting of multinational car companies.
+
+“They’re really getting very creative in the way that they try to bundle their malware together and deploy their attacks,” Bonner said of tactics generally used by APT32, also known as OceanLotus.
+
+Researchers have gone public with their work after Patrick Gray, host of the information security podcast Risky Business, first reported that APT32 was linked to the incidents at automotive companies.
+
+CyberScoop reached out to multiple car makers with operations in Vietnam asking if they were aware of the latest activity from APT32.
+
+Toyota Motor North America spokesman Brian Lyons said the company was aware of the reported threat but had no further comment.
+
+GM corporate spokesman Daniel Flores said the company doesn’t typically comment on specific threats, but described the auto giant’s general approach to cybersecurity risk. “We look at threats from end-to-end, from the back office to all aspects of the vehicle and its connected services,” Flores said. (GM last year agreed to transfer its Vietnam operation to VinFast.)
+
+FireEye researchers describe APT32 as a “state-aligned” group that supports the government’s interests. CyberScoop could not reach a Vietnamese government spokesperson for comment.
+
+Not really a red team
+The phishing campaign highlights the relentlessness of APT32, Vietnam’s most capable hacking outfit. In the last few years, APT32 has used a combination of custom-built and open-source tools to breach a string of companies with ties to Vietnam’s manufacturing, hospitality and healthcare sectors, among others.
+
+Carr dubbed the group “the world’s least-authorized red team,” because they employ readily available tools like Cobalt Strike that security professionals use to test networks.
+
+“They have all kinds of really impressive in-house capabilities, but in our experience, they will not resort to using that unless they need to,” Carr said.
+
+Bonner, the BlackBerry Cylance analyst, agreed that the group is strategic in how and when it uses its top-end tools.
+
+“They tend to hold the more complex remote access trojans quite close to their chest and will only deploy them later on, once they’ve established a good foothold [in networks],” Bonner said.
+
+His team is preparing to release research that shows how OceanLotus (his firm’s label for the group) has found new ways of hiding its payloads. “The complexity of the shellcode and loaders shows the group continues to invest heavily in development of bespoke tooling,” BlackBerry Cylance researchers have concluded.
+
+As APT32 shows no signs of quieting, researchers will continue to study its tradecraft. Romain Dumont, malware researcher at cybersecurity company ESET, says the group has been leaving less of a digital trail on victim systems to avoid detection.
+
+“They keep coming up with different techniques and even reuse and readapt publicly available exploit code,” Dumont wrote in analysis published Wednesday.

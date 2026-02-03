@@ -1,0 +1,62 @@
+“海莲花”组织私有木马 KerrDown 攻击手法及相关活动分析
+
+概要
+“海莲花”，又名 APT32 和 OceanLotus，是越南背景的黑客组织。该组织至少自 2012 年开始活跃，长期针对中国能源相关行业、海事机构、海域建设部门、科研院所和航运企业等进行网络攻击。除中国外，“海莲花”的目标还包含全球的政府、军事机构和大型企业，以及本国的媒体、人权和公民社会等相关的组织和个人。
+
+本报告主要针对 KerrDown 木马的攻击手法和相关活动进行分析。相关发现包含：APT32 至少自 2018 年开始积极使用 KerrDown 下载器，用于投递 Cobalt Strike Beacon 等后门，针对中国和越南语用户进行攻击。KerrDown 主要通过 MHT 格式的 DOC 文档，包含模板注入的 DOCX 文档，以及 ZIP 和 RAR 格式的压缩包进行投递。KerrDown 包含多层 Shellcode，多会针对包含 Microsoft、Google、Adobe、Neuber 等公司有效签名的 EXE 进行 DLL 劫持。微步在线通过对相关样本、IP 和域名的溯源分析，共提取 13 条相关 IOC，可用于威胁情报检测。微步在线的威胁情报平台(TIP)、威胁检测平台(TDP)、API 等均已支持此次攻击事件和团伙的检测。
+
+详情
+基于黑客画像和狩猎系统，微步在线实现了对全球 150 多个黑客组织持续监控。在针对 APT32 的持续监控中，发现 APT32 至少自 2018 年开始积极使用一个自定义的下载器投递 Cobalt Strike Beacon 等后门木马，用于针对我国政府、金融等相关目标以及越南语用户进行攻击。该下载器被 Palo Alto 命名为 KerrDown。
+
+KerrDown 主要通过 Office 文档和压缩文件作为载体进行投递，其中 Office 文档类载体目前最常用的为 MHT 格式的 DOC 文档和包含模板注入的 DOCX 文档，压缩文件则包含 ZIP 和 RAR 这两种格式，压缩包内的 DLL 文件通常会设置隐藏属性。KerrDown 广泛使用了 DLL 劫持技术，目前发现主要针对包含 Microsoft、Google、Adobe、Neuber 等公司有效签名的 EXE 进行 DLL 劫持。其中最常见的为 Word 白利用，推测是因为 Word 可执行文件自带 Word 文档图标，可同时伪装成文档文件进行钓鱼攻击，因此备受青睐。而为了凸显伪装 Word 文档的真实性，木马执行后会释放并启动一个 Word 文档迷惑受害者。
+
+微步在线共捕获近百 KerrDown 相关攻击样本，涉及攻击活动数十起。
+
+1. Microsoft Word 白利用，针对越南语用户的攻击示例。
+诱饵 1 (CPLH-NHNN-01-2019.rar)：该样本释放的诱饵文档及内容翻译如下图所示。可以看出是以越南国家银行为诱饵，疑似针对越南国家银行相关的分支机构进行定向攻击。
+诱饵 2 (Thu moi 2019.rar)：该样本释放的文件打开显示乱码，但结合攻击时间和文件名“Thu moi tham du hoi nghi tai toan quoc. Cong hoa xa hoi chung nghia Viet Nam. Doc lap tu do hanh phuc”推测，可能是以出席越南总理阮春福在 3 月 1 日主持举行的政府二月例行会议为诱饵，针对相关人员进行定向攻击。
+
+2. 以简历为诱饵，以包含模板注入功能的 DOCX 文档为载体，针对越南语用户的攻击示例。
+诱饵 1 (模板注入)：CV-AnthonyWei-CustomerService.docx，该样本将加密数据存于母体 DOCX 文件，通过远程模板中的宏代码解密执行。打开界面如下：
+
+样本分析
+KerrDown 主要通过 DOC、DOCX、ZIP 和 RAR 格式文件进行投递，下面分别以 ZIP 和 DOCX 格式样本为例进行分析。
+
+示例 1：Google 白利用
+样本 BrowserUpdate.zip 为 ZIP 格式的压缩文件，包含 BrowserUpdate.exe 和 goopdate.dll。其中 BrowserUpdate.exe 包含 Google 有效签名，goopdate.dll 为核心木马程序，即 KerrDown。goopdate.dll 的主要功能为内存中加载三段 Shellcode，然后从 https://amazone.hopto.me/p282 下载下一阶段的 Shellcode 并执行。p282 实际为一段 decrypt_sc + PE 文件，在内存中被解密后加载执行。该样本整体执行流程如下：
+1、样本 goopdate.dll 基本信息如下：SHA256 db8e57fbf23f21a6aebeee26afe01dbd3bafa7f0f42ab23fcf04863b14cdb065，SHA1 1735d5a0f11ba9b9df1d9db9ebb788a4a330e5ac，MD5 6aab0ff5cb3189505ca9aaf1d602ab28，文件格式 DLL，文件大小 83.0 KB，文件名 goopdate.dll。
+2、BrowserUpdate.zip 文件在微步云沙箱的分析结果。
+3、goopdate.dll 的主要功能为 InlineHook 函数 LdrLoadDll，并在 Hook 处理代码中加载第一阶段 Shellcode，下图为在 LdrLoadDll 函数中搜索要 hook 的偏移地址：
+设置 Hook 的代码：
+4、第一阶段 Shellcode 加载第二阶段 Shellcode：
+5、接着，第二阶段 Shellcode 同之前分析的某个阶段一样，代码基本一致，其功能也是从内存中解密第三阶段 Shellcode，并加载执行。
+6、第三阶段 Shellcode 会从地址 https://amazone.hopto.me/p282 下载真正的远控模块，并加载执行。
+7、名为 p282 的 Shellcode 的头部为解密代码，尾部是被加密的 DLL 文件。解密后会调用该 DLL 的导出函数 ReflectiveLoader 内存加载执行。
+8、解密得到的 DLL 文件为 Cobalt Strike Beacon 后门，启动后会根据内嵌的全局配置来确定是与配置中的 C2 交互还是以 DGA 的方式进行通信。
+9、当前配置的策略为向 https://193.111.152.71/s/ref=nb_sb_noss_1/167-3294888-0262949/field-keywords=books 发起 C2 连接，其 HTTP Headers 伪装 amazon 的 host 以规避检测。
+HTTP 头伪装：
+10、该后门包含的 C2 命令达 76 个之多，具体包含进程注入、文件创建、服务创建、文件释放等等。
+
+示例 2：DOCX(TemplateInject)
+样本 CV-AnthonyWei-CustomerService.docx 的主要功能为加载 Word 远程模板，远程模板中带有的恶意宏代码会从该 DOCX 文件中提取并释放出两个 PE 文件，并将其主程序加入到计划任务中。当该服务启动后会从内存中加载一个内嵌的 SCLoader，从远程服务器下载 Shellcode 并执行。该样本主要执行流程如下：
+1、该样本基本信息如下：SHA256 c263f4f335e79c299f1605f7a39fc864b60c6721366e2a730292064984ec6918，SHA1 1d2c3fcfc19d0f9d5f4dc025e100328aa5487afe，MD5 b1df440e5dd64ffae9f7e792993f2f4c，文件格式 DOCX，文件大小 555.62 KB，文件名 CV-AnthonyWei-CustomerService.docx。
+2、该样本在微步云沙箱的分析结果。
+3、模板文件中创建服务与解码释放 main_background.png 服务模块的恶意宏代码如下：
+4、服务模块主要功能是内存加载一个名为 PostData.exe 的内嵌 EXE。
+5、PostData.exe 通过命令行传入特定参数来下载并执行 Payload。
+
+关联分析
+根据木马相关的下载地址，C2，以及 TTPs 等确定 KerrDown 为 APT32 所有。比如下载地址 download-attachments.s3.amazonaws.com 在 2017 年 11 月就被识别为 APT32 所有。
+APT32 拥有丰富的，自定义的武器库，其中 KerrDown 为其至少自 2018 年开始积极使用的下载器，被用于投递 Cobalt Strike Beacon 等后门。KerrDown 相关攻击手法画像如下：
+投递载体 DOC(MHT)，DOCX(TemplateInject)，ZIP，RAR
+技术特点 多层 Shellcode，针对 Microsoft、Google、Adobe、Neuber 和 360 等的白加黑利用
+投递 Payload Cobalt Strike Beacon
+攻击目标 中国，越南语用户
+
+威胁指标（IOC）
+IP 193.111.152.71
+端口 1143
+域名 amazone.hopto.me
+子域名 cortana.homelinux.com，office.allsafebrowsing.com，trust.zapto.org，word.webhop.info
+Hash 208cdaeb25eb64fcb，3b2120b94d68c594，9127e4cb117c6044c，a4b1ddf4fce066070，c263f4f335e79c299f
+其他相关 IOC 共 13 条。

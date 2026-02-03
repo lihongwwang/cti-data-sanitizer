@@ -1,0 +1,107 @@
+﻿2019/10/30 国外安全研究⼈员在社交⽹站发现疑似某APT组织的后台
+
+国外安全研究⼈员在社交⽹站发现疑似某APT组织的后台
+深信服安全团队 深信服千⾥⽬安全实验室 Today
+
+事件追踪
+
+近⽇，深信服安全团队关注到，国外安全研究⼈员Misterch0c在twitter上发现疑似某APT组织的后台，时间节点在2019年10⽉27
+⽇。
+
+28⽇，另外⼀名安全研究员跟推，指出有部分中国⽤户被控制。
+
+https://mp.weixin.qq.com/s/U8ymwdMwVcB-A2xLotvORQ 1/7
+
+
+
+2019/10/30 国外安全研究⼈员在社交⽹站发现疑似某APT组织的后台
+
+关于此次事件的重要C2服务器lmhostsvc.net，深信服安全云脑威胁情报显示，只有极少数的访问记录，访问时间在2019年10⽉
+29号，并⾮关键核⼼部⻔，是⼀些学院性质的学校，疑似是twitter曝光lmhostsvc.net后，⼀些在校安全研究⼈员在研究和访问。
+
+样本分析
+
+该次事件所关联的样本⺟体是⼀个.msi⽂件，这个病毒以钓⻥邮件附件的⽅式分发到被攻击的⽬标。病毒运⾏后，会弹出⼀个提
+
+示框提示⽤户等待安装，来以掩盖背后的恶意⾏为。
+
+该msi会释放主程序audiodq.exe，该程序的主要功能为发送主机信息及接收C&C端下发的组件，如下图所示， regdl.exe和
+MSAServices.exe即为下发的后⻔组件。
+
+https://mp.weixin.qq.com/s/U8ymwdMwVcB-A2xLotvORQ 2/7
+
+
+
+2019/10/30 国外安全研究⼈员在社交⽹站发现疑似某APT组织的后台
+
+各组件功能如下：
+
+样本名称 MD5 功能
+
+46EF2C0DB107B794516DC2B2622E44
+audiodq.exe 发送主机信息及接收C&C端下发的组件
+
+AD
+
+regdl.exe be171b4df9b7db48c67f31c678421bfd 设置注册表⾃启动项
+
+49B9A0FDF026019B76DF0F03722B0D
+MSAServices.exe .NET后⻔模块
+
+88
+
+MSAServices.exe是⼀个.NET编写的后⻔，反编译后，其核⼼功能如下，主要为：⽂件操作、进程管理、远程执⾏命令。
+
+https://mp.weixin.qq.com/s/U8ymwdMwVcB-A2xLotvORQ 3/7
+
+
+
+2019/10/30 国外安全研究⼈员在社交⽹站发现疑似某APT组织的后台
+
+最后，从监控到的流量可以发现，中招主机上线URL形如：
+
+http://lmhostsvc.net/healthne/accept.php?a=MT&b=MT&c=Windows 7 Ultimate&d=G4rb3nG4rb3n53be9afe-e736-
+
+4104-8f32-fce8324c70e8365536040965860&e=
+
+https://mp.weixin.qq.com/s/U8ymwdMwVcB-A2xLotvORQ 4/7
+
+
+
+2019/10/30 国外安全研究⼈员在社交⽹站发现疑似某APT组织的后台
+
+安全加固
+
+在此，提醒⼴⼤⽤户，不⽤过度恐慌。深信服防⽕墙、安全感知⽤户、EDR⽤户，⽀持主动拦截此恶意样本相关流量，⽬前深信
+
+服⽤户，还未发现被此病毒⼤规模攻陷的现象。
+
+https://mp.weixin.qq.com/s/U8ymwdMwVcB-A2xLotvORQ 5/7
+
+
+
+2019/10/30 国外安全研究⼈员在社交⽹站发现疑似某APT组织的后台
+
+关 注 我 们
+
+解锁更多精彩内幕
+
+TransparentTribe APT组织最新样本分析报告
+DorkBot僵⼫⽹络近期活跃情况报告
+【实⽤指南】最全Linux应急响应技巧，看这⼀篇就够了
+
+深信服EDR官⽹，勒索病毒，⼀搜就知道~
+
+↓↓↓
+
+https://mp.weixin.qq.com/s/U8ymwdMwVcB-A2xLotvORQ 6/7
+
+
+
+2019/10/30 国外安全研究⼈员在社交⽹站发现疑似某APT组织的后台
+
+ 点击阅读原⽂进⼊EDR官⽹了解更多资讯
+
+Read more
+
+https://mp.weixin.qq.com/s/U8ymwdMwVcB-A2xLotvORQ 7/7

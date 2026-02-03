@@ -1,0 +1,22 @@
+Russian APT comes back to life with new US spear-phishing campaign
+Cozy Bear (APT29) makes a comeback after last year's Dutch and Norwegian hacking campaigns.
+
+A Russian state-sponsored cyber-espionage group has come back to life after a one-year period of inactivity with a relative large spear-phishing campaign that has targeted both the US government and private sector.
+
+The hacking group is known in infosec circles as Cozy Bear, APT29, The Dukes, or PowerDuke, and is infamous because it's one of the two Russian state hacking crews that hacked the Democratic National Committee before the 2016 US Presidential Elections.
+
+"On 14 November 2018, CrowdStrike detected a widespread spear-phishing campaign against multiple sectors," Adam Meyers, VP of Intelligence told ZDNet today. "These messages purported to be from an official with the U.S. Department of State and contained links to a compromised legitimate website," he added. "Individuals receiving the emails worked at organizations in a range of sectors including in think tank, law enforcement, government, and business information services."
+
+"Attribution for this activity is still in progress; however, the Tactics, Techniques, and Procedures (TTPs) and targeting are consistent with previously identified campaigns from the Russia-based actor COZY BEAR," Meyers said.
+
+However, CrowdStrike was just one of the many cyber-security firms that picked up this week's APT29 activities. FireEye and other members of the cyber-security industry have been analyzing and tearing apart the spear-phishing campaign on Twitter all week.
+
+FireEye, in particular, confirmed that 20 of its customers had received Cozy Bear's spear-phishing emails --customers across "Defense, Imagery, Law Enforcement, Local Government, Media, Military, Pharmaceutical, Think Tank, Transportation, & US Public Sector industries in multiple geographic regions."
+
+The spear-phishing campaign came out of nowhere and surprised most security experts. Before this week's discoveries, the group had been silent for more than a year.
+
+The last time cyber-security firms detected a Cozy Bear campaign, the hackers targeted members of the Norwegian and Dutch governments in 2017, and US think tanks and NGOs in late 2016.
+
+In the aftermath of the infamous DNC hack, CrowdStrike experts said the group appeared to have affiliations to the FSB, Russia's main intelligence service, a department previously led by Vladimir Putin a few years before becoming Russia's president.
+
+The group is considered to be one of Russia's top hacking outfits. Cyber-security firms have seen it operate using more advanced hacking tool compared to other Russian APTs, and paying more attention to hiding its operations, unlike Fancy Bear (APT28), another Russian cyber-espionage group whose name has become commonplace for many Americans due to its lackadaisical attempts at hiding its origin and operations, and attempts at influencing public opinion on various topics.

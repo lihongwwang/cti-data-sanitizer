@@ -1,0 +1,68 @@
+APT29仿冒德国大使馆下发恶意PDF文件
+
+01 事件概述
+APT29组织又名Cozy Bear、The Dukes，是具有东欧背景的APT组织，该组织自2008年开始活跃，主要从事以情报收集为主的间谍活动。活动目标为西方政府和相关组织，尤其关注政治、外交和智库部门。2021年，美国政府发布声明，将APT29组织列为SolarWinds供应链事件的肇事者，自此UNC2452、Nobelium等威胁组织名称均合并至APT29。
+
+安恒信息猎影实验室在对该组织的持续追踪时发现，APT29在俄乌冲突时期加大了对各国相关部门的攻击活动。今年先后仿冒了波兰、乌克兰、土耳其、挪威等欧盟国家大使馆，进行鱼叉式网络钓鱼邮件攻击。该组织在活动中利用合法服务DropBox、GoogleDrive、Slack、Trello、Notion API进行通信，最后下发CobaltStrike、BruteRatel等恶意负载。
+
+近期，我们再次捕获到APT29仿冒德国大使馆的攻击活动，活动攻击流程大致如下：
+
+1.  邮件附件为包含HTML代码的PDF文件，运行后将在本地释放zip文件；
+2.  zip文件包含同名HTA文件，运行后在本地释放白文件、恶意DLL文件以及诱饵文件；
+3.  恶意DLL文件加载之后将连接开源聊天软件Zulip的API接口进行数据传输，获取后续负载到本地执行。
+
+将上述执行流程绘制成流程图如下：
+
+02 样本分析
+利用PDF进行HTML smuggling
+活动初始阶段的PDF文件中嵌入HTML代码，此类攻击手法利用AdobeAcrobat Reader默认安全设置加载恶意Javascript代码，也被称作PDF smuggling文件打开后Acrobat Reader会提示其中包含的HTML文件疑似包含恶意代码确定运行后将加载HTML文件，运行其中的Javascript代码，并将zip文件Invitation_Farewell_DE_EMB.zip下载到本地。
+
+zip文件如下，包含同名HTA文件
+HTA文件运行后将在路径C:\Windows\Tasks\下释放白文件 msoev.exe,恶意DLL文件mso.dll、AppVIsvSubsystems64.dll，在原始路径下释放诱饵文件Invitation.pdf，最后启动msoev.exe
+
+释放的诱饵文件如下，意在仿冒德国大使馆以窃取目标主机信息
+
+通过合法服务下发恶意负载
+释放到本地的恶意DLL mso.dll通过白文件msoev.exe加载，此类白+黑为APT29的常用的攻击手法之一
+
+mso.dll加载后首先通过LdrLoadDll加载wininet.dll，随后获取网络通讯所需的函数地址InternetOpenA 、 InternetConnectA 、 HttpOpenRequestA 、HttpSendRequestA、InternetReadFile、InternetCloseHandle
+
+随后收集主机信息
+
+构建网络请求：
+利用开源聊天软件Zulip的API接口进行数据传输，其中请求域名为toyy.zulipchat[.]com
+
+订阅流，即读取后续负载到本地
+
+网络通信数据如下
+
+最后创建线程执行后续负载
+
+03 溯源关联
+今年6月，APT29以相似的攻击手法仿冒挪威大使馆下发鱼叉式网络钓鱼邮件其附件同样利用HTMLsmuggling执行Javascript代码，释放ISO文件invitation.iso到本地
+
+ISO文件中包含白文件CCleanerReactivator.exe，以及恶意DLL文件CCleanerDU.dll
+
+CCleanerDU.dll与mso.dll执行流程类似，均通过LdrLoadDll加载wininet.dll收集主机信息、并获取后续负载执行
+
+不同的是，在仿冒挪威大使馆的活动中，APT29使用的C2地址为自有基础设施hxxps://kefas[.]id/search/s.php?i=1&id=，仿冒德国大使馆的活动中则使用了合法服务Zulip下发后续负载
+
+APT29历史使用的合法服务
+
+Notion
+首先通过字符串解密函数解密出多个用于通信的属性字段，以及API请求所需的其他字段
+
+随后构造请求包并向api.notion.com发送POST请求
+
+最后通过InternetReadFile获取返回数据并加载运行
+
+DropBox
+在完成代码段映射后利用内存中的固定的token向api.dropbox.com发送POST请求，进一步获取新的通信token
+
+Trello
+Trello BEATDROP组件，利用api.trello.com传输后续payload
+
+安恒云沙箱捕获到该样本向Trello API发起的请求如下：
+
+04 活动总结
+APT29组织作为较早期披露的APT组织之一，不仅进行长期高频的攻击活动，而且还不断寻找新的合法服务用作通讯通道，以绕过杀软的流量检测。在代码方面，该组织使用DLL重映射、劫持线程上下文、混淆+VEH异常等手法躲避杀软静态检测。在此，猎影实验室提醒广大用户朋友，不运行未知来源的邮件附件。如有需要鉴别的未知来源样本，可以投递至安恒云沙箱查看判别结果后再进行后续操作。猎影实验室将持续对全球APT组织进行持续跟踪，专注发现并披露各类威胁事件。

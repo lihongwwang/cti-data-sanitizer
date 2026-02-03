@@ -1,0 +1,649 @@
+﻿2018/12/24 腾讯御见威胁情报中心
+
+蔓灵花（BITTER）APT组织针对中国境内政府、军工、核能等敏感机构的最新攻击活动报告
+原创：腾讯御见 腾讯御见威胁情报中心 3天前
+
+一、概述 
+
+蔓灵花（T‑APT‑17、BITTER）APT组织是一个长期针对中国、巴基斯坦等国家进行攻击活动的APT组织，该APT组织为目前活跃的针对境内目标进行
+
+攻击的境外APT组织之一。
+
+该组织主要针对政府、军工业、电力、核等单位进行攻击，窃取敏感资料，具有强烈的政治背景。该组织最早在2016由美国安全公司Forcepoint进行
+
+了披露，并且命名为“BITTER”，同年国内友商360也跟进发布了分析报告，命名为“蔓灵花”，鉴于对“谁先发现谁命名”的原则，我们继续沿用友商们
+对该组织的命名。
+
+该组织的名称的命名由来为，该组织的特马数据包头部以“BITTER”作为标识，因此命名为“BITTER”。但是值得注意的是，自从该活动被曝光后，该组
+织就修改了数据包结构，不再以“BITTER”作为数据包的标识，改为五字节的随机字符进行代替。
+
+腾讯御见威胁中心在今年五月份捕捉到了疑似该组织对我国境内敏感单位的攻击活动，但是由于当时无法下载到具体的攻击模块，因此无法进行进一
+
+步的关联和分析。
+
+而在10月底，腾讯御见威胁情报中心再次捕捉到了疑似该组织对我国的军工业、核能、政府等重点单位的攻击，并且获取到了完整的攻击武器库，经
+
+过进一步的关联分析，我们确认该攻击组织就是2016年曝光的蔓灵花。而有趣的是，我们进一步分析溯源发现，该组织跟“白象”（摩诃草、
+HangOver、Patchwork）也有千丝万缕的关系。
+
+二、最新活动分析 
+
+1、攻击方式 
+
+该组织主要采用鱼叉钓鱼的方式，对相关目标单位的个人直接发送嵌入了攻击诱饵的钓鱼邮件。此外，为了提高成功率，也会先对目标发送安全提示
+
+相关的钓鱼邮件，诱使被钓鱼用户修改邮件账户密码，从而获取用户的邮箱密码，而后再用被控制的邮箱继续对企业内的其他人进行嵌入攻击诱饵的
+
+钓鱼邮件。
+
+2、诱饵分析 
+
+最近的几次攻击捕捉到的诱饵文件均为rar压缩包，而压缩包里为一个伪装为word图标的自解压文件。如图： 
+
+运行后，除了会执行恶意文件外，还会打开一个doc文档，用于迷惑用户，让用户以为打开的文件就是一个doc文档。诱饵文档内容极尽诱惑力，如
+
+下： 
+
+诱饵1： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 1/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+诱饵2： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 2/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+诱饵3： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 3/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+诱饵4： 
+
+诱饵5： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 4/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+可以看到，诱饵文件名和诱饵内容完全不同，针对不同的攻击对象，完全定制化。 
+
+3、Dropper分析 
+
+1）Dropper文件为winrar自解压文件，使用英文版winrar打包压缩，运行后将文件释放到c:\intel\logs目录，并打开欺骗文档和木马文件，我们捕获
+
+的最新的针对不同目标进行攻击的4个诱饵文件释放出来的最终恶意文件都完全相同。 
+
+2）木马运行后首先解密配置信息，解密方式为每个字节+0xd，配置信息内容包含启动方式、C2、要检测的杀毒软件信息等。
+
+downloader解密后的配置信息： 
+
+3）获取主机名、计算机名、操作系统名、机器guid信息格式化成字符串。 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 5/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+上报信息格式如下：
+
+"?a=administ‑b24c70&b=ADMINIST‑B24C70&c=Microsoft%20Windows%20XP&d=AdministratorAdministrator3fb4c154‑b52a‑4667‑
+
+8a49‑4fbe422781b5365536040965860&e="
+
+4）拼成HTTP GET请求头并发送到C2： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 6/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+数据包内容如下： 
+
+5）接收数据，从中搜索Yes file，如果找到Yes file 则继续从其后搜索[] 标志，提取其中的字符。 
+
+6）将提取到的字符拼接到url后边，同时也拼接到木马所在目录后边，拼接出的url处下载文件到木马目录，随后将其重命名为.exe结尾的文件名，最
+
+后调用ShellExecute执行。完成下载功能。 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 7/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+成功下载功能模块的数据包格式如下： 
+
+4、下载的功能模块分析 
+
+1）模块一: 
+
+下载url：http://aroundtheworld123.net/healthne/healthne/regdl 
+
+功能：设置开机启动项 
+
+设置启动项模块解密后的配置信息： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 8/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+2）模块二： 
+
+下载：http://aroundtheworld123.net/healthne/healthne/igfxsrvk 
+
+功能：键盘记录 
+
+该模块通过设置键盘钩子记录用户按键信息，保存到%appdata%\syslog0812AXbcW1.tean中： 
+
+设置键盘钩子相关代码： 
+
+按键信息记录相关代码： 
+
+3）模块三： 
+
+下载：http://aroundtheworld123.net/healthne/healthne/spoolvs 
+
+功能：远程控制木马（RAT） 
+
+该模块是个远程控制模块，RAT模块解密后的配置信息： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 9/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+通讯数据包加密算法如下，密钥为 ：m50e!sq&n67$t  
+
+RAT命令分发相关代码： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 10/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+RAT功能如下表： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 11/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+RAT数据包特征： 
+
+5、受害用户分析 
+
+本次受害者主要为相关的军工企业、政府等人员。而从腾讯御见威胁情报中心对该次攻击的C&C监测的数据来看，该攻击在11月5日到达了一个高峰： 
+
+三、关联分析 
+
+1）和蔓灵花的关系 
+
+对本次攻击的武器库和攻击方式进行深入的分析和关联，我们确认为蔓灵花组织所为。 
+
+具体的关联分析如下：
+
+关联一：TTPs关联性 
+
+本次攻击活动跟之前友商曝光的TTPs极其相似。如诱饵为伪装成word图标的自解压文件；木马的释放路径为c:\intel\logs；下载功能模块执行的方
+
+式，且模块包含RAT、Keylogger等功能。见参考文章1、2、3、4。
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 12/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+关联二：pdb的关联性 
+
+本次攻击活动中的pdb，跟参考文章3中的文件的pdb极其相似。  发布该文章时，友商 提到是疑似蔓灵花组织的攻击活动，本文给出实锤的证据。
+
+如参考文章3的downloader的pdb为：
+
+d:\Backup from OLD BLDG\C++\new_downloader_wingames_180917\Release\new_downloader.pdb，而本次捕捉到的downloader的pdb
+
+为 ： d:\C++\new_downloader_aroundtheworld123\Release\audiodq.pdb 以 及 keylogger 的 pdb 为 ： D:\Backup from OLD
+
+BLDG\C++\keylogger_06092017\keylogger_06022017with feature of filesize check n copy to neat file\offkl\Release\kill.pdb
+
+可以看到，pdb路径是非常之类似。此外，从pdb中看该组织非常喜欢以事件的描述来作为目录的命名，这都跟之前的攻击活动中的高度相似，如：
+
+C:\Users\Bit\Desktop\uploader‑ Catroot 09‑09‑14 ‑ Edit me\Final Uploader for ibmsoft‑16‑07‑2014 ‑ Copy ‑
+
+Copy\Uploader\fupldr_wapp\Release\svcf.pdb 
+
+D:\c++\downloader_sandy win seperate download\Release\ndlr.pdb  
+
+C:\Users\John\Desktop\Edit\dnew23062015‑run no rest req ‑ Copy\Release\dwe01.pdb 
+
+C:\Users\John\Desktop\dnew01052015‑run mul exes avgok\Release\dwe01.pdb  
+
+D:\Backup from OLD BLDG\C++\keylogger_06092017\keylogger_06022017with feature of filesize check n copy to neat
+
+file\offkl\Release\kill.pdb
+
+关联三：代码的关联性 
+
+本次的RAT代码在无论是逻辑结构还是代码细节均有极大相似性，可以确定本次木马为该组织最新木马变种。参考文章1。
+
+数据包加密算法完全相同： 
+
+ 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 13/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+命令分发代码逻辑结构相似： 
+
+RAT命令分发代码细节高度相似： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 14/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+此外，本次下载到的功能模块keylogger，跟友商报告中提到的keylogger也几乎一致。虽然友商并未提供相关的文件hash，但是从报告中的流程图
+
+看，跟本次下载到的keylogger的几乎一致。见参考文章2。 
+
+综上所述，我们确认，该次攻击活动来自于APT组织蔓灵花。
+
+2）和白象的关系 
+
+有意思的是，继续关联和分析，我们发现，之前paloalto披露的另一个针对巴基斯坦等地的攻击活动中的MY24后门，实际上也是蔓灵花组织所为。见
+
+参考文章5。 
+
+相关关联证据如下：
+
+关联一：代码关联 
+
+从参考文章5里提到MY24后门来看，跟本次我们捕捉到的RAT高度相似： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 15/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+关联二：基础设施关联 
+
+如蔓灵花样本 25689fc7581840e851c3140aa8c3ac8b跟参考文章中提到的 d6b565b8f95ab6e20e4f39206c8c356d共用一个基础设施
+
+zmwardrobe.com： 
+
+而捕捉到的利用Inp漏洞CVE‑2017‑12824针对巴基斯坦进行攻击的样本： 
+SOP for Retrieval of Mobile Data Records.inp（863f2bfed6e8e1b8b4516e328c8ba41b）的下载地址为http://khurram.com.pk/js/drv。而该
+
+地址的关联样本正好为c3f5add704f2c540f3dd345f853e2d84，该样本确认为蔓灵花。
+
+此外，某诱饵（e152b5b7e9079f689ebaaa9b8fe2ed66）拉取蔓灵花的网络地址为http://hartraders.com/wp‑sig（拉取到的蔓灵花样本hash为
+
+68a1ca909e2fa34b5ffe42fa62312766），而该地址也跟文章中提到的地址结构高度相似： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 16/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+因此我们确认，该文章曝光的MY24后门，实际也是蔓灵花的后门。 
+
+而有意思的是，该文章提到，该后门跟confucius组织相关，而根据趋势的分析文章披露（见参考文章6、7），confucius又跟白象（Patchwork）疑
+
+似存在有一定的关联： 
+
+  
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 17/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+此外，我们也在腾讯御见威胁情报中心的样本库中进行挖掘，同样发现了白象和蔓灵花的一些相似的地方。我们以样本：Karachi violence hands of
+
+Indian intelligence agencies.exe（9dd90551b6299787ddb478e5a0ab9eab）为例进行分析。 
+
+该样本同样采用自解压的方式，且icon和释放路径和本次发现的蔓灵花类似： 
+
+而 dropper 释 放 的 恶 意 文 件 为 slidebar.exe （ md5 734e552fe9ffd1ffdea3434c62dd2e4b ， pdb ： E:\Data\User\MFC‑
+
+Projects\KeyLoggerWin32‑spectram\Release\slidebar.pdb），是一个keylogger，而该样本正好是之前国外安全公司曝光过的白象的样本（见参
+
+考文章8） 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 18/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+  
+
+针对释放的keylogger，我们进行相似性分析，关联到一个蔓灵花的keylogger： 
+
+f099cd511e9d10d80105d96f29dd28b7，发现代码存在很大的相似性。 
+
+如字符串加密算法： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 19/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+加密后的字符串为： 
+
+蔓灵花： 
+
+白象： 
+
+除此，无论是白象还是蔓灵花，从pdb的路径来看，作者一样都很喜欢在文件路径里描述一些东西。 
+
+从诱饵内容来看，都疑似跟印度有一定的关联性： 
+
+蔓灵花： 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 20/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+白象： 
+
+综合趋势科技和我们自己的分析，我们判断，蔓灵花组织和白象组织存在非常大的相似性，极有可能是来自同样地区的攻击小组。 
+
+四、武器库演变 
+
+该组织自从2016年被曝光后，也在不断的进行自我升级，无论是dropper、downloader还是具体的RAT均有变化。
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 21/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+1、dropper演变 
+
+dropper其实变化的不大，都采用winrar自解压包的方式。变化是从之前释放jpg变为了doc。当然严格来说，该变化不能称之为演变的过程，更多的
+
+是为了不同的攻击目标进行的定制化服务。
+
+老版本： 
+
+新版本：
+
+2、downloader演变 
+
+我们在腾讯御见威胁情报中心的样本库里挑选了数十个downloader进行分析，如下： 
+
+分析后发现，downloader主要有两个大版本，我们以pdb路径作为区分，分为downloader和new_downloader两个大版本。目前，这两个大版本依
+
+然都在持续不断的更新中。 
+
+以下，我们简单的介绍他们之间的关联及变种演进。 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 22/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+1）downloader：该下载器主要应用于漏洞利用类型的攻击，该下载器运行后会将自身拷贝到特定的目录以及通过开机设置自启动实现长期驻留，早
+
+期版本会复制自身到%appdata%目录中，并设置HKCU RUN注册表实现开机启动、后期则是将自身复制到c:\intel目录。 
+
+2）new_downloader：该下载器主要用于自解压类型诱饵的攻击，由dropper直接释放到指定目录，因此后期取消了将自身拷贝到指定目录的操作，
+
+而早期与downloader一样也是释放到%appdata%目录下，此外在自启动方面，早期通过HKCU RUN注册表实现，后期（如本次版本）则把设置开机
+
+启动单独列为一个模块由控制端下发。
+
+3）两种版本的下载器也有很多相同或者相似之处：拷贝文件及修改注册表操作均通过cmd进程进行，且很有特点的是创建一个cmd.exe进程，通过管
+
+道写入命令执行，随后关闭cmd.exe进程。此方式在其他样本中较为少见。 
+
+两种版本的请求包比较：  
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 23/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+3、RAT演变 
+
+RAT的变化相对downloader，变化稍小，且总体逻辑结构具有极大相似性，如线程分工、通讯协议、数据包结构等。但是在代码细节方面也可以看出
+
+明显的变种迭代特征： 
+
+（我们以2016年曝光的RAT记为V1、2017年paloalto曝光的MY24记为V2，而本次捕捉到的RAT记为V3）
+
+1）RAT的通讯数据包加密算法，均为异或加密一段key，在V1中没有对密钥长度做限制，密钥被配置为8字节数据，而到V2时，已经被写死13位有效
+
+数据，而到本次的变种V3，又取消了13字节有效限制，但是本次木马配置的密钥长度依然为13位。 
+
+2）V3相比于V1和V2，最大的更新在于控制指令的更新，本次精简和改良了部分控制指令，总体支持的指令数量也由原来的17个减少至现在的12个，
+
+而从V1到V2的更新并没有对指令进行改动。 
+
+3）汇总 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 24/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+五、组织小结 
+
+根据公开的报告（见参考资料），以及我们对该组织的攻击活动的分析后，我们对该组织的情况有了一个初步的了解，我们整理如下。但是对于该组
+
+织具体的组织画像依然还是缺少一些关键的拼图，因此我们希望友商和安全社区的研究员，一起来完善该组织的拼图。  
+
+此外，除了针对中国境内的目标外，我们还发现了多起该组织针对巴基斯坦的攻击活动，截止发文前，我们刚刚又获得了一个该组织最新的攻击活
+
+动，而最终的RAT跟攻击我国的目标的RAT完全一致（hash都一致）： 
+
+诱饵：cocktail and the dinner in last week of dec.doc
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 25/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+诱饵MD5:（488f39e81fa6ab497062631595da2bb8） 
+
+payload下载地址：http://fst.gov.pk/images/winsvc 
+
+payload：ctfmon.exe (7cc0b212d1b8ceb808c250495d83bae4)     
+
+RAT下载地址： 
+
+http://hewle.kielsoservice.net/Engset.php 
+
+http://hewle.kielsoservice.net/rankin.php 
+
+RAT hash：spoolvs.exe(fc516905e3237f1aa03a38a0dde84b52)    
+
+明 
+而有意思的是，该payload的下载地址放在了巴基斯坦的联邦服务法庭的官网上： 
+
+六、总结 
+
+蔓灵花是近几年针对我国境内目标进行攻击活动的最活跃的APT组织之一，意在攻击军工、能源、政府等敏感目标而窃取资料。虽然，该组织被曝光
+
+多次，但是该组织完全没有收手的意图，反而不断的改进攻击武器库以进行更多的攻击。 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 26/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+
+这足以说明，随着中国国力的不断增强，一些境外组织会不断的对我国的敏感机构进行攻击，意图窃取情报和进行破坏活动，并且攻击会越来越猛
+
+烈。因此相关单位一定不能掉以轻心，且不断的提升人员的安全意识。
+
+本次事件主要时间线 
+
+2018年10月29日，发现该次攻击 
+
+2018年11月5日，完成攻击报告初稿 
+
+2018年12月21日，发布本报告的最终版本 
+
+七、安全建议 
+
+1、不要打开不明来源的邮件附件； 
+
+2、及时打系统补丁和重要软件的补丁； 
+
+3、使用杀毒软件防御可能的病毒木马攻击； 
+
+4、使用腾讯御界高级威胁检测系统。御界高级威胁检测系统，是基于腾讯反病毒实验室的安全能力、依托腾讯在云和端的海量数据，研发出的独特威
+
+胁情报和恶意检测模型系统。 
+
+八、IOCs
+MD5： 
+c5de8edeaadc6495999bcb174a58592e  
+23a8ce358b16128f1ca291a284c0f6ef 
+3614f736035e1cf1792bf64f5864683b 
+13b283464f9401c653b81d9e6afe6fe4  
+62bb4224d8e8ec5c3495090b09b52e1c 
+7195c706fab11b258c769649c7e4cce0 
+a1bdb1889d960e424920e57366662a59 
+be171b4df9b7db48c67f31c678421bfd 
+fc516905e3237f1aa03a38a0dde84b52 
+efec7464f07633415cbc36a97b900587 
+f413ad5233cdf707fd1cddd53b858027 
+38ba17b9ae3a4a4733d716c2ecade70d 
+3c4bed8d649375050dba3a3a8df87d12 
+adb46f52791b5e3ba26256daf3936dc8 
+ecca8f4c7e14bbc1e3a06b9f8a41b53a 
+1c2a3aa370660b3ac2bf0f41c342373b 
+5b942290149f5666ddfb1e2dd81a03ea 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 27/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+e402c05ce9c46c0cf2f4e3db6f0ba4b5 
+68a1ca909e2fa34b5ffe42fa62312766 
+4cbfd989a44cf8f1a0025bbd07069d19 
+25689fc7581840e851c3140aa8c3ac8b 
+f9aeac76f92f8b2ddc253b3f53248c1d 
+c3f5add704f2c540f3dd345f853e2d84 
+8dda6f85f06b5952beaabbfea9e28cdd 
+25689fc7581840e851c3140aa8c3ac8b 
+c3f5add704f2c540f3dd345f853e2d84 
+525105d4f6904d567a98fac2eb25873e 
+84c96f8dd42d79679ce1e5dee643c58b 
+f099cd511e9d10d80105d96f29dd28b7 
+84c96f8dd42d79679ce1e5dee643c58b 
+863f2bfed6e8e1b8b4516e328c8ba41b 
+1960ac9d5b1192a9b2bfec15842cf3d1 
+aa2ed003ae8a2ccaa999aad38898d060 
+488f39e81fa6ab497062631595da2bb8 
+7cc0b212d1b8ceb808c250495d83bae4 
+6d175ac27b4554885b5c3d2ec9c6769 
+  
+domain： 
+http://aroundtheworld123.net 
+http://nethostsupport.ddns.net 
+http://healthnewsone.com 
+http://newmysticvision.com 
+http://xiovo416.net 
+http://nethosttalk.com 
+http:// wcnchost.ddns.net 
+http://johnywalter.webatu.com 
+http://zmwardrobe.com 
+http://wforc.pk 
+http://khurram.com.pk 
+http://almasoodgroup.com 
+http://hartraders.com 
+http://hewle.kielsoservice.net 
+http://fst.gov.pk 
+http://spring.tulipnetworks.net 
+
+PDB： 
+d:\new_downloader_healthnewsone\Release\audiodq.pdb 
+d:\C++\new_downloader_aroundtheworld123\Release\audiodq.pdb 
+D:\Backup from OLD BLDG\C++\keylogger_06092017\keylogger_06022017with feature of filesize check n copy to
+neat file\offkl\Release\kill.pdb 
+D:\C++\Reg_Entry\reg_en\Release\reg_en.pdb 
+G:\c++\keylogger_06022017with feature of filesize check n copy to neat file\offkl\Release\kill.pdb 
+C:\Users\INFINITE\Documents\Visual Studio 2008\Projects\DownWin32\Release\DownWin32.pdb 
+C:\Users\ANONYMOUS\Documents\Visual Studio 2008\Projects\Down Free\DownWin32\Release\DownWin32.pdb 
+C:\Users\John\Desktop\dnew01052015‑run mul exes avgok\Release\dwe01.pdb 
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 28/29
+
+
+
+2018/12/24 腾讯御见威胁情报中心
+C:\Users\John\Desktop\Edit\dnew23062015‑run no rest req ‑ Copy\Release\dwe01.pdb 
+C:\Users\predator\Desktop\dwn and up for ppsx\downloader_sandy _ok‑sschanged av av\Release\dltest1.pdb 
+C:\Users\STONE\Documents\Visual Studio 2008\Projects\15Mar2017\Release\15Mar2017.pdb 
+C:\Users\Windows 7\Documents\Visual Studio 2008\Projects\12Oct2017\Release\12Oct2017.pdb 
+C:\Users\Asterix\Documents\Visual Studio 2008\Projects\28NovDwn\Release\28NovDwn.pdb 
+D:\c++\downloader_sandy win seperate download\Release\ndlr.pdb 
+d:\backups\Projects5june2017\15Mar2017\Release\15Mar2017.pdb 
+C:\tcro\Release\tcro.pd
+
+九、参考文章 
+
+1、BITTER: a targeted attack against Pakistan（https://www.forcepoint.com/blog/security‑labs/bitter‑targeted‑attack‑against‑pakistan）
+
+2、蔓灵花APT行动攻击报告（https://www.freebuf.com/articles/paper/120002.html）
+
+3、疑似蔓灵花APT团伙钓鱼邮件攻击分析（https://ti.360.net/blog/articles/analysis‑of‑apt‑campaign‑bitter/）
+
+4、Malspam delivers BITTER RAT 01‑07‑2018（ https://community.rsa.com/community/products/netwitness/blog/2018/01/10/malspam‑
+
+delivers‑bitter‑rat‑07‑01‑2018）
+
+5 、 Recent InPage Exploits Lead to Multiple Malware Families （ https://researchcenter.paloaltonetworks.com/2017/11/unit42‑recent‑
+
+inpage‑exploits‑lead‑multiple‑malware‑families/）
+
+6 、 Deciphering Confucius’ Cyberespionage Operations （ https://blog.trendmicro.com/trendlabs‑security‑intelligence/deciphering‑
+
+confucius‑cyberespionage‑operations/）
+
+7、Confucius Update: New Tools and Techniques, Further Connections with Patchwork（https://blog.trendmicro.com/trendlabs‑security‑
+
+intelligence/confucius‑update‑new‑tools‑and‑techniques‑further‑connections‑with‑patchwork/）
+
+8、OPERATION HANGOVER（https://paper.seebug.org/papers/APT/APT_CyberCriminal_Campagin/2013/Unveiling an Indian Cyberattack
+
+Infrastructure ‑ appendixes.pdf） 
+
+文章已于2018‑12‑21修改
+
+https://mp.weixin.qq.com/s?__biz=MzI5ODk3OTM1Ng==&mid=2247487642&idx=1&sn=ed135857b97b818a0b8c7a3ac6e910af 29/29

@@ -1,0 +1,19 @@
+Potential Impact of ‘FIN7’ Arrests on Stolen Payment Card Ecosystem
+
+Deep & Dark Web (DDW) chatter following the U.S. Department of Justice’s announcement of indictments against three members of the cybercrime group FIN7 provides new insight into the group’s operations and role within the stolen payment card ecosystem.
+
+Since the indictment was made public on Aug. 1, much of the DDW chatter surrounding it has focused on the fate of Joker’s Stash, a popular DDW card shop and longtime fixture of the stolen payment card ecosystem. As the shop had been previously linked to FIN7, also known by some as Carbanak, some threat actors have expressed concern that the arrests of three key members of the group could slow business for Joker’s Stash.
+
+For example, on Aug. 2, on a Russian-language carding forum, a threat actor questioned the operator of Joker’s Stash about whether the FIN7 arrests would adversely affect the shop’s business. The operator responded that their account and shop were still operational and that they had not been arrested.
+
+Flashpoint analysts assess that Joker’s Stash likely retains multiple sources of compromised card information that will enable it to continue operations for the time being. The shop has released data from several breaches since the arrests were ostensibly made, including three major breaches in September. At least some of the most recent breaches have been attributed to the MageCart group. The shop does not appear to have decreased its output of available payment cards.
+
+While Joker’s Stash remains in business despite the FIN7 arrests, additional DDW chatter suggests that the arrests may be connected to the closure of HTA, another major card shop that went offline earlier this year. One threat actor’s post on Aug. 3 on a top-tier Russian-language fraud forum reads as follows:
+
+“It gone my friends, forget it all, everything that’s out in public that you see, forget about hta read the latest news, those who supplied hta with their material were picked up in Europe—FIN7
+
+I don’t envy them! This is the beginning of an interesting era, like what we had when we lost the Liberty Reserve payment system, that’s the new reality. Forgive me for being the bearer of such news!”
+
+HTA had been a well-respected and exclusive shop in the Russian-language DDW since at least 2015 and had specialized primarily in cards and dumps from the U.S. since at least fall of 2017. Flashpoint analysts observed frequent forum posts from threat actors seeking access to HTA prior to its closure; those who had access sometimes sold sub-accounts for as much as $5,000 USD.
+
+Based on the closure of HTA, it appears that the arrests of key FIN7 members may impact the group’s ability to supply stolen payment card information, at least in the short term. Flashpoint will continue to monitor for any indications that FIN7 is continuing its operations in spite of these arrests.

@@ -1,0 +1,146 @@
+﻿2019/1/14 启明星辰金睛安全研究团队
+
+金睛安全播报 NO.070
+原创：金睛 启明星辰金睛安全研究团队 3天前
+
+本周安全态势
+
+1. Dolibarr ERP‑CRM 8.0.4 ‑ 'rowid' SQL Injection分析
+ 
+
+Dolibarr ERP＆CRM是一个开源的企业ERP和CRM管理软件（PHP语言编写），专为小型，中型或大型公司，基金会和自由职
+业者设计，世界范围内有大量的用户。近期该软件8.0.2 8.0.4版本都被发现sql注入漏洞，以下是8.0.4 sql注入漏洞的分析：
+
+该漏洞在词典设置的准用户级别页面，使用报错注入即可注入出数据库数据，复现效果如下图所示：
+
+当输入url后变量回首先进入到main.inc.php,判断其是否为数组，如果不是则进入test_sql_and_script_inject函数对变量进行过
+滤：
+
+ 
+可以看到test_sql_and_script_inject使用的是黑名单机制过滤sql注入的有害字符，黑名单是有纰漏的，此时我们可以使用
+EXTRACTVALUE函数报错注入绕过黑名单：
+
+https://mp.weixin.qq.com/s/H3ugRQvlNIqxCDfZ2D24_g 1/7
+
+
+
+2019/1/14 启明星辰金睛安全研究团队
+
+在dict.php文件的797行是漏洞的关键处$rowid未经过任何的处理直接带入到sql语句，并且在802行对数据库进行了query操
+作：
+
+构造payload：
+actionmodify=Modify&button_removefilter=Removefilter&button_search=Search&code=PL_NONE&entity=&from=&libell
+e=None&page=0&position=1&rowid=1'AND EXTRACTVALUE(6385,CONCAT(0x5c,(select user()),0x5c))%23
+
+报错注入出数据库的用户名：
+
+https://mp.weixin.qq.com/s/H3ugRQvlNIqxCDfZ2D24_g 2/7
+
+
+
+2019/1/14 启明星辰金睛安全研究团队
+虽然只是一个简单的sql注入漏洞，但是该操作软件存储大量的客户信息资料，如果是竞争对手或者是黑产组织利用漏洞构造脚
+本进行脱裤，将会造成巨大的损害。造成该漏洞的原因有两个：
+
+1. 797行$rowid未经过任何的处理直接带入sql语句直接经行了操作
+2. 最初的防sql注入黑名单不够全面
+
+建议：
+
+1. 对带入sql语句的变量严格过滤，黑名单进一步优化。
+2. 使用waf设备防护sql注入。
+3. 目前官方已经修复了该漏洞，主要是对$rowid中的有害数据进行转义，用户可进行升级。
+4. 大部分的用户安全意识较差没有删除install目录，该目录存在添加后台用户和重装数据库的风险，并且小于7.0.3的版本存
+在代码注入的漏洞，因此建议用户删除install目录并且升级到最新版本。
+ 
+
+2.蔓灵花最新攻击样本分析
+
+样本文件名：article_amy.doc
+MD5：e4abdd40f7d1adb3f139940438484695
+
+（1）原始样本使用了Office漏洞CVE‑2017‑11882进行攻击，漏洞利用成功后会下载其他恶意样本下载链接如下：
+https://almasoodgroup[.]com/js/cwqj
+该网站疑似被攻陷的网站，其主页如下:
+
+在其JS目录下还发现了其他几个疑似第二段攻击载荷的文件：
+
+https://mp.weixin.qq.com/s/H3ugRQvlNIqxCDfZ2D24_g 3/7
+
+
+
+2019/1/14 启明星辰金睛安全研究团队
+
+（2）本次攻击样本和历史蔓灵花攻击样本类似，C&C直接以[jkla:C&C]的形式存放于样本之中，并且第二段攻击载荷都是存放
+在被攻陷主机的js目录下。
+
+本次样本
+
+ 
+
+历史蔓灵花攻击样本
+
+（3）被下载的恶意样本首先会解密内嵌的加密字符串，使用字节+0x22,得到最终的字符串，并且解密字符串的方式与前段时间
+蔓灵花攻击中的样本字符串解密方式相同。
+
+https://mp.weixin.qq.com/s/H3ugRQvlNIqxCDfZ2D24_g 4/7
+
+
+
+2019/1/14 启明星辰金睛安全研究团队
+
+解密后的字符串完整列表如下： 
+
+（4）解密字符串后会检测注册表，之后根据解密后的域名获取第二段载荷的下载IP，然后遍历进程检测进程名中是否带有AVG
+与Avast的进程，如果有，则将自身保存到
+\Microsoft\Windows\Start Menu\Programs\Startup\
+目录下，并且将名字更改为winapp.lnk文件，如果没有检测到如上进程则默认保存到固定目录C:\Intel\下命名为winapp.exe，并
+设置开机自启动项目，同时该恶意软件会随机产生一个值并写入到注册项 
+Software\Microsoft\Identity下的ID中，并且这个ID将做为后续与服务器交互的id值。 
+
+（5）将收集到的受害者主机信息使用GET/get_data.php?name1=后进行拼接，进行数据请求 
+
+（6）设置定时器任务，该定时任务会先请求GET/ping.php?id=[id],如果数据正确返回，那么会提取数据中””内的数据，然后寻
+找/后的数据并拼接上.exe。 
+
+https://mp.weixin.qq.com/s/H3ugRQvlNIqxCDfZ2D24_g 5/7
+
+
+
+2019/1/14 启明星辰金睛安全研究团队
+
+ 
+（7）然后判断拼接后的文件名是否存在，如果存在则生成如下URL 
+/receive_comment.php?id=[id]&file=[filename] 
+如果不存在则直接访问返回的URL下载对应文件到对应目录并执行。 
+
+（8）木马下载完毕会使用GET/qwergkkl.php?id=[id]+对应的文件名生成HTTP请求发送到对应服务器，表明数据接收成功。 
+
+但在分析过程中，我们发现最终下载的木马已经失效，所以无法得知后续攻击行为。 
+
+相关IOC:
+
+C:\tcro\Release\tcro.pdb
+
+thepandaservices.nsiagenthoster.net 
+26d175ac27b4554885b5c3d2ec9c6769 
+53d6ed9a3e56785ccbee9b73b14ec62c 
+a098d91f04eb259bf27432e81a9c523b 
+e4abdd40f7d1adb3f139940438484695
+
+ 
+
+本周升级公告
+
+https://mp.weixin.qq.com/s/H3ugRQvlNIqxCDfZ2D24_g 6/7
+
+
+
+2019/1/14 启明星辰金睛安全研究团队
+本周更新事件特征：
+
+1. HTTP_木马后门_ShieldPushBot_连接
+2. TCP_后门_Win32.Torchwood_连接
+
+https://mp.weixin.qq.com/s/H3ugRQvlNIqxCDfZ2D24_g 7/7

@@ -1,0 +1,104 @@
+Executive Summary
+In May of last year, ASERT Researchers reported on LoJax, a double-agent leveraging legitimate software to phone home to malicious command and control (C2) servers. Since the publication of our research, we’ve monitored a number of new malware samples. We also conducted additional research into infrastructure we believe Fancy Bear (APT28) operators use as part of their toolkit. We created fingerprints that enabled us find additional LoJax servers using our ATLAS collection platform. The research identified multiple live LoJax servers. All of the IPs uncovered by our collection platform have been published by other researchers; however, we also uncovered the suspected corresponding C2 domains, some of which have yet to be seen in LoJax. Since exposing the use of LoJax in May 2018, security researchers proved Fancy Bear used it as part of an UEFI based rootkit in September of 2018, making LoJax resilient to hard drive replacements and Windows OS re-installs. This blog post reveals activity around Fancy Bear’s LoJax infrastructure.
+
+Key Findings
+Two of of the identified LoJax command and control servers were live at the time of this analysis.
+PassiveDNS research uncovered additional suspected LoJax domains. We have not seen some of the suspect domains used in any known malware samples to date.
+Based on the ongoing infrastructure analysis, ASERT assesses with moderate confidence that Fancy Bear, LoJax operations started in late 2016.
+
+LoJax Servers Across the Internet
+ASERT Researchers constructed a network scanning fingerprint using intel gathered from a confirmed LoJax C2. Using this fingerprint, ASERT scanned our collection platform looking for additional LoJax C2 servers. The first round of scanning our collections resulted in identifying the following live C2 servers last year (Table 1):
+Table 1: Live C2 – Fall 2018
+Scanner Found IP:
+185.86.151[.]2
+169.239.128[.]133
+185.181.102[.]201
+46.21.147[.]76
+169.239.129[.]121
+46.21.147[.]71
+86.106.131[.]54
+
+A new scan in early 2019 revealed only two of the seven prior responsive servers remain active (Table 2).
+Table 2: Live C2 – Early 2019
+Scanner Found IP:
+169.239.128[.]133
+185.86.151[.]2
+
+Using DNS records, ASERT assess with moderate confidence the following corresponding LoJax domains correlate with each IP address below. We made this determination based on the timeline of when the IP addresses were active (Table 3).
+Table 3: C2 IP to Domain Mapping
+Scanner Found IP: ASERT Researched Domain Mapping:
+185.86.151[.]2 unigymboom[.]com
+169.239.128[.]133 ntpstatistics[.]com
+185.181.102[.]201 moldstream[.]md
+46.21.147[.]76 vsnet[.]co
+169.239.129[.]121 visualrates[.]com
+46.21.147[.]71 regvirt[.]com
+86.106.131[.]54 elaxo[.]org
+
+Combing through known LoJax samples, we found two of the above domains correspond with the following LoJax samples (Table 4):
+Table 4: Known LoJax Samples to Domain Mapping
+ASERT Researched Domain Mapping: Sample MD5:
+regvirt[.]com 89503b7935a05b1d26cb26ce3793a3fb
+regvirt[.]com cffcae5c5551b4b9489fec5d56269d84
+elaxo[.]org bda5f83ee4a6d64d1057f19a2a1ef071
+elaxo[.]org 9be30e2c2e185ccb6cdbbf585d368393
+elaxo[.]org f3c6e16f0dd2b0e55a7dad365c3877d4
+
+Note: the domain elaxo[.]org no longer pointed to the LoJax C2 IP as of May 2018, but the LoJax server on that IP was still active in Fall 2018.
+In addition to ASERT and ESET’s research, UK NCSC’s report (Oct 2018) included the same IP addresses found from our fingerprinting exercise. Further pDNS research revealed the suspected C2 domains tied to most of those IP addresses. ASERT maintains a moderate confidence with the following IP to domain mappings (Table 5). A subset of these domains appeared in known LoJax samples:
+Table 5: Additional LoJax C2 to Domain Mappings
+ASERT Researched Domain Mapping: UK NCSC IP:
+UNKNOWN 185.86.148[.]184
+moldstream[.]md 185.181.102[.]201
+visualrates[.]com 169.239.129[.]121
+regvirt[.]com 46.21.147[.]71
+ntpstatistics[.]com 169.239.128[.]133
+oiatribe[.]com 162.208.10[.]66
+msfontserver[.]com 179.43.158[.]20
+treckanalytics[.]com 94.177.12[.]150
+unigymboom[.]com 185.86.151[.]2
+sysanalyticweb[.]com 54.37.104[.]106
+remotepx[.]net 85.204.124[.]77
+vsnet[.]co 46.21.147[.]76
+hp-apps[.]com 185.86.149[.]116
+jflynci[.]com 185.86.151[.]104
+peacefund[.]eu 185.183.107[.]40
+elaxo[.]org 86.106.131[.]54
+oiagives[.]com 162.208.10[.]66
+UNKNOWN 93.113.131[.]103
+webstp[.]com 185.94.191[.]65
+
+Using the above mappings, we iterated through our repository of malware samples looking for matches. We managed to identify the following LoJax samples (Table 6) using the mapped domains in Table 5 (above).
+Table 6: Additional Domain to LoJax Sample Mappings
+ASERT Researched C2 Mapping / Sample C2: Sample MD5:
+regvirt[.]com 89503b7935a05b1d26cb26ce3793a3fb
+regvirt[.]com cffcae5c5551b4b9489fec5d56269d84
+sysanalyticweb[.]com 6eaa1ff5f33df3169c209f98cc5012d0
+sysanalyticweb[.]com f1df1a795eb784f7bfc3ba9a7e3b00ac
+remotepx[.]net e5db592704f30d42537b1257e79ff223
+jflynci[.]com f336379bd4a129f0851a24ccea47b4ec
+elaxo[.]org bda5f83ee4a6d64d1057f19a2a1ef071
+elaxo[.]org 9be30e2c2e185ccb6cdbbf585d368393
+elaxo[.]org f3c6e16f0dd2b0e55a7dad365c3877d4
+webstp[.]com 9157f70faaedf66688fc11f4abca83e2
+webstp[.]com 73ea983ec9c39fb820d086acdf439c95
+
+Assuming the mapping is correct, several of the domains haven’t been used with LoJax samples in the wild. Our research included numerous open source and proprietary malware repositories. Yet, we’ve not uncovered any samples that use the corresponding domains (Table 7). It’s possible that the currently active suspected LoJax C2 domains are either in use today or reserved for future use.
+Table 7: Suspected C2 Domains with no Corresponding Samples
+Scanner Found IP: ASERT Researched Domain Mapping: Last Active:
+185.86.151[.]2 unigymboom[.]com Current
+169.239.128[.]133 ntpstatistics[.]com Current
+185.181.102[.]201 moldstream[.]md Fall 2018
+46.21.147[.]76 vsnet[.]co Fall 2018
+169.239.129[.]121 visualrates[.]com Fall 2018
+
+IMPORTANT: The ntpstatistics[.]com and unigymboom[.]com domains still point to live C2 servers and can still be contacted by LoJax’s agents.
+
+LoJax Domain History Forensics
+We took things a step further by looking at domain registration information. The goal was to find when new confirmed and suspected domains came online. The chart below shows this activity over time. It outlines when Fancy Bear possibly began standing up LoJax C2 servers.
+Figure 1: New Confirmed and Suspected Domain Registrations
+
+Note: Aside from the initial hits in 2004 and 2006, the primary spike in activity occurred starting in late 2016. Based on currently visibility, ASERT believes LoJax began in late 2016. The spikes in 2006 may indicate previous ownership of domains, rather than testing by the Fancy Bear operators. However, we cannot rule out the possibility they owned the domains previous to their main campaigns kicking off in 2016. The software hijacked by the actors had a compile date in 2008. If accurate, it indicates that the earlier activity was erroneous or unrelated to current operations.
+
+Summary
+Continued diligence in tracking activity related to LoJax proved that the actors still maintain live C2 servers. They may also have additional ongoing operations outside the “in the wild” use reported by ESET activity (September, 2018). Even with all of the publicity around Lojax, Fancy Bear operations did not take the publicly disclosed servers offline. Because these C2 servers have a long shelf life, organizations should ensure they incorporate the IOCs into their defensive posture. This longevity underscores the importance that LoJax C2s remain in active defense postures for longer periods of time.

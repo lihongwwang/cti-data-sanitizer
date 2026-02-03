@@ -1,0 +1,49 @@
+﻿2019/10/30 突发：某国⽹军执⾏APT攻击的后台架构曝光
+
+突发：某国⽹军执⾏APT攻击的后台架构曝光
+From:红⾬滴团队 奇安信威胁情报中⼼ Today
+
+奇安信威胁情报中⼼红⾬滴团队在⽇常的APT组织跟踪过程中发现，国外推特⼀⽤户曝光了⼀张截图，上⾯显示了疑似⽊⻢控制后台的主机信息
+界⾯。
+
+经过排查发现，该推特实际上是评论了⼀个⼈的推特
+
+其中lmhostsvc.net在奇安信威胁情报中⼼Alpha威胁分析平台上可⻅，其为⼀个疑似印度来源的组织Bitter，中⽂名为蔓灵花。
+
+从曝光的后台界⾯来看，后台上端显示从左到右为状态，系统，任务，⽇志，还有登出按钮
+
+https://mp.weixin.qq.com/s/zDElsLBEoeUvk5htMSywEw 1/3
+
+
+
+2019/10/30 突发：某国⽹军执⾏APT攻击的后台架构曝光
+
+⽽根据该域名对应的样本(c0679704a43f33f088de6759583b527e)进⾏分析后发现，
+
+其回连C2的格式均如下所示:
+
+http://lmhostsvc.net/healthne/accept.php?a=dori-PC&b=DORI-PC&c=Windows%207%20Ultimate&d=AdministratorAdministrator0c2fffe3-
+2bbf-4418-a252-fc560dbb8ee51565536040965860&e=
+
+其中的相关字段正好可以对应后台的对应字段。
+
+下⾯的submit Task提交任务便暴露了Bitter组织下发⽊⻢的途径。
+
+⽽根据⼀些情报推测分析，下拉的样本⼤致如下
+
+其中的样本分析并不是本⽂的主要⽬的，⽇后红⾬滴团队将公布关于该组织的详细报告。
+
+最后，由于该图⽚已经开始⼤范围传播，为了及时响应，我们负责任的披露了此次曝光事件。
+
+*部分IP涉及国内受害者，因此采取打码⽅式隐去。
+
+相关资料
+
+https://mp.weixin.qq.com/s/zDElsLBEoeUvk5htMSywEw 2/3
+
+
+
+2019/10/30 突发：某国⽹军执⾏APT攻击的后台架构曝光
+https://ti.qianxin.com/search?type=domain&value=lmhostsvc.net
+
+https://mp.weixin.qq.com/s/zDElsLBEoeUvk5htMSywEw 3/3

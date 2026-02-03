@@ -1,0 +1,126 @@
+概述
+近期，微步情报局捕获到多个“海莲花”组织样本，从5月至7月份期间该组织针对越南地区的攻击手法来看，主要变化体现在投递的诱饵文件上面。涉及三种类型包括：白利用结合压缩包、（SFX）RAR自解压文件和携带宏代码的MIME格式文档。除诱饵类型的变化外，花指令、文件体积、ShellCode存放方式、外壳加载层数也存在变化。
+
+具体的有以下发现：
+· 类型1：攻击者将带数字签名的Office组件和恶意DLL打包成压缩包，并且白文件后缀名会携带较长的空格符号用于迷惑受害者；类型2：攻击者将带数字签名的iTunes组件、恶意DLL和加密ShellCode文件打包成SFX自解压程序；类型3：攻击者将携带宏代码的DOC文档保存成MIME格式投递。
+· 通过社会工程学诱导受害者点击执行，使用白利用方法绕过安全检测，最终加载的后门包括：CobaltStrike Beacon、DenesRAT等。
+· 除诱饵类型的变化外，花指令（包括：跳转、无意义运算等）、文件体积、ShellCode存放方式、外壳加载层数也存在变化。
+· 微步在线通过对相关样本、IP和域名的溯源分析，覆盖该组织的相关IOC，可用于威胁情报检测。微步在线的威胁情报平台（TIP）、威胁检测平台（TDP）、API等均已支持此次攻击事件和团伙的检测。
+
+详情
+自活跃以来，“海莲花”一直持续针对中国能源行业、海事机构、边防机构、卫生部门、海域建设部门、科研院所和航运企业等进行网络攻击。在攻击过程中，“海莲花”一直在尝试不同方法以实现在目标系统上执行恶意代码和绕过安全检测。
+近期，微步情报局捕获到多个“海莲花”样本，从5月至7月份期间该组织的攻击手法来看，主要变化体现在投递的诱饵文件上面。涉及三种类型包括：白利用结合压缩包、（SFX）RAR自解压文件和携带宏代码的MIME格式文档。
+除诱饵类型的变化外，花指令（包括：跳转、无意义运算等）、文件体积、ShellCode存放方式、外壳层数也有变化。
+整体攻击流程根据时间顺序变化如下：
+
+样本分析
+诱饵类型1：“致媒体邀请函-越南成立95周年之际，如何带动越南-2020年6月1日”
+攻击者通过带数字签名的“WINWORD.EXE”程序侧加载“wwlib.dll”恶意DLL文件，“wwlib.dll”执行后会解密自身携带的数据并释放出诱饵白文档，然后解密嵌套两层的下载器ShellCode，最后通过HTTP请求下载渗透常用的CobaltStrike Beacon。
+此类手法主要活跃在5月份往前，此外海莲花组织内网中的特马（特点：一机一码、使用“IP”或“计算机名称”当作密钥解密ShellCode）也是用相同算法解密并且ShellCode同样也嵌套多层。下文以其中一个投递的诱饵为例进行分析。
+1、基本信息如下：
+样本名称 Thu moi gap mat bao chi.rar
+SHA256 c0ea37db94aa0d747ece7f46afcf90e43fb22c06731f291f0b2ba189d4326e33
+SHA1 e66d3fb2ace75e92d0717f9b9d1bf1f40de1b8ce
+MD5 ae84cfc4440ab2e9424e07de4f7d4585
+样本大小 364006
+样本格式 RAR
+回连C2 summerevent.webhop.net
+2、侧加载方式装载“wwlib.dll”，然后将自身携带的诱饵白文档释放到“%TEMP%”目录，相关代码：
+3、释放完诱导文档后，Xor解密内置的加密Shellcode代码。
+4、解密完成的ShellCode不会直接被调用，当DLL第二次入口被调用时候，会重新分配内存并且将解密的ShellCode拷贝到新分配的内存中通过CreateThread函数创建新的线程进行调用，代码如下：
+5、ShellCode通过“CryptDecrypt”函数解密出ShellCode2，此处解密的代码函数调用流程在海莲花内网木马中经常出现，并且经常嵌套多层使用：
+6、ShellCode2代码主要是实现下载Payload功能，URL：“https://summerevent.webhop.net/SLdY”对应的Payload为Cobalt Strike生成的Beacon，HTTP请求如下：
+7、Cobalt Strike集成了端口转发、服务扫描、自动化溢出、多模式端口监听、PE木马生成、Java木马生成Office宏病毒生成、木马捆绑；钓鱼攻击包括：网站克隆、目标信息获取、java执行、浏览器自动攻击等。
+
+诱饵类型二：“36东盟峰会26-06-2020会议”
+攻击者将携带Apple公司签名的白文件和恶意DLL、加密后的代码文件打包成自解压格式文件。自解压格式文件被执行后会释放所有文件，并且调用“MicrosoftUpdate.exe”。
+当“MicrosoftUpdate.exe”被运行后，“SoftwareUpdateFilesLocalized.dll”通过白利用的方法加载然后读取文件“SoftwareUpdateFiles.locale”并Xor解密出ShellCode，ShellCode会释放出诱饵白文档同时在内存中构造出DenesRAT后门，然后修复导入表和重定位表，调用DLL初始化函数和功能函数。
+此类手法主要活跃在6月份。此类手法用的相对较少，下文以捕获到的诱饵为例进行分析。
+1、基本信息如下：
+样本名称 36 ASEAN Summit 26-06-2020 Conference.doc~.exe
+SHA256 dbde2b710bee38eb3ff1a72b673f756c27faa45d5c38cbe0f8a5dfccb16c18ba
+SHA1 4a41bc81b27374b8a711794a7b27d51700403341
+MD5 7579aede6a223c96231ad30472a060db
+样本大小 2143611
+样本格式 SFX（RAR自解压格式）
+回连C2 tripplekill.mentosfontcmb.com
+2、将白利用文件、恶意DLL、加密后的代码文件打包成SFX文件，通过“Setup”调用白文件“MicrosoftUpdate.exe”，SFX文件中打包的文件如下：
+3、由于没有对被加载的DLL做检查，这就导致存在DLL劫持的可能。“MicrosoftUpdate.exe”被执行后，目录中的“SoftwareUpdateFiles.Resources\ en.lproj\ SoftwareUpdateFilesLocalized.dll”会被加载。
+4、该DLL主要是做了一个HOOK的行为，在“MicrosoftUpdate.exe”内存0x3D93偏移处写入CALL指令，“MicrosoftUpdate.exe”代码执行流程经过0x3D93偏移处时调用恶意函数“sub_100010C0”。
+5、HOOK代码修改前后对比如下：
+6、函数“sub_100010C0”被调用，会读取同目录下的“SoftwareUpdateFiles.locale”文件，然后将读取的数据和内置的字符串循环Xor解密出ShellCode代码。
+7、ShellCode入口处将数据循环解密，如下：
+8、解密诱饵白文档数据，写入到“%temp%”目录
+9、释放完诱饵白文档后，会调用ShellExecute函数打开，然后跳转到后门加载ShellCode，此处的ShellCode加入大量无意义运算和无效跳转花指令，用于干扰分析。
+10、最终在内存中加载海莲花特有的DenesRAT木马，解密后的C2配置为“tripplekill.mentosfontcmb.com”:
+11、连接C2：“tripplekill.mentosfontcmb.com”，通过TCP协议发送加密后的数据到C2服务器，相关截图：
+12、最终释放的 DenesRAT 为“海莲花”组织私有木马，能够根据 C2 服务器下发的指令执行相应的功能。
+主要功能有： 
+1) 文件操作，比如创建文件或目录、删除文件或目录、查找文件； 
+2) 注册表读写； 
+3) 远程执行代码，比如创建进程、执行 DLL 等； 
+4) 设置环境变量
+
+诱饵类型三：“Report_tiecuoi.doc”
+攻击者将DOC文档保存成MIME格式储存，并且DOC文档里面携带恶意宏代码，当受害者点击启用宏选项后，恶意宏代码会释放出“inquiringly.db”恶意DLL文件，值得一提的是此恶意DLL文件体积膨胀程度达到90MB。
+当“inquiringly.db”被加载后，会将携带的Payload解密后通过反射加载执行，Payload释放出微软公司的白文件“MsMpEng.exe”和恶意DLL文件“MpSvc.dll”，利用任务计划定时执行“MsMpEng.exe”白文件，通过侧加载技术执行“MpSvc.dll”恶意文件，最终“MpSvc.dll”使用和“inquiringly.db”相同的反射加载方法加载Payload2，Payload2最终会通过HTTP请求获取下一载荷进行执行。
+此类手法主要活跃在7月份，下文以其中一个投递的诱饵为例进行分析。
+1、基本信息如下：
+样本名称 Report_tiecuoi.doc
+SHA256 3547f3e8f7c5aec3f507d75e7d3d254224d02a29290bf54945b29299950b94b2
+SHA1 13b4b8957d1cdcaf11f9d210ed13463d082d588a
+MD5 32218286a3ed33541c4aa31722c8d2c2
+样本大小 2087422
+样本格式 DOC文档（MIME格式）
+回连C2 feeder.blogdns.com
+该文件被程序打开后会提示启用宏当宏代码被执行后会释放文件到
+2、该文件被Word程序打开后会提示“启用宏”，当宏代码被执行后，会释放“inquiringly.db”文件到”%Appdata%\Roaming”目录。宏代码截图如下：
+3、“inquiringly.db”基本信息
+样本名称 inquiringly.db
+样本类型 PE32 executable (DLL) (GUI) Intel 80386, for MS Windows
+样本大小 96084212
+SHA256 18896e92dd60ee8d97a3526e3fa175a68b153cc03997c08dc50684a4969f9730
+SHA1 1d4e9bcdacbfad868b0bf83a3867b96b61c7bc13
+MD5 2f2f74531dd20e215970354ad2168fd5
+4、“inquiringly.db”被执行后会释放诱饵白文档到“%Temp%”目录，并且调用WinExec执行，代码如下
+5、然后在解密内存Payload，并且反射加载EXE Payload，截图如下：
+6、将此处加载的EXE Payload从内存中Dump出来后，基本信息如下：
+样本类型 PE32 executable (console) Intel 80386, for MS Windows
+样本大小 696884
+编译时间 2018-07-13 19:46:12
+SHA256 eeb4152fc7ae6234ba250be9b6c2ae312be874f35704efba3bf708fe63f90ec9
+SHA1 f217f4e870ffb7b0c600f38f61a8ff946df50fb4
+MD5 3cc07e0323b3d5065b1100489583e1bb
+7、该Payload会创建任务计划，便于实现持久化的攻击能力。
+8、然后释放两个文件，分别为微软公司的白文件“MsMpEng.exe”和恶意DLL文件“MpSvc.dll”，利用任务计划的执行白文件，通过侧加载技术执行恶意DLL文件。
+9、Payload沙箱行为截图如下：
+10、MpSvc.dll基本信息
+样本类型 PE32 executable (DLL) (GUI) Intel 80386, for MS Windows
+样本大小 63425536
+编译时间 2018-07-13 19:46:11
+SHA256 e696e6a94a512c0886d4f9a3fe45c94db312a0967f70e1d1993e6bce1fc99418
+SHA1 09f88d88a69544c03abd4dcc54e2c52244b84a3d
+MD5 1cd23de9e51e12726bbc2ce3decfbce7
+11、“MpSvc.dll”整体功能和“inquiringly.db”文件功能一致，同样也是加载Payload，截图如下：
+12、将此处加载的EXE Payload从内存中Dump出来后（此处为Payload2），基本信息如下：
+样本类型 PE32 executable (console) Intel 80386, for MS Windows
+样本大小 389684
+编译时间 2016-08-12 16:58:12
+SHA256 375c526339a7c08f5fec667316a65551f0aa74e183c768815fda4c78b1b90b0b
+SHA1 30e88e04a5ca0ba36d86ae53395f75df0605b04c
+MD5 48aa7b1114a4eb83a6e7ce1eaaf5cd96
+13、Payload2整体代码实际上是实现下载器的功能，同时还会上传进程信息，代码截图如下：
+14、远程下载“.7z“文件，将其解密后写入系统目录中，并且写入任务计划便于持久化攻击。
+15、由于没有后续的Payload，无法进一步分析投递的“green.png”Payload具备的功能。
+
+关联分析
+诱饵类型一：“致媒体邀请函-越南成立95周年之际，如何带动越南-2020年6月1日”
+1、和此前披露的“零杀软检出，我国遭到“海莲花”新手法攻击”利用手法一致。
+2、ShellCode中的解密算法基本一致，ShellCode解密算法是海莲花相关后门最重要的关联点之一。
+3、除解密算法以外，ShellCode中的无意义运算和无效跳转的两种花指令风格和海莲花一致。
+诱饵类型二：“36东盟峰会26-06-2020会议”
+1、早期海莲花惯用HOOK LdrLoadDll的方法，在此处是将0x3D93偏移处接管执行恶意代码。 
+2、使用海莲花特定木马DenesRAT。
+诱饵类型三：“Report_tiecuoi.doc”
+1、通过IOC关联，使用C2：“feeder.blogdns.com”，该域名在6月份期间使用和诱饵类型1的手法，并且其ShellCode特点和上述关联的一致。
+2、除此以外，在2017年期间海莲花也曾长时间投递过MIME格式的文档诱饵。宏代码行为主要是将Payload URL写入到任务计划项，然后通过“mshta.exe”执行。

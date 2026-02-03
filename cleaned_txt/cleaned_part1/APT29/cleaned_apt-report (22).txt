@@ -1,0 +1,197 @@
+NOBELIUM Uses Poland's Ambassador’s Visit to the U.S. to Target EU Governments Assisting Ukraine
+
+Summary
+NOBELIUM, aka APT29, is a sophisticated, Russian state-sponsored threat actor targeting Western
+countries. At the beginning of March, BlackBerry researchers observed a new campaign targeting
+European Union countries; specifically, its diplomatic entities and systems transmitting sensitive
+information about the region's politics, aiding Ukrainian citizens fleeing the country, and providing help to
+the government of Ukraine.
+
+Brief MITRE ATT&CK Information
+Tactic Technique
+
+Resource Development T1584.006 (Compromising legitimate web
+servers to spread downloaders)
+
+Initial Access T1566.002 (Spear-phishing email with link to
+malicious website)
+
+Execution T1204.002 (Malicious .lnk files inside of
+weaponized ISO images)
+
+Persistence T1547.001 (Execution through Autorun)
+
+Defense Evasion T1027.006 (Malicious HTML obfuscation)
+
+Command-and-Control T1102.002 (Communicating via Notion API)
+
+Weaponization and Technical Overview
+Weapons Obfuscated html files, iso files, .lnk files, DLL
+
+64 bits
+
+Attack Vector Spear-phishing
+
+Network Infrastructure Compromised legitimate websites.
+
+Targets Diplomatic entities
+
+Technical Analysis
+Context
+
+NOBELIUM is an advanced persistent threat group also known as APT29, which is publicly attributed to
+the Russian government and specifically to the Foreign Intelligence Service of the Russian Federation
+(SVR), an organization responsible for collecting intelligence outside Russia, including electronic
+surveillance.
+
+Although its phishing campaigns aren’t very sophisticated, APT29 is notorious for its agility once it is
+inside a target’s network. Its operators are known to be stealthy, extremely patient, and skilled in utilizing
+innovative intrusion techniques that abuse Microsoft technologies and services. The threat group made
+international news headlines back in December 2020 when a high-level supply chain attack Trojanized a
+software update to SolarWinds Orien software. The compromise affected thousands of users,
+distributing a backdoor dubbed SunBurst.
+
+The new NOBELIUM campaign BlackBerry observed creates lures targeted at those with interest in the
+Ministry of Foreign Affairs of Poland’s recent visit to the U.S., and abuses the legitimate electronic system
+for official document exchange in the EU called LegisWrite. It partially overlaps with a previous campaign
+discovered by researchers in October 2022.
+
+NOBELIUM is also known as Cozy Bear and The Dukes, and industry reporting has previously referred to
+the threat group as StellarParticle, UNC2452, and Dark Halo. NOBELIUM has historically targeted
+government organizations, non-governmental organizations, think tanks, military, IT service providers,
+health technology and research, and telecommunications providers.
+
+Attack Vector
+The infection vector for this particular campaign is a targeted phishing email containing a weaponized
+document. The malicious document includes a link leading to the download of an HTML file.
+
+hxxps[:]//literaturaelsalvador[.]com/Instructions[.]html
+hxxps[:]//literaturaelsalvador[.]com/Schedule[.]html
+
+The weaponized URLs shown above are hosted on a legitimate online library website based in El
+Salvador in Central America. We believe that the threat actor compromised this website sometime
+between the end of January 2023 and the beginning of February 2023.
+
+One of the lures appeals to those who want to find out the Poland Ambassador’s schedule for 2023. It
+overlaps with Ambassador Marek Magierowski's recent visit to the United Statesp; specifically, his talk on
+February 2, where he discussed the war in Ukraine at the Catholic University of America Columbus
+School of Law, also known as the Catholic Law, which is based in Washington, DC.
+
+Another lure we found abuses multiple legitimate systems, including LegisWrite and eTrustEx, which the
+EU nations use for information exchange and secure data transfer.
+
+LegisWrite is an editing program that allows secure document creation, revision, and exchange between
+governments within the European Union. The fact that LegisWrite is used in the malicious lure indicates
+that the threat actor behind this lure is specifically targeting state organizations within the European
+Union.
+
+Further analysis of the malicious HTML file reveals it to be a version of NOBELIUM’s malicious dropper
+tracked as ROOTSAW, also known as EnvyScout. EnvyScout uses a technique known as HTML
+smuggling to deliver an IMG or ISO file to the victim’s system.
+
+The HTML file delivered in this campaign contains a data block that can be decoded by subtracting 4.
+Upon decoding that data, we find that it has an “.ISO” file inside.
+
+The “hxxps[:]//literaturaelsalvador[.]com/Instructions[.]html” link drops “Instruction.iso”, and the
+“hxxps[:]//literaturaelsalvador[.]com/Schedule[.]html” link drops “Schedule.iso”. Both of those “.iso” files
+each contain two files, with the same hash for both:
+
+BugSplatRc64.dll
+<Instruction||Schedule>.lnk
+
+SHA256 dffaefaabbcf6da029f927e67e38c0d1e6271bf998040cfd6d8c50a4eff639df
+
+MD5 38b05aa4b5ba651ba95f7173c5145270
+
+ITW File Name Schedule.lnk, Instructions.lnk
+
+Compilation Stamp 2023-02-08T17:40:55.2737760+00:00
+
+File Type/Signature Windows shortcut
+
+File Size 1488 bytes
+
+Command Line BugSplatRc64.dll,InitiateDs
+Argument
+
+The purpose of the “.lnk” file is to run the specified command line argument:
+
+C:\Windows\system32\rundll32.exe BugSplatRc64.dll,InitiateDs
+
+SHA256 e957326b2167fa7ccd508cbf531779a28bfce75eb2635ab81826a522979aeb98
+
+MD5 cf36bf564fbb7d5ec4cec9b0f185f6c9
+
+ITW File Name BugSplatRc64.dll
+
+Compilation Stamp 2023-02-07 13:02:42 UTC
+
+File Type/Signature x64 PEDLL
+
+File Size 271360 bytes
+
+The BugSplatRc64.dll file contains many encrypted strings which are decrypted at runtime. Some of the
+those decrypted strings are as follows:
+
+BugSplatRc64.dll,InitiateDs" C:\Windows\System32\rundll32.exe"
+Software\Microsoft\Windows\CurrentVersion\Run
+authorization: Bearer secret_X92  sXCVWoTk63aPgGKlPBBmHVmuKXJ2geugKa7Ogj7s
+notion-version:   2022-06-28 accept: applicat ion/json..
+
+Continuing with its execution, a new directory is created under “C:\Users\<username>\AppData”, where
+the BugSplatRc64.dll is copied over.
+
+C:\Users\<username>\AppData\ DsDiBacks\BugSplatRc64.dll
+
+To remain persistent on the infected system, a new registry key is created under:
+“HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run\DsDiBacks”, with the value
+of “C:\Windows\System32\rundll32.exe "C:\Users\
+<username>\AppData\Local\DsDiBacks\BugSplatRc64.dll,InitiateDs”.
+
+The BugSplatRc64.dll file aims to collect and exfiltrate information about the infected system. That
+includes basic data such as the owner’s username and IP address. This information is then used to
+create the victim’s unique identifier, which it then sends to the command-and-control (C2) server, Notion,
+which we’ll go into more detail on below.
+
+Every minute (62000ms), the BugSplatRc64.dll connects to the Notion server, waiting for the next
+payload. If successful, the payload is executed as a shellcode in the memory of its process.
+
+Network Infrastructure
+This campaign's malware delivery is based on the use of legacy network infrastructure that has been
+compromised by the threat actor. Using a compromised legitimate server to host the packed malware
+payload increases the chances of a successful installation on the victims’ machines.
+
+The packed malware utilizes "api.notion.com" for its C2 communication. "Notion" is a commonly used
+note-taking application. By using Notion’s application programming interface (API) for C2, the threat
+group are giving their traffic a benign guise.
+
+NOBELIUM has a history of utilizing compromised C2 servers, such as those hosted in the Microsoft®
+Azure® cloud infrastructure, to make their malicious C2’s look legitimate. Notion was also used during
+their November 2022 campaign, further aligning this campaign’s tactics, techniques and procedures
+(TTPs) with APT29.
+
+This version of Notion is specified in the headers as “2022-06-28", and is the latest version of the API. In a
+campaign conducted in January 2022, NOBELIUM was still using the Trello API for C2 communication.
+Use of Notion’s API didn’t begin until late in 2022, leaving the middle of 2022 for the implementation of
+this new C2 feature.
+
+Targets
+Based on the current geopolitical situation involving Russia’s invasion of Ukraine, the visit of Poland's
+Ambassador to the United States and his talk about the war, and the abuse of the online system used to
+exchange documents inside the European Union, we believe the target of NOBELIUM’s campaign is
+Western countries, especially those in Western Europe, which provide help to Ukraine.
+
+Conclusions
+NOBELIUM actively collects intelligence information about the countries supporting Ukraine in the
+Russian-Ukraine war. The overlap between Poland's Ambassador’s visit to the United States with the lure
+used in the attacks, provides evidence that the threat actors carefully follow geopolitical events and use
+them to increase their possibility of a successful infection.
+
+Furthermore, our initial analysis of weaponized LNK files shows that the threat actor behind this
+campaign used anti-forensic techniques to wipe out personal metadata to remove information
+connected to its operations systems.
+
+Using compromised legitimate network infrastructure and a legitimate web server increases NOBELIUM’s
+technical capabilities to bypass basic network security mechanisms. However, an actionable Threat
+Intelligence model with counter-measure rules such as Suricata, will help to detect malicious traffic from
+the internal network to the threat actor’s network infrastructure.

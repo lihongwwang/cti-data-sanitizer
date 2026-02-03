@@ -1,0 +1,403 @@
+﻿2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+蔓灵花APT组织最新的C#⽊⻢组件揭秘
+猎影 安恒信息 3 days ago
+
+安恒安全研究院猎影威胁情报分析团队于今年4⽉份监控并发现“蔓灵花”(BITTER)组织针对我国多个敏感部⻔进⾏攻击，安全研究团队对
+
+该次事件进⾏深⼊了分析。通过持续监控，近期⼜发现其开始了新的攻击，并加⼊了新的组件。
+
+APT组织介绍
+
+“蔓灵花”⼜名“BITTER”，⼀个⻓期针对中国及巴基斯坦的政府、军⼯、电⼒、核等部⻔发动⽹络攻击，窃取敏感资料，具有较强的政治背
+
+景。该组织最早在2016由美国安全公司Forcepoint进⾏了披露，他们发现攻击者使⽤的远程访问⼯具（RAT）变体使⽤的⽹络通信头包含
+
+“BITTER”，所以该这次攻击命名为“BITTER”，同年国内安全⼚商也跟进发布了分析报告，命名为“蔓灵花”。
+
+攻击样本分析
+
+本次攻击(2019年9⽉份发现)使⽤了多个攻击样本，如捕获到⼀个命名为“mypictures.chm”的样本，该样本格式是chm，⽂件被打开后展
+
+示⼀些图⽚：
+
+通过查看代码发现它会在后台通过msiexec命令去远程服务器下载msi⽂件
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 1/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+观察进程树也能发现该⾏为：
+
+通过安恒⽂件威胁分析平台检索域名gongzuosousuo[.]net,⼜发现多个样本，其中2个样本引起我们注意：
+
+这两个⽂件都是捆绑的主样本，它们伪装成office图标的exe⽂件
+
+其中“中国新的对外安全政策.docx”打开后，是关于我国外交策略的⽂档，
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 2/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+另⼀个⽂档显示乱码：
+
+这两个⽂件除了显示假⽂档还会释放都“audiodq.exe”，且回连还是相同域名：gongzuosousuo[.]net。
+
+另外，通过该域名还可以关联到另⼀个msi样本wupd.msi。
+
+该样本会释放运⾏wupdte.exe，wupdte.exe包含pdb信息为：
+
+C:\Users\user\Desktop\360ActiveDefence 1.4 Sep2019\360ActiveDefence 1.4 V2\Release\360ActiveDefence.pdb
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 3/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+wupdte.exe的主要功能为获取基础信息和远程下载新样本并执⾏，
+
+该样本会搜集计算机名、⽤户名、操作系统版本、操作系统序列号等信息，发送到mil.openendhostservice[.]org远程地址，并拷⻉⾃身
+
+⽂件到
+
+C:\Users\⽤户名\AppData\Roaming\Microsoft\Windows\SendTo\winupd.exe
+
+并且还可以下载远程数据解密出样本并执⾏。
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 4/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+接下来，分析chm⽂件下载的ausetup.msi⽂件，它运⾏后也会释放叫“audiodq.exe”,其回连地址是：“lmhostsvc[.]net”，继续使⽤平台
+
+检索该域名，发现叫做engineblock-2.jpg.exe程序
+
+其运⾏后会打开图⽚和释放并运⾏audiodq.exe。
+
+audiodq.exe和之前发现的样本功能⼀致，只是域名有所变化，如本次攻击所使⽤的其中⼀个域名为lmhostsvc[.]net
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 5/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+并且通过安恒⽂件威胁分析平台分析关联到另⼀个域名zhulidailiren4winnt[.]net也是主模块回连域名。
+
+深⼊追踪发现BITTER组织对其组件进⾏了⼀些更新，其中最主要的变化是加⼊了两款.net的远控程序。
+
+从样本时间来看最新更新的组件时间为10⽉15⽇。
+
+由于篇幅有限，之前的分析⼀笔带过。之前组件的功能汇总如下表所示：
+
+样本名称 Md5 功能
+
+audiodq.exe 6bb5614223a21db411b1cb3ed29465f5 主程序 :发送基础信息，可接受⿊客指令下载各个组
+
+件
+
+regdl be171b4df9b7db48c67f31c678421bfd 组件:设置主程序audiodq的注册表⾃启动模块
+
+spoolvs fc516905e3237f1aa03a38a0dde84b52 组件 :远控模块，具备完善的⽂件窃密功能，使⽤加
+
+密传输，密钥是 ”m50e!sq&n67$t”，传输地址
+
+是：neth****pport.ddns.net
+
+igfxsrvk efec7464f07633415cbc36a97b900587 组件:键盘记录模块
+
+dashost d884f6d37c0202935db1a54c7f0a79ed 组件:功能同spoolvs，⽂件hash不同⽽已。
+
+lsap 44e936f5f02fa3fdf5925ba9fbd486e5 组件 :搜集信息（收集的⽂件列表）和并将⽂件涉及
+
+的⽂件上传到：Sysi****vice.ddns.net
+
+upmp 450005b247add0b1aa03cee00c90bc3b 组件:功能同lsap⼀样，⽂件hash不同⽽已。
+
+misis 11864ec73e6226f52a1e6e4074b33e89 组件 :功能和 lsap类似，当⽂件上传时采取的加密传
+
+输(参数base64+间隔符切割)，地址也是：Sysi***
+
+*vice.ddns.net
+
+putty b3e0ed34b7ee16b12b80a4dc5f8dddae 正常⽂件.ssh登⼊⼯具putty.exe
+
+我们将更新后的组件和之前的组件进⾏了对⽐分析，
+
+其中sleep、kill、regdl和之前的regdl⼀致为给audiodq程序设置⾃启动，
+
+lsap*系列和之前的lsap功能⼤致上是⼀致的都是搜集信息和⽂件并上传，
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 6/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+igfxsrvk和之前的也是⼀致的主要为键盘记录功能，
+
+winsvc和spoolvs功能⼀致为远控模块。
+
+这些模块功能⼤致相同，样本中的回连地址会做⼀些变化。
+
+下⾯主要分析新加⼊的.net程序模块MSAServices、MSAServicet、onedriveManager、sessionmanagers。
+
+MSAServices模块分析
+
+MSAServices为远程控制程序，主要功能为回连远程服务器进⾏命令控制和数据传输。
+
+样本先回进⾏⼀个冒泡排序，将结果写⼊到
+
+C:\Users\Public\array.txt⽂件中，具体内容似乎并⽆什么意义。
+
+然后进⾏了删除，猜测这么做的⽬的是为了判断系统是否是win7及以上的系统，在WIN XP下⽆法发现C:\Users\Public路径。
+
+接着进⾏⽹络连接操作并设置⼼跳状态定时回调函数。
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 7/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+可以观察到⽹络连接的C2域名为mswinhostsvc[.]net，端⼝为 43821，被⽤于数据传输加解密的NetworkKey为745930。
+
+其加密算法如下：
+
+然后接受和发送数据信息，发送的基本信息，包括系统版本、系统⽤户、系统⽬录、mac地址等等信息
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 8/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+还包括获取Win序列号信息等
+
+然后该程序会进⾏Processor调⽤初始化。
+
+包含了该程序可以执⾏的主要功能。
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 9/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+接收命令并进⾏执⾏并返回执⾏信息，功能如下所示：
+
+包类型 完成功能
+
+Delete File 删除⽂件
+
+Get Processes 获取进程信息
+
+Kill Processes Kill进程
+
+Suspend Processes 挂起进程
+
+Resume Processes 恢复进程
+
+Get Process DLLs 获取进程中使⽤的dll信息
+
+Get Process threads 获取进程中的线程信息
+
+Mod Thread 改变线程状态
+
+Start Process 开始进程
+
+FileMgr get drives 获取可⽤逻辑驱动器
+
+FileMgr get Folders 获取⽬录下的⽂件信息
+
+FileMgr Create File 创建⽂件
+
+FileMgr Copy File 拷⻉⽂件
+
+FileTransfer Begin 传输⽂件
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 10/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+FileTransfer Data 传输数据
+
+FileTransfer Complete 数据传输完成
+
+FileTransfer for downloading start 传输⽂件
+
+Get Command 获取指令
+
+Start Command Prompt 开始命令并监控
+
+Stop Command Prompt 结束命令
+
+Connection Status 连接状态
+
+MSAServicet和MSAServices功能⼀致。
+
+Sessionmanagers模块分析
+
+Sessionmanagers也为远程控制程序，主要功能为回连远程服务器进⾏命令控制和数据传输。
+
+通过安恒⽂件威胁分析平台分析发现该样本的编译时间故意被篡改。
+
+该程序会连接远程服务器进⾏命令和控制。
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 11/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+
+解密出远程服务器地址为winqrcservice[.]net，端⼝为28564。
+
+接着程序进⾏等待命令并处理命令阶段。
+
+命令包括获取信息包括基本的信息和杀毒软件信息等，
+
+主要命令如下列表：
+
+命令 功能
+
+tskmgr 启动任务管理器
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 12/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+getinfo- 获取各类信息
+
+prockill Kill进程
+
+proclist 列举进程
+
+startcmd 开启cmd
+
+stopcmd 停⽌cmd
+
+cmd§ 执⾏各类cmd指令
+
+fdrive 获取逻辑驱动器信息
+
+fdir§ 获取⽬录下的⽂件信息
+
+f1§ f1 + drive name
+
+fpaste§ 移动或拷⻉⽂件或⽂件夹
+
+fexec§ 执⾏程序
+
+fhide§ 设置⽂件属性为隐藏
+
+fshow§ 设置⽂件属性为可⻅
+
+fdel§ 删除⽂件
+
+frename§ 重命名⽂件或⽂件夹名
+
+ffile§ 新建⽂件
+
+fndir§ 新建⽂件夹
+
+getfile§ 备份⽂件
+
+putfile§ 写⼊⽂件
+
+fup 上传⽂件
+
+fdl§ 下载⽂件
+
+fconfirm 命令确认
+
+dc 循环接收指令
+
+onedriveManager和sessionmanagers功能⼀致。
+
+总结
+
+通过该次分析，可以看出该组织疑似有新的C#开发成员加⼊或转向了C#研发，新的组件代码仍在持续开发阶段，部分功能并没有调⽤或只
+
+是测试使⽤，通过回连域名发现攻击者了解中⽂，回连域名中包含中⽂拼⾳(如zhulidailiren4winnt、tongbanzhichi、
+
+gongzuosousuo)。
+
+另外，其核⼼⽊⻢下载功能也做了更新，安恒安全研究院猎影威胁情报分析团队将持续监控该组织动态。由于篇幅关系内容有所精简，需详
+
+细报告请联系邮箱ti@dbappsecurity.com.cn
+
+IOC
+
+域名：
+
+hxxp://lmhostsvc[.]net
+
+hxxp://zhulidailiren4winnt[.]net
+
+hxxp://mswinhostsvc[.]net
+
+hxxp://winqrcservice[.]net
+
+hxxp://winlocsec.ddns[.]net
+
+hxxp://tongbanzhichi[.]net
+
+hxxp://mscnsservice.ddns[.]net
+
+hxxp://gongzuosousuo[.]net
+
+hxxp://mil.openendhostservice[.]org
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 13/14
+
+
+
+2019/10/28 蔓灵花APT组织最新的C#⽊马组件揭秘
+⽂件MD5：
+
+c87641a13843682ae16a5da18ffee654
+
+46ef2c0db107b794516dc2b2622e44ad
+
+4b0e5c5c4e0e22f2dfeef0531e021072
+
+b5c66d01d0e96b04702030ed23add415
+
+b5c66d01d0e96b04702030ed23add415
+
+c831af87ab876bd774784eb8f3338b4b
+
+ae02f2f8100de5f9f155f4b8ce3e494e
+
+8831eac19d1a1c30697057fa501d063f
+
+d8c76c736a3285378bc82ea9cd3c972d
+
+4bfff2480fb6eaa0ef82abb0092c2586
+
+a24d5a8f6a916fe976face1f145cf297
+
+79a1e1d2ea5c629f60ef00a96ec4d0fe
+
+be171b4df9b7db48c67f31c678421bfd
+
+e421808b24c1ebd4cf0a078c6e66ded8
+
+fc572eec5ae8b38428259c5d8fc5a05f
+
+往期精选
+
+围观 安恒信息获评IDC MarketScape“2019年中国Web 应⽤安全市场领导者”
+
+热⽂ 利⽤⽹络空间探测引擎跟踪Lazarus组织的活动痕迹
+
+热⽂ IDC MarketScape：安恒信息成中国态势感知解决⽅案市场领导者
+
+https://mp.weixin.qq.com/s/dfH8WrDQWYFQHFlOElxN-Q 14/14

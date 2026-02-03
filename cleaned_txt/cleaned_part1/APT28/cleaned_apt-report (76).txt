@@ -1,0 +1,69 @@
+APT28 使用 Zebrocy 攻击欧洲军事和外交机构
+
+TAG: 高级可持续性攻击、APT、APT28、Zebrocy、远程模板注入、欧洲、白俄罗斯、军事、外交
+
+概要
+APT28，又名 Sofacy、Sednit、FancyBear、TsarTeam、Group74、PawnStorm 和 Strontium，自 2007 年起就开始针对北约、东欧及高加索地区的政府等机构开展网络间谍活动，主要目的是收集国防和地缘政治相关情报，被指可能与俄罗斯情报机构 GRU 有关。情报显示，该组织于 2017 年下半年将目标范围扩大到包含中亚地区，且有东移趋势。
+
+微步在线黑客画像和狩猎系统监控到该组织自 10 月下旬以来，针对白俄罗斯等欧洲目标发起了一波新的攻击。分析之后发现：
+- 这波攻击活动中，受害者主要为欧洲和北约相关的军事和外交机构，具体目标包含白俄罗斯国防部和波兰政府等等。
+- 攻击手法为鱼叉式网络钓鱼结合远程模板注入技术，攻击文档包含的恶意宏使用相对较为少见的 AutoClose 函数触发执行，启用宏之后，在关闭 Word 文档时才会执行恶意代码。
+- 这波活动中，攻击者针对性投递了使用 .NET、Delphi 和 C++ 编写的 Zebrocy 木马。Zebrocy 是 APT28 专用的攻击工具集，主要目的是用作侦察 (收集上传系统信息和截屏) 和部署 Covfacy 等下一阶段的攻击载荷，目前共发现 .NET、AutoIT、Delphi、C++ 和 PowerShell 这几种版本。
+- 微步在线通过对相关样本、IP 和域名的溯源分析，共提取 26 条相关 IOC，可用于威胁情报检测。微步在线的威胁情报平台 (TIP)、威胁情报订阅、API 等均已支持此次攻击事件和团伙的检测。
+
+详情
+2018 年 10 月底至今，微步在线狩猎系统捕获了一批攻击文档，这些文档使用的手法都是通过远程模板注入来执行恶意宏，然后针对性投递木马后门。分析之后发现，这些攻击文档大多由 APT28 使用，针对白俄罗斯等欧洲的军事和外交目标发起了一波定向攻击。
+
+以针对白俄罗斯国防部的攻击为例：攻击者以 DEA (美国缉毒局) 的禁毒调查邀请函为诱饵进行钓鱼攻击。其中 milcoop@mod.mil.by 为白俄罗斯国防部下属的国防部国际军事合作司的联系邮箱，该司主要负责与国防部门，外国武装部队和国际组织等进行合作。
+
+样本分析
+邮件附件是一个 DOCX 文档，打开后会加载远程模板，远程模板包含恶意宏，运行后会从自身解密出木马，该木马为 .NET 编写的 Zebrocy，其功能较为简单，主要用作侦察和部署下一阶段载荷。
+
+1、样本基本信息如下：
+SHA256  40318f3593bca859673827b88d65c5d2f0d80a76948be936a60bda67dff27be9
+SHA1 0e8cb18eb0aa6a8c616dfda19522e1a0e62a612b
+MD5 843ed074adb454beb8a547c6b9e71fef
+文件名 DN_325_170428_DEA Basic Narcotics Investigation Course invitation.docx
+文件类型 docx
+文件大小 32.99 KB
+
+2、文档打开时会尝试从文档中的 word/_rels/settings.xml.rels 加载远程模板。远程模板地址为 http://145.249.105.165/doc/temp/release.dotm。
+
+3、模板文件 SHA256：2da5a388b891e42df4ed62cffbc167db2021e2441e6075d651ecc1d0ffd32ec8。该模板中带有恶意的宏。通过 AutoClose 函数在文档关闭时候进行自动触发。可以在 vbaProject.bin 的 UserForm1 存储对象中发现名为 o 的流对象，该流对象中包含被 Base64 编码过的 PE 文件，该 PE 文件会被解码并执行。
+
+4、PE 文件 SHA256：9a0f00469d67bdb60f542fabb42e8d3a90c214b82f021ac6719c7f30e69ff0b9。该 PE 文件是一个 .NET 编写的木马程序，原始模块名为 mrx。
+1）样本会通过 wmic 收集各种系统信息。这些系统信息包含磁盘序列号、分区空间大小和分区剩余空间大小、操作系统版本、架构、语言、系统盘盘符、当前进程列表等。
+2）随后样本会进行截屏，将当前屏幕显示内容保存为 JPG 文件，并编码为十六进制。
+3）连接 C2 服务器 http://145.249.105.165/resource-store/stockroom-center-service/check.php 并发出 POST 请求。请求的参数共有 3 个，解释如下：
+fm C盘的序列号
+spp 通过WMI所收集到的系统信息
+spvg 截屏图片的16进制编码内容
+4）样本在发送请求后会等待 C2 服务器的回应。
+5）若 C2 服务器发送了回应内容，则样本会将回应内容写入到 %APPDATA%\OneDrive\Support\mvdrv.exe，为其注册自启动 (Software\Microsoft\Windows\CurrentVersion\Run\OneDriveScv) 并执行。
+6）样本会将自身也拷贝到 %APPDATA%\OneDrive\Support 目录下，文件名为 mse.exe，并为自身注册为注册表自启动项。
+
+关联分析
+综合分析这波攻击中使用的诱饵、木马、网络资产和被攻击目标等信息，判断幕后攻击者为 APT28。
+
+对 DN_325_170428_DEA Basic Narcotics Investigation Course invitation.docx 进行关联分析之后发现了一批由同一攻击者创建的同一类型的攻击文档，这些文档的最后修改者都是 Joohn，部分文档的创建者也是 Joohn。这些文档都是利用远程模板注入技术进行攻击，不同的是最终投递的载荷可能不同，大多数场景下投递的是 Zebrocy 后门。Zebrocy 是 APT28 专用的攻击工具集，主要用于部署 Covfacy 等下一阶段的攻击载荷，主要目的是用作侦察和窃取各种文档，目前共发现 .NET、AutoIT、Delphi、C++ 和 PowerShell 这几种版本。
+
+威胁指标（IOC）
+IP：
+109.248.148.42
+145.249.105.165
+185.203.118.198
+188.241.58.170
+
+Hash：
+2cfc4b3686511f959f…
+2da5a388b891e42df…
+34bdb5b364358a07f…
+40318f3593bca8596…
+6ad3eb8b5622145a…
+
+url：
+109.248.148.42/agr-enum/progress-inform/cube.php
+145.249.105.165/resource-store/stockroom-center-service/check.php
+109.248.148.42/office/thememl/2012/main/attachedTemplate.dotm
+109.248.148.42/officedocument/2006/relationships/templates.dotm
+188.241.58.170/live/owa/office.dotm

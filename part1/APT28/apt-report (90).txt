@@ -1,0 +1,245 @@
+﻿2018/7/30 Russian APT28 espionage group targets democratic Senator Claire McCaskillSecurity Affairs
+
+MUST RHEHAoomDmeeTe nC sy boCfe flry aCbwresim irne  SCamri sCmuynbege Sr mw aarrtCTfahyrinebgse Hr  uAwbP eTaxprfoas Der asetmaa Br t rheoaAmcPhe Tto  D eeDp aWteab Br Deiagictahl ID  D Heacekpin gWe Hback tivDisSmigeairtcah I.nl.. tIeDllige nce  
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+EXTENDED COOKIE POLICY  Contact me
+
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+Contact me
+
+   
+Russian APT28 espionage group targets
+
+Sponsored Content
+
+democratic Senator Claire McCaskill See Also
+
+July 28, 2018  By Pierluigi Paganini 1 Microsoft New Releases a
+
+Like 23
+2 Microsoft Encarta Premium a
+
+3 Phishing Scams a
+The Russia-linked APT28 group targets Senator
+
+Claire McCaskill and her staff as they gear up 4 Build Your Own Website a
+
+for her 2018 re-election campaign.
+
+The Russian APT group tracked as Fancy Bear (aka APT28, Pawn Storm, Sofacy Digging the Deep Web: Exploring the dark
+
+Group, Sednit, and STRONTIUM), that operated under the Russian military agency GRU, continues side of the web
+
+to target US politicians.
+
+This time the target is Senator Claire McCaskill and her staff as they gear up for her 2018 re-election
+campaign.
+
+The news was reported by The Daily Beast, McCaskill always expressed criticism of Russia and its
+aggressive strategy in the cyberspace. McCaskill has repeatedly accused the Russian Government
+of “cyber warfare against our democracy,” she defined President Vladimir Putin as a “thug” and a
+“bully.”
+
+Russian cyberspies launched spear-phishing attacks against the member of the staff aimed at
+stealing their credentials, a tactic already used against Hillary Clinton campaign manager John
+Podesta in 2016.
+
+The phishing messages contained fake notifications instructing the victims to change their Microsoft
+Exchange passwords.
+
+“The attempt against McCaskill’s office was a variant of the password-stealing technique used by
+#infosec16 SecurityAffairs Best European
+
+Russia’s so-called “Fancy Bear” hackers against Clinton’s campaign chairman, John Podesta, in
+Personal Security Blog
+
+2016.” reads the report published by The Daily Beast.
+
+“The hackers sent forged notification emails to Senate targets claiming the target’s Microsoft
+Exchange password had expired, and instructing them to change it. If the target clicked on the link,
+he or she was taken to a convincing replica of the U.S. Senate’s Active Directory Federation Services
+(ADFS) login page, a single sign-on point for e-mail and other services.”
+
+This site uses cookies, including for analytics, personalization, and advertising purposes. For more information or to change your cookie settings, click here. If
+you continue to browse this site without changing your cookie settings, you agree to this use. Accept  Read More
+
+https://securityaffairs.co/wordpress/74843/cyber-warfare-2/apt28-targeted-senator-mccaskill.html 1/4
+
+
+
+2018/7/30 Russian APT28 espionage group targets democratic Senator Claire McCaskillSecurity Affairs
+
+HHoommee  C ybCery Cbreimre Cri Cmybeer w arCfayreber  AwPTarfa Draeta B reaAcPhT  D eeDp aWteab Br Deiagictahl ID  D Heacekpin gWe Hback tivDismigita Inl tIeDllige nce
+
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+
+EXTENDED COOKIE POLICY  Contact me
+
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+Contact me
+
+In July, Microsoft helped the US Government is protecting at least three 2018 midterm election
+candidates from attacks of Russian cyberspies.
+
+The hackers sent spear-phishing messages to the candidates, the messages included links to a fake
+Microsoft website used by the cyberspies to trick victims into providing their credentials.
+
+“Earlier this year, we did discover that a fake Microsoft domain had been established as the landing
+page for phishing attacks,” said Tom Burt, Microsoft’s vice president for customer security.
+
+“And we saw metadata that suggested those phishing attacks were being directed at three
+candidates who are all standing for election in the midterm elections.”
+
+Once Microsoft discovered the phishing website it has taken down it and helped the US government
+to “avoid anybody being infected by that particular attack.”
+
+“In October, Microsoft wrested control of one of the spoofed website addresses—
+adfs.senate.qov.info. Seizing the Russians’ malicious domain names has been easy for Microsoft
+since August 2017, when a federal judge in Virginia issued a permanent injunction against the GRU +Pierluigi Paganini
+
+hackers, after Microsoft successfully sued them as unnamed “John Doe” defendants.” continues the
+report. Pierluigi Paganini is member of the
+
+ENISA (European Union Agency for
+Microsoft made sinkholing of the website, in this way it was able to track victims of the attacks that
+were redirected to the phishing attack. Network and Information Security)
+
+)Threat Landscape Stakeholder
+The Daily Beast identified McCaskill as a target while investigating statements made by Microsoft VP
+
+Group, member of Cyber G7
+Tom Burt during his speech at the Aspen Security Forum.
+
+Workgroup of the Italian Ministry of
+
+Microsoft attributed the attacks to Russian APT28 group. Foreign Affairs and International
+
+Cooperation, Director of the Master
+McCaskill released a statement confirming that cyberattack was unsuccessful.
+
+in Cyber Security at the Link Campus
+
+“Russia continues to engage in cyber warfare against our democracy. I will continue to speak out and University. He is also a Security
+press to hold them accountable,” McCaskill said. Evangelist, Security Analyst and
+
+“While this attack was not successful, it is outrageous that they think they can get away with this. I Freelance Writer. Editor-in-Chief at
+
+will not be intimidated. I’ve said it before and I will say it again, Putin is a thug and a bully.” "Cyber Defense Magazine",
+
+See Also
+Sponsored Content
+
+1. Microsoft New Releases a
+
+2. Microsoft Encarta Premium a
+
+3. Online Photo Gallery a
+
+4. Social Media Tracking a
+
+5. Network Security Training a
+This site uses cookies, including for analytics, personalization, and advertising purposes. For more information or to change your cookie settings, click here. If
+
+you continue to browse this site without changing your cookie settings, you agree to this use. Accept  Read More
+
+https://securityaffairs.co/wordpress/74843/cyber-warfare-2/apt28-targeted-senator-mccaskill.html 2/4
+
+
+
+2018/7/30 Russian APT28 espionage group targets democratic Senator Claire McCaskillSecurity Affairs
+Pierluigi Paganini See Also
+
+HHoommee  C ybCery Cbreimre Cri Cmybeer w arCfayreber  AwPTarfa Draeta B reaAcPhT  D eeDp aWteab Br Deiagictahl ID  D Heacekpin gWe Hback tivDismigita Inl tIeDllige nce
+
+(Security Affairs – McInCtaersnkeiltl ,o Af PTTh2in8g) s  Laws and regulations  Malware  Mobile  Reports  S1ecuMritiycros oSoftc Niale Nwe Rtweolerkasses Terrorism
+a
+
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+EXTENDED COOKIE POLICY  Contact me
+
+ AMPTo2b8 ileCy berReseppioonargtes  FASNeCcY uBrEiAtyR  HaScokicngial NMceCtawskoilrlksPie rluTigei Prraogarnisinmi  EX2TEMNicDroEsoDft  CEnOcaOrtKa IPEr ePmOiuLmICY  
+a
+
+politics Russia Security Affairs Contact me
+
+3 Phishing Scams a
+
+ 
+SHARE ON             
+
+4 Online Photo Gallery a
+
+Pierluigi Paganini  5 Social Media Tracking a
+
+Pierluigi Paganini is member of the ENISA (European Union Agency for Network
+and Information Security) Threat Landscape Stakeholder Group and Cyber G7 6 Network Security Training a
+Group, he is also a Security Evangelist, Security Analyst and Freelance Writer.
+Editor-in-Chief at "Cyber Defense Magazine", Pierluigi is a cyber security expert
+with over 20 years experience in the field, he is Certified Ethical Hacker at EC 7 G-String Monokinis a
+
+Council in London. The passion for writing and a strong belief that security is
+founded on sharing and awareness led Pierluigi to find the security blog
+"Security Affairs" recently named a Top National Security Resource for US. 8 Build Your Own Website a
+
+Pierluigi is a member of the "The Hacker News" team and he is a writer for
+some major publications in the field such as Cyber War Zone, ICTTF, Infosec
+Island, Infosec Institute, The Hacker News Magazine and for many other
+Security magazines. Author of the Books "The Deep Dark Web" and “Digital Sponsored Content
+
+Virtual Currency and Bitcoin”.
+ Sponsored Content
+
+Sponsored Content
+
+Promote your solutions on Security Affairs
+
+ PREVIOUS ARTICLE
+Microsoft revealed details of a supply NEXT ARTICLE
+
+chain attack at unnamed Maker of PDF Google bans cryptocurrency mining 
+Editor apps from the official Play Store
+
+ 
+
+YOU MIGHT ALSO LIKE
+
+ 
+
+Tens of flaws in Samsung
+
+SmartThings Hub expose smart
+FELIXROOT Backdoor is back in a home to attack
+new fresh spam campaign July 30, 2018  By Pierluigi Paganini
+
+July 30, 2018  By Pierluigi Paganini
+
+This site uses cookies, including for analytics, personalization, and advertising purposes. For more information or to change your cookie settings, click here. If
+you continue to browse this site without changing your cookie settings, you agree to this use. Accept  Read More
+
+https://securityaffairs.co/wordpress/74843/cyber-warfare-2/apt28-targeted-senator-mccaskill.html 3/4
+
+
+
+2018/7/30 Russian APT28 espionage group targets democratic Senator Claire McCaskillSecurity Affairs
+
+HHoommee  C ybCery Cbreimre Cri Cmybeer w arCfayreber  AwPTarfa Draeta B reaAcPhT  D eeDp aWteab Br Deiagictahl ID  D Heacekpin gWe Hback tivDismigita Inl tIeDllige nce
+
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+
+EXTENDED COOKIE POLICY  Contact me
+
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+Copyright 2015 Security Affairs by Pierluigi Paganini All Right Reserved. Back to top 
+
+Contact me
+
+This site uses cookies, including for analytics, personalization, and advertising purposes. For more information or to change your cookie settings, click here. If
+you continue to browse this site without changing your cookie settings, you agree to this use. Accept  Read More
+
+https://securityaffairs.co/wordpress/74843/cyber-warfare-2/apt28-targeted-senator-mccaskill.html 4/4

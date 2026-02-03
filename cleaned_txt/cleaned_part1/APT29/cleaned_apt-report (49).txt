@@ -1,0 +1,55 @@
+New “Cozy Bear” campaign, old habits
+
+Introduction
+The researchers of the Yoroi-Cybaze ZLab, on 16 November, accessed to a new APT29’s dangerous malware used for the recent attacks against many important US entities, such as military agencies, law enforcement, defense contractors, media companies and pharmaceutical companies.  
+The Russian group spread the malware through a spear phishing attacks impersonating a State Department official. The email messages carried a zip archive containing a simple, but effective, link file (.lnk).
+
+Technical analysis
+The entire payload is contained in specific hidden locations of the .lnk file. When the victim double-clicks on the link file, it starts a series of malicious activities. It runs a powershell command extracting another script from a hidden section of the .lnk file.
+This payload is contained between the file location’s 0x0005E2BE and 0x0000623B6.
+The second script creates two new files: a legitimate pdf document named “ds7002.pdf” and a dll file containing the real payload. The PDF document is written to the “%APPDATA%\Local\Temp” folder and it’s automatically opened by the malware. The purpose of this document is to decoy the victim while the malware executes other activities, in fact the PDF file is a publicly available form to register a internship placement plan to the US Department of State. The DLL, instead, is stored into the “%APPDATA%\Local\cyzfc.dat” file and it’s loaded through the second powershell command. It tries to contact the domain “pandorasong.com” and interacts with it via HTTPS protocol. The network destination is currently down, so the malware is unable to continue with its malicious activities at the moment.  
+According to FireEye’s report the DLL contains a beaconing payload generated with Cobalt Strike, well known post-exploitation framework typically used by Red-Teams all around the world and sometimes abused by other threat actors such as the russian “Carbanak” gang or the iranian “CopyKittens” group. So, the dll likely retrieved attacker commands and further payload modules from the “pandorasong.com” domain.  
+These two resources are both extracted from the powershell commands hidden into the original LNK file.
+Both the powershell commands are heavily obfuscated using DEC encoding and XOR encryption (with 0x5C key), as shown in the following piece of code:
+After the decoding of the commands, it is possible to actual code of the malware dropper extracting the dll payload described above and the deceptive PDF document. Actually, the payload is executed only if the victim machine installs a 64bit OS.
+
+Traffic analysis
+The payload was configure with a series of tricks to make it stealthier, such as:
+The “pandorasong.com” C2 recalls the legit “pandora.com” domain name, owned by one of the most popular music streaming service in the US;
+The interactions with the C2 take place over encrypted SSL channel;
+The HTTP requests are specifically crafted to mimit a legitimate communication to the Pandora’s servers, a related Cobalt Strike communication profile is publicly available on github.
+The following image shows similarities between the Pandora’s standard network profile and the http request performed by the malware:
+The User-agent and the HTTP request’s parameters match and the cookies have the same name and structure. Moreover, the malware’s request contains custom headers used by official Pandora’s services, such as “GetContentFeatures.DLNA.ORG”.
+
+Conclusion
+The usage of a link file containing the complete payload is a powerful technique, still hard to detect by several common anti-virus solutions. Despite the effectiveness of this strategy, the creation of the weaponized LINK such the one analyzed is quite easy, many publicly available resources could help crooks to abuse it.  
+This technique is also part of the APT29 arsenal from long time: a shortcut file containing self-extracting payload has been (ab)used back in 2016, when the “Cozy Bear” group tried to leverage the just concluded US Presidential Election to attack NGOs and US’s think tanks with a carefully prepared spear-phishing campaign.
+
+Yara Rules
+import "pe" 
+rule APT29_201811_LNK_dropper { 
+meta: 
+   description = "Yara Rule for APT29 LNK Dropper" 
+   author = "Cybaze ZLab – Yoroi" 
+   last_updated = "2018-11-20" 
+   tlp = "white" 
+   category = "informational" 
+strings: 
+$lnk ={4C 00} 
+$payload = {00 4A 00 48 00 42 00 30 00 5A 00 33 00 51 00 39 00 4D 00} 
+condition: 
+($lnk at 0) and $payload 
+} 
+rule APT29_201811_backdoor { 
+meta: 
+   description = "Yara Rule for APT29 Cobalt Strike DLL Backdoor" 
+   author = "Cybaze ZLab – Yoroi" 
+   last_updated = "2018-11-20" 
+   tlp = "white" 
+   category = "informational" 
+strings: 
+$mz ={4D 5A} 
+$payload = {A1 83 1C 16 8B 0A 73 77 C2 B2 73 76 C1 32 35 5C} 
+condition: 
+($mz at 0) and pe.exports("PointFunctionCall") and $payload  
+}

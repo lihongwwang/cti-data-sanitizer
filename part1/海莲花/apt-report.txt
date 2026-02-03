@@ -1,0 +1,169 @@
+﻿Operation Tornado:针对国产信创平台的网络间谍活动
+原创 红雨滴团队 奇安信威胁情报中心 2025年12月8日 10:01 云南
+
+概述
+
+2022 年，奇安信威胁情报中心红雨滴团队在 Operation Typhoon[1] 报告中首次披露了
+海莲花组织针对国产化系统的攻击案例。鉴于当时信创终端普及率较低，且该类设备多存储政府
+敏感信息，我们仅就该攻击趋势发布了预警。随后几年间，我们进一步监测到包括 APT-Q-95、
+UTG-Q-008 及某未知组织在内的多个攻击团伙持续针对信创平台以及政务网展开攻击，其核心
+目的在于窃取政务数据、刺探国家政策及未来发展战略。
+
+与 2022 年类似，海莲花选择了 Operation hurricane[2] 中的特马用于同时攻击 win 和
+信创平台，投递诸如 lnk、desktop、jar、epub 等类型的鱼叉邮件，值得注意的是，在 2025
+年 10-11 月份 win 平台的攻击活动中，海莲花似乎患上了天擎 PTSD，最新的 loader 特意检
+验受害者进程中是否存在天擎相关进程，如果存在直接退出。攻击者成功帮我们解决了天擎六合
+引擎启动拦截弹框后，用户点击放行的世界难题。
+
+实际上，天擎 V10 信创版目前已经能对 desktop 等类型的鱼叉诱饵进行告警，我们建议
+天擎 V8 信创版客户尽快升级到 V10 版本，开启云查杀功能。以抵御传统技战术的威胁。
+
+攻击面
+除了内网终端供应链，当前针对信创平台的攻击手法与 Linux 桌面版并无二致，两者存在
+
+显著的技术同源性。因此，核心问题在于：境外情报机构如何在此次信创替换浪潮中，精准识别
+哪些单位的邮箱已迁移至信创环境。根据我们掌握的情报，海莲花组织目前尚无法实现精准钓
+鱼，其策略主要依赖于邮件探针与文档探针进行排除筛选，最终通过广撒网式的群发钓鱼来提升
+攻击成功率。
+
+Desktop 诱饵
+
+信创平台下的 Desktop 文件与 windows 平台下的 LNK 文件类似，是针对 linux 系统最
+常见的诱饵格式，已经被境外组织 APT36 针对印度的攻击活动中所用。
+
+
+
+受害者双击后会执行 Exec 字段下的命令。
+
+命令功能一般为创建计划任务持续请求 C2，等待下发二阶段 payload。
+
+PDF 诱饵一般都在压缩包里，但是也有直接调用信创系统中的 wps 打开远程文档的情况：
+
+JAR 诱饵
+
+大部分政务信创终端默认安装 java、python 等环境，可以直接运行 jar 和 py 脚本，海莲
+花在 25 年初曾经投递过《亚太自贸区(FTAAP )路径之争及中国方案.jar》、《立项建议书立项
+
+
+
+论证报告审批表（通用表格）.docx.jar》、《能源供需情况报表.xls.jar》等类型的附件。
+
+会判断当前终端是否为 linux 系统，如果是则释放下载者 .report-scheduler-1.0-SNAPS
+HOT.jar 并创建计划任务。
+
+打开诱饵文档：
+
+
+
+epub 文件漏洞
+
+2025 年中旬，海莲花投递过带有 Nday 漏洞的 epub 文件：
+
+经过分析发现为 2024 年 1 月份曝光的 Atril EPUB 路径穿越漏洞：
+
+在 autostart 目录下释放 desktop-service-7803.desktop 文件实现持久化，.config 目
+录下释放.icWpnBHQc0Ka。desktop 解密 .icWpnBHQc0Ka，最终运行 python 下载者。
+
+漏洞复现效果如下：
+
+
+
+内网供应链
+
+与 2024 年 win 平台密保终端下发类似，涉及多个带有终端管理功能的国产软件。海莲花
+通过鱼叉邮件进入内网，随后尝试爆破内网密保信创服务器未果，在经历近一个月后疑似通过 0
+day 拿下服务器，并向内网信创终端和 win 终端下发恶意更新脚本。信创终端恶意更新脚本如
+下：
+
+通过 Openssl 实现反弹 shell，随后下发二阶段样本。这也是目前已知的国内首个信创平
+台下的供应链攻击事件。
+
+Win 终端恶意更新组件如下：
+
+武器介绍
+
+信创平台定制木马
+
+海莲花组织在信创平台释放的 elf 木马与传统 linux 平台的 elf 有略微差距：
+
+
+
+该信创木马通过将 ELF 文件 Magic Number 后的三个字节（用于标识位数、端序和版
+本）置零，实现了一种精准的兼容性攻击。此举导致传统 Linux 系统在识别文件时因格式错误
+而拒绝执行，信创平台却能正常解析运行。这一精心设计的细节，充分表明海莲花对国产信创系
+统的底层运行机制有着深入的理解。
+
+elf 木马核心逻辑与 Operation hurricane[2] 中的 rust 特马一致。
+
+海莲花在木马侧一直在追求将 PE 文件 shellcode 化，信创平台也是如此，在最新的攻击
+活动中的木马已经开始多层加密嵌套，最后执行 shellcode 化的 rust 特马。
+
+轻量化特马
+
+为了适配内网供应链攻击，海莲花组织设计了多种轻量化特马，多为自定义协议，指令较为
+简单，推测可能是一次性木马。
+
+类型一（内网节点）
+
+
+
+该特马 C2 回连内网密保服务器 IP 的 15001 端口，使用自定义协议支持两种远程指令，
+为 ping 和 init，发送 ping 命令时，服务器端会回复 “pong”，当发送 init 时，会将接收到的
+shellcode 通过 CreateThread 的方式执行。
+
+类型二
+由 pyinstaller 打包的 elf 木马，读取同目录下的配置文件.
+
+调用 sign 函数进行解密：
+
+解密完成后调用 protect 函数进入主逻辑。
+
+将解密后的数据分割 d 为远程 IP，c 为端口，使用 ssl 协议进行回连。
+
+对从 C2 接受的数据进行分割，判断分支指令。
+
+
+
+核心功能就是通过 subprocess 的 check_output 函数执行攻击者传递来的命令
+
+针对 IOT 设备的被动后门
+
+海莲花入侵国内边界路由器时植入了一个开源的被动后门，并设置 portmap 端口转发到境
+
+外 C2 服务器，手法与此前披露过的 Operation OceanStorm[3]类似。
+
+经过分析发现为开源项目 apache2_BackdoorMod。
+
+监听本地 32227 端口。
+
+
+
+IOC
+Md5:
+31d2192170e92579779b30aea102c121
+9c70b4d193aaf41241d86fb45920564c
+bc99b603530609d7b6f40c7f912fbe2e
+7b9f197532d342af5244ef1d3f2e9f4d
+a898d4d6e24a4612effa2b13d885fe99
+5cfb68302f0736754906442185b2c0d5
+3ae561425ac07975fdf4cd1d9c893534
+e1e3da8296ea93b3b4f49c959c6f6815
+467f39b8c0efad1202fcd111005a6f03
+
+参考链接
+[1] https://ti.qianxin.com/blog/articles/peeking-at-the-cyber-sea-lotus-of-the-nine
+-dash-line-in-the-south-china-sea/
+[2] https://ti.qianxin.com/blog/articles/operation-hurricane-a-brief-discussion-of-t
+he-techniques-and-tactics-of-the-new-oceanlotus-group-in-memory-cn/
+[3] https://ti.qianxin.com/blog/articles/Operation-OceanStorm:The-OceanLotus-hi
+dden-under-the-abyss-of-the-deep/
+
+点击阅读原文至ALPHA 8.3
+
+即刻助力威胁研判
+
+APT · 目录
+
+上一篇 · 摩诃草（APT-Q-36）利用 WebSocket 的新木马 StreamSpy 分析
+
+阅读原文

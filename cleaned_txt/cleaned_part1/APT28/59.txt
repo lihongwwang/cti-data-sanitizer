@@ -1,0 +1,53 @@
+Zebrocy relies on dropbox and remote template injection to supply its dishes to an institution of Eastern Europe diplomatic sector.
+
+On the 22nd of August 2019, a new spear-phishing email message has been collected by Telsy CTI Team. This malicious email has been armed with an attached lure document designed to infect and steal data from victim systems after executing a sequence of multi-stage malicious instructions.
+
+// Actor Profiling
+
+Zebrocy has been considered for years a subgroup of Sofacy (aka APT28, aka Fancy Bear, aka Group 74). However, it appears very different from the latter mainly due to its lower level of sophistication and an extensive use of a deal of development languages. Zebrocy has also the tendency to acquire and use publicly available code from sharing platforms like GitHub. For these and further technical evidences acquired from other research teams, we are currently tracking this group as a separate entity.
+
+// Insights
+
+According to the evidences spotted out, this message was directed to at least one diplomatic institution of an eastern european country.
+
+The retrieved email message makes use of remote template injection likely aimed at reducing the threat detection rate. This can be easily spotted out by looking at the settings.xml.rels of the malicious attached file.
+
+At the time of publishing, this file is no longer available and any attempt to view it results in a 404 error. However, we collected the malicious remote content more or less the day after the catch of the primary vector. This has been retrieved from the URL https: //www.dropbox. com/s/foughx315 j51u/wordData.dotm?dl=1.
+The remote file is the second stage of the kill chain and responds to the SHA256 hash 3652c16479540afe3e4da18e32e93f91a9357e81f170296af99bdabbf527afb2
+This payload is armed with code aimed at retrieving and installing further malicious objects within the system. The execution is triggered by sub Document_Open().
+
+Once executed, one of the important things to note is the internal retrieving of a base64 encoded data blob from the content of label UserF.lb_1
+After having some fun recomposing it manually, it’s possible to immediately recognize the header of a known file as the MS Office Open XML Format.
+Decompressing the content we can obtain two additional files, a .doc and an .exe
+Function rn within the first macro code provides to silently launch the .doc
+Another code blob triggered by Sub_AutoOpen() of lmss.doc provides to execute the .exe file and exiting the application.
+Following the piece of code we referred to:
+The .exe launched is a nim zebrocy downloader variant.
+At loc_407D95 we can have a quick idea regarding the functionality of this component looking at the mapped function calls through @nimGetProcAddr (text:00402e5c)
+
+The main purpose of this component is to download and support the execution of one additional malicious component after performing some actions aimed at collecting system information.
+This additional payload is saved under the path
+%PROGRAMDATA% / Java / Oracle / ospsvc.dll
+Unfortunately, at the time of writing, we do not have the final payload of the whole kill chain put in place. However, the array of Zebrocy final stage backdoors comprises credential stealers, keyloggers and remote administration tools. We have no reason to believe that in this case its feautures would have been very different. Anyway, we will update this post in case of further details.
+
+// Conclusion
+
+Zebrocy continues to leverage on its own agile malware set and spear-phishing activity to fulfill its interests . At the present day, this custom malware set has been coded in a half-dozen languages which include AutoIT, Go, C#, Delphi, PowerShell, VC++.
+To better understand the quantity and quality of the code used by this group, we can directly quote a Kaspersky Lab research, where they say “We have noted a virtual salad of Zebrocy code tossed together, built with a handful of languages, often ripped from various code-sharing sites”.
+The nim variants within this “salad“, therefore, represent a further entry to the list of languages used by this group.
+
+// Indicators of Compromise
+
+URL: https:// www.dropbox.com/s/foughx315 j51u/wordData.dotm?dl=1
+URL: http:// 185.221.202.35/software-protection/app.php
+IP: 185.221.202.35
+PATH: %PROGRAMDATA%/Java/Oracle/ospsvc.dll
+FILE NAME: ospsvc.dll
+FILE NAME: lmss.exe
+SHA256:
+2B657E2926D52A9550ECE4590075DCF3CC2BCDCB331BEC9B66F6EE85D2A1214E
+SHA256:
+3652C16479540AFE3E4DA18E32E93F91A9357E81F170296AF99BDABBF527AFB2
+SHA256:
+5C366EF31C5036D3A4AA0BAECFFCEC5EC89106CC5B94989C192877721676105A
+h/t: @RedDrip7

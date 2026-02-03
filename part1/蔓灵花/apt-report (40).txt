@@ -1,0 +1,287 @@
+﻿2021/11/22 下午5:08 安恒威胁情报中心
+
+BITTER APT 在针对性攻击中使用  WINDOWS 内核零日漏洞
+(CVE-2021-1732)
+
+  2 0 2 1年2月1 0日  ( H t t p s : // T i . D b a p p s e c u r i t y. C o m . C n / B l o g /A r t i c l e s / 2 0 2 1 / 0 2 / 1 0 / W i n d o w s - K e r n e l - Z e r o - D a y -
+E x p l o i t - I s - U s e d - B y - B i t t e r - A p t - I n -Ta r g e t e d - A t t a c k / )  
+猎影实验室
+
+( H t t p s : // T i . D b a p p s e c u r i t y. C o m . C n / B l o g /A r t i c l e s /A u t h o r /A d m i n / )          7 1 , 1 2 6  次浏览
+
+背景
+2020 年 12 月，DBAPPSecurity 威胁情报中心发现了 BITTER APT 的新组件。对该组件的进一步分析使我们发现了 win32kfull.sys 中的一个零日漏
+洞。原始样本旨在针对当时最新的 Windows10 1909 64 位操作系统。该漏洞还影响并可能在最新的 Windows10 20H2 64 位操作系统上被利用。
+我们已将此漏洞报告给 MSRC，并在 2021 年 2 月的安全更新中修复为 CVE-2021-1732。
+
+到目前为止，我们已经检测到使用此漏洞的攻击数量非常有限。受害者位于中国。
+
+时间线
+· 2020/12/10：DBAPPSecurity威胁情报中心捕获了BITTER APT的新组件。
+· 2020/12/15：DBAPPSecurity威胁情报中心在组件中发现了一个未知的windows内核漏洞，并启动了根本原因分析。
+· 2020/12/29：DBAPPSecurity威胁情报中心向MSRC报告了该漏洞。
+· 2020/12/29：MSRC确认已收到报告并为其立案。
+· 2020/12/31：MSRC 确认该漏洞是零日漏洞并要求提供更多信息。
+· 2020/12/31：DBAPPSecurity 向 MSRC 提供了更多细节。
+· 2021/01/06：MSRC 感谢您提供的附加信息，并开始着手修复该漏洞。
+· 2021/02/09：MSRC 将该漏洞修复为 CVE-2021-1732。
+
+强调
+根据我们的分析，野外零日漏洞有以下几个亮点：
+
+1. 1 、针对最新版本的Windows10操作系统
+1. 1.1. 野外样本针对最新版本的Windows10 1909 64位操作系统（样本编译于2020年5月）。
+2. 1.2. 源漏洞旨在针对多个 Windows 10 版本，从 Windows10 1709 到 Windows10 1909。
+3. 1.3. 只需稍作修改，即可在 Windows10 20H2 上利用原始漏洞。
+
+2. 2 、漏洞质量高，漏洞利用复杂
+1. 2.1. 源漏洞利用漏洞功能绕过了 KASLR。
+2. 2.2. 这不是 UAF 漏洞。整个利用过程不涉及堆喷射或内存重用。类型隔离缓解无法缓解此漏洞。Driver Verifier 无法检测到它，在
+打开Driver Verifier 时，野外样本可以成功利用。很难通过沙箱寻找野外样本。
+
+3. 2.3. 任意读取原语是通过漏洞特性结合GetMenuBarInfo 实现的，令人印象深刻。
+4. 2.4. 在实现任意读/写原语后，该漏洞利用仅数据攻击来执行权限提升，当前内核缓解措施无法缓解这种情况。
+5. 2.5. 漏洞利用的成功率几乎是100%。
+6. 2.6. 完成exploit后，exploit会恢复所有关键struct成员，exploit后不会出现蓝屏。
+
+3. 3.攻击者谨慎使用
+1. 3.1. 在利用之前，野外样本会检测特定的防病毒软件。
+2. 3.2. 野外样本执行操作系统构建版本检查，如果当前构建版本低于16535（Windows10 1709），则永远不会调用漏洞利用。
+3. 3.3. 野外样本2020年5月编译，2020年12月被我们捕获，至少存活了7个月。这间接反映了捕获这种隐身样本的难度。
+
+技术分析
+0x00 触发效果
+如果我们在持续的 windows10 1909 64 位环境中运行 in-the-wild 示例，我们可以观察到当前进程最初在中等完整性级别下运行。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 1/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+漏洞利用代码执行后，我们可以观察到当前进程在系统完整性级别下运行。这表明当前进程的Token已经被替换为System进程的Token，这是
+一种利用内核提权漏洞的常用方法。
+
+如果我们在最新的 windows10 20H2 64 位环境中运行 in-the-wild 示例，我们可以立即观察到 BSOD。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 2/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+0x01 漏洞概述
+该漏洞是由 win32kfull!xxxCreateWindowEx 中的 xxxClientAllocWindowClassExtraBytes 回调引起的。回调导致内核结构成员的设置及其相应标志
+不同步。
+
+当 xxxCreateWindowEx 创建一个有 WndExtra 区域的窗口时，会调用 xxxClientAllocWindowClassExtraBytes 触发回调，回调将返回用户态分配
+WndExtra 区域。在自定义回调函数中，攻击者可以调用  NtUserConsoleControl 并传入当前窗口的句柄，这将改变内核结构成员（指向
+WndExtra 区域）的偏移量，并设置相应的标志以指示该成员现在是一个偏移量。之后，攻击者可以在回调中调用 NtCallbackReturn 并返回任意
+值。当回调结束返回内核模式时，返回值会覆盖之前的偏移成员，但不会清除相应的标志。之后，内核代码直接使用未经检查的偏移值进行堆
+内存寻址，
+
+0x02 根本原因
+我们完全颠倒了野外样本的漏洞利用代码，并构建了一个基于它的poc。下图是我们poc的主要执行逻辑，我们结合这张图来解释漏洞触发逻
+辑。
+
+在win32kfull!xxxCreateWindowEx中，默认会调用user32!_xxxClientAllocWindowClassExtraBytes回调函数来分配WndExtra的内存。回调的返回值
+是一个使用模式指针，然后将其保存到内核结构成员（WndExtra 成员）中。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 3/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+如果我们在自定义_xxxClientAllocWindowClassExtraBytes 回调中调用win32kfull!xxxConsoleControl 并传入当前窗口的句柄，则WndExtra 成员将
+更改为偏移量，并设置相应的标志（|=0x800）。
+
+poc在调用DestoryWindow时触发蓝屏，win32kfull!xxxFreeWindow会检查上面的flag，如果已经设置，说明WndExtra成员是一个偏移量，
+xxxFreeWindow会调用 RtlFreeHeap来释放WndExtra区域；如果不是，说明  WndExtra 成员是使用模式指针， xxxFreeWindow 将调用
+xxxClientFreeWindowClassExtraBytes 来释放 WndExtra 区域。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 4/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+我们可以在自定义 _xxxClientAllocWindowClassExtraBytes 回调的末尾调用 NtCallbackReturn 并返回任意值。当回调完成返回内核模式时，返回
+值会覆盖偏移成员，但不会清除相应的标志。
+
+在poc中，我们返回一个用户态堆地址，该地址将原始偏移量覆盖为一个用户态堆地址（fake_offset）。这最终导致 win32kfull!xxxFreeWindow
+在使用 RtlFreeHeap 释放内核堆时触发越界访问。
+
+RtlFreeHeap 期望释放的是 RtlHeapBase+offset
+RtlFreeHeap 真正免费的是 RtlHeapBase+fake_offset
+
+如果我们在这里调用 RtlFreeHeap，它将触发 BSOD。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 5/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+0x03 漏洞利用
+野外样本为64位程序，首先调用CreateToolhelp32Snapshot等函数枚举进程检测“avp.exe”（avp.exe是卡巴斯基杀毒软件的一个进程）。
+
+但是，当检测到“avp.exe”进程时，它只会将一些值保存到自定义结构中而不会退出进程，仍然会调用完整的漏洞利用函数。我们安装卡巴斯基
+反病毒产品并运行示例；它将像往常一样获得系统权限。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 6/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+然后调用 IsWow64Process 来检查当前环境是 32 位还是 64 位，并根据结果修复一些偏移量。这里代码开发者好像搞错了，根据下面的源码，
+g_x64应该理解为g_x86，但是后续调用说明这个变量代表的是64位环境。
+
+但是，代码开发人员在初始化时强制 g_x64 为 TRUE，此处实际上可以忽略对 IsWow64Process 的调用。但这似乎意味着开发人员还开发了另一
+个 32 位版本的漏洞利用程序。
+
+修复一些偏移后，它获得了 RtlGetNtVersionNumbers、NtUserConsoleControl 和 NtCallbackReturn 的地址。然后调用RtlGetNtVersionNumbers获
+取当前操作系统的版本号，只有当版本号大于16535(Windows10 1709)时才会调用exploit函数，如果版本号大于18204(Windows10 1903)，就会修
+复一些内核结构偏移。这似乎意味着对这些版本的支持是后来添加的。
+
+如果当前环境通过检查，漏洞利用将被  in the wild 样本调用。该漏洞利用首先搜索字节以获取  HmValidateHandle 的地址，并将
+USER32!_xxxClientAllocWindowClassExtraBytes 挂钩到自定义回调函数。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 7/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+该漏洞利用随后注册了两种类型的 Windows 类。一类名为“magicClass”，用于创建漏洞窗口。另一个类的名称是“nolmalClass”，用于创建普通
+窗口，稍后将辅助任意地址写入原语。
+
+该漏洞利用normalClass创建了10个窗口，并调用HmValidateHandle通过tagWND地址泄露每个窗口的用户态tagWND地址和每个窗口的偏移量。
+然后利用破坏最后8个窗口，只保留窗口0和窗口1。
+
+如果当前程序是64位的，漏洞利用将调用NtUserConsoleControl并传递window 1的句柄，这会将window 0的WndExtra成员更改为一个偏移量。
+然后该漏洞会泄漏 windows 0 的内核 tagWND 偏移量以供以后使用。
+
+然后利用magicClass创建另一个窗口（windows 2），windows 2有一个之前生成的 cbWndExtra值。在创建窗口2的过程中，会触发
+xxxClientAllocWindowClassExtraBytes回调，进入自定义回调函数。
+
+在自定义回调函数中，漏洞利用首先检查当前窗口的cbWndExtra是否匹配某个值，然后检查当前进程是否为64位。如果两个检查都通过，漏洞
+利用调用  NtUserConsoleControl 并传递  windows 2 的句柄，这将窗口  2 的  WndExtra 更改为偏移量并设置相应的标志。然后漏洞利用调用
+NtCallbackReturn并传递windows 0的内核tagWND偏移量。当返回内核模式时，windows 2的内核WndExtra偏移量将更改为windows 0的内核
+tagWND偏移量。这导致后续对WndExtra区域的读/写窗口 2 到窗口 0 的内核 tagWND 结构上的读/写。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 8/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+创建窗口  2 后，漏洞利用程序通过设置窗口  2 的  WndExtra 区域来获取写入窗口  0 的内核  tagWND 的原语。该漏洞利用在窗口  2 上调用
+SetWindowLongW 以测试该原语是否正常工作。
+
+如果一切正常，漏洞利用调用 SetWindowLongW 将窗口 0 的 cbWndExtra 设置为 0xfffffff，这为窗口 0 提供了 OOB 读/写原语。该漏洞利用OOB写
+入原语修改窗口1的样式（dwStyle|=WS_CHILD），之后利用伪造的spmenu替换窗口1的原始spmenu。
+
+任意读取原语是通过与 GetMenuBarInfo 一起工作的假 spmenu 实现的。该漏洞利用 tagMenuBarInfo.rcBar.left 和 tagMenuBarInfo.rcBar.top 读取
+64 位值。该方法之前没有公开使用过，但与《Windows 10周年更新中的LPE漏洞利用》(ZeroNight, 2016)中的思路类似
+
+任意写入原语是通过窗口 0 和窗口 1 实现的，与 SetWindowLongPtrA 一起使用，见下文。
+
+在实现任意读/写原语后，漏洞利用从源 spmemu 泄漏内核地址，然后搜索它以找到当前进程的 EPROCESS。
+
+最后，漏洞利用遍历ActiveProcessLinks获取SYSTEM EPROCESS的Token和当前EPROCESS的Token区地址，并将当前进程Token值与SYSTEM Token
+交换。
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 9/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+实现提权后，漏洞利用任意写原语恢复窗口0、窗口1和窗口2的修改区域，如窗口1的原点spmenu和窗口2的标志，以确保不会导致蓝屏。整个
+漏洞利用过程非常稳定。
+
+0x04 结论
+此零日漏洞是由 win32k 回调引起的新漏洞，可用于在最新的 Windows 10 版本上逃逸 Microsoft IE 浏览器或 Adob​​e Reader 的沙箱。此漏洞的质
+量很高，而且利用方法很复杂。这种野外零日漏洞的使用体现了该组织强大的漏洞储备能力。威胁组织可能招募了具有一定实力的成员，或者
+从漏洞经纪人那里购买。
+
+概括
+零日漏洞在网络空间中发挥着举足轻重的作用。通常用作威胁组织的战略储备，具有特殊的使命和战略意义。 随着软件/硬件的迭代和防御系
+统的完善，挖掘和利用软件/硬件零日漏洞的成本越来越高和更高。
+
+多年来，世界各地的供应商在检测 APT 攻击方面投入了大量资金。这使得 APT 组织在使用零日漏洞时更加谨慎。为了最大化其价值，它只会
+用于极少数特定目标。稍有不慎就会缩短零日的生命周期。同时，一些零日漏洞已经潜伏了很长时间才被曝光，最显着的例子就是永恒之蓝使
+用的MS17-010，
+
+过去一年（2020 年），全球披露了数十起 0Day/1Day 攻击，其中 DBAPPSecurity 威胁情报中心跟踪了 3 起攻击。根据我们掌握的数据，我们预
+测 2021 年将有更多关于浏览器和权限升级的零日披露。
+
+零日检测能力是APT对抗过程中需要不断提升的关键环节之一。除了端点攻击，对边界系统、关键设备和集中控制系统的攻击也值得关注。过
+去几年，这些地区也发生了多起安全事件。
+
+未被发现并不意味着它不存在，它可能更多地处于隐身状态。高级威胁攻击的发现、检测和防御需要在游戏过程中不断迭代和加强。有必要多
+思考如何加强各点、线、面的防御能力。网络安全任重而道远，我们需要相互鼓励。
+
+如何防御此类攻击
+该DBAPPSecurity APT攻击预警平台 (http://dbappsecurity.com/html/show-62-4-1.html)可以找到已知/未知的威胁。该平台可以实时监控、捕获和
+分析恶意文件或程序的威胁，可以对与电子邮件传递、漏洞利用、安装/植入和C2各个阶段相关的木马等恶意样本进行强大的监控。
+
+同时，平台基于双向流量分析、智能机器学习、高效沙箱动态分析、丰富的特征库、全面的检测策略、海量威胁情报数据，对网络流量进行深
+度分析。检测能力完全覆盖整个APT攻击链，有效发现用户关心的APT攻击、未知威胁和网络安全事件。
+
+伤口规则
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 10/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+rule apt_bitter_win32k_0day {
+
+    meta:
+
+        author = "dbappsecurity_lieying_lab"
+
+        data = "01-01-2021"
+
+
+
+    strings:
+
+        $s1 = "NtUserConsoleControl" ascii wide
+
+        $s2 = "NtCallbackReturn" ascii wide
+
+        $s3 = "CreateWindowEx" ascii wide
+
+        $s4 = "SetWindowLong" ascii wide
+
+
+
+        $a1 = {48 C1 E8 02 48 C1 E9 02 C7 04 8A}
+
+        $a2 = {66 0F 1F 44 00 00 80 3C 01 E8 74 22 FF C2 48 FF C1}
+
+        $a3 = {48 63 05 CC 69 05 00 8B 0D C2 69 05 00 48 C1 E0 20 48 03 C1}
+
+
+
+    condition:
+
+        uint16(0) == 0x5a4d and all of ($s*) and 1 of ($a*)
+
+}
+
+ 
+Apt分析  (Https://Ti.Dbappsecurity.Com.Cn/Blog/Articles/Category/Apt/)
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 11/12
+
+
+
+2021/11/22 下午5:08 安恒威胁情报中心
+
+https://ti.dbappsecurity.com.cn/blog/articles/2021/02/10/windows-kernel-zero-day-exploit-is-used-by-bitter-apt-in-targeted-attack/ 12/12

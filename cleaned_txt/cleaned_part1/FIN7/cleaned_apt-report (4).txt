@@ -1,0 +1,82 @@
+FIN7 Uses Trusted Brands and Sponsored Google Ads to Distribute MSIX Payloads
+
+What did we find?
+In April 2024, eSentire’s Threat Response Unit (TRU) observed multiple incidents involving FIN7, a financially motivated threat group based in Russia that has been active since 2013. The threat actors used malicious websites to impersonate well-known brands, including AnyDesk, WinSCP, BlackRock, Asana, Concur, The Wall Street Journal, Workable, and Google Meet.
+
+In this TRU Positive, we will look at recently observed cases delivering NetSupport RAT via MSIX app installer files. These cases bear several similarities to previously reported FIN7 activity by Microsoft and Red Canary which is described at the end of this article.
+
+Users visiting the malicious website via sponsored Google Ads would receive a fake pop-up prompting them to download a fake browser extension. The fake browser extension payload appears to be an MSIX file, a Windows app packaging format.
+
+We found other websites controlled by FIN7 impersonating trusted brands using URLScan. You can find them here.
+
+The MSIX files we have observed are signed with “SOFTWARE SP Z O O” and “SOFTWARE BYTES LTD”. We submitted the request to GlobalSign to get the certificates successfully revoked.
+
+Infection Case One
+Let’s look at the first case involving the infection with NetSupport RAT.
+
+Upon extracting the MSIX file, we see that it contains the malicious PowerShell script.
+
+The snippet of the malicious PowerShell script is shown below.
+
+The PowerShell script collects system information such as the OS version and domain, retrieves the names of installed antivirus products, and generates a GUID. It then constructs a URL incorporating these details to download and Base64-decode a script from the C2 (Command and Control) server.
+
+If the server response includes “usradm”, the script runs further commands to retrieve payloads from the C2 server. Additionally, the script manages exceptions during its execution and reports errors back to the C2 server via URL parameters.
+
+The decoded script downloads the NetSupport archive from the C2 server using a specific URL format: hxxps://cdn46[.]space/974afa0a-d334-48ec-a0d4-4cc14efa730c-1d3d044a-e654-41e3-ad32-38a2934393e4?aklshdjahsjdh=25&ajhsdjhasjhd=nsd&iud=$iudValue and user-agent “myUserAgentHere”.
+
+Next, it extracts the contents of the zip file and stores the files under C:\ProgramData\netsupport path. Finally, the script executes the extracted NetSupport RAT executable.
+
+Infection Case Two
+The infection chain for the second case is like the first one, the user visited the malicious website meet-go[.]click to download a fake MSIX MeetGo installer. The MSIX payload dropped NetSupport RAT on the user’s machine. The threat actor connected to the machine approximately three hours later via NetSupport RAT.
+
+The threat actors used curl to retrieve csvde.exe (MD5: b6f12d39edbfe3b33952be4329064b35) via hxxp://91.219.238[.]214:4673/01/csvde.exe, which is a command-line tool for Windows that allows the import and export of Active Directory data. The tool was used to execute the command:
+
+csvde.exe  -r "(&(objectClass=Computer))" -l samAccountName,description,IPv4Address,info,operating System -f 01cp.txt
+
+The command exports data about computer objects into a text file (01cp.txt), including specific attributes like the account name, description, IP address, general info, and operating system details. Next, the threat actor used curl to retrieve “Adobe_017301.zip” (MD5: e7b1fb0ef5dd20f4522945b902803f10) zip archive via hxxp://91.219.238[.]214:4673/01/Adobe_017301.zip.
+
+The contents of the zip file are then extracted to c:\programdata\ with the command:
+
+tar  -zxvf c:\programdata\Adobe_017301.zip -C c:\programdata
+
+svchostc.exe is the renamed python.exe file (MD5: 0740803404a58d9c1c1f4bd9edaf4186) and svchostc.py (MD5: 782621d1062a8fc7d626ceb68af314e5) is the Python payload.
+
+The threat actor then performed additional reconnaissance by running the command “whoami /upn”, which displays the user principal name (UPN) of the currently logged-in user.
+
+The host's persistence is achieved via scheduled tasks. The threat actor created the scheduled task “Updater” to run the Python payload “svchostc.py.”
+
+SCHTASKS  /create /f /tn "Microsoft\Windows\Updater" /tr "cmd /c c:\programdata\Adobe_017301\svchostc.exe c:\programdata\Adobe_017301\svchostc.py" /sc minute /mo 1 /RU "NT AUTHORITY\SYSTEM"
+
+The Python payload's decryption and execution are implemented in the lambda function (_), which performs decryption operations such as string reversal and base64 decoding. zlib decompression to retrieve the original executable content.
+
+The decrypted output would contain the encrypted DiceLoader payload and the encrypted instructions to allocate memory with execute permissions, copy the decrypted payload into memory, and create and execute a new thread that runs the payload, effectively performing a process injection.
+
+DiceLoader stores its C2 IPs and ports in the .data section. The data is XOR’ed with a hardcoded key located within the same section.
+
+The incidents of FIN7 exploiting trusted brand names and using deceptive web ads to distribute NetSupport RAT followed by DiceLoader highlight the ongoing threat, particularly with the abuse of signed MSIX files by these actors, which has proven effective in their schemes.
+
+Connections to Known FIN7 Activity
+
+PowerShell Script
+We compared the latest version of the PowerShell script we observed with one from the MSIX payloads provided by Microsoft (MD5: 5b0b82f5c82a59d0b2c7b1bdaabd1848) in November 2023. The MSIX payload provided by Microsoft, SHA256: 2ba527fb8e31cb209df8d1890a63cda9cd4433aa0b841ed8b86fa801aff4ccbd (first observed in November 2023). Both scripts contained similar host fingerprinting instructions, as well as the "usradm" string and the "73689d8a-25b4-41cf-b693-05591ed804a7-7433f7b1-9997-477b-aadc-5a6e8d233c61" substring as shown in the screenshot below. Notably the variable names have been obfuscated in the latest sample.
+
+C2 Infrastructure
+sun47281[.]space, linked to FIN7 in Red Canary’s blog uses a similar ccTLD and name structure (alphabetic string + numeric string + .space) as cdn46[.]space described in this report. The JARM fingerprint (15d3fd16d29d29d00042d43d000000fe02290512647416dcf0a400ccbc0b6b), also aligns between the two, as well as the other cdn*.space domains included in the IoCs section of this report. The aforementioned JARM fingerprint also matches storageplace[.]pro, which was observed by both Microsoft and Red Canary.
+
+C2 URL Structure
+As mentioned above, the C2 URLs bear similar path strings between previous and recent observations.
+
+Example of Previously Reported URLs:
+hxxp://sun47281[.]space/73689d8a-25b4-41cf-b693-05591ed804a7-7433f7b1-9997-477b-aadc-5a6e8d233c61?av
+hxxp://storageplace[.]pro/73689d8a-25b4-41cf-b693-05591ed804a7-7433f7b1-9997-477b-aadc-5a6e8d233c61?av
+hxxp://sun1[.]space/73689d8a-25b4-41cf-b693-05591ed804a7-7433f7b1-9997-477b-aadc-5a6e8d233c61?av=$names&domain=$domain&os=$urlencodedoscaption&m=1
+
+Recently Observed:
+hxxps://cdn41[.]space/73689d8a-25b4-41cf-b693-05591ed804a7-7433f7b1-9997-477b-aadc-5a6e8d233c61?qKuKXnXZfhqq=$Se&...
+hxxp://cdn46[.]space/73689d8a-25b4-41cf-b693-05591ed804a7-7433f7b1-9997-477b-aadc-5a6e8d233c61?hflrkvxabogf=&...
+
+NetSupport RAT Signature
+The NetSupport RAT client (MD5: 9497aece91e1ccc495ca26ae284600b9) we retrieved was signed with “Crosstec Corporation” (the entity was also mentioned by Red Canary in NetSupport RAT clients they observed) as shown below.
+
+MSIX Creation Tool
+Recent samples discussed below were created with MSIX Packaging Tool version 1.2023.1005.0. This tool and version were used to create November 2023 samples linked to FIN7 such as 2ac5924081c7976cd114def3e603a178 (SHA256).

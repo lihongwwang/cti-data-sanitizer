@@ -1,0 +1,37 @@
+Russian ‘Cozy Bear’ Hackers Said to Breach RNC
+
+Russian government hackers breached the computer systems of the Republican National Committee last week, around the time a Russia-linked criminal group unleashed a massive ransomware attack, according to two people familiar with the matter.
+
+The government hackers were part of a group known as APT 29 or Cozy Bear, according to the people. That group has been tied to Russia’s foreign intelligence service and has previously been accused of breaching the Democratic National Committee in 2016 and of carrying out a supply-chain cyberattack involving SolarWinds Corp., which infiltrated nine U.S. government agencies and was disclosed in December.
+
+It’s not known what data the hackers viewed or stole, if anything. The RNC has repeatedly denied that it was hacked. “There is no indication the RNC was hacked or any RNC information was stolen,” spokesman Mike Reed said.
+
+In a statement following the publication of this story, Chief of Staff Richard Walters said the RNC learned over the weekend that a third-party provider, Synnex Corp., had been breached.
+
+“We immediately blocked all access from Synnex accounts to our cloud environment,” he said. “Our team worked with Microsoft to conduct a review of our systems and after a thorough investigation, no RNC data was accessed. We will continue to work with Microsoft, as well as federal law enforcement officials, on this matter.”
+
+In a statement, Microsoft declined to provide additional details. “We can’t talk about the specifics of any particular case without customer permission,” a company spokesperson said. “We continue to track malicious activity from nation-state threat actors -- as we do routinely -- and notify impacted customers.”
+
+Kremlin spokesman Dmitry Peskov denied any Russian state involvement. “We can only repeat that whatever happened, and we don’t know specifically what took place here, this had no connection to official Moscow,” he told a conference call.
+
+The attack on the RNC, coupled with the recent ransomware attack, is a major provocation to President Joe Biden, who warned Russian President Vladimir Putin about cyberattacks at a June 16 summit. The two countries have been holding “certain contacts” about cybersecurity as agreed at the meeting, Peskov said, declining to provide details or comment on whether the latest breach was discussed.
+
+It’s not clear if the attack on the RNC is connected in any way to the ransomware attacks, which exploited multiple previously unknown vulnerabilities in software from Miami-based Kaseya Ltd.
+
+Biden will meet with various agency leaders behind closed doors on Wednesday to discuss ransomware and ways to combat it, the White House said in a statement on Tuesday night, calling the risk a “national security and economic security priority for the administration.”
+
+In the case of the RNC, the hackers are suspected to have attacked through Fremont, California-based Synnex, the people said, asking not to be identified as they weren’t authorized to discuss confidential matters. In a press release, Synnex said “it is aware of a few instances where outside actors have attempted to gain access, through Synnex, to customer applications within the Microsoft cloud environment.”
+
+“As our review continues, we are unable to provide any specific details,” said Michael Urban, president of worldwide technology solutions distribution at Synnex in a statement to Bloomberg News. “As with any security issue, a full review of all companies, systems, third-party applications and related IT solutions must be completed before final determinations can be made.”
+
+Russian intelligence hackers are taking advantage of the chaos created by the global ransomware campaign to attack valuable intelligence targets, one of the people familiar with the matter said. The ransomware attack -- which cybersecurity experts attributed to a Russia-linked group called REvil -- may have hit more than 1,000 victims. Kaseya provides software for managed service providers, who in turn offer IT services to small- and medium-sized businesses.
+
+REvil has demanded $70 million in Bitcoin to unlock the victims’ computers, according to cybersecurity experts who reviewed an announcement on the group’s website.
+
+Kaseya said in a statement that fewer than 60 customers were compromised by the ransomware attack, all of whom used its VSA on-premises product. “While many of these customers provide IT services to multiple other companies, we understand the total impact thus far has been to fewer than 1,500 downstream businesses,” Kaseya said.
+
+Charles Carmakal, a senior vice president at Mandiant, part of the cybersecurity company FireEye Inc., said his firm has observed the Russian government hackers carrying out breaches in recent days, though he declined to identify the victims. Carmakal said he had no first-hand knowledge of the RNC breach.
+
+“No question, the Russian government is absolutely benefiting from security companies and intelligence organizations being so focused on ransomware right now,” Carmakal said. “But the question is, is the Russian government providing tacit approval for ransomware operators or are they providing instructions? I don’t know.
+
+“Is it just coincidental timing for the Russian government to do some of the other things they’re doing right now?” Carmakal said. “Is this coordinated and planned? I have no idea. I know that both things are happening, that’s a fact, I just don’t know why.”

@@ -1,0 +1,70 @@
+From Russia with Love?
+Alarm bells went off last week as the United States Department of Justice (DOJ) reported that a large number of small office home office (SOHO) routers and storage devices were being actively targeted by an ongoing nation state campaign. The bulletin went as far as to provide named attribution to Russia’s ‘Fancy Bear’ aka ‘apt28’ group, the same GRU outfit that may have compromised the Democratic National Committee (DNC) in 2016.
+
+Based on the co-released Talos VPNFilter report, it is believed that around 54 countries are currently affected in this attack, and that this nation-state campaign targets Netgear, TP-Link, Mikrotik, Linksys, and QNAP devices, on x86, MIPS, and ARM architectures with approximately 500.000 devices already compromised.
+
+VPNFilter Malware
+The VPNFilter malware itself consists of a persistent loader (stage 1) and a non-persistent unix RAT (stage 2) that supports a number of stage 3 plugins. Known capabilities include packet sniffing, tor command and control (C2), destruction of the victim device, and monitoring for modbus traffic (tcp 502), an aging but still prevalent Industrial Control Systems (ICS) protocol. (Note: Western Europe and North America may be at increased risk for a potential ICS attack against critical infrastructure.)
+
+The Talos VPNFilter report provides a thorough technical walkthrough, and we wanted to highlight a number of commonalities observed within all these stage 1 and stage 2 binaries. Outside of the obvious use http://api.ipify.org?format=json to check the victim IP address, we also observed common name servers, user agent strings, Internet browsing tools, file paths, and certificates.
+
+8.8.8.8 (Google) 
+8.8.4.4 (Google) 
+208.67.222.222 (OpenDNS) 
+208.67.220.220 (OpenDNS) 
+209.244.0.3 (Level3) 
+64.6.64.6 (Verisign)
+
+Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:52.0) Gecko/20100101 Firefox/52.0 
+Mozilla/5.0 (Windows NT 6.1; rv:52.0) Gecko/20100101 Firefox/52.0 
+Mozilla/6.1 (compatible; MSIE 9.0; Windows NT 5.3; Trident/5.0) 
+Google Chrome/64.0.3282.140 Windows 
+Google Chrome/64.0.3282.140 Linux 
+Lynx/2.8.8pre.4 libwww-FM/2.14
+
+curl/7.47.0
+Wget/1.17.1 (linux-gnu) 
+git/2.7.4
+python-requests/2.18.4
+
+/bin/sh 
+/bin/ash 
+/bin/bash 
+bash 
+/bin/shell 
+shell 
+/var/run/tord 
+/etc/config/crontab 
+/proc/%d/cmdline 
+/etc/resolv.conf 
+/etc/mtab
+
+With the exception of: 50ac4fcd3fbc8abcaa766449841b3a0a684b3e217fc40935f1ac22c34c58a9ec (stage 1 binary), all other digital certficates are expired.
+
+All this being said, perhaps the most significant commonality is Talos’s identification of faulty code reuse between VPNFilter and BlackEnergy malware, which the US government asserts was used by apt 28 to turn the lights out in Georgia and the Ukraine just prior to Russian incursions in 2008 and 2014 respectively.
+
+While the FBI claims to have mitigated the immediate threat, it is important to note that a large subset of infected devices were discovered in Ukraine, and that number appears to have continued to grow. In fact, Talos researchers observed spikes in Ukrainian specific VPNFilter infection activity on May 8th (with separate stage 2 C2 infrastructure via 46.151.209[.]33) and again on May 17th.
+
+Ongoing Indications of VPNFilter?
+JASK actively partners with GreyNoise Intelligence (GNI) to establish better access and visibility for global and regional SYN traffic. Preliminary analysis of GNI results identifies a number of source IPs exclusively scanning for port 2000 (MikroTik devices) in Ukrainian networks.
+
+ip | country, city | network details
+138.186.2.250 | Brazil, Andradina | Noroestecom Telecomunicacoes Ltda, r-250.2.186.138.static.nrttelecom.com.br
+178.78.13.69, | Russia, Volgograd | LLC Columbia Telecom
+178.78.6.224 | Russia, Volgograd | LLC Columbia Telecom
+187.85.58.107 | Brazil, Magalhães | LENCO TECNOLOGIA LTDA
+192.157.214.6 | United States, Los Angeles | Enzu Inc
+77.45.243.188 | Russia, Lisk | Regional multiservice network access, 188.243.c10008-a53.dsl-dynamic.vsi.ru
+88.213.189.253 | Switzerland, Schaffhausen | sasag Kabelkommunikation AG
+9.110.0.5 | United States, | IBM
+
+Activity like this raises some interesting questions about indications of ongoing Ukraine targeted campaigns, a likely subject for future research.
+
+The Digital Horizon
+VPNFilter is a disturbing example (recent Turla activity is yet another) of the increasingly aggressive cyber activity, which is a core component of today’s complex international political climate.
+
+If they haven’t already, the public needs to recognize that there are ongoing cyber and information warfare campaigns happening right in their own backyards. On the flip side, security professionals need to pick their heads up out of the bits in order to see the myriad of other potential connections outside of their normal perspectives.
+
+The timeline below attempts to capture context of military events in Ukraine and Syria, known information warfare campaigns (e.g., the destabilization of Moldova), a multi-front trade war for liquefied natural gas (LNG) exports, and ever evolving Iranian and Israeli dynamics. (With regard to Russia specifically, this seems straight out of the Gerasimov doctrine). These are all parts and pieces of the rapidly deteriorating diplomatic situation between Russia and the West.
+
+Maybe this all boils down to the evolution of modern warfare, are we effectively moving us past a virtual Balmer’s peak of conventional conflict? Are bits are now everything? The very fabric of our culture has become connectedness, but in that reliance haven’t we also made nations, communities, and even ourselves just more vulnerable?

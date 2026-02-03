@@ -1,0 +1,132 @@
+Bacloud: Russia’s New Misinformation Safe Haven
+
+September 13, 2018, Jordan Herman
+
+It was revealed last week that Microsoft took action to stop a phishing operation by Fancy Bear (aka APT28), a cyberespionage group associated with Russian intelligence. The company’s Digital Crimes Unit executed a court order to take control of and sinkhole six domains created by the hacking group ostensibly in preparation for launching phishing attacks against the International Republican Institute (IRI) and The Hudson Institute, both conservative think tanks that have been critical of the Russian state and Vladimir Putin. The board of the IRI includes several Republican senators, General H.R. McMaster, and Mitt Romney.
+
+The phishing domains are listed here:
+my-iri[.]org
+senate[.]group
+office365-onedrive[.]com
+adfs-senate[.]email
+adfs-senate[.]services
+hudsonorg-my-sharepoint[.]com
+
+There are also some subdomains associated with the above domains:
+adfs.senate[.]group
+sharepoint.my-iri[.]org
+mail.hudsonorg-my-sharepoint[.]com
+mail.office365-onedrive.com
+
+These domains are currently sinkholed at Microsoft’s IP 157.56.161.162.
+
+Little has been revealed publicly about how Microsoft became aware of these domains and whether attackers were able to use them operationally or if the domains were seized before the attacks could launch. Previously, we have seen phishing attacks launched against Democrats, most recently the staff of Senator Claire McCaskill of Missouri. You can read our analysis of the tradecraft (albeit shoddy) used to carry out that attack here.
+
+Now, it has been made clear that the Russian state intends to disrupt conservative and liberal institutions alike in its ongoing operation to disrupt and destabilize Western Democracy through the use of phishing, malware, and online disinformation campaigns on various social media platforms and websites. We’ll dive into a campaign associated with these domains meant to spread misinformation with the goal of spreading suspicion and political unrest.
+
+Infrastructure
+
+Fortunately, we can provide some insights into the infrastructure behind this latest attack through further analysis and RiskIQ’s datasets, including pDNS and Open Ports. Attackers spread hosting for these domains among the following providers: Namecheap, Bacloud, Swiftway, Info-Tel (which appears to be associated with Swiftway), Frantech, GlobeTech Communications, Public Domain Registry, and MonoVM. All of these providers have one thing in common: they accept bitcoin as payment for their hosting services.
+
+Namecheap hosted:
+senate.group 198.54.117.200 2018-06-28 – 2018-08-07
+adfs.senate.group 198.54.117.200 2018-07-05 – 2018-08-07
+mail.hudsonorg-my-sharepoint.com 185.25.51.95 2018-03-28 – 2018-03-28
+office365-onedrive.com 162.255.119.70 2018-04-25 – 2018-04-25
+mail.office365-onedrive.com 68.65.122.10 2018-08-09 – 2018-08-09
+
+Bacloud hosted:
+office365-onedrive.com 185.25.51.58 2018-04-26 – 2018-08-10
+mail.office365-onedrive.com 213.252.247.201 2018-06-28 – 2018-06-29
+adfs-senate.services 185.25.51.64 2017-09-27 – 2018-08-18
+
+Swiftway hosted:
+adfs.senate.group 37.72.175.151 2017-10-10 – 2018-06-02
+
+Info-Tel hosted:
+my-iri.org 23.227.207.167 2018-04-22 – 2018-08-14
+sharepoint.my-iri.org 23.227.207.167 2018-04-27 – 2018-06-17
+
+Frantech hosted:
+my-iri.org 198.251.83.27 2018-04-13 – 2018-04-19
+sharepoint.my-iri.org 198.251.83.27 2018-04-16 – 2018-04-16
+
+GlobeTech hosted:
+hudsonorg-my-sharepoint.com 173.209.43.29 2018-03-24 – 2018-08-13
+
+Public Domain Registry hosted:
+adfs-senate.email 104.254.99.142 2017-09-06 – 2018-08-11
+
+MonoVM hosted:
+mail.office365-onedrive.com 154.16.138.57 2018-06-26 – 2018-06-26
+
+There are several instances of domains or subdomains appearing on hosting infrastructure for a single day or less. The reason for this is unclear, but it may be that APT28 launched attacks from these domains then rapidly disabled routing/hosting to avoid detection or capture of their phishing or malware pages. However, there are also a few instances of domains hosted on the same infrastructure for long periods. Namecheap hosted ‘adfs-senate.services’ and Public Domain Registry hosted ‘adfs-senate.email’ for nearly a year. Namecheap also pools parked pages and automatically points them to infrastructure as a revenue stream.
+
+Without more information about the attacks that prompted Microsoft’s response, any inferences we draw from the time periods for which hosts appeared on various infrastructure would be speculative. However, we do know that these hosting providers accepting bitcoin payments gives the attackers another layer of anonymity when setting up their phishing/malware domains.
+
+Leveraging providers that accept bitcoin is similar to previous Russian hacking behavior according to a United States special counsel’s July 13th indictment of several Russian individuals who “…principally used bitcoin when purchasing servers, registering domains, and otherwise making payments in furtherance of hacking activity.” This activity included registering and hosting websites specifically for the release of stolen data and misinformation such as dcleaks[.]com. Additionally, some of the domains are on hosting infrastructure that also hosts VPN services, which, again, aligns with behavior outlined in the indictment above:
+
+“…between on or about March 14, 2016, and April 28, 2016, the Conspirators used the same pool of bitcoin funds to purchase a virtual private network (“VPN”) account and to lease a server in Malaysia. In or around June 2016, the Conspirators used the Malaysian server to host the dcleaks.com website.”
+
+The host vpn647639221.softether[.]net is hosted on Swiftway’s IP 154.16.138.57, which also hosted ‘mail.office365-onedrive.com’ on the 26th of June. SoftEther is a free and open service provided by the University of Tsukuba, Japan meant for academic purposes:
+
+“[T]he softether.net Dynamic DNS Service is designed to use with SoftEther VPN Server, a free open-source, cross-platform multi-protocol VPN server. The Dynamic DNS Client is built-in in the SoftEther VPN Server service. The Dynamic DNS function assigns a world-wide unique identifier on your SoftEther VPN Server. Your global IP address of SoftEther VPN Server will follow dynamic IP address changes. If the IP address of SoftEther VPN Server suddenly changed, the IP address record which is registered to the Dynamic DNS hostname changes automatically and immediately.”
+
+This particular VPN host has been hosted on the same IP since September 12th, 2017.
+
+Ports
+
+Looking at the ports that were open on these servers during the times the domains blocked by Microsoft were on them can provide insight into how they were managed and accessed and for what they may have been used. Several of the servers had open ports used for Microsoft’s remote desktop protocol, while others presumably ran SSH on port 22. Almost all, except 37.72.175.151, ran HTTP with a few running HTTPS as well.
+
+The IPs 23.227.207.167 and 173.209.43.29 had some ports open that were almost matching, the only differences being the former having port 22 open while the later opened 49157, which is usually assigned dynamically. Interestingly, they also have ports open that are usually used for NetBIOS and Distributed COM Service Control Manager, which should not be exposed to the internet as it can be used to easily identify every DCOM-related server/service running on a machine for exploitation. The IP 185.25.51.64 had port 25 open, which is used for SMTP and could be indicative of its use for sending phishing emails.
+
+185.25.51.95 22, 80
+104.254.99.142 22, 80, 8443
+185.25.51.64 22, 25, 80
+23.227.207.167 22, 80, 135, 139, 443, 445, 3389, 49152, 49153, 49154, 49155, 49156, 49157
+173.209.43.29 80, 135, 139, 443, 445, 3389, 49152, 49153, 49154, 49155, 49156
+185.25.51.58 80, 443, 3389
+37.72.175.151 3389, 49152, 49155
+
+Connection to Info Campaign
+
+In the course of this investigation, we noticed a domain hosted on the same infrastructure as one of the malicious domains above. The domain americafirstpolitics.com has been hosted on Namecheap’s infrastructure at 162.255.119.70 since April 13th, which overlaps with the hosting of office365-onedrive[.]com on that IP on April 25th. This coincidence piqued our interest as it has become clear that the Russians waged a disinformation campaign leading up to democratic elections in 2016 in the U.S., France, and other Western Countries. We decided to take a closer look at this domain to determine if it is or was somehow connected to those efforts and if it might be used for those purposes again.
+
+RiskIQ first observed americafirstpolitics[.]com on March 28th of 2016 hosted on a Rackspace IP, 104.239.150.30, which is shortly after the beginning of the Republican party’s presidential primaries on March 23rd. In April of 2017, it moved to GoDaddy’s infrastructure at 50.63.202.75 where it lived for about 21 days. We did not see it again until it surfaced on Namecheap’s servers this year. Unfortunately, we don’t have any crawls of this site in our data and thus can’t perform direct analysis of the content that was disseminated by those running it at that time. Instead, I decided to see what was available via open-source intelligence about the domain and any content it may have hosted.
+
+There are a few snapshots of the site available via the Wayback Machine Internet Archive, one of which provides a look at the sort of information americafirstpolitics[.]com published. The post in question is titled “Ron Paul: No Matter How You Vote, The Insiders Decide” features a snippet of text expressing mistrust of the election process of the United States and presumably originally featured a video of Ron Paul expressing the sentiment featured in the title. Under “Recent Posts” we see the titles:
+#GrabGate Debunked 2.5 – More Lies, Deception, Possible Conspiracy & Deja vu.
+Japan Goes Neocon – Dumps Antiwar Constitution
+BREAKING NEWS: Ted Cruz is being charged with child abuse after video goes viral
+Donald Trump: Why Do Bikers Like Me?’ Supporter: ‘Because You Don’t Take Any S**t!’
+Amanda Carpenter Denies Sexual Allegations from National Enquirer
+
+The site appears to be focused on attacking stories unflattering to Donald Trump and to spreading false stories and conspiracy theories about his opponents or foreign policy/national security concerns.
+
+My search also returned a link to a stormfront[.]org (a white-supremacist forum) post pointing to “The Official anti-American CuckList” hosted on americafirstpolitics[.]com. According to the February 16th indictment filed by special counsel Robert Mueller of several Russian agents and the Internet Research Agency (IRA) under which they were organized, Russian intelligence assets “were directed to create ‘political intensit through supporting radical group, users dissatisfied with [the] social and economic situation and oppositional social movements.'”
+
+Further searching led to a Reddit user account named Trump20162020, which was created on March 25th of 2016. According to the February indictment, Russian agents targeted social media sites. The account made several posts that same day and was regularly active until its final post on July 4th, 2016, 101 days later. The bulk of its activity was contained in the subreddit “The_Donald,” which features a user base that is fanatically pro-Trump and regularly posts false information and conspiracy theories alongside white nationalist rants and conspiracy theories. The account posted 17 times during the day it was created, between 12:44 AM and 1:22 PM Central Daylight Time, mostly about a baseless sex scandal story involving Ted Cruz.
+
+The sex scandal posts were based on a story run by the National Enquirer, a publication that has been tied to Trump through his relationship with David Pecker, the chairman of the tabloid’s parent company, American Media. Both ran stories attacking Trump opponents and bought the rights to stories damaging to Trump to suppress them. At this time, Ted Cruz was the sole viable competitor left against Trump for the Republican nomination. The story was also run by Sputnik, a state-owned Russian news agency that regularly disseminates falsehoods at the behest of the Kremlin.
+
+Another post from the Reddit account urges Trump’s followers to use Twitter to spread the Ted Cruz sex scandal story via a hashtag to force the “mainstream media” to cover it and help Trump win the nomination. The promoting of hashtags was a Russian tactic for the spreading of false information during the 2016 elections, as referenced in the Indictment of some Russian agents issued by special counsel Robert Mueller in February.
+
+Three days after the Reddit account was created it began posting links to americafirstpolitics[.]com. The first of these linked to the Ron Paul post archived by the Wayback Machine. An hour later, another post by Trump20162020 claimed ownership over the site. Another featured ‘the CuckList’ and linked to the Stormfront post.
+
+Another post provides a link to a YouTube video featuring a segment by RT, another Russian-sponsored news organization. In the comments, one user, whose account has since been deleted, expresses his admiration for RT. Trump20162020 agrees, stating that “RT is great. I don’t agree with everything they push, but all in all, they are what a media outlet should look like.” RT was singled out as a Russian state-run “propaganda machine” in a 2017 report from the Office of the Director of National Intelligence.
+
+Other posts include a fake story claiming that Hillary Clinton had “several abortions,” expressing that white nationalists are not white supremacists, another anti-Cruz story from the National Enquire—this time stating that Cruz’s father was involved in the assassination of JFK, and so on. There are also a handful of references to americafirstpolitics[.]com on Twitter from accounts trying to spread its messaging. Each tweet was within two days of the website’s creation.
+
+This analysis is speculative—if you were to ask me whether or not I believe the person behind the Reddit account and the website americafirstpolitics[.]com was a part of an effort by the Russian state to assist Trump in winning the Republican nomination and ultimately the presidency, I would have to say, probably not. However, there are a few interesting points that make it difficult for me to dismiss it outright.
+
+The first is the brief but timely intersection in hosting infrastructure between the dormant americafirstpolitics[.]com domain and one of the domains seized by Microsoft, office365-onedrive[.]com, which appeared on 162.255.119.70 twelve days after americafirstpolitics[.]com. Before this, RiskIQ did not observe the domain hosted anywhere for nearly a year. Also, the content that appears to have been hosted there (inferred from the content of Reddit posts from the account linked to the domain and the archived page retrieved from the Wayback Machine) aligns well with what we now know about the tactics of the information campaign waged by the Kremlin at that time.
+
+In these campaigns, agents involved in the IRA infiltrated various American groups and specifically tried to appear as bona fide members with established identities to influence them with false information and inflammatory content. Reddit has a list of 944 users they believe were created by or tied to the IRA. Of the approximately14,000 posts made by these known suspicious accounts, 316 occurred on ‘The_Donald.’ The Russians felt ‘The_Donald’ subreddit was fertile ground for their propaganda and misinformation. The apparent attempt to amplify the site’s reach via Twitter also seems to fit the known pattern.
+
+There is also the question of the short-lived activity of the Reddit account. We do not know how long the website was hosting or posting new content. According to the indictment, the IRA had metrics for measuring their successes and failures with various accounts and strategies. It may be that the actors abandoned this account and site when they failed to produce satisfactorily. However, americafirstpolitics[.]com is a solid domain name. It would be strange to discard it as it could be valuable later on, say during a phishing or malware campaign targeting either conservatives or liberals with links promising to serve the victim false, inflammatory news stories.
+
+Conclusions
+
+From what we can glean about the domains that Russian Intelligence was planning to use to attack conservative think tanks before their sinkholing by Microsoft, threat actors followed a pattern of using digital currency to pay for their registration and hosting. We can infer this from the fact that each hosting provider identified accepts digital currency payments and that previous Russian state-backed hacking activity, as enumerated in the indictments of Russian individuals by Robert Mueller’s investigation, also paid for hosting, registration, and other services through cryptocurrency.
+
+There may also be a connection in the use of a free VPN service on one of the servers that also briefly hosted one of the malicious domains identified, another behavior defined in the indictments. We also know that Russian agents used social media accounts and specifically created websites to disseminate stolen data and sow disinformation. The appearance of a domain that was created to spread disinformation in support of the Trump campaign on shared infrastructure and the use of Reddit and Twitter to promote this disinformation again fits the pattern of what we know about Russia’s information campaign against the United States.

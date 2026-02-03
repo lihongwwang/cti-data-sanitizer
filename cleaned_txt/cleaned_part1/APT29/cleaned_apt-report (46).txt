@@ -1,0 +1,33 @@
+SAN FRANCISCO — The Democratic National Committee believes it was targeted in a hacking attempt by a Russian group in the weeks after the midterm elections last year, according to court documents filed late Thursday.
+
+On Nov. 14, the documents say, dozens of D.N.C. email addresses were on the receiving end of a so‑called spearphishing campaign by one of two Russian organizations believed to be responsible for hacking into the committee’s computers during the 2016 presidential race. There is no evidence that the most recent attack was successful.
+
+The documents, filed in federal court in New York, were part of an amended complaint in a lawsuit filed in April that claimed the committee was the victim of a conspiracy by Russian intelligence agents, President Trump’s 2016 campaign and WikiLeaks to damage Hillary Clinton’s presidential run.
+
+The new court filings say the time stamps and contents of the spearphishing emails received in November were consistent with separate cyberattacks around the same time tied to the Russian hacking group known as Cozy Bear, one of the two Russian groups suspected of breaching D.N.C. computers in 2016.
+
+Security researchers believe the hacking attempt against the D.N.C. in November was part of a broader campaign that used decoy emails that appeared to come from the State Department.
+
+That campaign had more than a dozen targets, including government agencies, think tanks, law enforcement officials, journalists, military personnel, defense contractors, pharmaceutical companies and transportation officials, according to a report by the cybersecurity firm FireEye. Researchers believe the goal was to ferret out American foreign policy, particularly related to Africa; Democratic policy positions; and the platforms of 2020 Democratic presidential hopefuls.
+
+FireEye said the attempted hacking of the D.N.C. in November resembled other recent attacks attributed to Cozy Bear, including in its “deliberate reuse” of old phishing tactics and reliance on a similar list of victims. But there were a few new wrinkles, including new decoy email addresses and different obfuscation techniques.
+
+The hackers sent some targets of the broader campaign three phishing emails at most. In other instances, they were more aggressive, sending as many as 136 emails to a single organization. In some cases, the malware‑laced emails were successful. And once they gained access to a computer network, it was only a matter of hours before they were deploying stealthier hacking tools.
+
+The attackers in November compromised a hospital email server to launch their phishing emails, a common tactic of the Cozy Bear group, said Nick Carr, a senior manager at FireEye.
+
+Cozy Bear hackers are skilled at rummaging through a network without drawing attention, said Matthew Dunwoody, a FireEye security researcher. Once in, they often swap out their phishing tools for malware that can be hard to detect, he said.
+
+FireEye said that although Cozy Bear was the likeliest culprit, the firm could not firmly establish who was responsible for the 2018 campaign against the D.N.C. and other targets. CrowdStrike, another cybersecurity firm, also noted an uptick in hacking activity in November, but it could not say definitively that Cozy Bear was to blame.
+
+Cozy Bear, also known by security firms as APT 29 or the Dukes, was one of two Russian groups involved in the 2016 hacking of the D.N.C. It has not attracted the same scrutiny as the other group, Fancy Bear, or APT 28, which has been linked to a string of cyberattacks against the D.N.C., the International Olympic Committee and other international organizations.
+
+Cozy Bear has been active since 2016, security researchers say, and has been linked to a coordinated wave of hacking attacks on Democratic Party officials.
+
+The D.N.C. says in the amended complaint that the November campaign was consistent with a continuing push by Russian hackers to target Democratic candidates and party leaders. In 2017, Russian hackers are believed to have attempted a hack of the computer network of former Senator Claire McCaskill of Missouri and the networks of at least two other candidates in the midterm elections.
+
+Mr. Trump has long denied any collusion with Russia, and in December several defendants named in the D.N.C.’s lawsuit argued that it should be dismissed because the committee was using it to try to “explain away” the Democratic “candidate’s defeat in the 2016 presidential campaign.”
+
+On Friday, Geoffrey A. Graber, a D.N.C. lawyer, said the committee expected defendants named in the case to file another motion for dismissal soon.
+
+The Russian government has consistently denied hacking the D.N.C. In a “statement of immunity” from Russia’s Ministry of Justice, Russian authorities argued that even if it were responsible for the hacking, such a “sovereign act” would be considered a “military action” protected by a 1976 law that offers some immunity from lawsuits regarding foreign governments’ actions in the United States.

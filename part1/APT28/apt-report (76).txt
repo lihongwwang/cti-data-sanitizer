@@ -1,0 +1,209 @@
+﻿2018/12/10 【微步在线报告】APT28 使用 Zebrocy 攻击欧洲军事和外交机构 - 微步在线情报社区
+
+微步情报局 IOC 27
+
+APT APT28 高级可持续性攻击 Zebrocy 远程模板注入
+
+【 微 步 在 线 报 告 】 A P T 2 8   使 用   Z e b r o c y   攻 击 欧 洲 军 事 和 外 交 机 构
+
+微步情报局
++ 关注
+
+2018-12-10 11:02:30 401
+
+TAG: 高级可持续性攻击、APT、APT28、Zebrocy、远程模板注入、欧洲、白俄罗斯、军事、外交
+
+TLP: 白 (对报告转发及使用不受限制) 
+
+日期:2018-11-21 
+
+概要
+A P T 2 8 ， 又 名   S o f a c y 、 S e d n i t 、 F a n c y B e a r 、 T s a r T e a m 、 G r o u p   7 4 、 P a w n   S t o r m   和   S t r o n t i u
+m ， 自   2 0 0 7   年 起 就 开 始 针 对 北 约 、 东 欧 及 高 加 索 地 区 的 政 府 等 机 构 开 展 网 络 间 谍 活 动 ， 主 要 目 的 是 收 集 国
+防 和 地 缘 政 治 相 关 情 报 ， 被 指 可 能 与 俄 罗 斯 情 报 机 构   G R U   有 关 。 情 报 显 示 ， 该 组 织 于   2 0 1 7   年 下 半 年 将 目
+标 范 围 扩 大 到 包 含 中 亚 地 区 ， 且 有 东 移 趋 势 。
+
+微 步 在 线 黑 客 画 像 和 狩 猎 系 统 监 控 到 该 组 织 自   1 0   月 下 旬 以 来 ， 针 对 白 俄 罗 斯 等 欧 洲 目 标 发 起 了 一 波 新 的 攻
+击 。 分 析 之 后 发 现 :  
+
+⚫   这 波 攻 击 活 动 中 ， 受 害 者 主 要 为 欧 洲 和 北 约 相 关 的 军 事 和 外 交 机 构 ， 具 体 目 标 包 含 白 俄 罗 斯 国 防 部 和 波 兰
+政 府 等 等 。
+
+⚫   攻 击 手 法 为 鱼 叉 式 网 络 钓 鱼 结 合 远 程 模 板 注 入 技 术 ， 攻 击 文 档 包 含 的 恶 意 宏 使 用 相 对 较 为 少 见 的 A u t o C l o
+s e   函 数 触 发 执 行 ， 启 用 宏 之 后 ， 在 关 闭   W o r d   文 档 时 才 会 执 行 恶 意 代 码 。
+
+⚫     这 波 活 动 中 ， 攻 击 者 针 对 性 投 递 了 使 用 . N E T 、 D e l p h i   和   C + + 编 写 的   Z e b r o c y   木 马 。 Z e b r o c y   是
+A P T 2 8 专 用 的 攻 击 工 具 集 ， 主 要 目 的 是 用 作 侦 察 ( 收 集 上 传 系 统 信 息 和 截 屏 ) 和 部 署   C o v f a c y   等 下 一 阶 段 的
+攻 击 载 荷 ， 目 前 共 发 现 . N E T 、 A u t o I T 、 D e l p h i 、 C + + 和   P o w e r S h e l l   这 几 种 版 本 。
+
+⚫     微 步 在 线 通 过 对 相 关 样 本 、 I P   和 域 名 的 溯 源 分 析 ， 共 提 取   2 6   条 相 关   I O C ， 可 用 于 威 胁 情 报 检 测 。 微 步
+在 线 的 威 胁 情 报 平 台 ( T I P ) 、 威 胁 情 报 订 阅 、 A P I   等 均 已 支 持 此 次 攻 击 事 件 和 团 伙 的 检 测 。  
+
+详情
+2 0 1 8   年   1 0   月 底 至 今 ， 微 步 在 线 狩 猎 系 统 捕 获 了 一 批 攻 击 文 档 ， 这 些 文 档 使 用 的 手 法 都 是 通 过 远 程 模 板 注 入
+来 执 行 恶 意 宏 ， 然 后 针 对 性 投 递 木 马 后 门 。 分 析 之 后 发 现 ， 这 些 攻 击 文 档 大 多 由   A P T 2 8   使 用 ， 针 对 白 俄 罗 斯
+等 欧 洲 的 军 事 和 外 交 目 标 发 起 了 一 波 定 向 攻 击 。
+
+            以 针 对 白 俄 罗 斯 国 防 部 的 攻 击 为 例 : 攻 击 者 以   D E A ( 美 国 缉 毒 局 ) 的 禁 毒 调 查 邀 请 函 为 诱 饵 进 行 钓 鱼 攻
+击 。 其 中   m i l c o o p @ m o d . m i l . b y   为 白 俄 罗 斯 国 防 部 下 属 的 国 防 部 国 际 军 事 合 作 司 的 联 系 邮 箱 ， 该 司 主 要
+负 责 与 国 防 部 门 ， 外 国 武 装 部 队 和 国 际 组 织 等 进 行 合 作 。 相 关 邮 件 如 下 :  
+
+https://m.threatbook.cn/detail/958 1/7
+
+
+
+2018/12/10 【微步在线报告】APT28 使用 Zebrocy 攻击欧洲军事和外交机构 - 微步在线情报社区
+
+微步情报局 IOC 27
+
+样本分析
+邮 件 附 件 是 一 个   D O C X   文 档 ， 打 开 后 会 加 载 远 程 模 板 ， 远 程 模 板 包 含 恶 意 宏 ， 运 行 后 会 从 自 身 解 密 出 木 马 ，
+该 木 马 为 . N E T   编 写 的   Z e b r o c y ， 其 功 能 较 为 简 单 ， 主 要 用 作 侦 察 和 部 署 下 一 阶 段 载 荷 。  
+
+1、 样本基本信息如下: 
+
+SHA256   40318f3593bca859673827b88d65c5d2f0d80a76948be936a60bda67dff27be9  
+SHA1 0e8cb18eb0aa6a8c616dfda19522e1a0e62a612b
+MD5 843ed074adb454beb8a547c6b9e71fef
+文件名 DN_325_170428_DEA Basic Narcotics Investigation Course invitation.docx
+文件类型 docx
+文件大小 32.99 KB
+
+2 、 文 档 打 开 时 会 尝 试 从 文 档 中 的   w o r d / _ r e l s / s e t t i n g s . x m l . r e l s   加 载 远 程 模 板 。 远 程 模 板 地 址 为 h t t
+p : / / 1 4 5 . 2 4 9 . 1 0 5 . 1 6 5 / d o c / t e m p / r e l e a s e . d o t m 。  
+
+https://m.threatbook.cn/detail/958 2/7
+
+
+
+2018/12/10 【微步在线报告】APT28 使用 Zebrocy 攻击欧洲军事和外交机构 - 微步在线情报社区
+
+微步情报局 IOC 27
+
+图 ： 正 在 加 载 远 程 模 板  
+
+图 ： 加 载 失 败 后 的 显 示
+
+3 、 模 板 文 件 S H A 2 5 6 ： 2 d a 5 a 3 8 8 b 8 9 1 e 4 2 d f 4 e d 6 2 c f f b c 1 6 7 d b 2 0 2 1 e 2 4 4 1 e 6 0 7 5 d 6 5 1 e c c 1 d 0 f f
+d 3 2 e c 8 。 该 模 板 中 带 有 恶 意 的 宏 。 通 过 A u t o C l o s e 函 数 在 文 档 关 闭 时 候 进 行 自 动 触 发 。 可 以 在 v b a P r o j e c
+t . b i n 的 U s e r F o r m 1 存 储 对 象 中 发 现 名 为 o 的 流 对 象 ， 该 流 对 象 中 包 含 被 B a s e 6 4 编 码 过 的 P E 文 件 ， 该 P E 文
+件 会 被 解 码 并 执 行 。
+
+4 、 P E 文 件 S H A 2 5 6 ： 9 a 0 f 0 0 4 6 9 d 6 7 b d b 6 0 f 5 4 2 f a b b 4 2 e 8 d 3 a 9 0 c 2 1 4 b 8 2 f 0 2 1 a c 6 7 1 9 c 7 f 3 0 e 6 9 f
+f 0 b 9 。 该 P E 文 件 是 一 个 . N E T 编 写 的 木 马 程 序 ， 原 始 模 块 名 为 m r x 。
+
+1 ） 样 本 会 通 过 w m i c 收 集 各 种 系 统 信 息 。 这 些 系 统 信 息 包 含 磁 盘 序 列 号 、 分 区 空 间 大 小 和 分 区 剩 余 空 间 大
+小 、 操 作 系 统 版 本 、 架 构 、 语 言 、 系 统 盘 盘 符 、 当 前 进 程 列 表 等 。 完 整 的 命 令 行 如 下 所 示 ：
+
+https://m.threatbook.cn/detail/958 3/7
+
+
+
+2018/12/10 【微步在线报告】APT28 使用 Zebrocy 攻击欧洲军事和外交机构 - 微步在线情报社区
+
+微步情报局 IOC 27
+
+2 ） 随 后 样 本 会 进 行 截 屏 ， 将 当 前 屏 幕 显 示 内 容 保 存 为 J P G 文 件 ， 并 编 码 为 十 六 进 制 。  
+
+3 ） 连 接 C 2 服 务 器 h t t p : / / 1 4 5 . 2 4 9 . 1 0 5 . 1 6 5 / r e s o u r c e - s t o r e / s t o c k r o o m - c e n t e r - s e r v i c e / c h e c k .
+p h p 并 发 出 P O S T 请 求 。 请 求 的 参 数 共 有 3 个 ， 解 释 如 下 ：  
+
+https://m.threatbook.cn/detail/958 4/7
+
+
+
+2018/12/10 【微步在线报告】APT28 使用 Zebrocy 攻击欧洲军事和外交机构 - 微步在线情报社区
+fm C盘的序列号
+
+spp 微步情报局 通过WMI所收集到的系统信息 IOC 27
+spvg 截屏图片的16进制编码内容
+
+4 ） 样 本 在 发 送 请 求 后 会 等 待 C 2 服 务 器 的 回 应 。  
+
+5 ） 若 C 2 服 务 器 发 送 了 回 应 内 容 ， 则 样 本 会 将 回 应 内 容 写 入 到 % A P P D A T A % \ O n e D r i v e \ S u p p o r t \ m v d r
+v . e x e ， 为 其 注 册 自 启 动 ( S o f t w a r e \ M i c r o s o f t \ W i n d o w s \ C u r r e n t V e r s i o n \ R u n \ O n e D r i v e S c v ) 并
+执 行 。
+
+6 ） 样 本 会 将 自 身 也 拷 贝 到 % A P P D A T A % \ O n e D r i v e \ S u p p o r t 目 录 下 ， 文 件 名 为 m s e . e x e ， 并 为 自 身 注
+册 为 注 册 表 自 启 动 项 。
+
+https://m.threatbook.cn/detail/958 5/7
+
+
+
+2018/12/10 【微步在线报告】APT28 使用 Zebrocy 攻击欧洲军事和外交机构 - 微步在线情报社区
+
+微步情报局 IOC 27
+
+关联分析
+      综 合 分 析 这 波 攻 击 中 使 用 的 诱 饵 、 木 马 、 网 络 资 产 和 被 攻 击 目 标 等 信 息 ， 判 断 幕 后 攻 击 者 为 A P T 2 8 。
+
+对 D N _ 3 2 5 _ 1 7 0 4 2 8 _ D E A   B a s i c   N a r c o t i c s   I n v e s t i g a t i o n   C o u r s e   i n v i t a t i o n . d o c x 进 行 关 联 分 析
+之 后 发 现 了 一 批 由 同 一 攻 击 者 创 建 的 同 一 类 型 的 攻 击 文 档 ， 这 些 文 档 的 最 后 修 改 者 都 是 J o o h n ， 部 分 文 档 的 创
+建 者 也 是 J o o h n 。 这 些 文 档 都 是 利 用 远 程 模 板 注 入 技 术 进 行 攻 击 ， 不 同 的 是 最 终 投 递 的 载 荷 可 能 不 同 ， 大 多 数
+场 景 下 投 递 的 是 Z e b r o c y 后 门 。 Z e b r o c y 是 A P T 2 8 专 用 的 攻 击 工 具 集 ， 主 要 用 于 部 署 C o v f a c y 等 下 一 阶 段
+的 攻 击 载 荷 ， 主 要 目 的 是 用 作 侦 察 和 窃 取 各 种 文 档 ， 目 前 共 发 现 . N E T 、 A u t o I T 、 D e l p h i 、 C + + 和 P o w e r S
+h e l l 这 几 种 版 本 。
+
+部 分 样 本 如 下 ：
+
+ 
+
+威胁指标（IOC）
+
+IP 端口 域名 样本 标签
+
+https://m.threatbook.cn/detail/958 6/7
+
+
+
+2018/12/10 【微步在线报告】APT28 使用 Zebrocy 攻击欧洲军事和外交机构 - 微步在线情报社区
+
+IP 端口 域名 样本 标签
+微步情报局 IOC 27
+
+109.248.148.42 1 0 1 4
+
+145.249.105.165 0 227 0 0
+
+185.203.118.198 1 1 0 2
+
+188.241.58.170 0 9 2 1
+
+Hash 检测结果 样本 标签
+
+2cfc4b3686511f959f… 3/25 0 4
+
+2da5a388b891e42df… 7/25 0 0
+
+34bdb5b364358a07f… 0/0 0 0
+
+40318f3593bca8596… 0/0 0 0
+
+6ad3eb8b5622145a… 5/25 0 5
+
+查看全部14条
+
+url
+
+109.248.148.42/agr-enum/progress-inform/cube.php
+
+145.249.105.165/resource-store/stockroom-center-service/check.php
+
+109.248.148.42/office/thememl/2012/main/attachedTemplate.dotm
+
+109.248.148.42/officedocument/2006/relationships/templates.dotm
+
+188.241.58.170/live/owa/office.dotm
+
+查看全部9条
+
+0 赞
+
+评论
+
+已有0条评论，快来说说你的想法...
+
+已经到底了，没有更多内容了
+
+https://m.threatbook.cn/detail/958 7/7

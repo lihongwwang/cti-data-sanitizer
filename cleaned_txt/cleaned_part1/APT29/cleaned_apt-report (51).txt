@@ -1,0 +1,62 @@
+November 19, 2018 By Pierluigi Paganini
+
+Malware researchers from Cybaze ZLab – Yoroi team have detected a new strain of malware that appears to be associated with a new wave of attacks carries out by Russia linked APT29 group.
+
+The researchers of Yoroi ZLab, on 16 November, accessed to a new APT29’s dangerous malware which seems to be involved in the recent wave of attacks aimed at many important US entities, such as military agencies, law enforcement, defense contractors, media companies and pharmaceutical companies.
+
+“The Department is aware of the recent malicious cyber event involving the spoofing (impersonation) of a Department employee reported by U.S. cybersecurity firm FireEye. No Department networks were compromised by this malicious cyber attempt.” reads the statement released by the State Department.
+
+Many experts and media outlets attributed the attack to the Russian APT group.
+
+Threat actors carried out spear phishing attacks impersonating a State Department official to attempt compromising targets, the attacks are similar to the ones associated with Russia-linked group APT29 (aka The Dukes, Cozy Bear, and Cozy Duke).
+
+APT29 along with APT28 cyber espionage group was involved in the Democratic National Committee hack and the wave of attacks aimed at the 2016 US Presidential Elections.
+
+Moreover, many independent security researchers posted on Twitter about this news and currently, they are busy with the analysis of this threat.
+
+Joe Slowik  
+@jfslowik Looking at (alleged) #APT29 LNK 2cea2a1f53dac3f4fff156eacc2ecc8e98b1a64f0f5b5ee1c42c69d9a226c55c - simple, yet effective version for group just grabbing things from V such and trying to run the amintering. Group, malware of G7 Workgroup of the Italian Ministry of Foreign Affairs and International Cooperation, Director of the Master in Cyber Security at the Link Campus University. He is also a Security Evangelist, Security Analyst and Freelance Writer. Editor-in-Chief at "Cyber Defense Magazine",  
+38 11:07 PM - Nov 16, 2018  
+18 people are talking about this
+
+Drunk Binary  
+@DrunkBinary Great work @jfslowik  
+Joe Slowik @jfslowik Replying to @jfslowik Last thing on possible #APT29 shenanigans. These get referenced but haven't gotten far enough to see just how they're leveraged, both the full named one and the pattern: \\%s\pipe\msagent_%x \\.\pipe\MSSE-2996-server So - if you have named pipe visibility, something to look for.  
+5 2:43 AM - Nov 17, 2018  
+See Drunk Binary's other Tweets
+
+The threat actors have spread the malware through spear-phishing messages containing a zip file as an attachment. This file simply contains a link (.lnk) file with incredible capabilities.
+
+When the victim double-clicks on the link file, it starts different malicious activities:
+
+1. It runs a Powershell command with which extracts another Powershell script from a hidden section of the .lnk file. This payload is contained from the location 0x0005E2BE to the location 0x0000623B6 of the file.
+
+2. The second script provides to create two new files: a legitimate pdf document (ds7002.pdf) and a dll file (cyzfc.dat) that probably contains the real payload.
+
+The PDF document, written into “%APPDATA%⧵Local⧵Temp”, is opened automatically from the malware if a PDF viewer is installed into the infected system. This action seems to be a mislead attempt: the purpose is to confuse the user while the malware executes some other malicious activities.
+
+3. The DLL is written into “%APPDATA%⧵Local” and it is launched through the second Powershell command. It tries to contact the address “pandorasong.com” and interacts with this site using the HTTPS protocol. The C2C is currently down, so the malware is unable to continue with its malicious activities. However, the Yoroi Zlab’s researchers have intercepted a request to the C2C.
+
+At the time of the analysis, it is not yet clear the real purpose of the malware because the C2C is down. Moreover, it doesn’t seem to implement any techniques to get persistence on the infected system.
+
+Experts will publish a detailed technical analysis of the malicious DLL in the forthcoming weeks.
+
+Stay tuned!
+
+Below IoCs for the malware
+
+IP:  
+95.216.59[.]92
+
+URL:  
+pandorasong[.]com
+
+HASH:  
+2cea2a1f53dac3f4fff156eacc2ecc8e98b1a64f0f5b5ee1c42c69d9a226c55c  
+b77ff307ea74a3ab41c92036aea4a049b3c2e69b12a857d26910e535544dfb05  
+b1c811d3f0e930b0096a9e785f730ba4d92458bd6dcfbdff4cf7a1e247ef20d1
+
+FILENAME:  
+ds7002.lnk  
+%APPDATA%⧵Local⧵cyzfc.dat  
+%APPDATA%⧵Local⧵Temp⧵ds7002.pdf

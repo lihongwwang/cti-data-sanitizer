@@ -1,0 +1,127 @@
+技术剖析：海莲花OceanLotus Encryptor样本分析
+
+前言
+
+上周，360发布了海莲花的报告，数据收集，分析，解释，加工方面很能让人折服，但是看了其对所谓OceanLotus Encryptor样本的分析，和我自观查到的，我觉得有些地方描述的不正确，而且其对病毒攻击流程的分析语焉不详——一个APT攻击报告不能详细说明其攻击流程，其他数据分析的好我觉得都是没有说服力。
+
+很多地方看似是语法错误导致的，其实是其并没有完全分析清楚攻击流程所导致的，比如 :
+
+另外关于64位强密匙绕过杀软，其实质就是OceanLotus Encryptor 在创建进程时候的用到的一个64bytes的随机数，并没有什么其他的作用。还有点释放的同名doc不是木马本身释放的，而是由其子进程解密母体文件，然后覆盖母体文件的所产生的。
+
+综述
+
+该病毒我首次注意到是今年4月初，时就觉得这个病毒非同一般，但是却没有深入的去分析，直到看到360的报告，我觉得写的很模糊，所以就详细分析了下。该样本所采用的技并不是说很复杂，但是各种技巧的组合还是很有杀伤力的，很好的绕过了杀软的检测，具有很强的隐蔽性，而且从代码逻辑与攻击流程来看，该病毒绝对不是脚本小子，freshman所能写的。关于是不是专门针对中国的APT攻击，直到我分析完该样本，我觉得这应该不是专门针对中国大陆的APT攻击，原因有两点:
+
+1、在其释放的文件中，有一个%appdata%/tencent/qq.exe的文件。该文件文件信息伪造为国际版qq.exe 如下图，
+
+2、在核心功能组建中，bundle.rdb会创建这样一个路径用于存放从服务器下载的其他攻击组件
+
+如果是专门针对大陆的APT攻击，未免有点牵强。因为大陆很少会用到yahoo，而且qq政府工作人员也不会去用国际版，就算有那也很少。如果说是APT攻击人员的失误，那么这这两点将是致命性的错误，会造成攻击失败。
+
+综上我觉得如果说非要说是APT攻击，那么该攻击要么是针对驻外大使馆，或者海外中国企业的职工。qq用于自己使用,yahoo 则应该用于与当地人民，工作交流使用，这样就能说的通了。
+
+当然这只是我的推断，代表个人意见，如有不对勿喷。
+
+攻击流程
+
+2.1 攻击流程
+
+该样本攻击流程分为三个阶段:第一阶段为释放，总共释放了两个文件%appata%tencent/qq.exe,%appdata/tencent/plugin/Com.Tencnt.DirectShow/bundle.rdb。第二阶段注入代码到傀儡进程中让其加载核心功能组建bundle.rdb。第三阶段为核心功能组件，负责收集被感染系统信息，执行远程命令，并与服务器通信上传这些信息。
+
+过程解释：
+
+1.恶意电子邮件附件中包含Oceanlotus 
+2.在%TEMP%中自拷贝自身 
+3.释放同名白doc文件，释放下一阶段执行体qq.exe与核心功能组建bundle.rdb文件 
+4.qq.exe运行之后注入代码到傀儡进程中 
+5.傀儡进程加载bundle.rdb 
+6.收集账号信息 
+7.上传被感染机器信息到服务器，获取服务器指令
+
+3.1dropper技术细节
+
+Dropper，即360命名的OceanLotus Encryptor运行之后，首先会在%temp%中自释放一个副本，然后创建一个自进程，该进程命令行为%temp%[random].tmp  –help[parentpath] [0-9a-f]{64} .
+
+然后结束进程。子进程创建之后，先获取filepath路径，即母体的路径，然后读取母体id为65的资源数据，并解密，随后覆盖原文件，释放doc文档之后会检测是否运行在虚拟机里，检测完之后便会解密数据释放qq.exe,与bundle.rdb，注册mspaint键值，建立计划任务，创建qq.exe进程，结束运行。 
+
+3.1.1 判断运行参数，以判断自身是否为母体的子进程。这样是为了确保正确释放doc文件。
+
+3.1.2然后接下来获取资源节数据并解密资源节id为65的资源，即为doc文件内容。
+
+3.1.3.检测是否运行自虚拟机中，如果是则结束运行。
+
+通过这段指令，就可以检测运行环境是否在vmware里,该反虚拟机技术为公开的vmware 与客户机之间会话用的一段指令序列。
+
+反虚拟机的手段其实有很多，但是选择这种方式本人认为：一是相对检测注册表,进程名可靠性比较高,更加通用，二是这样子会更加的隐蔽，因为检测注册表，与进程名很容易被分析人员识别出来，而且代码量会大.
+
+3.1.3接下来是对解密自身数据，为释放%appdata%/Tencent/qq.exe 与%appdata% Tencent /plugin/Com.Tencnt.DirectShow/bundle.rdb 做准备，值得注意的是解密数据不是整体存放的，而是分块解密，这样做是为了对抗杀毒软件， 扰乱分析人员的深入分析，其中解密算法相当复杂，下为解密流程一部分：
+
+3.1.4 解密之后设置注册表，伪装为mspaint的注册表信息，分别设置
+
+HKCU/SOFTWARE/mspaint 值为bundle.rdb的路径。 
+HKLM/SOFTWARE/mspaint 值为qq.exe的路径。
+
+3.1.5将qq.exe 加入计划任务
+
+每过十五分钟启动一次%appdata%/Tencent/qq.exe
+
+3.2 %appdata%/Tencent/qq.exe细节
+
+3.2.1.该进程启动方式为计划任务创建的，运行之后首先把遍历是存在msiexec.exe %appdata%/Tencent/qq.exe 进程，如果存在则不运行。
+
+3.2.2．查看注册表，查找注册表键值
+
+HKCU\SOFTWARE\Microsoft\mspaint\  
+HKLM\SOFTWARE\Microsoft\mspaint\
+
+其中这两个键的键值为dropper创建的，并且其值分别为Bundle.rdb的路径与qq.exe的路径，如果查找成功则继续执行，不成功则结束进程。
+
+3.2.3.遍历进程查看其用户是否为administator，如果是则遍历其模块，如果模块中存在bundle.rdb 则结束运行。
+
+3.2.4遍历进程如果存在以下hash，则进行相应的操作
+
+Hash算法的C代码如下：
+
+其中CRCkey，存在于%appdata%/Tencent/qq.exe本身，位于文件偏移0×1016134处
+
+3.2.5 判断进程参数看其参数是否为 “rundll32.exe /m”
+
+如果是则依次判断是否存在文件syswow64/msiexec.exe，system32/msiexec.exe, Program Files\Internet Explorer\iexplore.exe, Program File (x86)\Internet Explorer\ielowutil.exe如果存在以上四个文件之一，则创建进程，为后面注入做准备。(本报告以msiexec.exe为例)。
+
+其伪代码如下:
+
+3.2.6创建完msiexec.exe后,遍历进程列表中的进程的所有线程，找到进程id为msiexec.exe的进程，挂起该进程的所有线程。为载入msiexec.exe做准备。
+
+3.2.7挂起所有线程之后，随后是注入代码到msiexec.exe.首先将bundle.rdb路径写入，如图所示
+
+然后，获取LoadLibrayW,RtlGetLasterror,Sleep,ExitProcess地址后，注入shellcode其实现的功能是，载入bundle.rdb模块，其注入的代码如图:
+
+当其注入完毕以后就恢复线程运行。这样qq.exe就完成了自己的任务。总结下qq.exe的最终目的主要是注入上面的代码到msiexec.exe 。但是该病毒相对平时见到的简单木马确实很不同寻常，相对来说过程复杂，功能全面，而且代码很稳健，而且这一步骤起着承前启后的作用。
+
+3.3 Bundle.rdb分析
+
+Bundle.rdb是一个动态库，为其核心功能组建，其相当于一个云配置客户端， 内部并没有多少恶意行为痕迹，只负责请求，接收，处理服务器端的信息(但是由于我拿到的样本ip失效，所以看不到与服务端的通信)并且收集被感染系统的信息，相对来说代码也比前两个阶段的代码复杂，解密过程极其复杂，有一些是为了对抗杀软特征查杀的技巧，但是也相对比较简单。
+
+Bundle.rdb实现的功能有与C&C 通信，获取服务器指令或者下载其他组建，但是由于ip失效，所以看不到下一步的操作。
+
+3.3.1  随机获取 zone.mizove.com ,sin04s01.listpaz.com active.soariz.com其中一个的的ip，然后与之建立连接，进行通信。
+
+3.3.2 获取以下数据
+
+注册表信息：
+
+software\Microsoft\Windows NT\CurrentVersion\ime 
+SOFTWARE\DESCRIPTION\System\CentralProcessor 
+Software\ATI Technologies\Install\South Bridge\ATI_AHCI_RAID 
+HARDWARE\DEVICEMAP\Scsi\Scsi Port 2\Scsi Bus 1\Target Id 0\Logical Unit Id 0
+
+还有硬盘信息，用户名信息等这里就不一一列举了。 
+
+3.3.3 从服务器中下载其他组建到一下路径，,并伪装成白文件。
+
+%appdata%\Yahoo!\Messenger\Martha\cacheinfo.db 
+%appdata%\Mozilla\statistics.db
+
+后记
+
+总的来说，病毒作者是选择了很巧妙地方法，由于功能分散在不同文件中，阶段性的执行，其中%appdata%tencent/qq.exe因为填充垃圾数据，对抗了云查杀，巧妙地利用了正常程序的路径来存放自身，其留在被感染机器上的痕迹很小，这样的免杀效果很好，而不是单单加个壳，因为加壳恰恰会引起杀软与分析人员的注意。

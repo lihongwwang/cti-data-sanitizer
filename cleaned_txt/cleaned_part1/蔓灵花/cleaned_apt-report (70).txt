@@ -1,0 +1,61 @@
+【微步在线报告】“Bitter”团伙持续对我国发起定向攻击
+
+微步情报局 2019-03-28 17:19:42 2065人浏览
+
+TAG:高级可持续攻击、APT、Bitter、中国、政府、军工 
+TLP:白（报告转发及使用不受限制）
+日期:2019-03-19
+
+概要
+Bitter，又名“蔓灵花”，是一个长期针对中国、巴基斯坦等国家的政府、军工、电力、核等部门发动网络攻击的 APT 团伙，具有较强的政治背景。微步在线曾于 2019 年 1 月公布该团伙针对巴基斯坦的攻击活动，经对木马 C&C 的持续监控发现，我们发现该团伙近期正利用相关 C&C 域名对我国发起定向攻击，具体情况如下:
+根据捕获到的样本，此次 Bitter 以北方工业公司和外交部相关内容为主题，对我国军工、政府相关目标进行定向攻击，释放远控类木马，对相关目标主机进行远程控制。
+经过相关攻击用木马分析，此次攻击以自解压木马作为附件对相关目标进行鱼叉式钓鱼邮件攻击，木马相关代码继续沿用原有核心框架，具备远程控制、键盘记录等功能，具备窃密及释放进一步 payload的能力，危害程度很高。
+微步在线已经将相关情报提取并收录，微步在线威胁检测平台(TDP)、威胁情报管理平台(TIP)、DNS 防火墙(OneDNS)、威胁情报云 API 均已支持该组织最新攻击的检测。如需协助，请与我们联系: contactus@threatbook.cn
+
+详情
+微步在线威胁情报云近日再次捕获大量“Bitter”团伙专用木马，并发现其中一个木马原始文件名为“=?UTF-8?B?56eY5a+G5paH5Lu2X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fLjExMQ==?=”，经过 Base64 解码为“秘密文件_____________________________________________________________________________________.111”。分析发现，该文件为自解压程序，内含名为“Assistant Foreign Minister Chen Xiaodong Visits Syria”(外交部长助理陈晓东出访叙利亚)的 PDF 诱饵文档及恶意样本“audiodq.exe”。从文件名判断相关文件系通过邮件投递，其中诱饵文档内容来自于我国外交部网站 3月的新闻。
+图一 PDF 诱饵时政新闻文档内容 
+除上述样本外，微步在线近期还捕获了部分同类型样本，其中一个自解压程序的诱饵文档为“NORINCO Firm Profile Document 2019”(北方工业公司简介 2019 版)，释放的样本同样为“audiodq.exe”，疑似针对我国军工企业的定向攻击。
+图二 诱饵文档内容 
+
+样本分析
+基本信息
+本次捕获自解压样本释放的木马文件名为“audiodq.exe”，其基本信息如下:
+MD5 6bb5614223a21db411b1cb3ed29465f5
+SHA1 b1ceba6c149eed550606c4e8673240e240be844b
+SHA256 e62f86f7aab8c32c4be75ecc053e32e183b889783d54883dfd1320e79132696c
+文件格式 exe
+文件大小 127 KB
+C&C healthdevicetracker.com http://aroundtheworld123.net///healthne/accept.php
+该样本的执行流程如下: 
+图三 木马执行流程 
+详细分析 
+1、该样本为木马加载器，运行后首先会对配置数据进行简单解密。 
+图四 解密配置信息 
+2、解析 C&C，获取系统配置信息，并将配置信息按照指定格式以 http.get 形式向 C&C(http://aroundtheworld123.net///healthne/accept.php)传输。 
+图五 向 C&C 回传系统配置信息 
+3、接收 C&C 回传指令，枚举查找指令中是否存在“Yes File”数据。 
+图六 接收 C&C 回传指令
+4、解析木马加载地址 loadurl( http://healthdevicetracker.com/healthne/healthne/regdl 等)，下载核心木马。
+图七 下载其他 payload 
+5、下载木马组件
+文件名 url 功能
+regdl http://healthdevicetracker.com/healthne/healthne/regdl 设置自启动
+spoolvs http://healthdevicetracker.com/healthne/healthne/spoolvs 远程控制
+igfxsrvk http://healthdevicetracker.com/healthne/healthne/igfxsrvk 键盘记录
+
+关联分析
+根据微步在线的威胁分析平台，此次攻击所使用的 C&C 已于 2019 年 1 月 18 日被捕获并录入:
+图八 X 社区情报
+从近期捕获的“Bitter”样本分析认为，该团伙正使用相同的基础设施同时针对中国和巴基斯坦两国发起攻击，并继续沿用原有核心木马框架，活动较为猖獗。
+相关链接 : ()
+
+威胁指标（IOC） 下载IOC表格
+域名(2) 威胁情报数目 子域名 历史指向ip 相关样本 微步标签 < 1/1 >
+aroundtheworld123.net 3 6 0 2 6
+healthdevicetracker.com 2 6 0 4 3
+Hash(4) 检测结果 关联样本 微步标签 < 1/1 >
+6249ed6e58cfa58ed75 4/25 0 0
+9fb013d86aca23cde1a 6/25 0 0
+af43bff869b4c91032b 7/25 0 0
+e62f86f7aab8c32c4be 3/25 0 0

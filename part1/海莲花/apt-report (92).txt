@@ -1,0 +1,891 @@
+﻿2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+3% BA
+
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD58/5SHA1&/SpHA256)、URL、邮箱
+&d ic=
+esc htt
+=& p 登录
+pic s%
+s= 3
+htt A%
+p 2
+s% F%
+3 2F
+A% x.t
+2 hre
+F% atb
+2F oo
+x.t k.c
+hre n%
+atb 2Fs
+oo tati
+k.c c%
+n% 2Fi
+2Fs m
+tati g%
+c% 2F2
+2Fi d_c
+m od
+g% e.jp
+2F2 g&
+d_c ap
+od pk
+e.jp ey
+
+     g)  =)
+
+【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击
+
+ 微步情报局 (/nodev4/vb4/uCenter?userID=f6ec9a044a604a53856557a66bde4f2c)  2018-05-16 10:26:01  3185人浏
+
+览
+
+TAG APT32 Denis CVE­2017­11882 CVE­2017­8570
+
+TLP
+
+2018­04­27
+
+  “ ” APT32 OceanLotus 2012
+“ ”
+
+   “ ” “ ” “
+” Denis “ ” macOS 2018
+
+4 Office Denis
+
+­ (https://s.threatbook.cn/report/file/e5c766ad580b5bc5f74acc8d2f5dd028c11495d2ce503de7c7a294f94583849
+d/?env=win7_sp1_enx86_office2010) APT32 
+
+­ 2018 4 APT32 CVE­2017­11882 CVE­2017­8570 Office Denis
+“ ”
+
+­ APT32 2018 4 5 info club xyz
+
+­ 
+
+­  IP 59 IOC
+TDP API
+
+   100 APT32
+APT32
+
+CVE 2017 11882 CVE 2017 8570 D i
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 6/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+CVE­2017­11882 CVE­2017­8570 Denis
+
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5/SHA1/SHA256)、URL、邮箱
+SHA256 C2
+e5c766ad580b5bc5f74acc8 CVE­2017­11882 straliaenollma.xyz andreaga Document_GPI Invitation­U 登录
+d2f5dd028c11495d2ce503d huvrauvin.com byronorenst NSOOC China.doc
+e7c7a294f94583849d ein.com
+
+0d1577802d4560b9ba184a CVE­2017­11882 stopherau.com orinneamou  
+2d13570ba28ed0318eee52 re.com ochefort.com
+0f2f7a6c5ef238671dd9
+
+3a3bc31afcf2ec82ff9ac001 CVE­2017­8570 tsworthoa.com earlase.com  
+6ce47e10833227665ab056 aximilian.com
+117520bdf097525c63
+
+abfcba26e50a88c2ce50721 CVE­2017­8570 orinneamoure.com ochefor Monthly Report 03.2018.doc
+2b15d2ee24c28fc8b28edea t.com icmannaws.com
+ae27f70faaf6fae700
+
+Denis APT32 DNS C2
+Denis Word Excel WPS PDF Adobe FireFox Google
+
+ 
+
+ 
+
+ 
+
+“Document_GPIInvitation­UNSOOC China.doc” CVE­2017­11882
+APT32 Denis
+
+1  
+
+rtf
+       3139367 
+
+Document_GPI Invitation­UNSOOC China.doc
+
+SHA256 e5c766ad580b5bc5f74acc8d2f5dd028c11495d2ce503de
+7c7a294f94583849d
+
+SHA1 e2d949cf06842b5f7ae6b2dffaa49771a93a00d9
+
+MD5 02ae075da4fb2a6d38ce06f8f40e397e
+
+2    (https://s.threatbook.cn/report/file/e5c766ad580b5bc5f74acc8d2f5dd
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 7/17
+
+
+
+2018/12/14
+( p【微步报告】"海莲花p "团伙本月利用Office漏洞发起高频攻击 - 情报详情
+
+028c11495d2ce503de7c7a294f94583849d/?env=win7_sp1_enx86_office2010)
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5/SHA1/SHA256)、URL、邮箱
+
+登录
+
+https://s.threatbook.cn/report/file/e5c766ad580b5bc5f74acc8d2f5dd028c11495d2ce503de7c7a294f94583849d/?env=
+win7_sp1_enx86_office2010 (https://s.threatbook.cn/report/file/e5c766ad580b5bc5f74acc8d2f5dd028c11495d2ce503
+de7c7a294f94583849d/?env=win7_sp1_enx86_office2010)
+
+3    CVE­2017­11882
+
+ 
+
+4    CVE­2017­11882 “ ”
+
+ 
+
+shellcode1 shellcode1 shellcode2 shellcode2 C:\ Program File
+s\ Microsoft­Windows­DiskDiagnosticResolver_2021325962
+MicrosoftWindowsDiskDiagnosticResolver.exe rastls.dll OUTLFLTR.DAT MicrosoftWindowsDiskDiag
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 8/17
+
+
+
+2018/12/14
+g 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻g击 - 情报详情
+
+nosticResolver.exe MicrosoftWindowsDiskDiagnosticResolver.exe Symantec
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5/SHA1/SHA256)、URL、邮箱
+
+rastls.dll “ ” rastls.dll APT32 Denis “
+” Denis “ ” Denis
+
+登录
+
+APT32 
+
+x.threatbook.cn straliaenollma.xyz andreagahuvrauvin.com byronorenstein.com
+
+C2 APT32
+
+C2
+straliaenollma.xyz 2018/04/06­2019/04/06
+
+andreagahuvrauvin.com 2018/04/06­2019/04/06
+
+byronorenstein.com 2018/04/06­2019/04/06
+
+          x.threatbook.cn CVE2017­11882 C2 stopherau.com
+
+ 
+
+APT32 2018/04/04­2018/04/06 C2 TL
+D club xyz info IOC APT32
+
+CVE­2017­11882 Office
+
+1)        Office
+ollydbg
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\Image File Execution Options\EQN
+EDT32.exe
+
+ 
+
+2)        ollydbg 0x00411655 0x00411655
+ollydbg
+
+ 
+
+3)       ollydb
+
+ 
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 9/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5/SHA1/SHA256)、URL、邮箱
+
+F9
+登录
+
+ 
+
+F9 EDI ESI
+
+ 
+
+EDI
+
+ 
+
+12F250 4115D8
+
+ 
+
+0012F250 00402114
+
+                  
+
+4)       00402114 00402114 0012f3D0
+
+            
+
+a)       kernel32 API API
+
+ kernel32.GetModuleHandleW  
+ kernel32.LoadLibraryW  
+ kernel32.GetProcAddress  
+ kernel32.CreateFileW  
+ kernel32.SetFilePointer  
+ kernel32.ReadFile  
+ kernel32.WriteFile  
+ kernel32.CloseHandle  
+ kernel32.ExpandEnvironmentStringsW 
+ kernel32.VirtualAlloc kernel32.VirtualFree  
+ kernel32.CreateThread  
+ kernel32.WaitForSingleObject kernel32.CopyFileW  
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 10/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+ kernel32.OpenProcess  
+  首ke页rn (e/)l32.GeAtCPIu (r/raepni)tProce监s控s   招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5/SHA1/SHA256)、URL、邮箱
+
+ kernel32.GetCurrentProcessId  
+ kernel32.CreateToolhelp32Snapshot   登录
+
+ kernel32.Process32FirstW  
+ kernel32.Process32NextW  
+ kernel32.GetFileSize  
+ Kernel32.CreateFileMappingW 
+ kernel32.MapViewOfFile  
+ kernel32.GetLogicalDriveStringsW  
+ kernel32.QueryDosDeviceW  
+ kernel32.GetTempPathW      
+ kernel32.OutputDebugStringW  
+ kernel32.Sleep
+
+ 
+
+b)       kernel32.GetProcAddress ntdll
+
+ntdll.ZwQuerySystemInformation
+
+ntdll.ZwDuplicateObject
+
+ntdll.ZwQueryObject
+
+c)       ole32.dll ole32.CoInitialize ole32.CoCreateInstance
+
+d)       oleaut32.VariantInit oleaut32.GetActiveObject
+
+e)       psapi.GetMappedFileNameW
+
+5)       winword winword
+shellcode
+
+a)       CreateToolhelp32Snapshot Process32FirstW Process32NextW CloseHandle winword I
+D
+
+b)       ZwQuerySystemInformation SystemInformationClass= SystemExte
+ndedHandleInformation ZwQueryObject winword Create
+FileMappingW MapViewOfFile “y
+yyy” VirtualAlloc
+
+6)       shellcode PE
+
+ 
+
+   shellcode DLL DLL DllMain
+DLL DllEntry DLL c:\ Program
+
+Files\ Microsoft­Windows­DiskDiagnosticResolver_2021325962
+MicrosoftWindowsDiskDiagnosticResolver.exe rastls.dll OUTLFLTR.DAT  MicrosoftWindowsDis
+
+kDiagnosticResolver.exe
+
+相关链接 ： ()
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 11/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+相关链接 ： ()
+
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5/SHA1/SHA256)、URL、邮箱
+
+威胁指标（IOC） 下载IOC表格
+登录
+
+域名(55) 威胁情报数目 子域名 历史指向ip 相关样本 微步标签 <  1/6  >
+
+alphbbeauchemin.co 3 3 0 0 4
+
+andreagahuvrauvin.co 5 8 0 0 9
+
+andreagbridge.com (/ 5 7 0 0 9
+
+angelinachilds.com (/n 4 6 0 0 4
+
+audreybourgeois.com 4 4 0 0 4
+
+aximilian.com (/nodev 5 3 0 0 9
+
+beaudrysang.xyz (/no 3 3 0 0 4
+
+byronorenstein.com (/ 5 7 0 0 9
+
+cesterlaunela.club (/n 3 3 0 0 4
+
+christienoll.xyz (/node 3 5 0 0 4
+
+Hash(4) 检测结果 关联样本 微步标签 < 1/1 >
+
+0d1577802d4560b9ba 1/25 0 3
+
+3a3bc31afcf2ec82ff9a 4/25 0 2
+
+abfcba26e50a88c2ce5 6/25 0 1
+
+e5c766ad580b5bc5f74 7/25 0 3
+
+ 15
+(htt
+p://
+co
+
+评论 8  发表评论  nn
+ect.
+
+  匿名用户    2018-06-05 14:39:20  回复 qq.
+co
+
+不错，分析很好 m/
+wid
+ge
+t/s
+
+  匿名用户    2018-05-21 15:57:13  回复
+har
+eq
+
+学习个 q/i
+nd
+ex.
+
+  匿名用户    2018-05-21 15:55:21  回复 ht
+ml?
+
+姿势不错。。6666 url
+=h
+ttp
+
+  匿名用户    2018-05-21 15:42:05  回复 s%
+3
+
+666 A%
+2
+F%
+
+ (/nodev4/vb4/uCenter?userID=3f61d51068f54fe493b7dfae56926255)  碧云涛    2018-05-19 00:3 2F
+x.t
+
+3:39  回复 hre
+很强 atb
+
+oo
+k.c
+
+  匿名用户    2018-05-17 22:22:08  回复 n%
+2F
+
+33333333333333333 no
+de
+v
+4%
+
+ (/nodev4/vb4/uCenter?userID=6975e6cea22a4316b064e82f4733f7d2)  T3a    2018-05-16 12:59:1 2Fv
+8  回复 b
+
+4%
+微步的云沙箱用着感觉还不错，但好像百度搜索没啥宣传啊。搜微步云沙箱出来的还是微步社区的链接 2Fa
+
+rtic
+l
+
+ (/nodev4/vb4/uCenter?userID=4fd9c51637cb44f0b8b33cdecc824fef)  星与月    2018-05-16 12:55: e%
+56 回复 3Ft
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 12/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+56  回复 3Ft
+
+hre
+ 首页 官(/)方出的情AP报I (贴/a啊pi，) 牛逼！监！控！ 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5a/tSIHA1/SHA256)、URL、邮箱
+
+nfo
+I 登录
+D%
+3D
+51
+5&
+titl
+e
+=%
+E
+3%
+8
+0%
+9
+0%
+E
+5%
+B
+E%
+A
+E%
+E
+6%
+A
+D%
+A
+5%
+E
+6%
+8
+A%
+A
+5%
+E
+5%
+9
+1%
+8
+A%
+E
+3%
+8
+0%
+9
+1%
+2
+6%
+23
+3
+4%
+3
+B%
+E
+6%
+B
+5%
+B
+7%
+E
+8%
+8
+E%
+B
+2%
+E
+8%
+8
+A%
+B
+1%
+2
+6%
+23
+3
+4%
+3
+B%
+E
+5%
+9
+B%
+A
+2%
+E
+4%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 13/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+B
+
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5C/S%HA1/SHA256)、URL、邮箱
+9
+9%
+E 登录
+6%
+9
+C%
+A
+C%
+E
+6%
+9
+C%
+8
+8%
+E
+5%
+8
+8%
+A
+9%
+E
+7%
+9
+4%
+A8
+Off
+ic
+e%
+E
+6%
+B
+C%
+8
+F%
+E
+6%
+B
+4%
+9
+E%
+E
+5% (htt
+8 p://
+F% ser
+9 vic
+1% e.w
+E eib
+8% o.c
+B o
+5% m/
+B sha
+7% re/
+E sha
+9% re.
+A ph
+B% p?
+9 url
+8% =h
+E ttp
+9% s%
+A 3
+2% A%
+9 2
+1% F%
+E 2F
+6% x.t
+9 hre
+4% atb
+B oo
+B% k.c
+E n%
+5% 2F
+8 no
+7% de
+B v
+B% 4%
+20- 2Fv
+%2 b
+0% 4%
+E 2Fa
+5% rtic
+B l
+E% e%
+A 3Ft
+E% hre
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 14/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+E atI
+6% nfo
+
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5A/SHA1I/SHA256)、URL、邮箱
+
+D% D%
+A 3D 登录
+5% 51
+E 5&
+5% titl
+9 e
+C% =%
+A E
+8% 3%
+E 8
+7% 0%
+B 9
+A% 0%
+BF E
+X% 5%
+E B
+6% E%
+8 A
+3% E%
+8 E
+5% 6%
+E A
+6% D%
+8 A
+A% 5%
+A E
+5% 6%
+E 8
+7% A%
+A A
+4% 5%
+B E
+E% 5%
+E 9
+5% 1%
+8 8
+C% A%
+BA E
+&s 3%
+our 8
+ce 0%
+=% 9
+E 1%
+3% 2
+8 6%
+0% 23
+9 3
+0% 4%
+E 3
+5% B%
+B E
+E% 6%
+A B
+E% 5%
+E B
+6% 7%
+A E
+D% 8%
+A 8
+5% E%
+E B
+6% 2%
+8 E
+A% 8%
+A 8
+5% A%
+E B
+5% 1%
+9 2
+1% 6%
+8 23
+A% 3
+E 4%
+3% 3
+8 B%
+0% E
+9 5%
+1% 9
+2 B%
+2% A
+E 2%
+6% E
+B 4%
+5% B
+B C%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 15/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+B C%
+7% 9
+
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD5E/SHA19/%SHA256)、URL、邮箱
+8% E
+8 6% 登录
+E% 9
+B C%
+2% A
+E C%
+8% E
+8 6%
+A% 9
+B C%
+1% 8
+2 8%
+2% E
+E 5%
+5% 8
+9 8%
+B% A
+A 9%
+2% E
+E 7%
+4% 9
+B 4%
+C% A8
+9 Off
+9% ic
+E e%
+6% E
+9 6%
+C% B
+A C%
+C% 8
+E F%
+6% E
+9 6%
+C% B
+8 4%
+8% 9
+E E%
+5% E
+8 5%
+8% 8
+A F%
+9% 9
+E 1%
+7% E
+9 8%
+4% B
+A8 5%
+Off B
+ic 7%
+e% E
+E 9%
+6% A
+B B%
+C% 9
+8 8%
+F% E
+E 9%
+6% A
+B 2%
+4% 9
+9 1%
+E% E
+E 6%
+5% 9
+8 4%
+F% B
+9 B%
+1% E
+E 5%
+8% 8
+B 7%
+5% B
+B B%
+7% 20-
+E %2
+9% 0%
+A E
+B% 5%
+9 B
+8% E%
+E A
+9% E%
+A E
+2% 6%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 16/17
+
+
+
+2018/12/14 【微步报告】"海莲花"团伙本月利用Office漏洞发起高频攻击 - 情报详情
+9 A
+
+ 首页 (/) API (/api) 监控 招聘 (https://threatbook.cn/opportunity) IP、域名、文件HASH(MD51/%SHA1D/S%HA256)、URL、邮箱
+E A
+6% 5%
+9 E 登录
+4% 5%
+B 9
+B% C%
+E A
+5% 8%
+8 E
+7% 7%
+B B
+B% A%
+20- BF
+%2 X%
+0% E
+E 6%
+6% 8
+8 3%
+3% 8
+8 5%
+5% E
+E 6%
+6% 8
+8 A%
+A% A
+A 5%
+5% E
+E 7%
+8% A
+A 4%
+F% B
+A E%
+6% E
+E 5%
+6% 8
+8 C%
+3% BA
+85 &p
+&d ic=
+esc htt
+=& p
+pic s%
+s= 3
+htt A%
+p 2
+s% F%
+3 2F
+A% x.t
+2 hre
+F% atb
+2F oo
+x.t k.c
+hre n%
+atb 2Fs
+oo tati
+k.c c%
+n% 2Fi
+2Fs m
+tati g%
+c% 2F2
+2Fi d_c
+m od
+g% e.jp
+2F2 g&
+d_c ap
+od pk
+e.jp ey
+
+ g)  =)
+写下你的评论...
+
+ 匿名 评论
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=515 17/17

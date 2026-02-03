@@ -1,0 +1,190 @@
+﻿疑似BITTER组织利用LNK文件的攻击活动分析
+原创 红雨滴团队 奇安信威胁情报中心 4天前
+
+概述
+蔓灵花（BITTER）是疑似具有南亚背景的APT组织，因其早期特马通信的数据包头部以“BITTER”作
+
+为标识而得名。该组织主要针对周边国家地区的政府，军工业，电力，核等单位进行攻击，以窃取敏感资
+料为目的，具有强烈的政治背景。
+
+近期，奇安信威胁情报中心红雨滴团队在日常高价值样本挖掘中，捕获了BITTER组织多个攻击样
+本，在此次攻击活动中，BITTER组织首次利用LNK文件作为攻击入口，从远程获取MSI文件执行，最终释
+放执行.NET恶意软件窃取受害者机器敏感信息。同时，其托管恶意软件的的服务器上存在多个BITTER组
+织攻击模块。红雨滴团队在在发现此次攻击活动的第一时间便向安全社区进行了预警。
+
+
+
+样本分析
+LNK样本分析
+
+此次捕获的样本包括漏洞利用的文档类样本以及LNK样本，LNK样本信息如下：
+
+文件名 Income tax  Savings for 2020-2021.lnk
+
+MD5 569d721e44e1a31a53aeaa0e514ad794
+
+远程MSI地址 https://jgcest.com/css/logs.php
+
+使用奇安信自研文件深度解析引擎QOWL解析该样本，信息如下：
+
+执行后，将从https://jgcest[.]com/css/logs.php获取恶意MSI执行。
+
+文件名 MsAulis.msi
+
+MD5 0a23faaf405c629e9202cbc90611b576
+
+该文件主要运行后将在c:\Perfslog\Sys\目录下 释放执行MsAulis.exe。
+
+文件名 MsAulis.exe
+
+MD5 D89560EC4DBB0CA75734B39009D089E5
+
+PDB G:\downloader\taskperformer_server\taskperformer\obj\Release\rkftl.pdb
+
+释放执行的MsAulis.exe是一个.NET 平台的Downloader,执行后首先将创建一个定时器用于与服务
+器通信。
+
+
+
+之后获取当前计算机用户名，系统版本，系统位数，MAC地址等信息。
+
+当通信定时器函数触发后，将首先检测是否已成功获取MAC地址信息，若未获取成功，仍为空则再
+次尝试获取信息，之后通过解密函数解出通信服务器地址。
+
+解密算法如下:
+
+
+
+之后将获取信息拼接后与C2通信。
+
+从C2服务器返回数据中解析数据，下载文件执行，遗憾的是，在分析过程中，未获取到任何后续
+Payload文件。
+
+漏洞利用文档
+
+
+
+该样本以”National Network Security.docx”为诱饵，有趣的是，摩诃草在近期的攻击活动中也使
+用了相同的文件名。样本信息如下
+
+文件名 National  Network Security.docx
+
+MD5 f10a8736d4005d15ff4a5f3ad4be834c
+
+模板注入地址 http://tusdec.org.pk/ee
+
+该样本在文档中嵌入了一个远程模板文件，受害者打开文档后，则会从外部链接下载公式编辑漏洞利
+用文档执行。
+
+远程模板文件信息如下：
+
+MD5 440410e640c6722b61171f760c7c6faa
+
+后续Payload地址 http://uniengrisb.com/img/rt.msi
+
+获取执行的远程Payload文件是一个公式编辑器漏洞利用文档。
+
+执行后将从远程服务器http://uniengrisb.com/img/rt.msi获取恶意软件执行。
+
+文件名 rt.msi
+
+
+
+MD5 df0cd6ac04f08a3c46546bc238dbacb1
+
+该样本下载执行后将在C:\Users\Public\Documents\目录下释放执行cgc.exe。
+
+文件名 cgc.exe
+
+MD5 6516BEDFFC29D38B6694C9C4FE5133E0
+
+是BITTER组织常用的下载器模块，其主要功能为收集用户信息上传，根据服务器返回数据执行其他
+模块。
+ 
+
+与C2服务器通信，获取其他攻击模块执行。
+
+
+
+ 
+溯源关联
+与BITTER组织的关联
+
+奇安信威胁情报中心红雨滴团队通过对此次捕获样本的木马特征，基础设施等方向关联发现，此次攻
+击活动幕后黑手疑似是南亚APT组织BITTER。
+
+LNK样本最终执行的Downloader与BITTER历史攻击活动中.NET 平台远控基本相似，似乎都基于开
+源项目C-Sharp-R.A.T-Client进行了魔改。
+
+
+
+同时其托管恶意软件的服务器jgcest.com上存在多个BITTER常用的木马，以及该组织独有的攻击模
+块。
+
+
+
+相关攻击模块信息如下所示。
+
+同时其托管的攻击模块dlhost其C2都未发生变化，奇安信ALPHA威胁分析平台已有相关BITTER组织
+标签。
+
+ 
+拓展
+
+
+
+基 于 LNK 文 件 中 SID 码 溯 源 关 联 发 现 多 个 恶 意 LNK 文 件 ， 但 此 类 LNK 文 件 后 续 Payload 均 采 用
+AgentTesla等开源商业木马，且SID易于伪造，故此类样本无法强关联到BITTER组织中，此节样本仅作
+为参考。部分样本信息如下。
+
+文件名 MD5 远程服务器链接
+
+Maeva_HOT.zip 19988eff2f49898dd0a237524ae9f8fa http://66.206.40.103/install.
+msi
+
+Clara_Hot.zip 68119093fc01f3f3955bffa00ae7e7fb http://66.206.40.103/clara.m
+si
+
+部分样本利用色情相关信息为诱饵，从远程获取恶意MSI文件执行。
+
+总结：
+BITTER是一个长期活跃的APT组织，且近期南亚局势紧张，其攻击活动不会停歇，奇安信威胁情报中
+
+心再次提醒各企业用户，加强员工的安全意识培训是企业信息安全建设中最重要的一环，如有需要，企业
+用户可以建设态势感知，完善资产管理及持续监控能力，并积极引入威胁情报，以尽可能防御此类攻击。
+
+目前，基于奇安信威胁情报中心的威胁情报数据的全线产品，包括威胁情报平台（TIP）、天眼高级
+威胁检测系统、NGSOC、奇安信态势感知等，都已经支持对此APT攻击团伙攻击活动的精准检测。
+
+IOC
+868157228b5bf0faeac5e31aa682e8a5
+0650e1bd642f67843d8f8f1a9f61ff10
+d89560ec4dbb0ca75734b39009d089e5
+c48a87cce4ace4a40702f9fae82509d3
+f9b7d155cfae71bb4b1335eeb8d054e0
+
+
+
+e50c6f49650acbcaffb3e39313871abb
+FCCF7B9F23C9D7FC3DABBAB14702DEC8
+569d721e44e1a31a53aeaa0e514ad794
+0a23faaf405c629e9202cbc90611b576
+f10a8736d4005d15ff4a5f3ad4be834c
+D89560EC4DBB0CA75734B39009D089E5
+df0cd6ac04f08a3c46546bc238dbacb1
+6516BEDFFC29D38B6694C9C4FE5133E0
+761570587a2f92eea1512ff159ccef29
+e247f876c07be64200c455f42c123467
+https://jgcest.com/css/
+http://162.0.229.203/RguhsT/RguhsT/
+http://162.0.229.203/RguhsT/accept.php
+pichostfrm.net
+http://vdsappauthservice.net/taskshandlers/DBhandle/primary_main.php
+http://vdsappauthservice.net/taskshandlers/DBhandle/secondary.php
+http://vdsappauthservice.net/taskshandlers/DBhandle/FileFolder/
+dcomlaunchservice.net
+dcomlaunchservice.net
+snsrsvchost.net
+wcsvclaunch.net
+http://tusdec.org.pk/ee
+http://uniengrisb.com/img/rt.msi

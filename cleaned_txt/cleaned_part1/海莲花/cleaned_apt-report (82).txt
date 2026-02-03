@@ -1,0 +1,140 @@
+0x00 概要  
+“海莲花”，又名 APT32 和 OceanLotus，是越南背景的黑客组织。该组织至少自 2012 年开始活跃，长期针对中国能源相关行业、海事机构、海域建设部门、科研院所和航运企业等进行网络攻击。除中国外，“海莲花”的目标还包含全球的政府、军事机构和大型企业，以及本国的媒体、人权和公民社会等相关的组织和个人。  
+
+2017 年下半年至今，微步在线发布了《“海莲花”团伙的最新动向分析》、《“海莲花”团伙专用后门Denis最新变种分析》、《微步在线发现“海莲花”团伙最新macOS后门》和《“海莲花”团伙本月利用Office漏洞发起高频攻击》等多篇报告，披露了 APT32 的相关攻击活动。近期，微步在线黑客画像系统监控到该组织多平台的攻击活动，经分析发现：  
+
+→ APT32 的攻击活动仍在持续，近期中国、韩国、美国和柬埔寨等国金融、政府和体育等行业相关目标遭到定向攻击。  
+
+→ 攻击平台包含 Windows 和 macOS，攻击手法相比之前变化不大，除都使用了伪装 Word 文档的可执行程序之外，针对 Windows 平台的还利用了 CVE-2017-11882 漏洞。  
+
+→ 针对 Windows 平台的木马部分利用了白加黑技术，部分利用了 Regsvr32.exe 加载执行 OCX 可执行文件。此外，相比之前多利用 Symantec 公司签名的程序进行白加黑利用来投递 Denis 木马，APT32 近期增加了对 Intel 和 Adobe 公司签名程序的白加黑利用。  
+
+→ 针对 macOS 平台的木马相较之前其 Dropper 和 Payload 加了壳和虚拟机检测。  
+
+→ 微步在线通过对相关样本、IP 和域名的溯源分析，共提取 22 条相关 IOC，可用于威胁情报检测。微步在线的威胁情报平台（TIP）、威胁情报订阅、API 等均已支持此次攻击事件和团伙的检测。  
+
+0x01 详情  
+微步在线长期跟踪全球 150 多个黑客组织。近期，微步在线监测到 APT32 针对中国、韩国、美国和柬埔寨等国金融、政府和体育等行业相关目标的多平台攻击活动。该组织近期手法与之前相比变化不大，其中针对 Windows 平台的攻击主要利用包含 CVE-2017-11882 漏洞的 doc 文档结合白加黑利用和图标伪装为 Word 的 RAR 自解压文件来投递其特种木马 Denis，针对 macOS 平台的亦同样是将 macOS 应用程序伪装为 Word 文档进行木马投递。  
+
+与此前一样，诱饵文档内容都是模糊图片，例如 Scanned Investment Report - July 2018.ⅾocx：  
+
+0x02 样本分析  
+微步在线在 8 月份监控到多起 APT32 的攻击活动，涉及 Windows 和 macOS 平台。相关分析如下：  
+
+Windows 样本  
+1、漏洞样本  
+
+在 Office 漏洞利用方面，APT32 近期主要利用 CVE-2017-11882 漏洞投递 Denis 木马。《“海莲花”团伙本月利用 Office 漏洞发起高频攻击》对 CVE-2017-11882 漏洞利用做过详细分析，详情可查阅相关报告。近期相关的部分漏洞样本：  
+
+SHA256 文件名  
+d6d4bd5a905e8261ad410a088daec7f3f695bb8189 July , 2018.doc  
+e7e5cc489b234a9f84909b019d5f63af702b4058c5 FW Report on demonstration of former CNRP in Republic of Korea  
+
+以 e7f9c777ca54b87eb4109d6d4bd5a905e8261ad410a088daec7f3f695bb8189 为例，该样本在微步在线云沙箱的分析结果如下图所示，从“云沙箱-威胁情报 IOC”可发现此样本相关 C2 已被识别为 APT32 所有。  
+
+2、RAR自解压样本  
+
+APT32 经常使用伪装成 Word 文档的可执行程序作为投递木马的载体，通常还会结合 RLO 手法迷惑受害者。近期伪装成 Word 文档的部分 RAR 自解压文件：  
+
+SHA256 文件名  
+58e294513641374ff0b42b7c652d3b4a471e8bde8664a79311e4244be0546df4 Sum for July 2018.exe  
+78a1f6d9b91334e5435a45b4362f508ae27d7ad784b96621d825c2e966d04064 feedback, Rally in USA from July 28-2  
+
+以样本 78a1f6d9b91334e5435a45b4362f508ae27d7ad784b96621d825c2e966d04064 为例。使用 WinRAR 查看该文件，可发现该自解压文件运行后会通过 regsvr32.exe 加载执行释放的 OCX 可执行文件，然后打开诱饵文档迷惑受害者。  
+
+该样本在微步在线云沙箱的分析结果如下图所示，从“云沙箱-威胁情报 IOC”亦可发现此样本相关 C2 已被识别为 APT32 所有。  
+
+macOS 样本  
+微步在线近期还捕获了多个 APT32 针对 macOS 平台的特种木马，下文以 “Scanned Investment Report - July 2018.ⅾocx” 为例进行分析。  
+
+a）该样本的基本信息如下：  
+
+文件类型 Zip 文件，macOS app  
+文件大小 454,967 字节  
+文件名 Scanned Investment Report-July 2018.ⅾocx  
+MD5 a3d09d969df1742a7cc9511f07e9b44b  
+SHA1 01ad8b20337da00d1d458ba93f98dc996a97a71f  
+SHA256 68f7ca2f1fa9f0b5151bec686144eafc13a1e2266dcfc95fafc3104f0a96b802  
+
+b）该样本为后缀伪装成为 .docx 的 macOS 应用程序，一旦双击运行则会执行 \Contents\macOS\ 下的 Scanned Investment Report - July 2018 可执行文件，导致系统被感染。该可执行文件是一个 Dropper，相比此前《微步在线发现“海莲花”团伙最新macOS后门》中分析的样本，该 Dropper 和其释放的 Payload 都加了一个简单的壳，Payload 相比之前也增加了虚拟机检测。  
+
+c）样本 Scanned Investment Report - July 2018 运行后判断启动权限，根据权限释放文件到不同目录，然后设置隐藏属性和修改文件创建时间。其中 mouseevents 和 mediaagentd 属同一文件，为恶意 Payload 程序，plist 文件的功能是实现对应 Payload 的开机自启。  
+
+权限 释放文件  
+root /Library/Mouse/Primary/mouseevents /Library/LaunchDaemons/com.apple.mouses.event.plist  
+非root /Users/boy/Library/Video/Download/Updater/mediaagentd /Users/boy/Library/LaunchAgents/com.apple.me  
+
+修改创建时间相关命令如下：  
+
+com.apple.mouses.event.plist 被设置为隐藏属性，其创建时间被修改为 2017-11-22 00:33:43，文件内容如下：  
+
+d）样本释放的 mouseevents 属后门程序，其核心功能是接受 C2 控制执行各种操作，具体包含上传下载和删除文件、执行 shell 命令等等。相关分析如下：  
+
+1）mouseevents 首先会通过检测系统信息来做反虚拟机检测。通过内置关键字 vmware、virtualbox、parallels 来检测程序是否运行在虚拟环境中。使用的 shell 命令如下：  
+
+2）如检测到运行在虚拟环境中，则通过 shell 命令删除其父程序所在的目录。但有趣的是，即使检测到自身运行在虚拟机环境中也不会退出，只会不断的循环检测运行环境。使用 shell 命令如下：  
+
+3）如检测到不在虚拟环境中，则会随机休眠一段时间。  
+
+4）然后通过 shell 命令获取系统版本、用户名、计算机名和系统架构体系等信息。相关代码和指令如下：  
+
+Shell命令  
+
+ioreg -rd1 -c IOPlatformExpertDevice | awk '/IOPlatformSerialNumber/ { split($0, line, "\\""); printf("%s", line[4]); }' 2  
+system_profiler SPHardwareDataType 2>/dev/null | awk '/Memory/ {split($0,line, ":");  
+sw_vers –productVersion  
+uname –m  
+scutil --get ComputerName  
+
+5）在获取系统信息之后，程序会解密出 C2 并拼接 “/store/ads/modal.css” 作为上线的 URL，拼接的 URL 具有一定的欺骗性。上线发送的内容包含安装时间、安装路径、PID、是否 root 权限、Arch、计算机名称、用户名和系统版本等信息。  
+
+6）该后门内置 3 个 C2 域名，执行时按顺序请求连接，若连接失败超过 5 次，则会解密下一个域名并尝试连接。如第一个域名就上线成功，则不会解密之后的域名。该样本内置的 C2 域名为 web.dalalepredaa.com、p12.alerentice.com 和 rio.imbandaad.com。C2 的解密算法为 AES256，解密 key 如下：  
+
+7）程序通过设置一个全局变量的值来判断选取哪个域名作为上线域名，通过 curl 模块发送网络连接，通过返回值来判断是否获取下一个 C2。  
+
+8）一旦上线成功，程序会在随机等待一段时间之后向 {C2 domain}/appleauth/static/cssj/N252394295/widget/auth/app.css 循环请求控制指令。  
+
+9）通过对 C2 返回的 0x2F 开始的 0x10 个字节进行 rol 2 并异或 0x13 得到控制指令。  
+
+10）该后门包含 7 个控制指令，相关指令和对应功能如下表：  
+
+指令 功能  
+0xE8 结束自身进程  
+0xA2 将执行控制指令 shell 命令写入文件，执行，并上传结果  
+0xAC 执行控制指令 shell 命令，并上传结果  
+0x3C 下载文件  
+0x23 同 0x3C  
+0x72 上传文件  
+0x48 删除文件  
+0x32 设置请求超时的时间  
+0x33 获取文件信息  
+其他 不执行有效操作  
+
+0x03 关联分析  
+微步在线威胁情报云显示，APT32 的攻击仍在持续，近期中国、韩国、美国和柬埔寨相关目标遭到定向攻击。以微步在线狩猎系统捕获的诱饵文档 July , 2018.doc 为例，该文件创建时间为 2018/08/06，野外发现时间为 2018/08/14，结合文件名判断，该样本应是在 8 月中上旬被攻击者使用。但其最终释放的后门的 C2 早已被微步在线识别，这侧面体现了威胁情报相较于传统安全产品的优势，可以在攻击者发起攻击之前就识别其攻击资产。  
+
+由于相关诱饵文档内容均为模糊图片，难以通过文档内容进行受害者分析，此处主要以诱饵文件名结合首次发现地等信息对受害者进行分析。  
+
+诱饵 “FW Report on demonstration of former CNRP in Republic of Korea.doc” 可译为“关于在韩国的前 CNRP 示威活动的第一手报告.doc”。CNRP 即柬埔寨救国党，该党被柬埔寨最高法院在 2017 年 11 月 16 裁决解散。该党领袖莫淑华在 2018 年 6 月 24 领导在韩务工人员在韩国首尔举行示威活动，要求日本不要承认柬埔寨大选（7月29日举行）结果，以及释放该党主席根索卡。由此可推测，此次攻击的受害者极有可能为柬埔寨政府或关注柬埔寨政事的相关目标。有趣的是，微步在线 2017 年 8 月份发布的报告《“海莲花”团伙的最新动向分析》曾披露相关针对柬埔寨选举的攻击活动，结合此前以 2018 柬埔寨展望会议为主题的攻击，说明 APT32 持续在针对柬埔寨进行定向攻击。  
+
+针对 macOS 平台的诱饵名为 “Scanned Investment Report - July 2018”，可译为“扫描的 2018年 7 月投资报告”，疑似针对金融相关目标。  
+
+诱饵 “feedback, Rally in USA from July 28-29, 2018”，可译为“从 2018 年 7 月 28 日至 29 日美国拉力赛的反馈”，疑似针对体育或汽车相关行业目标。  
+
+威胁指标（IOC）  
+
+域名 子域名 历史IP 样本 标签  
+andreagahuvrauvin.… 4 0 0 9  
+andreagbridge.com 5 0 0 9  
+byronorenstein.com 2 0 0 9  
+christienollmache.xyz 11 0 0 9  
+dieordaunt.com 4 0 0 9  
+查看全部13条  
+
+Hash 检测结果 样本 标签  
+0abe0a3b1fd812724… 3/25 0 8  
+58e294513641374ff… 5/25 0 8  
+68f7ca2f1fa9f0b515… 0/23 0 8  
+78a1f6d9b91334e54… 8/25 0 8  
+b08904dc9b104cca6… 2/25 0 10  
+查看全部7条

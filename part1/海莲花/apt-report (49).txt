@@ -1,0 +1,171 @@
+﻿2019/12/11 越南相关的海洋莲花⼊侵宝马和现代⽹络安全事务
+
+MUST READ City of Pensacola hit by a cyberattack few days after military base Search...  
+
+Home  Cyber Crime  Cyber warfare  APT  Data Breach  Deep Web  Digital ID  
+
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+
+Mobile  Reports  Security  Social Networks  Terrorism  ICS-SCADA  
+
+EXTENDED COOKIE POLICY  Contact me
+
+Vietnam-linked Ocean Lotus hacked BMW and Sponsored Content
+
+Hyundai networks Hyundai New Models a
+
+December 7, 2019  By Pierluigi Paganini
+
+BMW Car Prices a
+
+Alleged Vietnamese Ocean Lotus (APT32) Hyundai Tucson Clearance a
+
+hackers breached the networks of the car
+Online Linux Training Courses a
+
+manufacturers BMW and Hyundai to steal
+
+automotive trade secrets.
+Digging the Deep Web: Exploring the dark
+
+According to German media, hackers suspected to be members of the Vietnam-linked APT Ocean
+side of the web
+
+Lotus (APT32) group breached the networks of the car manufacturers BMW and Hyundai. The
+intrusion aimed at stealing automotive trade secrets.
+
+“The attack the alleged Vietnamese hacker group began in the spring of 2019. Last weekend, the
+automobile company from Munich finally took the computers concerned off the grid. Previously, the
+group’s IT security experts had been monitoring the hackers for months. This is the result of research
+by the Bayerischer Rundfunk.” reported the Bayerischer Rundfunk (BR). “Also on the South Korean
+car manufacturer Hyundai, the hackers had it apart.”
+
+The APT32 group, also known as OceanLotus Group, has been active since at least 2012 targeting
+organizations across multiple industries and foreign governments, dissidents, and journalists.
+
+Since at least 2014, experts at FireEye have observed APT32 targeting foreign corporations with an
+interest in Vietnam’s manufacturing, consumer products, and hospitality sectors. The APT32 also
+targeted peripheral network security and technology infrastructure corporations, and security firms
+that may have connections with foreign investors.
+
+The APT32 used both Windows and Mac malware in its campaigns delivered to the victims via
+Yoroi Blog
+
+watering hole attacks, it leveraged sophisticated techniques to evade detection.
+
+In the recent attacks against the car manufacturers, the attackers managed to deploy in the target
+network the Cobalt Strike hacking tool “Cobalt Strike”. 
+
+https://securityaffairs.co/wordpress/94805/hacking/ocean-lotus-hacked-bmw-hyundai.html 1/3
+
+
+
+2019/12/11 越南相关的海洋莲花⼊侵宝马和现代⽹络安全事务
+The Cobalt Strike platform was developed for Adversary Simulations and Red Team Operations, but
+it has also become popular among threat actors over the past years (including APT29 and FIN7).
+
+It is quite easy to find pirated versions of the software that were used by attackers in the wild.
+
+The attackers set up a website that posed as the BMW branch in Thailand, a similar technique was
+employed in the attack aimed at Hyundai.
+
+Once the staff at BMW has spotted the intrusion, it did not lock out the hackers, instead, it
+attempted to track them while they attempted lateral movements in the breached networks. BMW
+finally locked out the attackers at the end of November.
+
+Neither BMW nor Hyundai commented on the report published by the BR media outlet.
+Yoroi Blog
+
+Ocean Lotus attackers were linked to other attacks against car vendors, including Toyota
+Australia, Toyota Japan, and Toyota Vietnam.
+
+Experts believe that the group is interested in stealing intellectual property for its government and
+help state-owned companies.
+
+Sponsored Content
+
+The German Federal Office for the Protection of the Constitution also warned of cyber espionage
+activities carried out by the OceanLotus cyberespionage group. 
+
+1 Online Linux Training Courses
+“The OceanLotus group has already become important, and we should keep an eye on its evolution,
+especially because of the target range automotive industry,” said a spokeswoman.
+
+2 Hyundai Santa Fe Clearance Sale
+In the summer, the German Association of the Automotive Industry (VDA) sent an e-mail to its
+members. The subject was: “Warning message from the Federal Office for the Protection of the
+Constitution about possible cyber attacks on German automobile companies.”  3 New BMW Models
+
+1 Online Linux Training Courses a
+4 Mobile Phone Tracking
+
+2 Hyundai Santa Fe Clearance Sale a
+
+5 Used BMW X5 Cars for Sale
+3 New BMW Models a
+
+4 Mobile Phone Tracking a 6 Cheap BMW X5 For Sale
+
+7 Track Cell Phone Location
+Pierluigi Paganini
+
+(SecurityAffairs – BMW, cyberespionage) 8 Hyundai Dealer Clearance
+
+ APT32 automotive Cyberespionage Hacking information security news
+
+Ocean Lotus Pierluigi Paganini Security Affairs Security News
+
+Sponsored Content
+
+SHARE ON             
+Sponsored Content
+
+Pierluigi Paganini
+
+Pierluigi Paganini is member of the ENISA (European Union Agency for Network Sponsored Content
+
+and Information Security) Threat Landscape Stakeholder Group and Cyber G7
+Group, he is also a Security Evangelist, Security Analyst and Freelance Writer.
+
+https://securityaffairs.co/wordpress/94805/hacking/ocean-lotus-hacked-bmw-hyundai.html 2/3
+
+
+
+2019/12/11 越南相关的海洋莲花⼊侵宝马和现代⽹络安全事务
+Editor-in-Chief at "Cyber Defense Magazine", Pierluigi is a cyber security expert
+with over 20 years experience in the field, he is Certified Ethical Hacker at EC
+Council in London. The passion for writing and a strong belief that security is
+founded on sharing and awareness led Pierluigi to find the security blog
+"Security Affairs" recently named a Top National Security Resource for US.
+Pierluigi is a member of the "The Hacker News" team and he is a writer for
+some major publications in the field such as Cyber War Zone, ICTTF, Infosec
+Island, Infosec Institute, The Hacker News Magazine and for many other
+Security magazines. Author of the Books "The Deep Dark Web" and “Digital
+Virtual Currency and Bitcoin”.
+
+ PREVIOUS ARTICLE NEXT ARTICLE
+Russia-linked Gamaredon group US authorities charged Dridex gang 
+
+targets Ukraine officials members for stealing over $100 Million
+ 
+
+YOU MIGHT ALSO LIKE
+
+More than 44 million Microsoft user
+Adobe Patch Tuesday addresses
+
+accounts are exposed to hack
+critical flaws in four products
+
+December 10, 2019  By Pierluigi Paganini
+December 10, 2019  By Pierluigi Paganini
+
+Copyright 2015 Security Affairs by Pierluigi Paganini All Right Reserved. Back to top 
+
+Home  Cyber Crime  Cyber warfare  APT  Data Breach  Deep Web  Digital ID  Hacking  Hacktivism  Intelligence
+
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism  ICS-SCADA
+
+EXTENDED COOKIE POLICY  Contact me
+
+https://securityaffairs.co/wordpress/94805/hacking/ocean-lotus-hacked-bmw-hyundai.html 3/3

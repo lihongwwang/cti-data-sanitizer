@@ -1,0 +1,202 @@
+Sednit also known as APT28, Sofacy, Strontium and Fancy Bear – has been operating since at least 2004, and has made headlines frequently in the past years: it is believed to be behind major, high profile attacks. For instance, several security companies as well as the US Department of Justice named the group as being responsible for the Democratic National Committee (DNC) hack just before the US 2016 elections. The group is also presumed to be behind the hacking of global television network TV5Monde, the World Anti-Doping Agency (WADA) email leak and many others. Its targets are many and the group has a diversified set of malware in its toolbox several of which we have documented previously, but this white paper details the first time this group is known to have used a UEFI rootkit.
+
+Key points in this white paper:
+- Starting in at least early 2017, trojanized versions of an older userland agent of the popular LoJack anti-theft software from Absolute Software were found in the wild. We call this trojanized LoJack agent LoJax. LoJack attracted a lot of attention in recent years as it implements a UEFI/BIOS module as a persistence mechanism.
+- The presence of known Sednit tools alongside LoJax samples as well as the fact that some of the C&C servers used by these trojanized agents were part of an earlier Sednit network infrastructure allows us to link this UEFI rootkit to the Sednit group with high confidence.
+- Along with the LoJax agents, tools with the ability to read systems’ UEFI firmware were found and in one case, this tool was able to dump, patch and overwrite part of the system’s SPI flash memory. This tool’s ultimate goal was to install a malicious UEFI module on a system whose SPI flash memory protections were vulnerable or misconfigured.
+- This UEFI module has the responsibility to drop the LoJax agent on the system, making it the first Sednit UEFI rootkit identified. As it resides in the system’s firmware, it can survive a Windows re-install as well as a hard drive replacement.
+- There was at least one case where this rootkit was successfully installed in a system’s SPI flash memory. To our knowledge, this is the first UEFI rootkit found in the wild.
+
+INTRODUCTION
+The Sednit group is a resourceful APT group targeting people and organizations around the world. It has been in operation since at least 2004, using a wide range of malware families.
+
+Throughout our multi-year tracking of this group, we released many reports on its activities, ranging from zero-day usage to custom malware it develops, such as Zebrocy. However, the component described in this white paper is in a league of its own.
+
+There have been stories in the past of UEFI rootkits, such as “rkloader” described in a presentation from the Hacking Team data leak or “DerStarke”, a macOS EFI/UEFI boot implant described in the Vault7 leaks. While we know of their existence, there has never been a published report detailing a real case of a victim compromised by such malware.
+
+Not only were we able to confirm discovering an in the wild firmware including the malicious LoJax UEFI module, but we were also able to find the full toolchain that was presumably used to install it. It is interesting to note here that Sednit used the DownDelph bootkit in 2013 and 2014 as a persistence method for Downdelph, one of the group’s first-stage backdoors. While the idea is similar, bootkits are no longer possible with the new UEFI implementation. Thus, these two components differ significantly in their behavior.
+
+This white paper is divided into three sections. The first will deal with previous security research on LoJack/Computrace and how it could be used maliciously. The second section will examine the breadcrumbs found along our research route that ultimately led us to the UEFI rootkit. Finally, the third section will detail the different LoJax components and how they persist on a system even after a Windows re-install or a hard drive replacement.
+
+Attribution
+While many vendors have made attribution claims about the Sednit group in the past, ESET does not perform any type of geopolitical attribution. That was our position back when we published our white paper in 2016 and is still the case today. As we wrote back then, performing attribution in a serious, scientific manner is a hard problem that is out of our scope as ESET security researchers. What we call “the Sednit group” is merely a set of software and the related network infrastructure, which we can hardly correlate authoritatively with any specific organization.
+
+Victimology
+We found a limited number of different LoJax samples during our research. Based on our telemetry data and on other Sednit tools found in the wild, we are confident that this particular module was rarely used compared to other malware components at their disposal. The targets were mostly government entities located in the Balkans as well as Central and Eastern Europe.
+
+PREVIOUS RESEARCH ON COMPUTRACE/LOJACK
+LoJack is anti-theft software made by Absolute Software Corporation. Earlier versions of this agent were known as Computrace. As its former name implies, once a user activated the service, the computer could call back to its C&C server and its user be notified of its location should it have gone missing or been stolen.
+
+The rest of this section describes what LoJack architecture used to be. As only an old version of this software was trojanized by the threat actor, it makes sense to focus only on it. Also, Absolute Software issued a statement in May 2018 stating that the vulnerabilities described below are not affecting recent versions of their agents.
+
+Computrace attracted attention from the security community mostly because of its unusual persistence method. Since this software’s intent is to protect a system hardware from theft, it is important that it resists OS re-installation or hard drive replacement. Thus, it is implemented as a UEFI/BIOS module, able to survive such events. This solution comes pre-installed in the firmware of a large portion of laptops’ manufactured by various OEMs, waiting to be activated by its users. This activation step can be done through a BIOS option.
+
+One of the first research reports providing information on how this solution is implemented was published in 2009. The global architecture of the product, at that time, was revealed, detailing how the UEFI/BIOS module was able to drop the userland agent on disk and how this agent was then able to call home by contacting a web server controlled by Absolute Software.
+
+Here is a description of the different steps highlighted above:
+1. At boot time, if activated, the UEFI/BIOS module is executed. It will try to find a FAT/FAT32/NTFS partition. Using an NTFS driver, it then creates a backup of autochk.exe and overwrites its content with a dropper responsible for installing the userland agent component. autochk.exe is a Windows executable that is run during the early stages of Windows initialization to check for possible hard drive corruption.
+2. When the modified autochk.exe is run, its main purpose is to drop the small agent rpcnetp.exe and add it as a service so that it is started at each reboot. The last step of this component is to restore the original version of autochk.exe.
+3. The small agent, rpcnetp.exe, is a small executable whose main purpose is to ensure that the main agent is running. If not, it will try to connect to Absolute Software’s C&C server to download and execute it. The small agent will first make a copy of itself and modify the PE header so that it becomes a dynamic-link library (DLL). This DLL is then loaded in memory and it will spawn a svchost.exe process and inject the DLL there. It will then spawn an Internet Explorer iexplore.exe process and again inject its DLL into it. This last process will then be used to communicate over the Internet. The Computrace small agent’s behavior of injecting code into foreign processes is commonly seen in malware and rarely associated with legitimate, reputable software.
+4. The full featured agent is now running on the system and implements Computrace’s various tracking and recovery functions.
+
+This overall process, along with a detailed description of the network protocol used between the small agent and its C&C server, was published in 2014. As no authentication mechanism exists, if adversaries could control the server with which the small agent communicates, they could make it download and execute arbitrary code. There are several different mechanisms allowing an attacker to communicate directly with the small agent. The one that is the most relevant to our discussion involves how the address of the C&C server is retrieved by the small agent. In fact, this information is stored in a configuration file hardcoded in the executable itself.
+
+The “encryption” method used is a simple XOR operation using a one-byte key. This key, 0xB5, is the same for all small agents studied. As seen, the C&C domain name is clearly visible. The four bytes preceding that comprise a C&C server IP address. As there is no validation done on the configuration file content, adversaries with write access to %WINDIR% can change its content so that the small agent contacts a C&C server under their control instead of the legitimate one. By understanding the network protocol, it is then possible to make the small agent download and execute arbitrary code.
+
+Although these risks were identified a long time ago, no noteworthy usage of this security risk was seen in the wild until recently.
+
+LoJack becomes LoJax
+In May 2018, an Arbor Networks blogpost describing several trojanized samples of the LoJack small agent, rpcnetp.exe, was published. These malicious samples communicated with a malicious C&C server instead of the legitimate Absolute Software one, because their hardcoded configuration settings had been altered. Some of the domains found in LoJax samples had been seen before: they were used in late 2017 as C&C domains for the notorious Sednit first-stage backdoor, SedUploader.
+
+The differences between the legitimate and trojanized agent are so small that the figures above actually show most of the changes between them. All the LoJax small agent samples we could recover are trojanizing the exact same legitimate sample of the Computrace small agent rpcnetp.exe. They all have the same compilation timestamp and only a few tens of bytes are different from the original one. Besides the modifications to the configuration file, the other changes include timer values specifying the intervals between connections to the C&C server.
+
+At the time the blog was published, we had found different LoJax small agents targeting different entities in the Balkans as well as Central and Eastern Europe, but had no idea how they were installed. Of course, the obvious explanation was that some well-known Sednit backdoor installed them. After all, since LoJack was a well-known tool, it was whitelisted by many AV vendors. Thus, even if only the small agent was used in this campaign and that it could not survive a Windows re-install, it still had the benefit of being less likely to be flagged as malicious. However, what if the compromise was deeper than that? What if they tried to mimic the LoJack solution and go all the way to the system’s firmware?
+
+THE HUNT FOR A LOWER-LEVEL COMPONENT
+We were able to uncover LoJax campaigns targeting a few organizations in the Balkans as well as Central and Eastern Europe. In all of them, we were able to find traces of other Sednit malware detections, namely:
+- SedUploader, a first-stage backdoor
+- XAgent, Sednit’s flagship backdoor
+- Xtunnel, a network proxy tool that can relay any kind of network traffic between a C&C server on the Internet and an endpoint computer inside a local network
+
+Although we detected traces of Sednit tools on most of the systems we examined that were targeted by LoJax, we found a couple of systems where only LoJax was present. Thus, we can infer that in some cases, LoJax was used as a stand-alone tool, presumably as an additional backdoor used to regain admittance to the network should Sednit operators lose access.
+
+As XAgent is routinely used to drop additional modules on a compromised system, it is tempting to jump to the conclusion that LoJax samples are dropped in the same way and that there are no other mechanisms in place. This would mean that the only part that was inspired by the LoJack solution would be the small agent. However, shortly after we started our analysis, we found some clues that led us to believe the inspiration went a bit further.
+
+RWEverything driver (RwDrv) and info_efi.exe
+The first piece of evidence comes from a custom tool created by the malicious actors that, when executed, dumps information about low level system settings to a text file. This tool was found alongside some LoJax samples.
+
+In order to read this type of information, this tool embeds a driver called RwDrv.sys. This kernel driver is bundled with RWEverything, a free utility available on the web that can be used to read information on almost all the computer low-level settings, including PCI Express, Memory, PCI Option ROMs, etc. As this kernel driver belongs to legitimate software, it is signed with a valid code-signing certificate.
+
+The info_efi tool discovery was the first sign that a LoJax UEFI module might exist. When trying to update a system’s firmware, it is crucial to have information about the firmware vendor, its version, etc. As there are known vulnerabilities allowing userland processes to access and modify the content of the SPI flash memory where the UEFI modules are stored, getting data about the system’s hardware is the first step towards a successful attack.
+
+The final lead that allowed us to find Sednit’s first UEFI rootkit was two different tools — one used to dump the SPI flash memory and one to write to it.
+
+Dumping the SPI flash memory
+The first piece of the puzzle was a file called ReWriter_read.exe. This file contained all the code required to dump a system SPI flash memory using the RWEverything driver, RwDrv.sys. In order for the device driver to perform the required operations, the dumper tool must send the correct I/O control (IOCTL) codes. While RwDrv.sys supports many different IOCTL codes, both the dumper and writer tool described in this section and the next use only four of them.
+
+ReWriter_read first creates a service with the embedded kernel driver RwDrv.sys and logs some information on the UEFI/BIOS configuration, namely the value of three fields contained in the BIOS Control Register (BIOS_CNTL): BIOS Lock Enable (BLE), BIOS Write Enable (BIOSWE) and SMM BIOS Write Protect Disable (SMM_BWP). While ReWrite_read does not use these values at all, the following sections will highlight why these three fields are of interest to this tool.
+
+The tool’s next task is to retrieve the BIOS region base address on the SPI flash memory as well as its size. This information is contained in the SPI Host Interface register “BIOS Flash Primary Region”. All SPI Host Interface registers are memory-mapped in the Root Complex Register Block (RCRB) whose base address can be retrieved by reading the correct PCI Configuration Register. ReWriter_read obtains this address by using RwDrv IOCTL 0x22840 and reading the correct offset (0xF0 in our case). Once the BIOS region base address and size are known, the dump tool reads the relevant content of the SPI flash memory and writes it to a file on disk.
+
+Except for the first two steps that are executed only once, these operations are repeated in a loop until all the data is read from the SPI flash memory. This process is also well described. ReWriter_read will then validate the size of the dumped image. It will parse the image Flash descriptor to get the memory ranges of the BIOS, the Gigabit Ethernet (GbE) and the Management Engine (ME) regions. Adding the size of these three regions allows the dumper tool to compute the size of the entire content of the SPI flash memory. If this size is equal to the size obtained by reading the BIOS Flash Primary region register, the image is considered valid.
+
+Patching the UEFI firmware
+The second piece of the puzzle is a file called ReWriter_binary.exe. This file contains the evidence we were missing to prove that Sednit’s operators went as far as targeting the firmware. This file contains the code to patch the dumped UEFI image and write the trojanized version back to the SPI flash memory. This section will detail the inner workings of this binary.
+
+Once the flash memory content has been dumped and successfully validated by the aforementioned dumper tool, the malicious UEFI module is added to the image. To do so, the UEFI image must first be parsed to extract the information required for this task.
+
+The data stored in the UEFI image are laid out in volumes using Firmware File System (FFS). As its name suggests, it is a file system specifically tailored for storing firmware images. Volumes contain files identified by GUIDs. Each file is usually composed of multiple sections, one of which contains the actual PE/COFF executable that is the UEFI image.
+
+ReWriter_binary parses all of the firmware volumes found in the BIOS region of the SPI flash memory searching for specific files:
+- Ip4Dxe (8f92960f-2880-4659-b857-915a8901bdc8)
+- NtfsDxe (768bedfd-7b4b-4c9f-b2ff-6377e3387243)
+- SmiFlash (bc327dbd-b982-4f55-9f79-056ad7e987c5)
+- DXE Core
+
+Ip4Dxe and NtfsDxe are DXE drivers. In UEFI firmware, DXE drivers are PE/COFF images that are either meant to abstract the hardware or to produce services that can be used by other DXE drivers or by UEFI applications. Such drivers are discovered and loaded by the DXE Foundation through the DXE Dispatcher (DXE Core) early in the boot process. After completion of this phase, all services expected to be available by UEFI applications, such as an OS loader, are in place. Usually, all the DXE drivers are stored in the same volume. However, the DXE dispatcher may be on a separate one.
+
+ReWriter_binary looks for Ip4Dxe only as an indication that the volume being parsed is the volume that contains the DXE drivers. As we will describe later, this volume will be a candidate for the installation of the malicious DXE driver. It also looks for DXE Core and adds the volume where it’s located as another candidate volume for where to write the rootkit. The free space available on each of these volumes is stored and is used later to verify whether there is enough space available to add the malicious driver.
+
+NtfsDxe is the AMI NTFS DXE driver. If present in a firmware volume, its location is stored and is later used to remove the file from the volume. We will see why the tool removes this driver in the section dedicated to the analysis of the UEFI rootkit.
+
+As for the SmiFlash image, the information related to this image is stored but is not used anywhere in the malware. Interestingly, this image is vulnerable. Thus, we believe that Sednit’s operators might be working on some exploit for these vulnerabilities. This could allow them to write to the SPI flash memory even on properly configured systems. As we will describe later: in its current state, the tool is only able to write to the BIOS region of misconfigured or fairly old systems (on motherboards older than Platform Controller Hub chipsets introduced around 2008).
+
+After the extraction of required metadata, ReWriter_binary proceeds to patching the dumped UEFI image, adding its malicious DXE driver. First, it creates a file header structure (EFI_FFS_FILE_HEADER). Then, it selects the destination volume based on the location of Ip4Dxe and DXE Core as well as the free space available on these volumes. ReWriter_binary embeds a compressed section containing the PE image and a User interface section specifying the human-readable name of the file: SecDxe. The compressed section is appended to the file header and written at the end of the volume, where the volume free space is located.
+
+Finally, if the NtfsDxe driver is present in the image, it is removed. Since the firmware file system stores files and their content sequentially, it is a fairly simple process:
+- It finds the offset to the free space at the end of the volume
+- The NtfsDxe image is overwritten by 0xFF bytes
+- The trailing part of the firmware volume is copied starting at the offset where NtfsDxe was located
+- The remainder of the file system is padded with 0xFF bytes, which means free space
+
+Writing the patched firmware back to the SPI flash memory
+Once the dumped firmware image is successfully modified, the next step is to write it back to the SPI flash memory. Before we dive into this process, we need to introduce some of the BIOS write protections that are relevant to this case. Other existing mechanisms, like BIOS Range Write Protection, are left aside since they are not checked by ReWriter_binary.
+
+The platform exposes multiple protection mechanisms to block unauthorized attempts to write to the BIOS region. These mechanisms are nonetheless not enabled by default. The firmware is responsible for configuring them properly. Such configurations are exposed via the BIOS control register (BIOS_CNTL). This register contains the BIOS Write Enable (BIOSWE) bit, which needs to be set to 1 to be able to write to the BIOS region of the SPI flash memory. Since the platform shouldn’t allow all attempts to write to the BIOS region, another bit is available in the BIOS_CNTL to protect BIOSWE: the BIOS Lock Enable (BLE). When enabled, this mechanism is meant to lock the BIOSWE bit to 0. However, the implementation is vulnerable. Indeed, when there is a request to set the BIOSWE bit to 1, the BIOSWE bit is actually set to 1. Only then does the platform issue a System Management Interrupt (SMI) and the handler for this SMI is responsible for setting the BIOSWE bit back to 0.
+
+Multiple issues arise from this implementation. First, the implementation of the SMI handler is left to the firmware developers. Thus, if the firmware doesn’t implement this handler, the BLE bit is useless since there won’t be any routine setting the BIOSWE bit back to 0. Second, there’s a race condition vulnerability that allows complete bypass of this mechanism, even if the SMI handler is properly implemented. To exploit this vulnerability, an attacker needs to start a thread that continuously sets BIOSWE to 1 while another thread writes data to the SPI flash memory. According to Kallenberg and Wojtczuk’s paper, this attack works on multi-core processors and can also succeed on a single-core processor if it has hyper-threading enabled.
+
+To remediate this issue, a new protection mechanism configured via the BIOS_CNTL was added to the platform. It was introduced in the Platform Controller Hub (PCH) family of Intel chipsets. If its configuration bit is set, SMM BIOS Write Protect Disable (SMM_BWP) will ensure that the BIOS region is writable only if all the cores are running in System Management Mode (SMM) and BIOSWE is set to 1. This effectively protects a system against the race condition vulnerability explained above. However, as is the case for BLE, SMM_BWP needs to be activated by the firmware. Hence, a firmware that doesn’t configure these mechanisms properly leaves the system at risk of unauthorized writes to the BIOS region.
+
+ReWriter_binary reads the content of the BIOS control register to choose the proper path to take. It first checks if BIOSWE is set. If it is, it goes to the writing phase. If BIOSWE is disabled, it checks the value of the BLE bit. If it is not set, it flips the BIOSWE bit and starts to write the patched firmware. If BLE is set, it makes sure that SMM_BWP is disabled and exploits the race condition mentioned above. If the SMM_BWP bit is set, it fails.
+
+Assuming that the exact build of ReWriter_binary we analyzed was the one that was used to deploy the UEFI rootkit, we can conclude that either the firmware did not properly configure the BIOS write protection mechanisms or the victim’s machine had a chipset older than the Platform Controller Hub. ReWriter_binary wouldn’t have succeeded at flashing the UEFI firmware on a properly configured modern system. However, looking for the vulnerable SmiFlash UEFI image when parsing the UEFI firmware volumes suggests that the operators might have been fiddling with more advanced techniques to bypass BIOS write protections.
+
+Very similar to the read operation described above, the following sequence of events occurs to write to the SPI flash memory:
+
+Except for the first two steps that are only executed once, these operations are repeated in a loop until all the data is written to the SPI flash memory.
+
+When the writing process is done, the content of the SPI flash memory is once again dumped into the file image.bin. The same integrity check that was done by ReWriter_read is performed on the new dumped image. Then, the image read from the SPI flash memory is compared to the patched image in-memory. If some bytes differ, the address where it happened is logged. Whether they differ or not has no effect on the execution of the malware. It is just logged for the operators to know what happened.
+
+As final steps, this registry key is set:
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\BootExecute = “autocheck autochk *”
+
+Then, RwDrv service is stopped and uninstalled. It is important that the Windows Registry value is set to that string because the UEFI Rootkit looks for that exact string to modify it and thus execute its payload during Windows startup. We will give more details about this modification of the Windows Registry when we describe the UEFI Rootkit and its payloads.
+
+LOJAX TECHNICAL ANALYSIS
+While the tool to dump, patch and write to the SPI flash memory is customized for a particular firmware image and cannot be re-used easily on any given system, the full UEFI module can be extracted from it. The first step we did after recovering this module was to go through our telemetry to see whether we had seen this module before. However, as this is a UEFI module, we had to rely on the new ESET UEFI scanner that is able to access and scan a system’s firmware. Using telemetry coming from this module, we were able to find at least one case where the Sednit’s UEFI module was installed on a system, meaning that this UEFI rootkit was truly deployed in the wild.
+
+We do not know for sure how the different tools ended up on the compromised systems. The most likely guess at this point is that it was dropped by another tool, likely XAgent, as part of the post-compromise steps done by the operators. Since the dumper and the writer tools were found on the same system but at different times, it is likely the operators worked in two steps. First, they dumped the firmware on the target machine, made sure that their patching tool would work fine before uploading it again and patching the firmware for real. While we were able to find only one version of the dumper and writer tools, there is a possibility that different versions exist for different vulnerable firmware they were able to locate.
+
+Figure 14 gives a high-level overview of the UEFI rootkit workflow until the OS boots. First, SecDxe DXE driver is loaded by the DXE dispatcher. It sets a Notify function callback on the EFI_EVENT_GROUP_READY_TO_BOOT event group. When the firmware is about to choose a boot device and to run the OS loader, the Notify function is called. The callback does three things:
+- It loads an embedded NTFS DXE driver to be able to access and write to NTFS partitions
+- It writes two files to the Windows NTFS partition: rpcnetp.exe and autoche.exe
+- It modifies this registry key ‘HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\BootExecute’:
+    - Before: ‘autocheck autochk *’
+    - After: ‘autocheck autoche *’.
+
+SecDxe: The malicious DXE driver
+Now that we have covered the details of the deployment of the UEFI rootkit, this section focuses on the chain of events that occurs on a compromised machine. We adopt a bottom-up approach where we begin by describing the UEFI rootkit itself and then follow the chain of events up to the final payloads that are deployed at the operating system level.
+
+Sednit’s UEFI rootkit is a DXE driver, identified by the GUID 682894B5-6B70-4EBA-9E90-A607E5676297. It is unsigned; thus it cannot run on a system with Secure Boot enabled. Once deployed in one of the firmware volumes, the DXE Foundation loads it every time the system boots.
+
+SecDxe is a small DXE driver that mainly does two things. It installs a protocol identified by the GUID 832d9b4d-d8d5-425f-bd52-5c5afb2c85dc that is never used. Then, it creates an event associated with a Notify function. The Notify function is set to be called when the EFI_EVENT_GROUP_READY_TO_BOOT event group is signaled. This event group is signaled by the boot manager when it is about to choose a device to boot from.
+
+The Notify function implements the malicious behavior of Sednit’s UEFI rootkit. It writes the payloads to Windows’ NTFS file system. Since UEFI firmware normally deals solely with the EFI system partition, an NTFS driver usually is not included. Only FAT-based file systems are supported as boot partitions. Thus, it is not mandatory for a UEFI firmware to ship with NTFS drivers. For that reason, SecDxe embeds its own NTFS driver. This driver is first loaded and connected to the disk device. Hence, it installs an EFI_SIMPLE_FILE_SYSTEM_PROTOCOL on disk devices with NTFS partitions, enabling file-based access to it.
+
+Now that everything is in place to write files on the Windows partition, SecDxe drops rpcnetp.exe and autoche.exe. Next, rpcnetp.exe is installed to %WINDIR%\SysWOW64 on 64-bit Windows versions or to %WINDIR%\System32 on 32-bit versions. As for autoche.exe, it is installed to %WINDIR%\SysWOW64.
+
+SecDxe then opens %WINDIR%\System32\config\SYSTEM, which is the file backing the HKLM\SYSTEM registry hive. It parses the file until it finds ‘autocheck autochk *’ and replaces the ‘k’ of ‘autochk’ with ‘e’. This sets ‘HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\BootExecute’ to ‘autocheck autoche *’. Next time Windows boots, autoche.exe will be launched instead of autochk.exe.
+
+Hacking Team’s NTFS driver
+As previously discussed, SecDxe module embeds an NTFS driver. There is strong evidence that Sednit’s operators did not write their own driver, but rather compiled their own copy of Hacking Team’s leaked NTFS DXE driver.
+
+Hacking Team’s NTFS driver uses the ntfs-3g open source project at its core. It is merely a wrapper around it to make it work as a UEFI DXE Driver. As such, the INF file build information of Hacking Team’s driver lists filenames from the ntfs-3g project. SecDxe’s NTFS driver strings also lists many of these filenames:
+
+Another interesting thing to note is that the project path is the same as those found in vector-edk, Hacking Team’s EFI development leaked project. In vector-edk, there is a subproject NtfsPkg with the exact same directory layout. The ntfs-3g source code files are located in the same path. While these paths are generic, we believe this is not a coincidence.
+
+Comparing the leaked source code with Hex-Rays decompiler output, it becomes evident that it is the same project. The logic and the order of the function calls are the same. Both projects even use the same variable (LockedByMe) to keep the state of the lock.
+
+The comparison above shows code from Hacking Team developers and is not present in the ntfs-3g open source code.
+
+As mentioned in the ReWriter_binary section, when parsing the firmware file system the executable tries to remove the AMI NTFS driver. We wanted to understand why they remove it instead of using it. We analyzed the driver and found out that it can only perform read operations. As writing to the file system is not supported, they couldn’t use it for their purposes. It is also likely that Sednit’s operators may have run into some issues when another NTFS driver was already present in the firmware, so they simply decided to remove it. In addition to implementing read and write operations, Hacking Team’s driver does not enforce file permissions. For instance, it is possible to overwrite a read-only file without raising any error.
+
+At this point in this paper, we have described the various operations performed by the UEFI rootkit to compromise the host operating system. We also discussed the reasons why we believe that Sednit operators used the source code of Hacking Team’s vector-edk to build their NTFS driver to write files on the Windows NTFS partition. In the following sections, we will provide our analysis of the payloads dropped by SecDxe.
+
+autoche.exe vs. autochk.exe
+The malicious autoche.exe is used to set up persistence for the small agent rpcnetp.exe. As can be seen, it uses native Windows API calls to create this service.
+
+It should be noted that the service name is the same as the one used by the legitimate Computrace agent. Once the service is created, it then restores the BootExecute registry key to its previous value.
+
+Since this process takes place while Windows is booting, the user can hardly notice the BootExecute registry key value modification. It should be noted that autoche.exe shows some similarities with Computrace’s autochk.exe module, such as the API calls used and the service registration, but the rest is quite different. Computrace’s module is bigger and restores the original autochk.exe executable instead of changing the registry key. It is also responsible for dropping the small agent on disk, while this is handled by the UEFI rootkit in the LoJax case.
+
+rpcnetp.exe
+While the small agent rpcnetp.exe can be dropped by the UEFI rootkit, it is probable that most instances we saw of a trojanized LoJack small agent did not use this component. It is likely that they were opportunistic and installed the UEFI rootkit only when possible and in organizations of high importance.
+
+Throughout our investigation, we were able to uncover different LoJax small agent versions. The IOC section lists their hashes and the associated malicious domains/IPs. As discussed previously, all LoJax small agent samples we were able to recover were a trojanized version of the same old Computrace small agent compiled in 2008.
+
+While we never witnessed LoJax agent download and install additional modules, we do know that this functionality exists. As LoJax’s best quality is to be stealthy and persistent, it could definitely be used to help ensure that access to key resources is maintained.
+
+PREVENTION AND REMEDIATION
+How could such an attack have been prevented? This involves a complex ecosystem composed of multiple actors. The first security mechanism that could have blocked such an attack is Secure Boot. When Secure Boot is enabled, each and every firmware component that is loaded by the firmware needs to be properly signed, thus ensuring the integrity of the firmware. We strongly suggest that you enable it. This is the base defense against attacks targeting UEFI firmware.
+
+As is the case for software, the UEFI firmware should always be kept up-to-date. Visit your motherboard website to make sure that you have the latest version available.
+
+You should also make sure that all of your systems have modern chipsets with Platform Controller Hub (starting from Intel Series 5 chipsets onwards). This will ensure that the security mechanism against the race condition vulnerability we mentioned is available on the platform.
+
+The other part of firmware security is in the hands of UEFI/BIOS vendors. The security mechanisms provided by the platform need to be properly configured by the system firmware to actually protect it. Thus, firmware must be built with security in mind from the ground up. Fortunately, more and more security researchers are looking at firmware security thus contributing to improve this field and raise awareness of firmware vendors. It is also worth mentioning CHIPSEC, an open source framework to perform low-level security assessments, which is very helpful to determine if your platform is properly configured.
+
+Remediation of a UEFI firmware-based compromise is a hard problem. There are no easy ways of cleaning the system from such threat nor are there any security products that can save the day. In the case we described in this paper, the SPI flash memory needs to be reflashed to remove the rootkit. This is not a trivial task and that definitely is not a recommended procedure for the average computer owner. Upgrading the UEFI firmware may remove the rootkit given that the update rewrites the whole BIOS region of the SPI flash memory. If reflashing the UEFI firmware is not an option for you, the only alternative is to change the motherboard of the infected system.
+
+CONCLUSION
+UEFI rootkits are one of the most powerful tools in an attacker’s arsenal as they are persistent across OS re-install and hard disk changes and are extremely difficult to detect and remove. While it is hard to modify a system’s UEFI image, few solutions exists to scan system’s UEFI modules and detect malicious ones. Moreover, cleaning a system’s UEFI firmware means re-flashing it, an operation not commonly done and certainly not by the average user. These advantages explain why determined and resourceful attackers will continue to target systems’ UEFI.

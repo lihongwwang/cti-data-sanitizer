@@ -1,0 +1,289 @@
+海莲花（OceanLotus、APT32、APT‑C‑00）
+
+一、摘要
+海莲花(OceanLotus、APT32)是一个具有越南背景的黑客组织。该组织最早被发现于2012年4月攻击中国海事机构、海域建设部门、科研院所和航运企业。主要使用鱼叉和水坑攻击方式，配合社工手段，利用特种木马进行窃密活动。2014年开始，其活动强度加大。
+海莲花高强度的攻击自2014年起持续至今，攻击目标越来越明确、攻击技术越来越复杂、社工手段越来越精准、与杀毒软件的对抗性与防溯源的隐蔽性越来越强。海莲花的技术手段表明其已发展为一个高度组织化、专业化的境外国家级黑客组织。
+海莲花的攻击目标与越南存在较大联系，遍布政治、经济、社会等多个重要领域。具有较明确的窃取机密文件的目的。
+2012年4月，360天眼实验室首次捕获与境外黑客组织海莲花（OceanLotus、APT32）相关的第一个特种木马。
+2013年，Electronic Frontier Foundation发表公开博文表示新闻记者、活动家、持不同政见者、博客作者等均遭到与海莲花组织相关的恶意软件的攻击。
+2014年2月以后，OceanLotus进入攻击活跃期，并于2014年5月发动了最大规模的一轮鱼叉攻击。
+2014年5月、9月，以及2015年1月，OceanLotus又对多个政府机构、科研院所和涉外企业的网站进行篡改和挂马，发动了多轮次、有针对性的水坑攻击。
+2014年以后，OceanLotus特种木马开始采用包括文件伪装、随机加密和自我销毁等一系列复杂的攻击技术与安全软件进行对抗，查杀和捕捉的难度大大增加。
+2014年11月以后，OceanLotus特种木马开始使用云控技术，攻击的危险性、不确定性与木马识别查杀的难度都大大增强。
+2014年，一家欧洲公司先于越南手工业遭到OceanLotus攻击。同年，海莲花组织使用名为“Plans to crackdown on protesters at the Embassy of Vietnam.exe”的鱼叉式网络钓鱼附件针对位于东南亚的越南侨胞组织的持不同政见活动发起攻击。同样在2014年，海莲花组织还入侵了一个欧洲国家的立法机关。
+2015年5月29日，360天眼实验室发布首个与该组织相关的APT报告，并将其正式命名为OceanLotus。
+2016年，涉及到网络安全、技术基础设施、银行业和媒体行业的越南企业及外资企业受到攻击。
+2015-2016年间，FireEye认定越南的两家媒体受到了海莲花组织专用的恶意软件攻击。
+2016年年中，FireEye在一家全球酒店业大亨的网络中检测到了海莲花组织专用的恶意软件，该酒店计划在越南扩大业务。
+2016-2017年间，两个位于越南境内的美国和菲律宾消费品企业的子公司，成为海莲花组织的攻击目标。
+2017年5月，FireEye发布报告称其发现OceanLotus组织入侵涉及多个行业的私营企业、新闻记者、活动家、持不同政见者、博客作者、西方立法机关、越南的新闻媒体等，且其行动皆与越南的国家利益相关。FireEye将其命名为APT32。
+2017年6月22日，The Palo Alto发布报告称其发现海莲花组织针对MacOS的全新升级的恶意后门。
+2017年7月360威胁情报中心截获并分析了多个海莲花团伙的新样本及对应的通信基础设施，发现海莲花团伙活动的一些变化。
+2017年9月，微步在线发布报告表明，在最新的攻击活动中APT32使用过微软的OneDrive云服务来托管相关木马。
+2017年11月6日，Volexity发布报告称APT32通过针对性的JavaScript脚本进行信息收集，修改网页视图，配合社会工程学诱导受害人点击安装恶意软件或者登陆钓鱼页面，以进行下一步的攻击渗透。
+2017年11月，微步在线发布报告表明，APT32 的攻击活动近期仍在持续，且有加剧趋势。攻击主要使用的木马为Denis木马的最新变种，主要使用Amazon S3云存储服务来托管相关木马。
+2017年11月23日，360团队发布报告称，海莲花团伙在大半年内入侵了大量网站执行水坑式攻击。其通过入侵目标相关的网站植入恶意JavaScript获取系统基本信息，筛选出感兴趣的目标，诱导其执行所提供的恶意程序从而植入远控后门。
+
+二、攻击目标
+1. 2012年至2015年的三年间：
+主要针对中国政府、科研院所、海事机构、海域建设、航运企业等相关重要领域。
+新闻记者、活动家、持不同政见者、博客作者、西方立法机关、越南的新闻媒体等也都遭受过攻击。
+感染者遍布中国29个省级行政区和境外的36个国家。
+
+2. 2017年初，攻击与越南国家利益相关的私营企业，涉及到越南的制造业，消费品以及酒店业等多个行业。
+
+3. 2017年中，中国、柬埔寨和越南等国家的相关机构遭受到了APT32的定向攻击。
+
+4. 2017年11月左右，中国、柬埔寨、菲律宾、老挝、韩国等亚洲国家的政府、军事机构和大型企业，以及东盟组织和越南的媒体、人权和公民社会等相关的组织和个人遭到过APT32的定向攻击。
+
+三、攻击目的
+窃取感染目标电脑中的机密数据。
+收集受害者信息，通过钓鱼页面等方式获取受害者邮箱账号并执行进一步的攻击。
+
+四、攻击手段
+1. 第一阶段 
+主要通过鱼叉攻击和水坑攻击等方法，配合多种社会工程学手段进行渗透，向特定目标人群传播特种木马程序或后门。
+
+2. 第二阶段 
+通过木马程序或后门秘密控制部分政府人员、外包商和行业专家等攻击目标的电脑系统，窃取系统中相关领域的机密资料。
+
+3. 此外，OceanLotus 组织经常变换下载服务器和 C2服务器的域名和IP ，以隐藏其真实身份。
+
+五、IOC
+文件 类型
+MD5 7e68371ba3a988ff88e0fb54e2507f0d 文件
+MD5 0529b1d393f405bc2b2b33709dd57153 文件
+MD5 9fea62c042a8eda1d3f5ae54bad1e959 文件
+MD5 486bb089b22998ec2560afa59008eafa 文件
+MD5 b778d0de33b66ffdaaf76ba01e7c5b7b 文件
+MD5 53e5718adf6f5feb2e3bb3396a229ba8 文件
+MD5 d39edc7922054a0f14a5b000a28e3329 文件
+MD5 41bced8c65c5822d43cadad7d1dc49fd 文件
+MD5 5458a2e4d784abb1a1127263bd5006b5 文件
+MD5 ce50e544430e7265a45fab5a1f31e529 文件
+MD5 4f761095ca51bfbbf4496a4964e41d4f 文件
+MD5 e9abe54162ba4572c770ab043f576784 文件
+MD5 fba089444c769700e47c6b44c362f96b 文件
+MD5 f6ee4b72d6d42d0c7be9172be2b817c1 文件
+MD5 aa1f85de3e4d33f31b4f78968b29f175 文件
+MD5 5180a8d9325a417f2d8066f9226a5154 文件
+MD5 f6ee4b72d6d42d0c7be9172be2b817c1 文件
+MD5 6baafffa7bf960dec821b627f9653e44 文件
+MD5 471a2e7341f2614b715dc89e803ffcac 文件
+MD5 f1af6bb36cdf3cff768faee7919f0733 文件
+MD5 bc1ccc120d185a0c36b191ec6b74397c 文件
+MD5 42123d2493598c9ac9803fe1b92ed032 文件
+MD5 3b53e66f34beb3cd30e6a7da457e86c8 文件
+MD5 3bd041ef488806c55fbc40b4af24eabb 文件
+MD5 46745e29f15eedfabba7e080f6295200 文件
+MD5 d1e614479fee318904442c16c5ef4877 文件
+MD5 1f8ade068ba6fbfe8605e0946bf2d79f 文件
+MD5 c117ea93410ad849e7a3ff9293bcd9ab 文件
+SHA256 7c2b7593bcabdb253ebcf4905367d6760f53ac118edb70a305502ef11a63ec12 文件
+SHA256 b6242d27c437a44b670c7a9a8a6bd2a92f6c4d66615310fadad146605d73e600 文件
+SHA256 6b2a24e2818efff0e4571ae24f1aaffb9745c8b1426bfa57e6a7c067a7a074f8 文件
+SHA256 a87a14347dfa87128a5e5eb85067dbb6aac9d28484c08923c55c36ab1a3a99fa 文件
+SHA256 a70e7d11fb221210b50691d2904712313bc94370dd7893bf1bf4501018a112a9 文件
+SHA256 4331c18483950c9a48a71a9b1d9b26ad1e2216d170898c22494900c8fc5e36dd 文件
+SHA256 9d57ce4d1578fe7b3651a98b41a62888a1b228d6152acfd3b5c3e0b4c81c77ad 文件
+SHA256 7c2b7593bcabdb253ebcf4905367d6760f53ac118edb70a305502ef11a63ec12 文件
+SHA256 b6242d27c437a44b670c7a9a8a6bd2a92f6c4d66615310fadad146605d73e600 文件
+SHA256 ef68cfad4cdae58624d12ff97ae00e68aafae9e6f33f3bd23dffc37869a1e578 文件
+SHA256 e7c855161c6240beb0dec7b8209df8289be22eb9665cf71cf76228472c9de8b5 文件
+SHA256 023a4f500af9aac9960066a96fb0d811e4e25df7d9d564b3d0cc899b7c2bb5b3 文件
+SHA256 e13cd452c0d9b8fa1a6f3a3b8722e35870efa0bec90bedf4eb757a9fe4c0c27b 文件
+SHA256 16fdb8f388f5a8737130d952f752fc9201ffde8549ae583c7582ab01147d171d 文件
+SHA256 82369d8e376beb0c26d93e16f9794139163ce14e394d113a84a40f96bcde0cbb 文件
+SHA256 45243bd5eb94718bcc0b36d941989d9e2d8c9329c059c3e537513e7fa21e0f5a 文件
+SHA256 ef68cfad4cdae58624d12ff97ae00e68aafae9e6f33f3bd23dffc37869a1e578 文件
+SHA256 e7c855161c6240beb0dec7b8209df8289be22eb9665cf71cf76228472c9de8b5 文件
+SHA256 023a4f500af9aac9960066a96fb0d811e4e25df7d9d564b3d0cc899b7c2bb5b3 文件
+SHA256 b6b872de14275866bed7d9a7f685a382a29fa298394d21cdd365de452db5a3c8 文件
+SHA256 5dff6bc9e8898f2ed09ced9ac23b7e4d867e90c3efbe42726edcb01ecb0b1673 文件
+SHA256 bdb83301a470d202480274df161638f83f8f26e7dda131a11b89a5a3d8259c73 文件
+SHA256 198e3c9e6f3dbcf586ac90486187ebfffdeb1c5d663131fc60c45451b04cce7a 文件
+SHA256 5091430fac8b608ac612c35a1e29ce47cdeb22429657460dddc660727806b511 文件
+SHA256 a17d4568ad5f745d36fc17846d3e0edf63d4e3c9fccb9861579e957f7a560217 文件
+SHA256 8f00c2dab8cc32e0052b7779de0bdc8faa385e890415555e86efdfc3b01cc504 文件
+SHA256 890e5bd2650399d7fc3b543e8d1e65c0385f4d6003186245c8574c1913ca5d64 文件
+SHA256 30d06e100215461ad1c5b3bdb7a3b65c61f0ad27ebd733c7a37f40bd4b64932e 文件
+SHA256 c24e6d402a5adf1ece2d6a3dbe270e0904d43119d68e7862555505825a273cad 文件
+SHA256 4ab2df974e5e563f611d7267916a00c18f819f5b8770ffcfadc5e1959047fb8e 文件
+SHA256 d7549b1ddd668c5706b680654b2c39b6e401c55ecf25d0c4b1bff6468426e7ed 文件
+SystemEventsBrokers.xml 文件
+NTDSs.xml 文件
+2018年加薪及任命决定征求意见表.exe 文件
+请查收8月和9月的工资单.doc 文件
+
+域名 类型 简介
+pad.werzo[.]net 域名 C2，MAC OS；绑定IP：185.29.8[.]39
+shop.ownpro[.]net 域名 C2，MAC OS；绑定IP：185.29.8[.]39
+ssl.sfashi[.]com 域名 C2；绑定IP：176.31.22[.]77；注册时间：2014/2/8
+kiifd.pozon7[.]net 域名 C2，MAC OS；绑定IP：173.208.157[.]117
+cdn.libjs[.]co 域名 C2；绑定IP：62.113.238[.]135；注册时间：2014/2/8
+sin04s01.listpaz[.]com 域名 C2；绑定IP：193.169.244[.]73；注册时间：2014/2/8
+high.expbas[.]net 域名 C2；绑定IP：91.229.77[.]179；注册时间：2014/2/8
+img.fanspeed[.]net 域名 C2；注册时间：2014/2/8
+active.soariz[.]com 域名 C2；绑定IP：193.169.244[.]73；注册时间：2014/2/8
+zone.mizove[.]com 域名 C2；绑定IP：193.169.244[.]73；注册时间：2014/2/8
+dc.jaomao69[.]info 域名 Downloader；绑定IP：146.0.43[.]107
+cdn.jaomao69[.]info 域名 C2；绑定IP：146.0.43[.]107；注册时间：2014/2/8
+download.mail-attach[.]net 域名 Downloader；注册时间：2014/4/2
+cnf.flashads[.]org 域名 钓鱼服务器；绑定IP：128.127.106[.]243
+cn.flashads[.]org 域名 钓鱼服务器，Downloader， DNS；绑定IP：128.127.106[.]243
+cv.flashads[.]org 域名 钓鱼服务器；绑定IP：128.127.106[.]243
+cp.flashads[.]org 域名 钓鱼服务器；绑定IP：128.127.106[.]243
+fpdownload.shockwave.flashads[.]org 域名 Downloader；绑定IP：128.127.106[.]243
+authen.mail.hairunaw.com.l.main.userapp[.]org 域名 Downloader；绑定IP：192.187.120[.]45
+jsquery[.]net 域名 C2；绑定IP：64.62.174[.]176；注册时间：2014/2/8
+gs.kroger7[.]net 域名 C2；绑定IP：167.114.184[.]117；注册时间：2014/2/8
+autoupdate.adobe[.]com 域名 通过域名劫持伪造的Adobe 子域名
+24.datatimes[.]org 域名 C2 Infrastructure
+blog.docksugs[.]org 域名 C2 Infrastructure
+blog.panggin[.]org 域名 C2 Infrastructure
+contay.deaftone[.]com 域名 C2 Infrastructure
+check.paidprefund[.]org 域名 C2 Infrastructure
+datatimes[.]org 域名 C2 Infrastructure
+docksugs[.]org 域名 C2 Infrastructure
+economy.bloghop[.]org 域名 C2 Infrastructure
+emp.gapte[.]name 域名 C2 Infrastructure
+facebook-cdn[.]net 域名 C2 Infrastructure
+gap-facebook[.]com 域名 C2 Infrastructure
+gl-appspot[.]org 域名 C2 Infrastructure
+help.checkonl[.]org 域名 C2 Infrastructure
+high.expbas[.]net 域名 C2 Infrastructure
+high.vphelp[.]net 域名 C2 Infrastructure
+icon.torrentart[.]com 域名 C2 Infrastructure
+images.chinabytes[.]info 域名 C2 Infrastructure
+imaps.qki6[.]com 域名 C2 Infrastructure
+img.fanspeed[.]net 域名 C2 Infrastructure
+job.supperpow[.]com 域名 C2 Infrastructure
+lighpress[.]info 域名 C2 Infrastructure
+menmin.strezf[.]com 域名 C2 Infrastructure
+mobile.pagmobiles[.]info 域名 C2 Infrastructure
+news.lighpress[.]info 域名 C2 Infrastructure
+notificeva[.]com 域名 C2 Infrastructure
+nsquery[.]net 域名 C2 Infrastructure
+pagmobiles[.]info 域名 C2 Infrastructure
+paidprefund[.]org 域名 C2 Infrastructure
+push.relasign[.]org 域名 C2 Infrastructure
+relasign[.]org 域名 C2 Infrastructure
+share.codehao[.]net 域名 C2 Infrastructure
+seri.volveri[.]net 域名 C2 Infrastructure
+ssl.zin0[.]com 域名 C2 Infrastructure
+static.jg7[.]org 域名 C2 Infrastructure
+syn.timeizu[.]net 域名 C2 Infrastructure
+teriava[.]com 域名 C2 Infrastructure
+timeizu[.]net 域名 C2 Infrastructure
+tonholding[.]com 域名 C2 Infrastructure
+tulationeva[.]com 域名 C2 Infrastructure
+untitled.po9z[.]com 域名 C2 Infrastructure
+update-flashs[.]com 域名 C2 Infrastructure
+vieweva[.]com 域名 C2 Infrastructure
+volveri[.]net 域名 C2 Infrastructure
+vphelp[.]net 域名 C2 Infrastructure
+yii.yiihao126[.]net 域名 C2 Infrastructure
+zone.apize[.]net 域名 C2 Infrastructure
+engine.lanaurmi[.]com 域名 C2，该域名于2017年4月3日集中注册
+movies.onaldest[.]com 域名 C2，该域名于2017年4月3日集中注册
+images.andychroeder[.]com 域名 C2，该域名于2017年4月3日集中注册
+png.eirahrlichmann[.]com 域名 C2，该域名于2017年4月3日集中注册
+store.shoesadidas[.]net 域名 C2
+chinanetworkvub[.]info 域名 于2017年3月23日注册，并且使用
+lawph[.]info 域名 与b6242d27c437a44b670c7a9a8a6bd2a92f6c4d66615310fadad146605d73e600相关
+blog.panggin[.]org 域名 C2，曾在APT32针对中国的相关攻击中使用
+womenofchina[.]info 域名 与4331c18483950c9a48a71a9b1d9b26ad1e2216d170898c22494900c8fc5e36dd相关
+system.galaburner[.]info 域名 C2，与mx.powergala[.]info、smtp.galamower[.]com、help.galaspot[.]net相关
+mx.powergala[.]info 域名 C2，与system.galaburner[.]info、smtp.galamower[.]com、help.galaspot[.]net相关
+smtp.galamower[.]com 域名 C2，与system.galaburner[.]info、mx.powergala[.]info、help.galaspot[.]net相关
+help.galaspot[.]net 域名 C2，与system.galaburner[.]info、mx.powergala[.]info、smtp.galamower[.]com相关
+yii.yiihao126[.]net 域名 C2，曾在APT32针对中国的相关攻击中使用
+listpaz[.]com 域名
+bull.pengpi[.]net 域名
+dez.raizpox[.]com 域名
+msofficecloud[.]org 域名 与a87a14347dfa87128a5e5eb85067dbb6aac9d28484c08923c55c36ab1a3a99fa相关
+dload01.s3.amazonaws[.]com 域名 C2服务器
+download-attachments.s3.amazonaws[.]com 域名 C2服务器
+a.doulbeclick[.]org 域名 用于分发恶意JavaScript的域名
+ad.adthis[.]org 域名 用于分发恶意JavaScript的域名
+ad.jqueryclick[.]com 域名 用于分发恶意JavaScript的域名
+ad.linksys-analytic[.]com 域名 用于分发恶意JavaScript的域名
+ads.alternativeads[.]net 域名 用于分发恶意JavaScript的域名
+api.2nd-weibo[.]com 域名 用于分发恶意JavaScript的域名
+api.analyticsearch[.]org 域名 用于分发恶意JavaScript的域名
+api.baiduusercontent[.]com 域名 用于分发恶意JavaScript的域名
+api.disquscore[.]com 域名 用于分发恶意JavaScript的域名
+api.fbconnect[.]net 域名 用于分发恶意JavaScript的域名
+api.querycore[.]com 域名 用于分发恶意JavaScript的域名
+apps.identrust[.]com 域名 用于分发恶意JavaScript的域名
+browser-extension.jdfkmiabjpfjacifcmihfdjhpnjpiick[.]com 域名 用于分发恶意JavaScript的域名
+cache.akamaihd-d[.]com 域名 用于分发恶意JavaScript的域名
+cdn-js[.]com 域名 用于分发恶意JavaScript的域名
+cdn.adsfly[.]co 域名 用于分发恶意JavaScript的域名
+cdn.disqusapi[.]com 域名 用于分发恶意JavaScript的域名
+cloud.corewidget[.]com 域名 用于分发恶意JavaScript的域名
+cloudflare-api[.]com 域名 用于分发恶意JavaScript的域名
+core.alternativeads[.]net 域名 用于分发恶意JavaScript的域名
+cory.ns.webjzcnd[.]com 域名 用于分发恶意JavaScript的域名
+d3.advertisingbaidu[.]com 域名 用于分发恶意JavaScript的域名
+eclick.analyticsearch[.]org 域名 用于分发恶意JavaScript的域名
+google-js[.]net 域名 用于分发恶意JavaScript的域名
+google-js[.]org 域名 用于分发恶意JavaScript的域名
+google-script[.]net 域名 用于分发恶意JavaScript的域名
+googlescripts[.]com 域名 用于分发恶意JavaScript的域名
+gs.baidustats[.]com 域名 用于分发恶意JavaScript的域名
+health-ray-id[.]com 域名 用于分发恶意JavaScript的域名
+hit.asmung[.]net 域名 用于分发恶意JavaScript的域名
+jquery.google-script[.]org 域名 用于分发恶意JavaScript的域名
+js.ecommer[.]org 域名 用于分发恶意JavaScript的域名
+linked.livestreamanalytic[.]com 域名 用于分发恶意JavaScript的域名
+linksys-analytic[.]com 域名 用于分发恶意JavaScript的域名
+live.webfontupdate[.]com 域名 用于分发恶意JavaScript的域名
+s.jscore-group[.]com 域名 用于分发恶意JavaScript的域名
+s1.gridsumcontent[.]com 域名 用于分发恶意JavaScript的域名
+s1.jqueryclick[.]com 域名 用于分发恶意JavaScript的域名
+ssl.security.akamaihd-d[.]com 域名 用于分发恶意JavaScript的域名
+stat.cdnanalytic[.]com 域名 用于分发恶意JavaScript的域名
+static.livestreamanalytic[.]com 域名 用于分发恶意JavaScript的域名
+stats.corewidget[.]com 域名 用于分发恶意JavaScript的域名
+stats.widgetapi[.]com 域名 用于分发恶意JavaScript的域名
+track-google[.]com 域名 用于分发恶意JavaScript的域名
+update.akamaihd-d[.]com 域名 用于分发恶意JavaScript的域名
+update.security.akamaihd-d[.]com 域名 用于分发恶意JavaScript的域名
+update.webfontupdate[.]com 域名 用于分发恶意JavaScript的域名
+upgrade.liveupdateplugins[.]com 域名 用于分发恶意JavaScript的域名
+widget.jscore-group[.]com 域名 用于分发恶意JavaScript的域名
+wiget.adsfly[.]co 域名 用于分发恶意JavaScript的域名
+
+地址 类型 简介
+185.29.8[.]39 地址 绑定域名：pad.werzo[.]net，shop.ownpro[.]net
+176.31.22[.]77 地址 绑定域名：ssl.sfashi[.]com
+173.208.157[.]117 地址 绑定域名：kiifd.pozon7[.]net
+62.113.238[.]135 地址 绑定域名：cdn.libjs[.]co
+193.169.244[.]73 地址 绑定域名：sin04s01.listpaz[.]com
+91.229.77[.]179 地址 绑定域名：high.expbas[.]net
+193.169.244[.]73 地址 绑定域名：active.soariz[.]com，zone.mizove[.]com
+146.0.43[.]107 地址 绑定域名：dc.jaomao69[.]info，cdn.jaomao69[.]info
+128.127.106[.]243 地址 绑定域名：cnf.flashads[.]org，cn.flashads[.]org，cv.flashads[.]org，cp.flashads[.]org
+192.187.120[.]45 地址 绑定域名：authen.mail.hairunaw.com.l.main.userapp[.]org
+64.62.174[.]176 地址 绑定域名：jsquery[.]net
+167.114.184[.]117 地址 绑定域名：gs.kroger7[.]net
+103.53.197[.]202 地址 C2 Infrastructure
+104.237.218[.]70 地址 C2 Infrastructure
+104.237.218[.]72 地址 C2 Infrastructure
+185.157.79[.]3 地址 C2 Infrastructure
+193.169.245[.]78 地址 C2 Infrastructure
+193.169.245[.]137 地址 C2 Infrastructure
+23.227.196[.]210 地址 C2 Infrastructure
+80.255.3[.]87 地址 C2 Infrastructure
+108.170.20[.]88 地址
+185.64.104[.]229 地址
+185.141.27[.]116 地址 与4331c18483950c9a48a71a9b1d9b26ad1e2216d170898c22494900c8fc5e36dd相关
+193.169.244[.]213 地址 被绑定到域名smtp.galamower[.]com和help.galaspot[.]net上
+
+URL 类型 简介 日期 来源
+store[.]shoesadidas.net:80/newmodel[.]png URL 目前还处于活动状态
+
+邮箱 类型 简介 日期
+josephgaze[@]gmx.com 邮箱
+socialnetmake[@]gmail.com 邮箱 system.galaburner[.]info和mx.powergala[.]info的注册邮箱

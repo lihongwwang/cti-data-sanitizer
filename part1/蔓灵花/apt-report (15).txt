@@ -1,0 +1,210 @@
+﻿2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+蔓灵花（BITTER）近期活跃样本分析
+原创 山石网科情报中心 山石网科安全技术研究院 2023-12-21 10:52 发表于广东
+
+背景介绍
+
+蔓灵花组织，又称为BITTER、APT-C-08。是一支据称有南亚背景的高级持久性威
+胁组织。最早活跃于2013年，以东南亚地区周边国家为主要活动区域，专注于对高价值
+单位，如政府部门、能源企业、军工企业、高校等等进行长期的数据监控和信息窃取。
+本次山石情报中心将针对近期海外设备发现的一个蔓灵花相关的样本功能进行分析。
+
+总体流程
+
+样本分析
+
+MSI：
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 1/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+通过解析msi结构，可以看到msi中包含了一个文件“msrete.exe”。
+
+Msrete.exe：
+
+查看msrete.exe中pe信息，可以看到该文件为.Net文件。
+
+加载到dnspy进行分析，在main函数可以看到如下结构。
+
+其中在ProcessClient.Initialize函数中可以看到注册功能函数。
+
+函数指令和指定代码对应如下：
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 2/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+Name opcode
+
+FileMgr get drives 18
+
+FileMgr get Folders 19
+
+Get Comand 35
+
+Sart Comand Prompt 36
+
+FileTransfer Begin 38
+
+FileTransfer Data 39
+
+FileTransfer Complete 40
+
+FileTransfer for downloading start 41
+
+Get Command 48
+
+Start Command Prompt 49
+
+Stop Command Prompt 50
+
+Connection Status 51
+
+指令详解：
+
+“FileMgr get drives”
+
+上传设备硬盘信息数据：
+
+“FileMgr get Folders”
+
+该函数分为两部分，第一部分上传文件夹信息，第二部分上传文件信息。
+
+发送指定文件夹内包含子文件夹路径。
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 3/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+发送文件夹内文件信息，包含文件名、最后更改时间、拓展名、文件大小等。
+
+“Get Comand”
+
+通过”powershell”执行指定命令，并将执行结果发送给服务器。
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 4/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+“Sart Comand Prompt”
+
+创建powershell.exe进程，通过管道进行通信，向远端服务器提供shell。
+
+“FileTransfer Begin”
+
+添加指定文件路径到传输列表，并置空传输数据。
+
+若当前路径已有文件存在，则将文件重命名为“原名称 + {1}“
+
+“FileTransfer Data”
+
+向指令路径文件写入数据。
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 5/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+“FileTransfer Complete”
+
+从文件传输列表中删除指定文件路径。
+
+“FileTransfer for downloading start”
+
+ 将指定文件上传至服务器。
+
+该指令与上述提到的三个指令类似，但不同的是该指令是将文件传输至服务器。核
+心代码如下，在传输的过程中会将文件拆分为30000000字节大小的数据块进行传输。
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 6/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+“Get Command”
+
+创建“cmd”进程执行指令：
+
+编号35和48的两个进程之间指令不一样的点在于启动的进程不同，该程序使用硬编
+码保留了两个进程的路径，两者路径区别如下：
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 7/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+上方为35编号的进程路径
+下发为48编号的进程路径
+
+“Start Command Prompt”
+
+“Stop Command Prompt”
+
+编号49和50的指令为一组，向远端服务器提供shell，与编号“36”的指令相类似，
+不同的在于49和50的指令创建的进程为cmd.exe。
+
+“Connection Status”
+
+无动作，推测功能为心跳包。
+
+IOC
+
+Md5：
+de7080b60f2dc1f5c92fc126d8c668bf
+c65ec525f6c7738e75404ef734fef4d4
+
+domain：
+loganwcshost.com
+
+处置建议
+
+可使用山石网科防火墙和NIPS产品的C2和AV防护模块来防范该风险，请确保将特
+征库升级最新版本。山石网科防火墙与态势感知云景可以有效地预警并拦截与APT组织
+相关的威胁情报（IOC）和恶意行为。
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 8/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+关于山石网科情报中心
+
+山石网科情报中心，涵盖威胁情报狩猎运维和入侵检测与防御团队。 山石网科情报
+中心专注于保护数字世界的安全。以情报狩猎、攻击溯源和威胁分析为核心，团队致力
+于预防潜在攻击、应对安全事件。山石网科情报中心汇集网络安全、计算机科学、数据
+分析等专家，多学科融合确保全面的威胁分析。我们积极创新，采用新工具和技术提升
+分析效率。团队协同合作，分享信息与见解，追求卓越，为客户保驾护航。无论是防范
+未来威胁还是应对当下攻击，我们努力确保数字世界安全稳定。其中山石网科网络入侵
+检测防御系统，是山石网科公司结合多年应用安全的攻防理论和应急响应实践经验积累
+的基础上自主研发完成，满足各类法律法规如PCI、等级保护、企业内部控制规范等要
+求。
+
+山石云瞻威胁情报中心：
+https://ti.hillstonenet.com.cn/
+
+山石云影沙箱：
+https://sandbox.hillstonenet.com.cn/
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 9/10
+
+
+
+2024/1/19 10:58 蔓灵花（BITTER）近期活跃样本分析
+
+威胁情报 16 山石网科情报中心 18
+
+https://mp.weixin.qq.com/s/o8KeGK1DKFfXCQT2KFdhHA 10/10

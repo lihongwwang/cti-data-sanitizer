@@ -1,0 +1,65 @@
+APT32 (OceanLotus) — Một chiến dịch APT bài bản như thế nào … (Phần 1)
+
+Phần 1: Email Phishing của attacker và những kỹ thuật cơ bản
+Email anh bạn xã hội gửi cho tôi có tiêu đề “Apply CV at … — Nguyen Minh Duc” được gửi từ địa chỉ minhduc90.ng@gmail.com
+
+Với nội dung kiểu: Tôi đọc được thông tin tuyển dụng ở trên Facebook và cảm thấy tôi đỉnh kout trong lĩnh vực này nên nộp CV :)
+
+Email giả mạo việc nộp CV xin việc có đính kèm link download CV
+
+Tôi chụp lại 1 đoạn email thôi chứ thực chất luồng email là cả 1 quá trình mồi chài người dùng và dẫn dắt đến việc download file CV-ducnguyenminh.doc về(MD5: CB39E2138AF92C32E53C97C0AA590D48) theo url: https://mycv[.]vip/downloads/cv-ducnguyenminh.doc.
+
+File doc được download về thuộc dạng MIME DOC, trong bụng nó có chứa 1 thằng ActiveMime (ở đây chính là thằng editdata.mso — trong file MIME DOC nó được encode bằng Base64). Gặp định dạng maldoc kiểu này anh em cứ kéo thẳng xuống cuối để xem FileList xem có thằng mso nào không :)
+
+Tôi dump đoạn editdata.mso ra và decode nó với Base64 để có ActiveMime object. Đối với ActiveMime thì đơn giản là ta dùng zlib-compressed data ở offset 0x32 (cái này là theo cấu trúc của ActiveMime).
+
+Chạy đoạn code python nhỏ trên thu được file OleObject, OleObject này chứa Macro bên trong. Macro có nhiệm vụ giải mã Base64 để dump ra 2 file WinwordUpdates.exe và wwlib.dll vào thư mục Appdata và tạo taskjob để thực thi file WinwordUpdates.exe:
+
+Để dump 02 files này ra ta có 2 cách:
+
+• Cách 1: Mở file doc lên và Run code Macro trong file doc lên rồi vào thư mục Appdata để lấy file -> Hơi thủ công (Tất nhiên là nên chạy trong máy ảo)
+
+• Cách 2: Tìm kiếm String “TVqQAAMAAAAEAAAA” trong file MIME DOC (sẽ tìm được 2 đoạn chính là 2 đoạn encoded base64 của 2 file này) rồi copy đoạn Base64 mang ra decode -> Cách này có tí đầu óc :))
+
+2 files dump được ra bao gồm 1 file chuẩn và 1 file là mã độc
+
+Phân tích 2 file dump:
+
+WinwordUpdates.exe — CEAA5817A65E914AA178B28F12359A46: File có chữ ký của Microsoft
+
+wwlib.dll — 8CCFD46A24D3BCBEE934AF91DDA8483D: File mã độc, trùng với tên file chuẩn được mặc định load lên khi WinwordUpdates.exe thực thi.
+
+File wwlib.dll độc hại được load lên bởi file WinwordUpdates.exe bằng hàm LoadLibraryW rồi gọi hàm export FMain:
+
+LoadLibraryW trong WinwordUpdates.exe -> gọi hàm FMain
+
+Hàm export FMain sẽ được gọi sau khi wwlib.dll được load lên
+
+Việc phân tích file wwlib.dll tôi không đi quá sâu vì kỹ thuật tuy hơi loằng ngoằng chút nhưng sau 1 vài breakpoints tôi cũng đến được chỗ cần đến:
+
+Url: https://outlook[.]updateoffices[.]net/vean32[.]png
+
+Tại thời điểm phân tích thì tôi không download file vean32.png được nữa. C&C này chắc anh em nhìn cũng quen vì thấy trên Kiểm tra thử với virustotal thì cũng thấy khá nhiều thứ đặt trên C&C này:
+
+C&C: outlook[.]updateoffices[.]net — 88[.]150[.]138[.]114
+
+Kết thúc phần 1: Có thể nhiều anh em thấy chưa có gì hấp dẫn lắm, một phần chắc với trình độ cao siêu hơn nên thấy bình thường hoặc có thể nghĩ đây cũng chỉ là 1 mẫu APT như bao mẫu khác. Anh em nếu hứng thú thì tiếp tục với phần 2 nhé :D
+
+IoCs:
+C&C:
+
+• outlook[.]updateoffices[.]net
+
+• 88[.]150[.]138[.]114
+
+• https://outlook[.]updateoffices[.]net/vean32[.]png
+
+MD5 Hash:
+
+• WinwordUpdates.exe — CEAA5817A65E914AA178B28F12359A46
+
+• wwlib.dll — 8CCFD46A24D3BCBEE934AF91DDA8483D
+
+• CV-ducnguyenminh.doc — CB39E2138AF92C32E53C97C0AA590D48
+
+To be continued …

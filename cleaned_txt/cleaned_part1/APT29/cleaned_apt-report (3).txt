@@ -1,0 +1,29 @@
+HPE notifies employees of data breach after Russian Office 365 hack
+
+Hewlett Packard Enterprise (HPE) is notifying employees whose data was stolen from the company's Office 365 email environment by Russian state-sponsored hackers in a May 2023 cyberattack.
+
+According to filings with Attorney General offices in New Hampshire and Massachusets, HPE started sending the breach notification letters last month to at least 16 people who had their driver's licenses, credit card numbers, and Social Security numbers stolen.
+
+"HPE's forensic investigation determined that certain individuals' personal information may have been subject to unauthorized access," the company says in the letters. "On January 29, 2025, HPE began providing notice of this event to impacted individuals, in accordance with applicable law."
+
+When asked to share the number of employees affected by this data breach, an HPE spokesperson said it was "a limited group of HPE team member mailboxes that were accessed, and only the information contained in those mailboxes was involved."
+
+The group behind the attack, Cozy Bear (also known as Midnight Blizzard, APT29, and Nobelium), is believed to be part of Russia's Foreign Intelligence Service (SVR) and has also been linked to other high-profile breaches, including the infamous 2020 SolarWinds supply chain attack.
+
+The HPE breach incident was first disclosed in an SEC filing on January 29, 2024, when the company said it was notified on December 12 that suspected Russian hackers breached its cloud-based Office 365 email environment in May 2023 using a compromised account.
+
+"We determined that this nation-state actor accessed and exfiltrated data beginning in May 2023 from a small percentage of HPE mailboxes belonging to individuals in our cybersecurity, go-to-market, business segments, and other functions. We believe the nation-state actor is Midnight Blizzard, also known as Cozy Bear," HPE told BleeingComputer at the time.
+
+"The accessed data is limited to information contained in the users' mailboxes. We continue to investigate and will make appropriate notifications as required."
+
+Sharepoint server breached by the same hackers
+
+In the SEC filing, HPE added that the Office 365 incident was likely related to another May 2023 breach, when threat actors accessed the company's SharePoint server and stole files.
+
+Days before HPE's disclosure, Microsoft also warned that Cozy Bear hackers stole data from corporate email accounts and source code repositories. They first breached Microsoft's network in November 2024 in a password spray attack to access a legacy non-production test tenant account.
+
+HPE was previously breached in 2018 when Chinese malicious actors hacked into its network and used that access to breach its customers' devices.
+
+In 2021, it also disclosed that the data repos for its Aruba Central network monitoring platform had been compromised, allowing a threat actor to access information about monitored devices and their locations.
+
+More recently, in February 2024 and January 2025, the company started investigating other potential security breaches after a threat actor using the IntelBroker handle claimed to have stolen HPE credentials, source code, and other sensitive information.

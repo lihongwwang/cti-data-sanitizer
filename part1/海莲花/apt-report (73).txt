@@ -1,0 +1,331 @@
+﻿2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+海莲花 APT32 OceanLotus KerrDown CobaltStrikeBeacon
+
+【 微 步 在 线 报 告 】 “ 海 莲 花 ” 组 织 私 有 木 马   K e r r D o w n   攻 击 手 法 及 相   关
+活 动 分 析
+
+微步情报局
++ 关注
+
+2019-03-21 16:22:04 966
+
+T A G : 高 级 可 持 续 攻 击 、 海 莲 花 、 中 国 、 政 府 、 金 融 、 越 南 、 A P T 3 2 、 O c e a n L o t u s 、 K e r r D o w n 、 C o b a l t
+S t r i k e B e a c o n
+
+T L P : 白 （ 报 告 转 发 及 使 用 不 受 限 制 ）
+
+日 期 : 2 0 1 9 - 0 3 - 0 7  
+
+概要
+“ 海 莲 花 ” ， 又 名   A P T 3 2   和   O c e a n L o t u s ， 是 越 南 背 景 的 黑 客 组 织 。 该 组 织 至 少 自   2 0 1 2   年 开 始 活 跃 ，
+长   期 针 对 中 国 能 源 相 关 行 业 、 海 事 机 构 、 海 域 建 设 部 门 、 科 研 院 所 和 航 运 企 业 等 进 行 网 络 攻 击 。 除 中 国
+外 ， “ 海   莲 花 ” 的 目 标 还 包 含 全 球 的 政 府 、 军 事 机 构 和 大 型 企 业 ， 以 及 本 国 的 媒 体 、 人 权 和 公 民 社 会 等 相 关
+的 组 织   和 个 人 。
+
+本 报 告 主 要 针 对   K e r r D o w n   木 马 的 攻 击 手 法 和 相 关 活 动 进 行 分 析 。 相 关 发 现 包 含 :
+
+APT32 至少自 2018 年开始积极使用 KerrDown 下载器，用于投递 Cobalt Strike Beacon 等后门，针对中国和越南语用户进行攻击。
+
+KerrDown 主要通过 MHT 格式的 DOC 文档，包含模板注入的 DOCX 文档，以及 ZIP 和 RAR 格式的压缩包进行投递。
+
+KerrDown 包含多层 Shellcode，多会针对包含 Microsoft、Google、Adobe、Neuber 等公司有效签名的EXE进行 DLL 劫持。
+
+微步在线通过对相关样本、IP 和域名的溯源分析，共提取 13 条相关 IOC，可用于威胁情报检测。微步在线的威胁情报平台(TIP)、威胁检测平台(TDP)、AP
+I 等均已支持此次攻击事件和团伙的检测。
+
+详情
+基 于 黑 客 画 像 和 狩 猎 系 统 ， 微 步 在 线 实 现 了 对 全 球   1 5 0   多 个 黑 客 组 织 持 续 监 控 。 在 针 对   A P T 3 2   的 持 续   监
+控 中 ， 发 现   A P T 3 2   至 少 自   2 0 1 8   年 开 始 积 极 使 用 一 个 自 定 义 的 下 载 器 投 递   C o b a l t   S t r i k e   B e a c o n   等 后
+门 木 马 ， 用 于 针 对 我 国 政 府 、 金 融 等 相 关 目 标 以 及 越 南 语 用 户 进 行 攻 击 。 该 下 载 器 被   P a l o A l t o   命 名 为   K e r r
+D o w n 1 。
+
+K e r r D o w n   主 要 通 过   O f f i c e   文 档 和 压 缩 文 件 作 为 载 体 进 行 投 递 ， 其 中   O f f i c e   文 档 类 载 体 目 前 最 常 用 的 为
+M H T   格 式 的   D O C   文 档 和 包 含 模 板 注 入 的   D O C X   文 档 ， 压 缩 文 件 则 包 含   Z I P   和   R A R   这 两 种 格 式 ， 压 缩
+包 内 的   D L L   文 件 通 常 会 设 置 隐 藏 属 性 。 K e r r D o w n   广 泛 使 用 了   D L L   劫 持 技 术 ， 目 前 发 现 主 要 针 对 包 含   M i
+c r o s o f t 、 G o o g l e 、 A d o b e 、 N e u b e r   等 公 司 有 效 签 名 的   E X E   进 行   D L L   劫 持 。 其 中 最 常 见 的 为   W o r
+d   白 利 用 ， 推 测 是 因   为   W o r d   可 执 行 文 件 自 带   W o r d   文 档 图 标 ， 可 同 时 伪 装 成 文 档 文 件 进 行 钓 鱼 攻 击 ， 因
+此 备 受 青 睐 。 而 为 了 凸   显 伪 装   W o r d   文 档 的 真 实 性 ， 木 马 执 行 后 会 释 放 并 启 动 一 个   W o r d   文 档 迷 惑 受 害
+者 。
+
+微 步 在 线 共 捕 获 近 百   K e r r D o w n   相 关 攻 击 样 本 ， 涉 及 攻 击 活 动 数 十 起 。  
+
+1.Microsoft Word 白利用，针对越南语用户的攻击示例。
+
+诱 饵   1 ( C P L H - N H N N - 0 1 - 2 0 1 9 . r a r ) : 该 样 本 释 放 的 诱 饵 文 档 及 内 容 翻 译 如 下 图 所 示 。 可 以 看 出 是 以 越 南
+国 家 银 行 为 诱 饵 ， 疑 似 针 对 越 南 国 家 银 行 相 关 的 分 支 机 构 进 行 定 向 攻 击 。
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 1/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+ 
+
+诱 饵   2 ( T h u   m o i   2 0 1 9 . r a r ) : 该 样 本 释 放 的 文 件 打 开 显 示 乱 码 ， 但 结 合 攻 击 时 间 和 文 件 名 “ T h u   m o i   t h a m
+d u   h o i   n g h i   t a i   t o a n   q u o c .   C o n g   h o a   x a   h o i   c h u   n g h i a   V i e t   N a m .   D o c   l a p   t u   d o   h a n h   p
+h u c ” 推 测 ， 可 能 是 以 出   席 越 南 总 理 阮 春 福 在   3   月   1   日 主 持 举 行 的 政 府 二 月 例 行 会 议 为 诱 饵 ， 针 对 相 关 人
+员 进 行 定 向 攻 击 。  
+
+2.以简历为诱饵，以包含模板注入功能的 DOCX 文档为载体，针对越南语用户的攻击示例。 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 2/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+诱 饵   1 ( 模 板 注 入 ) : C V - A n t h o n y W e i - C u s t o m e r S e r v i c e . d o c x ， 该 样 本 将 加 密 数 据 存 于 母 体   D O C X   文
+件 ，   通 过 远微程步情模报板局 中 的 宏 代 码 解 密 执 行 。 打 开 界 面 如 下 :   IOC 13
+
+ 
+
+样本分析 
+     KerrDown 主要通过 DOC、DOCX、ZIP 和 RAR 格式文件进行投递，下面分别以 ZIP 和 DOCX 格式样本为例进行分析。 
+
+示例 1:Google 白利用
+样 本   B r o w s e r U p d a t e . z i p   为   Z I P   格 式 的 压 缩 文 件 ， 包 含   B r o w s e r U p d a t e . e x e   和   g o o p d a t e . d l l 。
+其 中 B r o w s e r U p d a t e . e x e   包 含   G o o g l e   有 效 签 名 ， g o o p d a t e . d l l   为 核 心 木 马 程 序 ， 即   K e r r D o w n 。
+g o o p d a t e . d l l   的 主 要   功 能 为 内 存 中 加 载 三 段   S h e l l c o d e ， 然 后 从   h t t p s : / / a m a z o n e . h o p t o . m e / p 2 8
+2   下 载 下 一 阶 段 的   S h e l l c o d e   并 执 行 。 p 2 8 2   实 际 为 一 段   d e c r y p t _ s c   +   P E   文 件 ， 在 内 存 中 被 解 密 后 加
+载 执 行 。 该 样 本 整 体 执 行 流 程 如 下 :
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 3/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+1、样本 goopdate.dll 基本信息如下: 
+
+SHA256 db8e57fbf23f21a6aebeee26afe01dbd3bafa7f0f42ab23fcf04863b14cdb065
+SHA1 1735d5a0f11ba9b9df1d9db9ebb788a4a330e5ac
+MD5 6aab0ff5cb3189505ca9aaf1d602ab28
+文件格式 DLL
+文件大小 83.0 KB
+文件名 goopdate.dll
+
+2、 BrowserUpdate.zip 文件在微步云沙箱的分析结果如下图: 
+
+h t t p s : / / s . t h r e a t b o o k . c n / r e p o r t / f i l e / 9 1 2 7 e 4 c b 1 1 7 c 6 0 4 4 c 7 7 c 6 6 8 5 2 c 6 e 1 f 5 5 3 8 1 9 5 c e 5 c 6 6 d
+5 b 6 5 0 8 6 3 7 c 9 7 8 9 d e 0 1 9 5   / ? s i g n = h i s t o r y & e n v = w i n 7 _ s p 1 _ e n x 8 6 _ o f f i c e 2 0 1 3
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 4/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 5/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+3、 goopdate.dll 的主要功能为 InlineHook 函数 LdrLoadDll，并在 Hook 处理代码中加载第一阶段 Shellcode， 下图为在 LdrL
+oadDll 函数中搜索要 hook 的偏移地址: 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 6/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+设 置   H o o k   的 代 码 :  
+
+4、 第一阶段 Shellcode 加载第二阶段 Shellcode: 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 7/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+5、 接着，第二阶段 Shellcode 同之前分析的某个阶段一样，代码基本一致，其功能也是从内存中解密第三 阶段 Shellcode，并
+加载执行，如下图: 
+
+6、第三阶段 Shellcode 会从地址 https://amazone.hopto.me/p282 下载真正的远控模块，并加载执行，代码如 下: 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 8/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+7、 名为 p282 的 Shellcode 的头部为解密代码，尾部是被加密的 DLL 文件。解密后会调用该 DLL 的导出函 数 ReflectiveLoade
+r 内存加载执行，代码如下: 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 9/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+8、 解密得到的 DLL 文件为 Cobalt Strike Beacon 后门，启动后会根据内嵌的全局配置来确定是与配置中的C2 交互还是以 DG
+A 的方式进行通信，代码如下: 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 10/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+9、当 前 配 置 的 策 略 为 向https://193.111.152.71/s/ref=nb_sb_noss_1/167-3294888-0262949/field-keywords=books 发
+起 C2 连接，其HTTP Headers 伪装 amazon 的 host 以规避检测，如下图: 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 11/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+H T T P   头 伪 装 :  
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 12/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+10、该后门包含的 C2 命令达 76 个之多，具体包含进程注入、文件创建、服务创建、文件释放等等。 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 13/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+示例 2:DOCX(TemplateInject)
+
+样 本   C V - A n t h o n y W e i - C u s t o m e r S e r v i c e . d o c x   的 主 要 功 能 为 加 载   W o r d   远 程 模 板 ， 远 程 模 板 中 带 有
+的 恶 意   宏 代 码 会 从 该   D O C X   文 件 中 提 取 并 释 放 出 两 个   P E   文 件 ， 并 将 其 主 程 序 加 入 到 计 划 任 务 中 。 当 该 服
+务 启 动   后 会 从 内 存 中 加 载 一 个 内 嵌 的   S C L o a d e r ， 从 远 程 服 务 器 下 载   S h e l l c o d e   并 执 行 。 该 样 本 主 要 执 行
+流 程 如 下 :
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 14/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+1、 该样本基本信息如下:
+
+SHA256 c263f4f335e79c299f1605f7a39fc864b60c6721366e2a730292064984ec6918
+SHA1 1d2c3fcfc19d0f9d5f4dc025e100328aa5487afe
+MD5 b1df440e5dd64ffae9f7e792993f2f4c
+
+文件格式 DOCX
+文件大小 555.62 KB
+文件名 CV-AnthonyWei-CustomerService.docx
+
+2、 该样本在微步云沙箱的分析结果如下图所示: 
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 15/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+3、 模板文件中创建服务与解码释放 main_background.png 服务模块的恶意宏代码如下: 
+
+4、 服务模块主要功能是内存加载一个名为 PostData.exe 的内嵌 EXE。 
+
+5、 PostData.exe 通过命令行传入特定参数来下载并执行 Payload。 
+https://m.threatbook.cn/detail/1283?from=groupmessage 16/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+微步情报局 IOC 13
+
+关联分析 
+根 据 木 马 相 关 的 下 载 地 址 ， C 2 ， 以 及   T T P s   等 确 定   K e r r D o w n   为   A P T 3 2   所 有 。 比 如 下 载 地 址 d o w n l o a d
+- a t t a c h m e n t s . s 3 . a m a z o n a w s . c o m   在   2 0 1 7   年   1 1   月 就 被 识 别 为   A P T 3 2   所 有 。
+
+A P T 3 2   拥 有 丰 富 的 ， 自 定 义 的 武 器 库 ， 其 中   K e r r D o w n   为 其 至 少 自   2 0 1 8   年 开 始 积 极 使 用 的 下 载 器 ， 被
+用 于 投 递   C o b a l t   S t r i k e   B e a c o n   等 后 门 。 K e r r D o w n   相 关 攻 击 手 法 画 像 如 下 :
+
+投递载体 DOC(MHT)，DOCX(TemplateInject)，ZIP，RAR
+技术特点 多层 Shellcode，针对 Microsoft、Google、Adobe、Neuber 和 360 等的白加黑 利用
+投递 Payload Cobalt Strike Beacon
+攻击目标 中国，越南语用户
+
+威胁指标（IOC）
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 17/18
+
+
+
+2019/3/22 【微步在线报告】“海莲花”组织私有木马 KerrDown 攻击手法及相 关活动分析 - 微步在线情报社区
+
+IP 端口 域名 样本 标签
+微步情报局 IOC 13
+
+193.111.152.71 1 1 4 3
+
+域名 子域名 历史IP 样本 标签
+
+amazone.hopto.me 1 0 4 4
+
+cortana.homelinux.c… 1 0 6 4
+
+office.allsafebrowsin… 2 0 3 4
+
+trust.zapto.org 1 0 4 4
+
+word.webhop.info 1 0 12 4
+
+Hash 检测结果 样本 标签
+
+208cdaeb25eb64fcb… 3/25 0 0
+
+3b2120b94d68c594… 6/25 0 1
+
+9127e4cb117c6044c… 0/25 0 0
+
+a4b1ddf4fce066070… 3/25 0 0
+
+c263f4f335e79c299f… 2/25 0 2
+
+查看全部7条
+
+1 赞
+
+评论
+
+已有0条评论，快来说说你的想法...
+
+已经到底了，没有更多内容了
+
+https://m.threatbook.cn/detail/1283?from=groupmessage 18/18

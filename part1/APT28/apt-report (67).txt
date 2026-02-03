@@ -1,0 +1,181 @@
+﻿2019/3/25 Russian APT groups target European governments ahead of May ElectionsSecurity Affairs
+
+MUST READ WordPress Social Warfare plugin zero-day exploited in attacks Search...  
+
+Home  Cyber Crime  Cyber warfare  APT  Data Breach  Deep Web  Digital ID  
+
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+Contact me
+
+   
+Russian APT groups target European governments
+
+Sponsored Content
+
+ahead of May Elections
+1. TOP 10 DISABILITY LAWYERS a
+
+March 22, 2019  By Pierluigi Paganini
+
+2. RETIREMENT INCOME PLANNING a
+
+Russian APT groups are targeting European 3. MEDICARE PART B COST FOR 2019 a
+
+governments for cyber-espionage purposes 4. QUALIFY FOR DISABILITY
+BENEFITS a
+
+ahead of the upcoming European elections. 5. BUILD YOUR OWN WEBSITE a
+
+According to experts from FireEye, Russia-linked APT28  
+(aka Fancy Bear, Pawn Storm, Sofacy Group, Sednit, and STRONTIUM) and 
+Sandworm Team (also TeleBots) cyberespionage groups are targeting European governments for
+
+Digging the Deep Web: Exploring the dark
+cyber-espionage purposes ahead of the upcoming European elections.
+
+side of the web
+
+The activity of the Russia-linked groups is focused on NATO member states.
+
+The APT28 group has been active since at least 2007 and it has targeted governments, militaries,
+and security organizations worldwide. The group was involved also in the string of attacks that
+targeted 2016 Presidential election.
+
+According to a report published by Symantec in October, the group was actively conducting cyber
+espionage campaigns against government and military organizations in Europe and South America.
+
+Starting in 2017 and continuing into 2018, the APT28 group returned to covert intelligence gathering
+operations in Europe and South America.
+
+The espionage activity on NATO member states has increased significantly since mid-2018, and it is
+ongoing. 
+
+FireEye revealed that the two Russia-linked APT groups carried out spear-phishing attacks to trick
+victims into revealing government information and credentials.
+
+Experts noticed that the activities of the groups are aligned, but while APT28 was observed using
+custom malware and zero-day exploits, the  
+Sandworm Team mainly used publicly available hacking tools. 
+
+https://securityaffairs.co/wordpress/82772/apt/russian-apt-groups-may-elections.html 1/3
+
+
+
+2019/3/25 Russian APT groups target European governments ahead of May ElectionsSecurity Affairs
+“The groups could be trying to gain access to the targeted networks in order to gather information
+that will allow Russia to make more informed political decisions, or it could be gearing up to leak data
+that would be damaging for a particular political party or candidate ahead of the European elections,”
+explained Benjamin Read, senior manager of cyberespionage analysis at FireEye.
+
+“The link between this activity and the European elections is yet to be confirmed, but the multiple
+voting systems and political parties involved in the elections creates a broad attack surface for
+hackers,” FireEye’s Read said.”
+
++Pierluigi Paganini
+According to The Milpitas, California-based firm, the group also targeted media outlets in France and
+Germany, political opposition groups in Russia, and LGBT organizations with links to Russia.
+
+Pierluigi Paganini is member of the
+FireEye notified targeted organizations after uncovering the espionage campaigns. ENISA (European Union Agency for
+
+Network and Information Security)
+Ad Ad closed by  )Threat Landscape Stakeholder
+
+Stop seeing this ad Group, member of Cyber G7
+
+Why this ad?  Workgroup of the Italian Ministry of
+
+Foreign Affairs and International
+
+Cooperation, Director of the Master
+
+O'Reilly's Graph Databases ­ Free Book in Cyber Security at the Link Campus
+Download University. He is also a Security
+
+Evangelist, Security Analyst and
+Download
+
+Freelance Writer. Editor-in-Chief at
+
+"Cyber Defense Magazine",
+Pierluigi Paganini
+
+(SecurityAffairs – Russian APT group, cyberespionage) Yoroi Blog
+
+ Cyberespionage NATO Pierluigi Paganini Russian APT groups Security Affairs
+
+ 
+SHARE ON             
+
+Pierluigi Paganini  
+
+Pierluigi Paganini is member of the ENISA (European Union Agency for Network
+and Information Security) Threat Landscape Stakeholder Group and Cyber G7
+Group, he is also a Security Evangelist, Security Analyst and Freelance Writer. Yoroi Blog
+Editor-in-Chief at "Cyber Defense Magazine", Pierluigi is a cyber security expert
+with over 20 years experience in the field, he is Certified Ethical Hacker at EC
+Council in London. The passion for writing and a strong belief that security is
+founded on sharing and awareness led Pierluigi to find the security blog
+"Security Affairs" recently named a Top National Security Resource for US. Sponsored Content
+
+Pierluigi is a member of the "The Hacker News" team and he is a writer for
+some major publications in the field such as Cyber War Zone, ICTTF, Infosec
+Island, Infosec Institute, The Hacker News Magazine and for many other
+Security magazines. Author of the Books "The Deep Dark Web" and “Digital
+Virtual Currency and Bitcoin”.
+
+ 
+
+https://securityaffairs.co/wordpress/82772/apt/russian-apt-groups-may-elections.html 2/3
+
+
+
+2019/3/25 Russian APT groups target European governments ahead of May ElectionsSecurity Affairs
+Ad
+
+ PREVIOUS ARTICLE NEXT ARTICLE
+Medtronic's implantable heart Pwn2Own 2019 Day 3: Experts hacked 
+
+defibrillators vulnerable to hack Tesla 3 browser
+ 
+
+O'Reilly's Graph Databases ­ Free Book
+YOU MIGHT ALSO LIKE Download
+
+Master the World of Graph Databases.
+ Download the Ebook to Learn How.
+
+Neo4j, Inc.
+
+Download
+
+Federal Emergency Management
+
+Agency’s (FEMA) data leak exposes
+
+data of 2.3M survivors
+
+Microsoft Defender APT now March 24, 2019  By Pierluigi Paganini
+
+protects also macOS
+
+March 24, 2019  By Pierluigi Paganini
+
+Sponsored Content
+
+Sponsored Content
+
+Sponsored Content
+
+Copyright 2015 Security Affairs by Pierluigi Paganini All Right Reserved. Back to top 
+
+Home  Cyber Crime  Cyber warfare  APT  Data Breach  Deep Web  Digital ID  Hacking  Hacktivism  Intelligence
+
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+
+EXTENDED COOKIE POLICY  Contact me
+
+https://securityaffairs.co/wordpress/82772/apt/russian-apt-groups-may-elections.html 3/3

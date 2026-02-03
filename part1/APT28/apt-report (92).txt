@@ -1,0 +1,279 @@
+﻿2018/7/31 VPNFilter-affected Devices Still Riddled with 19 Vulnerabilities - TrendLabs Security Intelligence Blog
+Trend Micro About TrendLabs Security Intelligence Blog
+
+SeHaorcmhe: Categories
+
+Home   »   Internet of Things   »   VPNFilter-affected Devices Still Riddled with 19
+Vulnerabilities Featured Stories
+
+systemd Vulnerability
+VPNFilter-affected Devices Still Riddled with 19 Vulnerabilities 0
+
+Leads to Denial of
+Posted on: July 13, 2018 at 5:02 am Posted in: Internet of Things, Vulnerabilities
+
+Service on Linux
+Author:
+Trend Micro qkG Filecoder: Self-
+
+Replicating, Document-
+Encrypting Ransomware
+Mitigating CVE-2017-
+5689, an Intel
+Management Engine
+Vulnerability
+A Closer Look at North
+Korea’s Internet
+From Cybercrime to
+Cyberpropaganda
+
+by Tony Yang and Peter Lee (Consumer Team) 
+
+Our IoT scanning tool allows users to identify if connected devices (e.g. routers, Security Predictions for
+network attached storage devices, IP cameras, and printers) in a given network are 2018
+vulnerable to security risks and vulnerabilities, such as those related to Mirai, Reaper,
+and WannaCry.
+
+We gather our data from the Trend Micro™ Home Network Security solution and
+HouseCall™ for Home Networks scanner. HouseCall for Home Networks is a free tool
+that features device recognition and vulnerability scanning in users’ networks and
+connected devices. Home Network Security is a solution plugged into users’ routers Attackers are banking on
+that protects connected devices from potential cyberattacks. Our scanning can cover network vulnerabilities
+multiple operating systems, including Linux, Mac, Windows, Android, iOS, and other and inherent weaknesses
+software development kit (SDK) platforms. to facilitate massive
+This blog tackles the recently ill-famed VPNFilter malware and if deployed devices malware attacks, IoT
+are vulnerable to it and other vulnerabilities. VPNFilter is a newly discovered, multi- hacks, and operational
+stage malware (detected by Trend Micro as ELF_VPNFILT.A, ELF_VPNFILT.B, disruptions. The ever-
+ELF_VPNFILT.C, and ELF_VPNFILT.D) that affects many models of connected shifting threats and
+devices. Initially reported at the tail end of May to have infected at least 500,000 increasingly expanding
+networking devices across 54 countries, including those from Linksys, MikroTik, attack surface will
+Netgear, and TP-Link, to steal website credentials and even render devices unusable, challenge users and
+the malware is now seen targeting more devices to deliver exploits and even override enterprises to catch up
+reboots. The Federal Bureau of Investigation (FBI) has even released a public service with their security. 
+announcement (PSA), warning that it is the work of foreign threat actors looking to Read our security
+compromise networked devices worldwide. predictions for 2018.
+
+Different brands and models affected by VPNFilter and more
+VPNFilter is known to affect over ten brands and 70 models of devices. Our IoT Business Process
+scanning tool can identify other publicly known vulnerabilities targeting the devices Compromise
+as listed below:
+
+Manufacturer Model Device Type
+Asus RT-AC66U, RT-N10, RT-N10E, Routers
+
+RT-N10U, RT-N56U, and RT-N66U
+D-Link DES-1210-08P Ethernet switch 
+
+DIR-300, DIR-300A, DSR-250N, Routers
+DSR-500N, DSR-1000, and DSR-
+
+1000N Attackers are starting to
+Huawei HG8245 Router
+Linksys E1200, E2500, E3000 E3200, Routers invest in long-term
+
+E4200, RV082, and WRVS4400N operations that target
+MikroTik CCR1009, CCR1016, CCR1036, Routers specific processes
+
+CCR1072, CRS109, CRS112,
+CRS125, RB411, RB450, RB750, enterprises rely on. They
+RB911, RB921, RB941, RB951, scout for vulnerable
+
+RB952, RB960, RB962, RB1100,
+RB1200, RB2011, RB3011, practices, susceptible
+
+RB Groove, RB Omnitik, and STX5 systems and operational
+Netgear DG834, DGN1000, DGN2200, Routers loopholes that they can
+
+DGN3500, FVS318N, MBRN3000,
+R6400, R7000, R8000, WNR1000, leverage or abuse. To
+WNR2000, WNR2200, WNR4000, learn more, read our
+
+WNDR3700, WNDR4000,
+
+https://blog.trendmicro.com/trendlabs-security-intelligence/vpnfilter-affected-devices-still-riddled-with-19-vulnerabilities/ 1/4
+
+
+
+2018/7/31 VPNFilter-affected Devices Still Riddled with 19 Vulnerabilities - TrendLabs Security Intelligence Blog
+WNDR4300, WNDR4300-TN, and Security 101: Business
+
+UTM50
+QNAP TS251, TS439 Pro, and other QNAP NAS devices Process Compromise.
+
+NAS devices running QTS software
+TP-Link R600VPN, TL-WR741ND, Routers
+
+and TL-WR841N
+Ubiquiti NSM2 and PBE M5 Wireless access points Recent Posts
+
+ZTE ZXHN H108N Router
+Table 1. Some of the known affected devices by VPNFilter New Underminer
+
+Exploit Kit Delivers
+Based on our data from June 1 to July 12, plenty of the devices are still using old Bootkit and
+firmware versions. In fact, 19 known vulnerabilities, not only taken advantage of by Cryptocurrency-mining
+VPNFilter but other malware as well, can still be detected in devices up to this day. Malware with
+At the time of our scanning, we observed that 34 percent of home networks had at Encrypted TCP Tunnel
+least one device with a known vulnerability. We found that 9 percent of vulnerable Open ADB Ports Being
+devices are potentially affected by VPNFilter. Exploited to Spread
+
+Device Vulnerabilities Vulnerable Devices/Services Possible Satori Variant
+Authentication Bypass Vulnerability CVE- QNAP FTP Service in Android Devices
+
+2015-7261
+Reaper Remote Code Execution CVE- D-Link DIR-300 Blackgear
+
+2011-4723 Cyberespionage
+Remote Code Execution CVE-2014-9583 ASUS RT-AC66U, RT-N66U
+
+Reaper OS Command Injection CVE- Linksys E2500 Campaign Resurfaces,
+2013-2678 Abuses Social Media
+
+Buffer Overflow Vulnerability Vulnerable UPnP Service (e.g. for C&C
+CVE-2013-0229 Netgear/TP-Link/D-Link)
+
+Stack Overflow Vulnerability Vulnerable UPnP Service (e.g. Communication
+CVE-2013-0230 Netgear/TP-Link/D-Link) New Andariel
+
+Remote Code Execution CVE-2017-6361 QNAP QTS before 4.2.4 Build
+20170313 Reconnaissance
+
+Router JSONP Info Leak CVE-2017-8877 ASUS RT-AC* and RT-N* Tactics Hint At Next
+Router Password Disclosure CVE-2017- Netgear R6400, R7000, R8000
+
+5521 Targets
+Stack Overflow Vulnerability Vulnerable UPnP Service (e.g. VPNFilter-affected
+
+CVE-2012-5958 Netgear/TP-Link/D-Link)
+Stack Overflow Vulnerability Vulnerable UPnP Service (e.g. Devices Still Riddled
+
+CVE-2012-5959 Netgear/TP-Link/D-Link) with 19 Vulnerabilities
+Reaper Router Remote Code Execution D-Link DIR-300
+
+Router Password Disclosure Netgear WNR2000
+Remote Code Execution CVE-2016-6277 Netgear R6400, R7000
+Router Session Stealing CVE-2017-6549 ASUS RT-N66U
+OS Command Injection CVE-2013-2679 Linksys E4200 Popular Posts
+
+Authentication Bypass Vulnerability Netgear WNR1000
+Router Password Disclosure Netgear WNR1000 VPNFilter-affected
+
+Unauthenticated Router Access TP-Link TL-WR841N Devices Still Riddled with
+Vulnerability 19 Vulnerabilities
+
+Table 2. 19 vulnerability detections on VPNFilter-affected devices
+Using Insights From
+
+As expected, the 19 vulnerabilities primarily affect routers. Interestingly, the DefPloreX-NG to Thwart
+Authentication Bypass Vulnerability CVE-2015-7261, an FTP (File Transfer Protocol) Web Defacement
+flaw in the QNAP NAS firmware, mostly affects printers based on our detection. Attacks
+While determining the possible reason behind this, we found that many of the Identifying Top
+detected printers’ FTP could connect to the network without any authentication. In Vulnerabilities in
+some cases, this may be the printer’s default configuration, but it still poses a Networks: Old
+potential security risk if the FTP is set as open on the internet. Vulnerabilities, IoT
+
+Botnets, Wireless
+Connection Exploits
+North American Malware
+Trends: Taking a
+Proactive Approach to
+Modern Threats
+New Underminer Exploit
+Kit Delivers Bootkit and
+Cryptocurrency-mining
+
+Figure 1. A Shodan result of an FTP connection to a printer without authentication Malware with Encrypted
+TCP Tunnel
+
+The other vulnerabilities detected, such as the Buffer Overflow CVE-2013-0229 and
+Stack Overflow CVE-2013-0230, can allow attackers to cause a denial-of-service
+(DoS) and execute arbitrary code in systems, respectively. Vulnerable UPnP Services Stay Updated
+detected, moreover, aren’t exclusively associated with Netgear/TP-Link/D-Link
+devices, as other brands could also have the same vulnerability. In that case, we can Email Subscription
+expect more detections. Your email here
+
+Protecting devices and networks against VPNFilter malware and other Subscribe
+vulnerabilities
+The threat of VPNFilter malware is augmented by the fact that other publicly known
+vulnerabilities were detected in the affected devices. Since not all device
+manufacturers provide immediate fixes for discovered vulnerabilities and not all users
+
+https://blog.trendmicro.com/trendlabs-security-intelligence/vpnfilter-affected-devices-still-riddled-with-19-vulnerabilities/ 2/4
+
+
+
+2018/7/31 VPNFilter-affected Devices Still Riddled with 19 Vulnerabilities - TrendLabs Security Intelligence Blog
+regularly apply patches, users should first secure the way they set up their devices
+and networks. Trend Micro™ Home Network Security solution can check internet
+traffic between the router and all connected devices. Our IoT scanning tool has been
+integrated into the Home Network Security solution and HouseCall™ for Home
+Networks scanner. Enterprises can also monitor all ports and network protocols for
+advanced threats and thwart targeted attacks with the Trend Micro™ Deep
+Discovery™ Inspector network appliance.
+
+Aside from adopting security solutions that can protect networks and connected
+devices from the vulnerabilities through the identification and assessment of
+potential risks, we recommend standard security measures, such as:
+
+Updating the firmware versions of devices once they’re available to avoid attacks
+that exploit known vulnerabilities.
+Avoiding the use of public Wi-Fi on devices that are also used in home or corporate
+networks.
+Changing device’s default credentials and using strong passwords to deter
+unauthorized access.
+Being wary of suspicious URLs or attachments from unknown sources that may lead
+to infecting devices connected to the network.
+Users of the Trend Micro Home Network Security solution are also protected from
+particular vulnerabilities via these rules:
+
+1058981 WEB Directory Traversal -21
+1130327 EXPLOIT ASUSWRT 3.0.0.4.376_1071 LAN Backdoor Command Execution
+(CVE-2014-9583)
+
+Related Posts:
+Device Vulnerabilities in the Connected Home: Uncovering Remote Code Execution
+and More
+Not Only Botnets: Hacking Group in Brazil Targets IoT Devices With Malware
+Mirai-like Scanning Activity Detected From China, With Targets in Brazil
+GPON Vulnerabilities Exploited for Mexico-based Mirai-like Scanning Activities
+
+Learn how to protect Enterprises, Small Businesses, and Home Users from
+ransomware:
+
+ENTERPRISE » SMALL BUSINESS » HOME »
+
+Tags: IOT Malware security VPNFilter vulnerability
+
+Comments for this thread are now closed. ×
+
+0 Comments TrendLabs 1 Login
+
+ Recommend 1 ⤤ Share Sort by Best
+
+This discussion has been closed.
+
+✉ Subscribe d Add Disqus to your siteAdd DisqusAdd
+  Disqus' Privacy PolicyPrivacy PolicyPrivacy
+
+Home and Home Office
+|
+For Business
+|
+Security Intelligence
+|
+About Trend Micro
+
+https://blog.trendmicro.com/trendlabs-security-intelligence/vpnfilter-affected-devices-still-riddled-with-19-vulnerabilities/ 3/4
+
+
+
+2018/7/31 VPNFilter-affected Devices Still Riddled with 19 Vulnerabilities - TrendLabs Security Intelligence Blog
+Asia Pacific Region (APAC): Australia / New Zealand, 中国, 日本, 대한민국, 台灣
+Latin America Region (LAR): Brasil, México
+North America Region (NABU): United States, Canada 
+Europe, Middle East, & Africa Region (EMEA): France, Deutschland / Österreich / Schweiz, Italia, Россия, España, United
+Kingdom / Ireland
+
+Privacy Statement Legal Policies Copyright © 2018 Trend Micro Incorporated. All rights reserved.
+
+https://blog.trendmicro.com/trendlabs-security-intelligence/vpnfilter-affected-devices-still-riddled-with-19-vulnerabilities/ 4/4

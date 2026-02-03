@@ -1,0 +1,1794 @@
+﻿2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+35 min read
+
+The Bitter End:
+Unraveling Eight
+Years of Espionage
+Antics – Part Two
+
+Published on
+
+June 4, 2025
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 1/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+By Abdallah Elshinbary and Jonas Wagner in collaboration with
+Proofpoint's Nick Attfield and Konstantin Klinger.
+
+This is a two-part blog series, detailing research undertaken in
+collaboration with Proofpoint. Part one of this blog series can be
+found on their website here.
+
+Key findings
+Bitter's malware has significantly evolved since 2016, moving from basic
+downloaders to more capable RATs. The group primarily uses simple and
+home-grown payloads delivered via their infection chain, rather than
+relying on advanced anti-analysis techniques within the payloads itself.
+Their diverse toolset shows consistent coding patterns across malware
+families, particularly in system information gathering and string
+obfuscation. This strongly suggests a common developer base.
+Several of their recent malware families continue to undergo active
+development in 2025, with new variants appearing in recent campaigns.
+
+Payload Arsenal
+In this second part of our blog series on the Bitter espionage group,
+we turn our focus to the engine of their operations: a diverse and
+continually evolving payload arsenal. Since their first known
+malware surfaced in 2016, Bitter's toolset has expanded from basic
+downloaders to sophisticated backdoors and full-featured Remote
+Access Trojans (RATs). This section dissects the technical
+capabilities, evolutionary paths, and shared development traits of
+Bitter's malware, offering insights for detection, attribution and a
+comprehensive understanding of their operational sophistication.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 2/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Timeline and activity (in red, if known) of the different payloads deployed by Bitter.
+
+Our exploration will proceed chronologically through each malware
+family, detailing its core functionality, distinctive code patterns,
+obfuscation techniques, command-and-control (C2)
+communication, and any identified variants. This analysis draws
+from both OSINT sources and our own research. We offer new
+insights on novel variants of MuuyDownloader, BDarkRAT and
+MiyaRAT, the latter two being observed in campaigns that
+Proofpoint documented in the first part of the blog post series.
+
+Key to Bitter's mode of operation is their reliance on the infection
+chain for payload delivery during hands-on activities, rather than
+employing complex anti-analysis measures or packers within the
+malware itself.
+
+Across their arsenal, we observe consistent code patterns, notably
+in how they gather system information and decode obfuscated
+strings using simple character addition or subtraction. It's also
+noteworthy that some malware families exhibit code pattern
+variations between different versions while retaining identical core
+functionality.
+
+A central theme revealed by our analysis is Bitter's sustained use of
+a core suite of custom-developed tools in C/C++ and .NET. These
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 3/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+tools frequently undergo iterative development, marked by
+significant shifts in obfuscation strategies and C2 communication
+protocols over the years. Furthermore, we will present evidence of
+shared development methodologies across malware families that
+might otherwise appear distinct, pointing to a cohesive
+development effort. These discernible patterns not only fingerprint
+the group's modus operandi but also highlight their resourcefulness
+and evolution throughout their extensive operational history.
+
+By providing a granular dissection of Bitter's payloads, we aim to
+give the most comprehensive insights to date into the actors
+tradecraft and equip defenders with a deeper understanding of the
+threats posed by this group. Such insights are crucial for crafting
+more effective detection signatures and for anticipating and
+tracking their future tactical shifts.
+
+ArtraDownloader
+
+The first known family used by Bitter is ArtraDownloader. First
+appearing in 2016 and received its name in 2019 based on a PDB
+string found within the samples. ArtraDownloader is a simple
+downloader written in C++
+ (ef0cb0a1a29bcdf2b36622f72734aec8d38326fc8f7270f78bd956e706a5fd57,
+seen in 2018).
+
+The downloader starts by collecting system information, which
+includes username, computer name, and the operating system.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 4/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+ArtraDownloader collecting system information.
+
+This collected information is then used to generate a victim’s
+unique identifier.
+
+ArtraDownloader building victim unique ID.
+
+The unique identifier and collected system information is then
+encoded (by adding 1 to each byte) and sent to the C2 server. After
+the initial C2 request, ArtraDownloader expects a response
+containing the identifier "DFCB=". This identifier allows it to extract
+an encoded payload filename. ArtraDownloader then sends
+another C2 request to download the payload, saves it to disk, and
+executes it using ShellExecuteA.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 5/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+ArtraDownloader sending system information to C2 and receiving encoded payload
+name.
+
+ArtraDownloader establishes persistence on the victim's machine
+by copying itself to a hardcoded path and adding its new location
+to the Run registry key.
+
+ArtraDownloader setting up persistence on the victim’s machine.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 6/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Important strings are obfuscated with a simple encoding algorithm
+where each character is decoded by subtracting 1.
+
+Two additional variants of ArtraDownloader were discovered in the
+wild. These variants primarily differ in their string obfuscation
+methods and HTTP request formats.
+
+In the second variant
+(0b2a794bac4bf650b6ba537137504162520b67266449be979679afbb14e8e5c0,
+seen in 2019), strings are decoded by subtracting 3 from each
+character, rather than 1 as in the first variant.
+
+Like the original variant, this version collects similar system
+information, encodes it by adding 1 to each byte, then transmits it
+to the C2 server using a different format. This variant also expects
+a different identifier ("AXE: #") from the C2 server to extract the
+payload name.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 7/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Second ArtraDownloader variant sending system information to C2 and receiving
+payload name.
+
+The third variant
+(f0ef4242cc6b8fa3728b61d2ce86ea934bd59f550de9167afbca0b0aaa3b2c22,
+seen in 2018) uses a string decoding method that subtracts 13 from
+each character.
+
+This variant collects various system information, but unlike the
+other two variants, it doesn’t encode the payload sent to the C2
+server. The third variant also expects a distinct identifier ("Yes
+file") from the C2 server to extract the payload name.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 8/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Third ArtraDownloader variant sending system information to C2 and receiving payload
+name.
+
+ArtraDownloader has been observed deploying a simple keylogger,
+WSCSPL backdoor and a .NET RAT known as BDarkRAT.
+
+Keylogger
+
+Bitter has been known to deploy a simple C++ keylogger module in
+different campaigns. The keylogger
+(f619eb9a6255f6adcb02d59ed20f69d801a7db1f481f88e14abca2df020c4d26,
+seen in 2017) creates paths for two log files in the "%APPDATA"
+directory.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 9/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Bitter keylogger creating log files on the victim’s machine.
+
+The keylogger then starts a new thread to set up a hook for
+monitoring keyboard input events. It also has the capability to
+capture clipboard contents. The keystrokes are encoded by adding
+20 to each character before being written to a temporary log file.
+
+Once the temporary log file reaches 1KB in size, its contents are
+transferred to a permanent log file. The temporary file is then
+deleted and recreated to continue capturing new data.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 10/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Bitter keylogger writing keystrokes to the log file.
+
+Strings are obfuscated with a simple encoding algorithm where
+each character is decoded by subtracting 13.
+
+The keylogger lacks exfiltration capabilities, requiring deployment
+alongside another module (such as the WSCSPL backdoor) to
+handle the exfiltration of collected logs.
+
+WSCSPL Backdoor
+
+WSCSPL is a backdoor written in C that emerged in 2016 as
+ArtraDownloader's next-stage payload. Like ArtraDownloader, the
+backdoor
+(a241cfcd60942ea401d53d6e02ec3dfb5f92e8f4fda0aef032bee7bb5a344c35,
+seen in 2018) collects system information including username,
+computer name, and operating system.
+
+WSCSPL collecting system information.
+
+The collected information is concatenated and encoded before
+sending it to the C2 server. WSCSPL receives a numerical value
+from the C2 server that indicates which command to execute. The
+backdoor supports several commands, each executed in its own
+thread, notably:
+
+Getting the machine information
+Getting drives info
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 11/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Downloading and executing files
+Executing remote commands
+
+Strings are obfuscated and encoded with a simple algorithm, which
+decodes them by adding 34 to each character.
+
+WSCSPL decoding strings.
+
+‍BDarkRAT
+
+BDarkRAT is a .NET RAT first discovered in 2019 that Bitter group
+continues to use today. The RAT
+(e07e8cbeeddc60697cc6fdb5314bd3abb748e3ac5347ff108fef9eab2f5c89b8,
+seen in 2021) begins by gathering basic system information such as
+username, operating system, and MAC address. A hardcoded
+version number is appended to the collected information before
+sending it to the C2 server in order to register new victims.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 12/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+BDarkRAT collecting system information.
+
+BDarkRAT includes standard RAT capabilities such as executing
+shell commands, downloading files, and managing files on the
+compromised system.
+
+BDarkRAT registering different C2 commands.
+
+The configuration for the RAT is hardcoded in plain text, with the
+C2 address in hex-encoded form.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 13/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+BDarkRAT embedded configuration.
+
+The RAT contains a hardcoded encryption key (stored in the config
+field NetworkKey) used to encrypt network packets with a simple
+XOR operation before sending to the C2 server.
+
+A newer variant of BDarkRAT
+(bf169e4dacda653c367b015a12ee8e379f07c5728322d9828b7d66f28ee7e07a,
+seen in 2024) expanded its capabilities to include screen capture
+and PowerShell command execution. They also shifted from using a
+descriptive name for each C2 command in the initialization
+function to numerical values, but the function names still explain
+the functionality of each C2 command.
+
+New BDarkRAT variant with more C2 commands.
+
+This variant collects less system information compared to the
+previous version, and no longer includes the RAT's version number.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 14/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+New BDarkRAT system information collection.
+
+In this variant, the C2 address is now encrypted instead of just
+hex-encoded.
+
+BDarkRAT with encrypted C2 address.
+
+The encryption algorithm for the C2 address is AES-256-CBC,
+where the key and IV are derived via the PBKDF2 algorithm.
+
+In early 2025, Proofpoint discovered another BDarkRAT variant
+(e599c55885a170c7ae5c7dfdb8be38516070747b642ac21194ad6d322f28c782).
+While this variant shared the same new capabilities as the one
+discovered in 2024, it reverted to using hex-encoded C2 addresses
+like the older variant.
+
+BDarkRAT embedded configuration with hex-encoded C2 address
+
+BDarkRAT has been given several names by the community,
+including SplinterRAT. These different names likely emerged due to
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 15/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+varying .NET namespaces found in different samples in the wild.
+
+One of the .NET namespaces that
+appeared in BDarkRAT samples.
+
+However, we believe that BDarkRAT is likely the most accurate
+name for this RAT, as reported in 2023, since many code
+components from its early versions were derived from
+DarkAgentRAT, an open-source .NET RAT from 2011.
+
+The initialisation of C2 commands represents one of the key code
+similarities between BDarkRAT and DarkAgentRAT.
+
+DarkAgentRAT (left) using the same C2 initialization pattern as BDarkRAT (right).
+
+Additionally, the encryption for network packets matches BDarkRAT
+exactly, even using identical function names:
+
+DarkAgentRAT (left) using the same network packet encryption function as BDarkRAT
+(right).
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 16/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+DarkAgentRAT (left) using the same function to send network packets as BDarkRAT
+(right).
+
+Since BDarkRAT is based on an open-source RAT, it was essential to
+identify its unique functions that don't exist in the open-source
+version. Using our native function retrohunt capabilities, we quickly
+verified which functions would make suitable candidates for YARA
+rule generation.
+
+Retrohunting for one of the functions used in BDarkRAT detection rule.
+
+MuuyDownloader
+
+In 2021, Bitter switched from ArtraDownloader to a new downloader
+called MuuyDownloader (also known as ZxxZ downloader). Like
+ArtraDownloader, it is written in C++ and has a similar
+implementation.
+
+MuuyDownloader
+(3fdf291e39e93305ebc9df19ba480ebd60845053b0b606a620bf482d0f09f4d3,
+seen in 2021) begins by gathering system information (username,
+computer name, and operating system) and transmits it to the C2
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 17/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+server in encrypted form. The collected information is separated
+using the delimiter "ZxxZ".
+
+MuuyDownloader collecting system information and building C2 payload.
+
+After receiving the payload name from the C2 server,
+MuuyDownloader builds the payload path and appends ".exe" to
+the filename. The C2 server sends the payload with its first PE
+header byte missing, likely to evade network detection.
+MuuyDownloader writes the 0x4D byte to the target file, appends
+the downloaded payload, and executes it using ShellExecuteA.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 18/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+MuuyDownloader downloading the next stage payload.
+
+Strings are encrypted with a simple XOR algorithm where each
+string has its own encryption key.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 19/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+MuuyDownloader decrypting strings.
+
+Other variants of MuuyDownloader have been identified featuring
+slight modifications to their string obfuscation and HTTP request
+formats.
+
+The second variant
+(225d865d61178afafc33ef89f0a032ad0e17549552178a72e3182b48971821a8,
+seen in 2021) implements a modified string encoding algorithm that
+subtracts 5 from each character and strips asterisk characters
+from the decoded output.
+
+This variant uses a dollar sign instead of "ZxxZ" as the separator for
+system information.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 20/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Second MuuyDownloader variant collecting system information and building C2 payload.
+
+The third variant
+(91ddbe011f1129c186849cd4c84cf7848f20f74bf512362b3283d1ad93be3e42,
+seen in 2022) implements a string decryption algorithm similar to
+the first variant but uses a single XOR key to decrypt all strings.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 21/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Third MuuyDownloader variant decrypting strings.
+
+This variant also includes two different payload formats for system
+information.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 22/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Third MuuyDownloader variant building C2 payload.
+
+Instead of using ShellExecuteA, this variant executes the next-stage
+payload using CreateProcessA.
+
+Third MuuyDownloader variant downloading the next stage payload.
+
+During our investigations, we discovered a new sample from Bitter
+that we believe, with medium-high confidence, is a new variant of
+MuuyDownloader
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 23/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+(edb68223db3e583f9a4dd52fd91867fa3c1ce93a98b3c93df3832318fd0a3a56,
+seen in 2025).
+
+This variant decrypts strings using a combination of single-byte
+XOR operations and character addition.
+
+Fourth MuuyDownloader variant decrypting
+strings.
+
+Like previous variants, it collects comparable system information
+using a similar payload format. The key difference is that this
+variant Base64-encodes the system information before C2
+transmission.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 24/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Fourth MuuyDownloader variant collecting system information and building C2 payload.
+
+Like other variants, this version fetches the next-stage payload
+using a blocking stream rather than recv.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 25/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Fourth MuuyDownloader variant downloading the next stage payload.
+
+MuuyDownloader has been found to also download a simple
+keylogger (similar to the one dropped by ArtraDownloader), and
+two different .NET RATs called BDarkRAT and AlmondRAT.
+
+AlmondRAT
+
+AlmondRAT, another .NET RAT discovered in 2022, is deployed by
+the Bitter group and shares similar functionality with BDarkRAT. The
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 26/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+RAT
+(d83cb82be250604b2089a1198cedd553aaa5e8838b82011d6999bc6431935691,
+seen in 2022) starts by collecting and transmitting system
+information, including username and operating system details, to
+the C2 server.
+
+AlmondRAT collecting system information.
+
+The RAT includes standard functionality for directory listing, file
+transfer (both upload and download), and shell command
+execution.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 27/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+AlmondRAT C2 command handling.
+
+In another variant of AlmondRAT
+(55901c2d5489d6ac5a0671971d29a31f4cdfa2e03d56e18c1585d78547a26396,
+seen in 2022), strings such as the C2 address and commands are
+stored in an encrypted format.
+
+AlmondRATC2 usage of encrypted strings.
+
+String encryption uses AES-256-CBC encryption, with the key and
+initialization vector (IV) derived through the PBKDF2 algorithm. The
+decryption code is identical to the one used in BDarkRAT.
+
+WmRAT
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 28/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+WmRAT is a C++ RAT first observed in 2022 and later seen in 2024
+campaigns documented by Proofpoint. The RAT
+(4e3e4d476810c95c34b6f2aa9c735f8e57e85e3b7a97c709adc5d6ee4a5f6ccc,
+seen in 2023) starts by decrypting some strings (including the C2
+address) before calling its main function. After that, it connects to
+the C2 server and starts receiving commands.
+
+In case no command is received, the RAT collects system
+information such as the the username, computer name, and
+operating system. The collected information is then sent to the C2
+server and the RAT waits for C2 commands.
+
+WmRAT information collection.
+
+WmRAT supports basic capabilities such as capturing screenshots,
+stealing files, and executing PowerShell commands. The C2
+commands are numerical values where each number represents a
+specific functionality.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 29/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+WmRAT C2 commands.
+
+Almost all strings in WmRAT are encrypted, and they are decrypted
+using character subtraction in some cases and addition in other
+cases.
+
+WmRAT string decryption routine.
+
+WmRAT also employs some kind of anti-analysis by creating a
+number of junk threads. The threads loop for 1000 times just to get
+basic machine information. This is possibly done to generate noise
+in the logs of the victim’s environment.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 30/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+WmRAT code to fill the system logs with useless events.
+
+It also frequently calls the Sleep function throughout the code as an
+evasion technique.
+
+During our investigation into WmRAT, we observed numerous
+samples in the wild reported by different sources. Our native code
+diffing capabilities enabled us to quickly cluster samples and
+identify shared code functions. This helped us identify different
+variants and guided our YARA rule creation workflow by pinpointing
+unique code.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 31/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Clustering multiple WmRAT samples.
+
+ORPCBackdoor
+
+ORPCBackdoor is a C++ backdoor that emerged in 2022. The
+backdoor
+(8aeb7dd31c764b0cf08b38030a73ac1d22b29522fbcf512e0d24544b3d01d8b3,
+seen in 2022) initially collects various system details including the
+username, computer name, operating system, and running
+processes.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 32/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+ORPCBackdoor collecting system information
+
+ORPCBackdoor implements basic C2 functionality, including file
+downloads from the C2 server and shell command execution.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 33/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+ORPCBackdoor C2 command handling
+
+The backdoor communicates with the C2 server using the RPC
+protocol.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 34/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+ORPCBackdoor connecting to the C2 server via RPC.
+
+The C2 commands and many other strings are hex-encoded and
+decoded in batches during runtime.
+
+ORPCBackdoor decoding hex strings.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 35/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+In 2023, a new group called "Mysterious Elephant" (also known as
+"APT-K-47") was using ORPCBackdoor to target victims linked to
+Pakistan's foreign affairs. This variant is identical to its 2022 version,
+with only the C2 address being different.
+
+MiyaRAT
+
+MiyaRAT is another RAT written in C++, first observed in 2024. The
+RAT
+(df5c0d787de9cc7dceeec3e34575220d831b5c8aeef2209bcd81f58c8b3c08ed,
+seen in 2024) initially connects to its C2 server using a hardcoded
+port. It then collects basic system information, including the
+username, computer name, and operating system details.
+
+MiyaRAT collecting system information.
+
+The C2 address is decrypted through a simple subtraction
+operation, where the characters of a hardcoded key are subtracted
+from the encrypted value. The system information is concatenated
+and sent to the C2 server using a pipe character ("|") to separate
+the values.
+
+MiyaRAT features multiple command capabilities, including shell
+command execution, file deletion, screenshot capture, and
+directory enumeration.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 36/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+MiyaRAT C2 command handling.
+
+In a variant discovered by Proofpoint in late 2024
+(c7ab300df27ad41f8d9e52e2d732f95479f4212a3c3d62dbf0511b37b3e81317),
+the RAT appends its version number to the system information
+payload, whereas the first variant stored this information in the PDB
+string.
+
+MiyaRAT old (left) vs new (right) C2 payload format.
+
+Unlike the first variant of MiyaRAT, this variant encrypts all C2
+communication by XORing each byte with a hardcoded single-byte
+key before transmission.
+
+In May 2025, Proofpoint discovered a new MiyaRAT variant
+(c2c92f2238bc20a7b4d4c152861850b8e069c924231e2fa14ea09e9dcd1e9f0a,
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 37/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+seen in 2025). This version (v5.0) maintains nearly identical
+functionality to its predecessor, with minor modifications. One
+notable change is its expanded use of the character subtraction
+algorithm for string decryption, still utilizing a hardcoded binary key.
+
+This variant employs single-byte XOR encryption for C2
+communication, though it implements the encryption differently
+than previous variants. While the C2 commands are now
+obfuscated with only their first characters visible, the variant
+maintains the same functionality and command set as before.
+
+MiyaRAT old (left) vs new (right) C2 commands.
+
+While the code's functionality remains identical, the
+implementation changes make it more difficult to create detection
+signatures based on code patterns. A string-based YARA rule was
+able to detect most MiyaRAT variants, however it failed to detect
+the latest variant (v5.0) due to the newly obfuscated strings.
+Threatray's detection capabilities, which are based on code reuse
+algorithms, allowed us to easily detect it by finding structural
+similarities with past MiyaRAT variants.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 38/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+MiyaRAT 5.0 detected by Threatray.
+
+KiwiStealer
+
+KiwiStealer is a simple file stealer first discovered in late 2024. The
+stealer
+(4b62fc86273cdc424125a34d6142162000ab8b97190bf6af428d3599e4f4c175,
+seen in 2024) starts by gathering the computer name and
+username. It also retrieves the current system time, which will be
+used later to check the last modification time of files on the
+machine.
+
+KiwiStealer reading system information.
+
+The computer name and username are then appended to the C2
+path (which is decrypted at runtime) and sent to the C2 server
+while exfiltrating files from the victim’s machine.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 39/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+KiwiStealer building the C2 path.
+
+KiwiStealer searches through the following predefined list of
+directories to gather files.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 40/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+KiwiStealer hardcoded list of directories to traverse.
+
+The stealer only exfiltrates files that are smaller than 50MB and
+have been modified within the past year. It searches for files with
+these extensions: .z7, .txt, .doc, .docx, .xls, .xlsx, .ppt, .pptx,
+.pdf, .rtf, .jpg, .zip, .rar, .apk, .neat, .err, .eln, .ppi, .er9,
+
+.azr, .pfx, .ovpn
+
+The stealer writes the collected file paths and their last
+modification timestamps to a log file at C:\ProgramData\winlist.log
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 41/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+After that, the stealer reads the log file and exfiltrates the collected
+files.
+
+KiwiStealer exfiltrating files from the victim’s
+machine.
+
+The C2 address and other strings are encoded through a
+combination of string reversal and a modified Caesar cipher
+(ROT2).
+
+KiwiStealer decoding strings.
+
+KugelBlitz
+
+KugelBlitz is a shellcode loader discovered in late 2024. The loader
+(a56b5e90a08822483805f9ab38debb028eb5eade8d796ebf0ff1695c3c379618,
+seen in 2024) loads shellcode into memory from a file specified via
+command line. If no file is specified, it defaults to run.bin.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 42/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+KugelBlitz parsing the command line to get the payload file name.
+
+The shellcode loading process is straightforward: it allocates
+memory for the shellcode using VirtualAlloc, reads the file content
+into the allocated memory, and executes it.
+
+KugelBlitz loading the shellcode file into memory and executing it.
+
+Proofpoint observed Bitter using KugelBlitz to deploy the Havoc C2
+framework during hands-on activities. See Part 1 over at
+Proofpoint's blog for more details.
+
+Shared Payload TTPs
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 43/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Across Bitter's diverse and evolving malware arsenal, several
+consistent TTPs emerge, painting a clearer picture of the group's
+development practices and operational playbook. These shared
+characteristics not only aid in identifying Bitter's handiwork but
+also suggest a common origin or shared development resources for
+their tools.
+
+Consistent Information Gathering
+
+A striking commonality across almost all of Bitter's malware families
+is the method used for initial victim system reconnaissance.  The
+malware routinely gathers a standard set of details:
+
+Computer Name: To identify the specific machine.
+Username: To identify the active user.
+Operating System Details: Typically extracted from the ProductName
+registry value.
+
+Common information gathering pattern.
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 44/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+This consistent pattern of collecting Computer Name, Username,
+and OS information is evident in malware like ArtraDownloader,
+WSCSPL Backdoor, MuuyDownloader, WmRAT, MiyaRAT and
+Kugelblitz, indicating a standardized approach to initial system
+fingerprinting.
+
+Evolution of Encoding and Encryption
+
+Older malware families, such as early versions of ArtraDownloader,
+Keylogger, and WSCSPL Backdoor, predominantly relied on simple
+character addition or subtraction for encoding and decoding
+important strings. MuuyDownloader, WmRAT and MiyaRAT also rely
+on a very similar character subtraction pattern.
+
+Simple character arithmetic of early malware families.
+
+As their tools evolved, Bitter incorporated simple XOR encryption.
+This is notably seen in MuuyDownloader (where each string might
+have its own unique key, or a single key is used for all strings in
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 45/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+other variants), BDarkRAT (using a hardcoded key for network
+packets), and later variants of MiyaRAT (for C2 communication).
+
+XOR encryption used by later malware families.
+
+The two .NET families, BDarkRAT and AlmondRAT both employ AES-
+256-CBC encryption. The key and Initialization Vector for are
+derived using the PBKDF2 algorithm. The implementation is exactly
+the same for both families.
+
+BDarkRAT and AlmondRAT AES-256-CBC encryption implementation.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 46/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Code Pattern Variations and Iterative Development
+
+While core functionalities often remain the same, several malware
+families exhibit variations in their code patterns across different
+versions. This is particularly evident in:
+
+C2 Payload Construction: ArtraDownloader and MuuyDownloader
+show different methods of concatenating or formatting the data
+sent to the C2 server in their various iterations
+
+ArtaDownloader C2 formatting variations.
+
+MuuyDownloader C2 formatting variations.
+
+‍
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 47/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+String Decryption Routines: Even when the underlying
+cryptographic logic is similar (e.g., character subtraction or XOR),
+the specific implementation of the decryption functions can vary
+between variants of ArtraDownloader, MuuyDownloader, and
+MiyaRAT.  For example, MiyaRAT v5.0, while functionally identical to
+its predecessor, featured tweaked code patterns for string
+decryption and C2 XORing, making signature-based detection
+more challenging.
+
+ArtraDownloader string decryption variations.
+
+MuuyDownloader string decryption variations.
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 48/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+MiyaRAT string decryption variations.
+
+Conclusion
+With this collaborative research we have provided a
+comprehensive dissection of Bitter (TA397)  group's sustained
+espionage operations spanning over eight years. Through
+Proofpoint’s analysis of extensive telemetry and Threatray’s in-
+depth malware analysis, we have illuminated the group's evolving
+TTPs, from their initial access methodologies and hands-on-
+keyboard activity to their diverse and custom-developed payload
+arsenal. Our findings reveal consistent operational patterns, shared
+development practices across their malware families, and distinct
+infrastructure characteristics that, when combined with observed
+targeting and lure strategies, lead us to jointly assess that Bitter
+(TA397) is highly likely a state-backed threat actor tasked with
+intelligence gathering in the interests of the Indian government. By
+sharing these detailed insights, YARA rules, and indicators of
+compromise, we aim to empower the global cybersecurity
+community to better detect, mitigate, and ultimately disrupt Bitter
+(TA397).
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 49/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+Appendix: Indicators and YARA Rules
+Associated IOCs are also available on our GitHub repository.
+
+IoCs
+
+SHA256
+
+ef0cb0a1a29bcdf2b36622f72734aec8d38326fc8f7270f78bd956e706a5fd57
+
+0b2a794bac4bf650b6ba537137504162520b67266449be979679afbb14e8e5
+
+f0ef4242cc6b8fa3728b61d2ce86ea934bd59f550de9167afbca0b0aaa3b2c2
+
+a241cfcd60942ea401d53d6e02ec3dfb5f92e8f4fda0aef032bee7bb5a344c3
+
+096e6546b5ca43adbe34bbedc84b002bbf399d2ecf08e83966757b88c5c0
+
+225d865d61178afafc33ef89f0a032ad0e17549552178a72e3182b48971821a8
+
+3fdf291e39e93305ebc9df19ba480ebd60845053b0b606a620bf482d0f09f4
+
+91ddbe011f1129c186849cd4c84cf7848f20f74bf512362b3283d1ad93be3e42
+
+edb68223db3e583f9a4dd52fd91867fa3c1ce93a98b3c93df3832318fd0a3a5
+
+f619eb9a6255f6adcb02d59ed20f69d801a7db1f481f88e14abca2df020c4d26
+
+1f9363e640e9fe0d25ef15ed5d3517ec5b3fb16e3b1abb58049f5ad45415654d
+
+9319421ff52d7ea4cca08d1cc7064f9ed5b19ee19dbdde182a0e51325632df88
+
+bf169e4dacda653c367b015a12ee8e379f07c5728322d9828b7d66f28ee7e07a
+
+e599c55885a170c7ae5c7dfdb8be38516070747b642ac21194ad6d322f28c78
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 50/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+SHA256
+
+55901c2d5489d6ac5a0671971d29a31f4cdfa2e03d56e18c1585d78547a26396
+
+d83cb82be250604b2089a1198cedd553aaa5e8838b82011d6999bc6431935
+
+811741d9df51a9f16272a64ec7eb8ff12f8f26794368b1ff4ad5d30a1f4bb42a
+
+10cec5a84943f9b0c635640fad93fd2a2469cc46aae5e43a4604c903d1399
+
+8aeb7dd31c764b0cf08b38030a73ac1d22b29522fbcf512e0d24544b3d01d8b
+
+dd53768eb7d5724adeb58796f986ded3c9b469157a1a1757d80ccd7956a3db
+
+df5c0d787de9cc7dceeec3e34575220d831b5c8aeef2209bcd81f58c8b3c08
+
+c7ab300df27ad41f8d9e52e2d732f95479f4212a3c3d62dbf0511b37b3e81317
+
+0953d4cc6861082c079935918c63cd71df30e5e6854adf608a8b8f5254be8e
+
+c2c92f2238bc20a7b4d4c152861850b8e069c924231e2fa14ea09e9dcd1e9f0
+
+4b62fc86273cdc424125a34d6142162000ab8b97190bf6af428d3599e4f4c175
+
+a56b5e90a08822483805f9ab38debb028eb5eade8d796ebf0ff1695c3c379
+
+YARA Rules
+
+import "pe"
+
+rule ArtraDownloader : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects ArtraDownloader used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "ef0cb0a1a29bcdf2b36622f72734aec8d38326fc8f7270f78bd95
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 51/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        hash = "0b2a794bac4bf650b6ba537137504162520b67266449be979679a
+        hash = "f0ef4242cc6b8fa3728b61d2ce86ea934bd59f550de9167afbca0
+
+    strings:
+        $v1_s1 = "BCDEF=%s&MNOPQ=%s&GHIJ=%s&UVWXYZ=%s&st=%d" ascii fu
+        $v1_s2 = "%s %s %s\r\n%s %s\r\n%s%s\r\n%s%s\r\nContent-length
+        $v1_s3 = "DFCB=" ascii fullword
+        $v1_s4 = "DWN" ascii fullword
+        $v1_s5 = "<br>" ascii fullword
+
+        $v2_s1 ="GET %s HTTP/1.0" ascii fullword
+        $v2_s2 ="Host: %s" ascii fullword
+        $v2_s3 ="?a=\x00&b=\x00&c=\x00&d=\x00&e=\x00" ascii fullword
+        $v2_s4 ="%s%s%s%s%s%s%s%s" ascii fullword
+        $v2_s5 ="Yes file" ascii fullword
+        
+        $v3_s1 = "AXE: #" ascii fullword
+        $v3_s2 = "%s*%s*%s" ascii fullword
+        $v3_s3 = "Bld: %s.%s.%s" ascii fullword
+        $v3_s4 = "%s@%s %s" ascii fullword
+        $v3_s5 = "%s%s\r\n\r\n" ascii fullword
+
+    condition:
+        pe.is_pe and
+        filesize < 400KB and
+        all of ($v1_*) or all of ($v2_*) or all of ($v3_*)
+}
+
+rule BitterKeylogger : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects the Keylogger module used by Bitter AP
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "f619eb9a6255f6adcb02d59ed20f69d801a7db1f481f88e14abca
+        hash = "1f9363e640e9fe0d25ef15ed5d3517ec5b3fb16e3b1abb58049f5
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 52/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+    strings:
+        $code_get_key_state = {
+            8B 07                  // mov     eax, [edi]
+            3D A0 00 00 00         // cmp     eax, 0A0h
+            74 ??                  // jz      short loc_401472
+            3D A1 00 00 00         // cmp     eax, 0A1h
+            75 ??                  // jnz     short loc_401486
+        }
+        $code_collect_clipboard = {
+            FF 15 ?? ?? ?? ??      // call    ds:OpenClipboard
+            85 ??                  // test    eax, eax
+            74 ??                  // jz      short loc_40250A
+            6A 01                  // push    1               ; forma
+            FF 15 ?? ?? ?? ??      // call    ds:IsClipboardFormatAva
+            85 C0                  // test    eax, eax
+            74 ??                  // jz      short loc_40250A
+            6A 01                  // push    1               ; uForm
+            FF 15 ?? ?? ?? ??      // call    ds:GetClipboardData
+            8B ??                  // mov     ecx, eax
+            8D ?? 01               // lea     esi, [ecx+1]
+        }
+        $code_check_log_file_size = {
+            6A 02                  // push    2
+            8B ??                  // mov     esi, eax
+            6A 00                  // push    0
+            5?                     // push    esi
+            E8 ?? ?? ?? ??         // call    _fseek
+            5?                     // push    esi
+            E8 ?? ?? ?? ??         // call    _ftell
+            5?                     // push    esi
+            8B ??                  // mov     edi, eax
+            E8 ?? ?? ?? ??         // call    _fclose
+            83 C4 1C               // add     esp, 1Ch
+            81 ?? E8 03 00 00      // cmp     edi, 3E8h
+
+        }
+
+    condition:
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 53/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        pe.is_pe and
+        filesize < 400KB and
+        all of them
+}
+
+rule WSCSPLBackdoor : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects WSCSPL backdoor used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "a241cfcd60942ea401d53d6e02ec3dfb5f92e8f4fda0aef032bee
+        hash = "096e6546b5ca43adbe34bbedc84b002bbf399d2ecf08e83966757
+
+    strings:
+        $code_main = {
+            6A 64                            // push    64h ; 'd'    
+            68 ?? ?? ?? ??                   // push    offset Window
+            6A 67                            // push    67h ; 'g'    
+            5?                               // push    esi          
+            FF D?                            // call    edi ; LoadStr
+            6A 64                            // push    64h ; 'd'    
+            68 ?? ?? ?? ??                   // push    offset ClassN
+            6A 6D                            // push    6Dh ; 'm'    
+            5?                               // push    esi          
+            FF D?                            // call    edi ; LoadStr
+        }
+        $code_xor_c2_data = {
+            8A 8? 17 ?? ?? ?? ??             // mov     al, byte_4520
+            32 8? ?? ?? ?? ??                // xor     al, byte_4060
+            4?                               // inc     ecx
+            88 8? ?? ?? ?? ??                // mov     byte_4520D8[e
+            4?                               // inc     edx
+            3? ??                            // cmp     ecx, esi
+            75 ??                            // jnz     short loc_401
+            3? ??                            // xor     ecx, ecx
+            3? ??                            // cmp     edx, ebp
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 54/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+            7C ??                            // jl      short loc_401
+        }
+        $code_handle_c2_commands = {
+            8D ?? 24 10                      // lea     edx, [esp+10h
+            5?                               // push    edx          
+            68 ?? ?? ?? ??                   // push    offset mw_get
+            6A 00                            // push    0            
+            6A 00                            // push    0            
+            C7 05 ?? ?? ?? ?? A0 0F 00 00    // mov     dword_406090,
+            C7 05 ?? ?? ?? ?? ?? ?? 00 00    // mov     dword_45EA98,
+            FF 15 ?? ?? ?? ??                // call    ds:CreateThre
+            A3 ?? ?? ?? ??                   // mov     dword_45EA64,
+            E9 ?? ?? 00 00                   // jmp     def_401CEE
+        }
+
+    condition:
+        pe.is_pe and
+        filesize < 200KB and
+        all of them
+}
+
+rule MuuyDownloader : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects MuuyDownloader used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "225d865d61178afafc33ef89f0a032ad0e17549552178a72e3182
+        hash = "3fdf291e39e93305ebc9df19ba480ebd60845053b0b606a620bf4
+        hash = "91ddbe011f1129c186849cd4c84cf7848f20f74bf512362b3283d
+        hash = "edb68223db3e583f9a4dd52fd91867fa3c1ce93a98b3c93df3832
+
+    strings:
+    $x = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" ascii wide
+
+    $code_main = {
+        6A 64                    // push    64h ; 'd'       ; cchBuff
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 55/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        68 ?? ?? ?? ??           // push    offset WindowName ; lpBuf
+        6A 67                    // push    67h ; 'g'       ; uID
+        5?                       // push    esi             ; hInstan
+        FF D?                    // call    edi ; LoadStringA
+        6A 64                    // push    64h ; 'd'       ; cchBuff
+        68 ?? ?? ?? ??           // push    offset ClassName ; lpBuff
+        6A 6D                    // push    6Dh ; 'm'       ; uID
+        5?                       // push    esi             ; hInstan
+        FF D?                    // call    edi ; LoadStringA
+    }
+    $code_write_mz = {
+        8B 3D ?? ?? ?? ??      // mov     edi, ds:fwrite
+        [0-2]
+        56                     // push    esi             ; Stream
+        6A 01                  // push    1               ; ElementCo
+        6A 01                  // push    1               ; ElementSi
+        68 ?? ?? ?? ??         // push    offset aM       ; Buffer
+        FF D7                  // call    edi ; fwrite
+    }
+    $code_c2_conn = {
+        C7 [2-3] 01 00 00 00     // mov     [esp+1E4h+pHints.ai_sockt
+        C7 [2-3] 06 00 00 00     // mov     [esp+1E4h+pHints.ai_proto
+        FF 15 ?? ?? ?? ??        // call    ds:getaddrinfo
+        85 C0                    // test    eax, eax
+    }
+    $code_check_running_procs = {
+        6A 00                    // push    0               ; th32Pro
+        6A 0F                    // push    0Fh             ; dwFlags
+        E8 ?? ?? ?? ??           // call    CreateToolhelp32Snapshot
+        68 ?? 01 00 00           // push    124h            ; Size
+        8B ??                    // mov     esi, eax
+        8D [3-5]                 // lea     eax, [ebp+pe.cntUsage]
+        6A 00                    // push    0               ; Val
+        50                       // push    eax             ; void *
+        E8 ?? ?? ?? ??           // call    memset
+        83 C4 0C                 // add     esp, 0Ch
+    }
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 56/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+    condition:
+        pe.is_pe and
+        filesize < 100KB and
+        ($x and 2 of ($code*) or (3 of ($code*))) and
+        for any i in pe.import_details: ( for any f in i.functions: (
+}
+
+rule BDarkRAT : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects BDarkRAT used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "e07e8cbeeddc60697cc6fdb5314bd3abb748e3ac5347ff108fef9
+        hash = "bf169e4dacda653c367b015a12ee8e379f07c5728322d9828b7d6
+        hash = "e599c55885a170c7ae5c7dfdb8be38516070747b642ac21194ad6
+
+    strings:
+        $s1 = "Process started successfully" wide fullword
+        $s2 = "No process to send input to" wide fullword
+
+        $code_initialize_commands = {
+            73 ?? 00 00 0A    // IL_0000: newobj    ::.ctor()
+            80 ?? 00 00 04    // IL_0005: stsfld    ::packetList
+            72 ?? ?? 00 70    // IL_000A: ldstr     "1"
+            [1-2]             // IL_000F: ldc.i4.2
+            D0 ?? ?? 00 02    // IL_0010: ldtoken   R_DeleteFile
+            28 ?? ?? 00 0A    // IL_0015: call      ::GetTypeFromHand
+            73 ?? ?? 00 06    // IL_001A: newobj    ::.ctor
+            28 ?? ?? 00 06    // IL_001F: call      ::RegisterPacket
+            72 ?? ?? 00 70    // IL_0024: ldstr     "12"
+            [1-2]             // IL_0029: ldc.i4.s  18
+            D0 ?? ?? 00 02    // IL_002B: ldtoken   R_FileMgrGetDrive
+            28 ?? ?? 00 0A    // IL_0030: call      ::GetTypeFromHand
+            73 ?? ?? 00 06    // IL_0035: newobj    ::.ctor
+            28 ?? ?? 00 06    // IL_003A: call      ::RegisterPacket
+            72 ?? ?? 00 70    // IL_003F: ldstr     "13"
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 57/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        }
+        $code_connect_ip = {
+            26                // IL_0071: pop
+            02                // IL_0072: ldarg.0
+            7B ?? ?? 00 04    // IL_0073: ldfld     ::random
+            17                // IL_0078: ldc.i4.1
+            1?                // IL_0079: ldc.i4.4
+            6F ?? ?? 00 0A    // IL_007A: callvirt  Random::Next
+            20 E8 03 00 00    // IL_007F: ldc.i4    1000
+            5A                // IL_0084: mul
+            28 ?? ?? 00 0A    // IL_0085: call      Thread::Sleep
+            DE ??             // IL_008A: leave.s   IL_00CE
+            02                // IL_008C: ldarg.0
+            7B ?? ?? 00 04    // IL_008D: ldfld     ::random
+            17                // IL_0092: ldc.i4.1
+            1?                // IL_0093: ldc.i4.2
+            6F ?? ?? 00 0A    // IL_0094: callvirt  Random::Next
+            20 E8 03 00 00    // IL_0099: ldc.i4    1000
+            5A                // IL_009E: mul
+            28 ?? ?? 00 0A    // IL_009F: call      Thread::Sleep
+            7E ?? ?? 00 04    // IL_00A4: ldsfld    Settings::Connect
+            28 ?? ?? 00 0A    // IL_00A9: call      ::IsNullOrEmpty
+            2D 19             // IL_00AE: brtrue.s  IL_00C9
+            7E ?? ?? 00 04    // IL_00B0: ldsfld    ClientConnect::cl
+            7E ?? ?? 00 04    // IL_00B5: ldsfld    Settings::Connect
+            28 ?? ?? 00 0A    // IL_00BA: call      IPAddress::Parse
+            7E ?? ?? 00 04    // IL_00BF: ldsfld    Settings::Connect
+            6F ?? ?? 00 0A    // IL_00C4: callvirt  Socket::Connect
+            DE ??             // IL_01EE: leave.s   IL_01F3
+        }
+        $code_packet_crypt = {
+            16                // IL_0000: ldc.i4.0
+            0A                // IL_0001: stloc.0
+            2B 16             // IL_0002: br.s      IL_001A
+            02                // IL_0004: ldarg.0
+            06                // IL_0005: ldloc.0
+            8F ?? ?? 00 01    // IL_0006: ldelema   System.Byte
+            25                // IL_000B: dup
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 58/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+            47                // IL_000C: ldind.u1
+            7E ?? ?? 00 04    // IL_000D: ldsfld    CryptEngine::_key
+            D2                // IL_0012: conv.u1
+            61                // IL_0013: xor
+            D2                // IL_0014: conv.u1
+            52                // IL_0015: stind.i1
+            06                // IL_0016: ldloc.0
+            17                // IL_0017: ldc.i4.1
+            58                // IL_0018: add
+            0A                // IL_0019: stloc.0
+            06                // IL_001A: ldloc.0
+            02                // IL_001B: ldarg.0
+            8E                // IL_001C: ldlen
+            69                // IL_001D: conv.i4
+            32 E4             // IL_001E: blt.s     IL_0004
+            02                // IL_0020: ldarg.0
+            2A                // IL_0021: ret
+        }
+
+    condition:
+        pe.is_pe and
+        filesize < 200KB and
+        all of ($s*) and 2 of ($code*)
+}
+
+rule AlmondRAT : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects AlmondRAT used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "55901c2d5489d6ac5a0671971d29a31f4cdfa2e03d56e18c1585d
+        hash = "d83cb82be250604b2089a1198cedd553aaa5e8838b82011d6999b
+
+    strings:
+        $s1  = "GetMacid" ascii fullword
+        $s2  = "GetOsName" ascii fullword
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 59/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        $s3  = "GetallDrives" ascii fullword
+        $s4  = "sendingSysInfo" ascii fullword
+        $s5  = "fileAccessible" ascii fullword
+        $s6  = "StartClient" ascii fullword
+        $s7  = "StartCommWithServer" ascii fullword
+        $s8  = "*|END|*" wide fullword
+        $s9  = "PATH>" wide fullword
+        $s10 = "FILE>" wide fullword
+        $s11 = "NOTOK" wide fullword
+
+    condition:
+        pe.is_pe and
+        filesize < 50KB and
+        8 of ($s*)
+}
+
+rule ORPCBackdoor : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects ORPCBackdoor used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "8aeb7dd31c764b0cf08b38030a73ac1d22b29522fbcf512e0d245
+        hash = "dd53768eb7d5724adeb58796f986ded3c9b469157a1a1757d80cc
+
+    strings:
+        $rpc = "RPCRT4.dll"
+
+        $s1  = "Host Name:\t\t\t" ascii
+        $s2  = "OS Build Type :\t\t\t" ascii
+        $s3  = "Registered Owner:\t\t" ascii
+        $s4  = "Product ID:\t\t\t" ascii
+        $s5  = "Install Date:\t\t\t" ascii
+        $s6  = "System Manufacturer:\t\t" ascii
+        $s7  = "Processor(s):\t\t\t" ascii
+        $s8  = "BiosVersion:\t\t\t" ascii
+        $s9  = "BIOSVENDOR:\t\t\t" ascii
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 60/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        $s10 = "BIOS Date:\t\t\t" ascii
+        $s11 = "Boot Device:\t\t\t" ascii
+        $s12 = "Input Locale:\t\t\t" ascii
+        $s13 = "Time zone:\t\t\t" ascii
+        $s14 = "Total Physical Memory:\t\t" ascii
+        $s15 = "Virtual Memory: In Use:\t\t" ascii
+        $s16 = "Page File Location(s):\t\t" ascii
+        $s17 = "Error! GetComputerName failed.\n" ascii
+        $s18 = "Error! RegOpenKeyEx failed.\n" ascii
+        $s19 = "IA64-based PC" wide
+        $s20 = "AMD64-based PC" wide
+        $s21 = "X86-based PC" wide
+        $s22 = "%s\\oeminfo.ini" wide
+
+    condition:
+        pe.is_pe and
+        $rpc and 15 of ($s*)
+}
+
+rule WmRAT : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf, Threatray)"
+        description = "Detects WmRAT used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "4e3e4d476810c95c34b6f2aa9c735f8e57e85e3b7a97c709adc5d
+        hash = "10cec5a84943f9b0c635640fad93fd2a2469cc46aae5e43a4604c
+
+    strings:
+        $s1  = "%s%ld M" ascii fullword
+        $s2  = "%s%ld K" ascii fullword
+        $s3  = "%s%ld MB" ascii fullword
+        $s4  = "%s%ld KB" ascii fullword
+        $s5  = "--,." ascii fullword
+        $s6  = "RFOX" ascii fullword
+        $s7  = "1llll" ascii fullword
+        $s8  = "exit" ascii fullword
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 61/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        $s9  = "Path=" ascii fullword
+        $s10 = "  %d result(s)" ascii fullword
+        $s11 = "%02d-%02d-%d %02d:%02d" ascii fullword
+
+        $code_sleep = {
+            6A 64                 // push    64h ; 'd'       ; dwMill
+            FF ??                 // call    esi ; Sleep
+            6A 01                 // push    1               ; unsign
+            E8 ?? ?? ?? ??        // call    ??2@YAPAXI@Z    ; operat
+            83 C4 04              // add     esp, 4
+            3B ??                 // cmp     eax, edi
+            74 ??                 // jz      short loc_4019E5
+        }
+        $code_dec_str = {
+            83 7C 24 ?? 10        // cmp     dword ptr [esp+44h], 10h
+            8B 44 24 ??           // mov     eax, [esp+30h]
+            73 ??                 // jnb     short loc_4086B2
+            8D 44 24 ??           // lea     eax, [esp+30h]
+            8A 0C 37              // mov     cl, [edi+esi]
+            80 ?? ??              // sub     cl, 2Eh ; '.'
+            88 0C 30              // mov     [eax+esi], cl
+            46                    // inc     esi
+            3B F5                 // cmp     esi, ebp
+            7C ??                 // jl      short loc_408680
+        }
+        $code_fill_logs = {
+            BD E8 03 00 00        // mov     ebp, 1000
+            83 ?? FF              // or      edi, 0FFFFFFFFh
+            E8 ?? ?? ?? ??        // call    Get_ComputerName_and_Use
+            66 A1 ?? ?? ?? ??     // mov     ax, ds:word_40D82C
+            8A 0D ?? ?? ?? ??     // mov     cl, ds:byte_40D82E
+            66 89 44 24 ??        // mov     [esp+14h], ax
+            88 4C 24 ??           // mov     [esp+16h], cl
+            FF 15 ?? ?? ?? ??     // call    ds:GetLogicalDrives
+            89 44 24 ??           // mov     [esp+18h], eax
+            3B ??                 // cmp     eax, esi
+            74 ??                 // jz      short loc_4091E1
+            8D ?? 00 00 00 00     // lea     ebx, [ebx+0]
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 62/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+            A8 01                 // test    al, 1
+            74 ??                 // jz      short loc_4091D5
+        }
+
+    condition:
+        pe.is_pe and
+        filesize < 300KB and
+        10 of ($s*) or all of ($code*)
+}
+
+rule MiyaRAT : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects MiyaRAT used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "df5c0d787de9cc7dceeec3e34575220d831b5c8aeef2209bcd81f
+        hash = "c7ab300df27ad41f8d9e52e2d732f95479f4212a3c3d62dbf0511
+        hash = "0953d4cc6861082c079935918c63cd71df30e5e6854adf608a8b8
+        hash = "c2c92f2238bc20a7b4d4c152861850b8e069c924231e2fa14ea09
+
+    strings:
+        $x1 = "] GB FREE\r\n" ascii fullword
+        $x2 = "<||>\r\n" wide fullword
+
+        $s1  = "<SZ>" wide
+        $s2  = "<FIL>" wide
+        $s3  = "UPL1" wide
+        $s4  = "DWNL" wide
+        $s5  = ",filesize==" wide
+        $s6  = "[DIR]<||>" wide
+        $s7  = "[FILE]<||>" wide
+        $s8  = "[END]~!@" wide
+        $s9  = "GDIR" wide
+        $s10 = "DELz" wide
+        $s11 = "GFS" wide
+        $s12 = "SH1" wide
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 63/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        $s13 = "SH2" wide
+        $s14 = "SFS" wide
+        $s15 = "GSS" wide
+        $s16 = "SH1cmd" wide
+        $s17 = "SH1start_cmd" wide
+        $s18 = "SH1start_ps" wide
+        $s19 = "SH1exit_client" wide
+
+        $code_init_c2_conn = {
+            68 00 00 00 80               // push    80000000h       ;
+            FF 15 ?? ?? ?? ??            // call    ds:SetThreadExecu
+            68 E9 FD 00 00               // push    0FDE9h          ;
+            FF 15 ?? ?? ?? ??            // call    ds:SetConsoleOutp
+            68 E9 FD 00 00               // push    0FDE9h          ;
+            FF 15 ?? ?? ?? ??            // call    ds:SetConsoleCP
+            [0-1]
+            8D 85 ?? ?? ?? ??            // lea     eax, [ebp+WSAData
+            50                           // push    eax             ;
+            68 02 02 00 00               // push    202h            ;
+            FF 15 ?? ?? ?? ??            // call    ds:WSAStartup
+            85 C0                        // test    eax, eax
+        }
+        $code_collect_user_info = {
+            68 00 20 00 00                       //  push    2000h   
+            [0-6]
+            6A 00                                //  push    0       
+            [0-6]
+            5?                                   //  push    eax     
+            E8 ?? ?? ?? ??                       //  call    _memset 
+            83 C4 0C                             //  add     esp, 0Ch
+            C7 85 ?? ?? ?? ?? 10 00 00 00        //  mov     [ebp+pcb
+            8D 8? ?? ?? ?? ??                    //  lea     eax, [eb
+            5?                                   //  push    eax     
+            8D 4? ??                             //  lea     eax, [eb
+            5?                                   //  push    eax     
+            FF 15 ?? ?? ?? ??                    //  call    ds:GetUs
+            [0-6]
+            C7 85 ?? ?? ?? ?? 10 00 00 00        //   mov     [ebp+pc
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 64/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+            [0-6]
+            5?                                   //  push    eax     
+            8D 4? ??                             //  lea     eax, [eb
+            5?                                   //  push    eax     
+            FF 15 ?? ?? ?? ??                    //  call    ds:GetCo
+            6A 00                                //  push    0       
+            FF 15 ?? ?? ?? ??                    //  call    ds:GetMo
+        }
+
+    condition:
+        pe.is_pe and
+        all of ($x*) and
+        (10 of ($s*) or 2 of ($code*))
+}
+
+rule KiwiStealer : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects KiwiStealer used by Bitter APT"
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "4b62fc86273cdc424125a34d6142162000ab8b97190bf6af428d3
+
+    strings:
+        $code_main = {
+            FF 15 ?? ?? ?? ??       // call    cs:CreateMutexA
+            4C 8B F8                // mov     r15, rax
+            FF 15 ?? ?? ?? ??       // call    cs:GetLastError
+            3D B7 00 00 00          // cmp     eax, 0B7h
+            0F 84 ?? ?? ?? ??       // jz      loc_14000B718
+            FF 15 ?? ?? ?? ??       // call    cs:GetLastError
+            83 F8 05                // cmp     eax, 5
+            0F 84 ?? ?? ?? ??       // jz      loc_14000B718
+        }
+        $code_dec_str = {
+            66 83 ?? 19             // cmp     ax, 19h
+            77 ??                   // ja      short loc_140005CDF
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 65/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+            83 ?? 3F                // sub     ecx, 3Fh ; '?'
+            B? 4F EC C4 4E          // mov     eax, 4EC4EC4Fh
+            F7 ??                   // imul    ecx
+            C1 ?? 03                // sar     edx, 3
+            8B ??                   // mov     eax, edx
+            C1 ?? 1F                // shr     eax, 1Fh
+            03 ??                   // add     edx, eax
+            6B ?? 1A                // imul    eax, edx, 1Ah
+            2B ??                   // sub     ecx, eax
+            66 83 ?? 41             // add     cx, 41h ; 'A'
+        }
+
+    condition:
+        pe.is_pe and
+        filesize < 300KB and
+        all of them
+}
+
+rule KugelBlitz : BitterAPT {
+    meta:
+        author = "Abdallah Elshinbary (n1ghtw0lf), Threatray"
+        description = "Detects KugelBlitz shellcode loader used by Bi
+        license = "Detection Rule License (DRL) 1.1"
+        date = "2025-06-01"
+        reference = "https://www.threatray.com/blog/the-bitter-end-un
+        hash = "a56b5e90a08822483805f9ab38debb028eb5eade8d796ebf0ff16
+
+    strings:
+        $s1 = "run.bin" wide
+        $s2 = "Failed to open the file." ascii
+        $s3 = "Failed to allocate memory." ascii
+        $s4 = "Failed to read the shellcode." ascii
+        $s5 = "ShellCode_Loader" ascii
+
+    condition:
+        pe.is_pe and
+        filesize < 100KB and
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 66/67
+
+
+
+2025/6/10 18:22 The Bitter End: Unraveling Eight Years of Espionage Antics – Part Two | Threatray
+
+        4 of them
+}
+
+‍
+
+https://www.threatray.com/blog/the-bitter-end-unraveling-eight-years-of-espionage-antics-part-two 67/67

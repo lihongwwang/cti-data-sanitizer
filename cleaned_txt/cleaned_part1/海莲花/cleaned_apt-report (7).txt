@@ -1,0 +1,70 @@
+海莲花组织以南海的法律制度等为话题的攻击活动分析
+
+1 事件概述
+
+OceanLotus又名APT32、海莲花，是具有东南亚国家背景的APT组织。该组织自2015年披露以来，持续活跃至今，主要针对周边国家：中国、柬埔寨、泰国、老挝进行国家级网络间谍活动。其目标行业包括政府、金融、海事机构、海域建设部门、航运企业、科研院所和境内高校。
+
+近日，猎影实验室捕获到OceanLotus（海莲花）针对境内的攻击活动，活动延续此前的攻击目标与攻击手法，即仍然通过鱼叉式网络钓鱼邮件针对国内海事机构。攻击活动流程大致如下：
+1.   该鱼叉式网络钓鱼邮件附件为包含有MSC文件的压缩包文件，其中MSC文件伪装成DOCX文件引诱目标用户点击；
+2.   MSC文件运行后将读取自身释放诱饵文档、白文件Warp.exe以及恶意DLL文件7z.dll，其中诱饵文档之一的内容为适用于南海的两种法律制度研究；
+3.   恶意DLL文件由白文件Warp.exe加载后，将在内存中解密多层Shellcode，最终执行CobaltStrikeBeacon，连接到C2服务器，并等待后续指令下发。
+
+2 诱饵文件
+
+三个MSC文件释放的诱饵文件分别如下：
+1.  适用于南海的两种法律制度研究
+2.  匿名审稿专家回执
+3.  《国际论坛》匿名审稿专家邀请函
+
+3 样本分析
+
+MSC文件启动
+XML格式的MSC文件中存在有可疑的Javascript指令
+其执行的内容经解码后如下，主要功能为加载XML中嵌入的VBScript执行
+
+VBScript脚本
+VBScript脚本加载后主要释放三个文件：白文件Warp.exe、恶意DLL文件7z.dll到目录C:\Program Files\Cloudflare，以及诱饵文件“适用于南海的两种法律制度研究（稿件）.docx”到目录%Temp%
+释放文件来自源文件，名为CONSOLE_TREE、CONSOLE_MENU、以及CONSOLE_PANE的标签，通过Base64解码后写入对应的文件路径
+最后打开诱饵文件、带参数"t 8.8.8.8"启动白文件Warp.exe
+
+DLL文件侧载
+DLL文件侧载是一种利用程序加载DLL文件进行恶意操作的攻击技术，正常情况下，应用程序会依赖系统提供的动态链接库（DLL）执行特定功能。攻击者则通过修改或替换这些DLL文件，使应用程序加载恶意代码。
+利用DLL文件劫持是OceanLotus组织常用的一种攻击手法，该组织在历史攻击活动中劫持过的白文件包括：WinWord.exe（Word主程序）、MicrosoftUpdate.exe（微软升级程序）、SoftManager.exe（360软件管理器）、GoogleUpdate.exe（谷歌更新程序）、LenovoDrvTray.exe（联想驱动管理程序）、RasTlsc.exe（赛门铁克产品组件）、LenovoDesk.exe（联想桌面应用）等。
+
+此次捕获到OceanLotus使用的恶意DLL文件7z.dll由Warp.exe侧加载，其中Warp.exe证书信息如下：
+白文件加载7z.dll后，获取其导出表GetNumberOfMethods进行调用
+首先解密出字符串“cloudflare.warp.process”，并以此为名创建互斥体
+接着获取一组API函数地址用于获取命令行参数并进行验证
+随后创建命名管道ntsvcs用于进程间通信
+使用ReadFile、WriteFile从/向管道读取/写入数据
+获取Chakra.JsProjectWinRTNamespeace函数的内存，并通过VirtualProtect更改其属性为读写权限
+随后将Shellcode写入该内存，再次通过VirtualProtect更改其属性为可执行
+最终内存中加载的有效负载仍为Cobalt Strike Beacon
+
+4 规避手段
+
+1.   MSC文件图标设置为Word图标，在默认隐藏文件后缀的主机上真假难辨
+2.   MSC文件在携带PE文件资源时使用了Base64编码，以规避静态检测
+3.   恶意DLL文件通过带有合法数字签名的白文件加载，逃避杀软动态检测
+
+5 C2连接
+
+解密出C2域名及请求路径，建立通信后接收后续远控指令
+安恒云沙箱可直接跑出本次海莲花样本连接域名：office.enucuzalanadi.net，解析到IP159.223.49.98
+
+6 远控指令
+
+此次攻击活动最终阶段的远控指令通过CobaltStrike Beacon下发。Cobalt Strike Beacon是一款非常受攻击者青睐的红队渗透测试框架。有数据表明，2018年至今，60%以上的网络犯罪及APT活动均涉及使用Cobalt Strike，部分APT例如SolarWinds供应链攻击事件背后的APT29、常年针对我国海事机构的OceanLotus、Winnti等都将该工具纳入自身武器库中。Cobalt Strike功能强大，负载类型丰富，4.2版本已支持多达100+远控指令，包括Shell执行、文件操作、执行加载器、内网侦察、横向移动、持久性等
+
+7 关联分析
+
+此次攻击活动存在如下特征，与OceanLotus历史攻击活动特征高度重合。
+1.  活动针对国内海事机构及相关人员；
+2.  活动使用伪装成DOCX文件的恶意MSC文件作为邮件附件下发；
+3.  释放的后续负载仍为白+黑的启动方式；
+4.  后续在内存中加载的Shellcode加载CobaltStrikeBeacon。
+此外，公开来源的威胁情报已将本次活动最后阶段CobaltStrikeBeacon连接到的C2标记为APT组织海莲花资产，由此可以看出海莲花组织活动广泛，需要用户警惕此类钓鱼邮件攻击。
+
+5 活动总结
+
+OceanLotus组织自披露以来，长期处于活跃状态，其擅长制作针对中国的钓鱼邮件，且多年来一直热衷于DLL文件侧载的攻击方式。猎影实验室提醒广大用户朋友，不运行未知来源的邮件附件。如有需要鉴别的未知来源样本，可以投递至安恒云沙箱查看判别结果后再进行后续操作。猎影实验室将持续对全球APT组织进行持续跟踪，专注发现并披露各类威胁事件。

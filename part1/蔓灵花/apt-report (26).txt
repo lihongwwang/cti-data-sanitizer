@@ -1,0 +1,1032 @@
+﻿2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+< Overview
+
+ECUINFRA Falcon Team · 05.07.2022
+
+Whatever floats your Boat – Bitter APT continues to
+arget Bangladesh
+he SECUINFRA Falcon Team analyzed a recent attack conducted by the south-
+sian Advanced Persistent Threat group „Bitter“. The campaign is specifically
+
+argeting (military) organizations from Bangladesh. Through malicious document
+es and intermediate malware stages the threat actors conduct espionage by
+
+eploying Remote Access Trojans.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 1/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+ontents
+. Key Findings
+. Overview
+. Analysis
+. Hosting Infrastructure / Network Indicators
+. Yara Rules
+. Indicators of Compromise
+. MITRE ATT&CK TTPs
+. Conclusion
+
+Key Findings
+
+The SECUINFRA Falcon Team identified a recent attack consitent with the campaign targeting
+Bangladesh conducted by the advanced persistent threat group “Bitter”, also known as T-APT-
+17.
+Bitter employs malicious document files as lures containing different implementations of the
+so-called “Equation Editor exploits” to download following malware stages.
+The second stage consists of a Loader, which gathers information about the infected system
+and retrieves the third stage from a remote server.
+The third stage of a Bitter attack can feature different types of Malware e.g. Keyloggers,
+Stealers or Remote Access Trojans (RATs). We analyzed one of the newer utilized RATs, which
+we refer to as “Almond RAT”.
+
+Overview
+he Bitter APT group is said to be active since at least 2013 was first reported about by Forcepoin
+abs in 2016 when it was primarily targeting Pakistan. The threat group is suspected to be locate
+southern Asia. Even back then the group was using spearphishing emails to exploit Microsoft
+
+ffice (e.g. CVE-2012-0158) and download additional malware, so compared to their attacks
+oday their modus operandi has not changed at all. Occasionally they also target Android devices
+ith Remote Access Trojans, as reported by BitDefender in 2020.
+
+Februray of 2019 Palo Alto Networks documented Bitter attacks using a second stage
+ownloader dubbed “ArtraDownloader” which has been in use since 2017. Also Chinese and Saud
+rabian organizations were added to the list of targets.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 2/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+s discovered by Cyble and Kaspersky in 2021 the Bitter group is also capable of more than just
+d Office exploits, for example abusing 0-day vulnerabilities like a Windows Kernel vulnerability
+
+CVE-2021-1732) and a vulnerability in the Windows Desktop Window Manager (CVE-2021-
+8310) for privilege escalation.
+
+May 2022 Cisco Talos shared an Analysis of a new Bitter campaign targeting users in
+angladesh starting in October 2021 up to February 2022 with a new-ish second stage
+ownloader called “ZxxZ”.
+
+his report builds on the findings published by Talos and covers an attack presumabily conducte
+mid May 2022.
+
+hortly before the completion of this report the Qi Anxin Threat Intellingence Center published a
+port on recent Bitter activities targeting military branches of Bangladesh. They also mentioned
+e RAT sample analyzed in this blog post.
+
+n the 4th of July @c3rb3ru5d3d53c released a report about a Bitter campaign targeting
+akistan. In addition to many analysis steps that match our approach, it was also demonstrated
+ow the ZxxZ Downloader could be used with a custom C2 server.
+
+Analysis
+xcel Maldoc
+he sample of the malicious Excel document (1bf615946ad9ea7b5a282a8529641bf6) was
+btained through the public Any.Run Sandbox service. As with previous campaigns conducted by
+tter the file was likely distributed via a spearphishing email, which is not available for Analysis.
+he sample was previously mentioned by Simon Kenin (k3yp0d) on Twitter.
+
+he filename of the document reads “Repair of different csoc cstc, china supplied system – BNS
+JOY.xls”. The abbreviations csoc and cstc likely stand for “China Shipbuilding & Offshore
+ternational Co. Ltd” and “China Shipbuilding Trading Co. Ltd” respectively and BNS Bijoy is the
+
+ame of a “Castle-class guided missile corvette” (small warship) of the Bangladesh Navy
+Wikipedia).
+
+he document does not contain readable content on the topic the filename suggests, only a white
+ctangle image and unicode characters, which should alert victims that it is not a legitimate
+
+ocument. As soon as the file is opened the Equation Editor exploit, which we identified as CVE-
+018-0798, is executed.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 3/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 1: Visible contents of the Excel document
+
+Without alerting the user in any way the Equation Editor is started in the background and used to
+ownload the next malware stage and execute it. By tracing the Process Tree with ProcMon we
+an see that the downloaded binary is written to C:\$Drw\fsutil.exe and executed by the Window
+xplorer.
+
+gure 2: Process Tree of Equation Editor
+
+o extract information from the Maldoc we opted for a dynamic approach first. By registering a
+ebugger for the Equation Editor executable via gflags.exe, which is part of the Windows SDK, we
+re able to attach x32dbg to the process once the Excel document is opened (this technique was
+howcased by Colin Hardy for CVE-2017-1182).
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 4/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+gure 3: Registering a debugger for Equation Editor
+
+nce Excel is waiting on the Equation Editor to exit, our debugging session will unfortunately be
+nded after a fixed amount of time with the error message below, so we will have to approach it
+fferently.
+
+Figure 4: Error dialog while debugging Equation Editor
+
+With the well-known oledump tool developed by Didier Stevens we can take a look at the data
+reams inside the Excel file. In this case the stream A4, which is named Equation Native is of
+
+articular interest for us.
+
+gure 5: Viewing the contents of the Excel file with oledump
+
+y specifying the stream and the -d parameter we can dump it to analyze it further.
+
+gure 6: Dumping the Equation stream
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 5/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+pening the dumped file in a hex editor we can visually identify two different segments of data.
+ighlighted in green we see data that is likely the shellcode required for the Equation Editor exploi
+nce there are next to no readable ASCII strings in there (looking closely we can spot fragments
+at look like “URL” or “http”) this data is likely encoded or encrypted in some way. Below that we
+
+an see data in a repeating pattern which is used as padding for the memory corruption exploit
+VE-2018-0798.
+
+Figure 7: Analyzing the shellcode in a Hex editor
+
+an attempt to decode the shellcode portion of the data we ran a frequency analysis (a very
+seful feature of the Okteta hex editor) on it to determine which values occur the most, since in a
+019 report by Sophos Labs a maldoc builder for CVE-2018-0798 was analyzed which
+
+mplements a XOR-based encoding for the shellcode. For this maldoc the most frequent byte is F
+o we assume that this could be encoded null bytes and therefore FF could be the key in a single-
+yte XOR encoding.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 6/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+gure 8: Running frequency analysis on the shellcode
+
+sing Cyberchef with the presumed shellcode section and XOR key does yield readable strings.
+rom here we can extract important information about the executed shellcode and indicators like
+e URL for the next malware stage.
+
+Figure 9: Decoding the XOR-ed shellcode
+
+he visualization below shows the most important API calls made in the shellcode:
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 7/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+gure 10: Graph showing the functionality of the maldoc shellcode
+
+y debugging the Equation Editor exploit again and manually placing a breakpoint on e.g.
+RLDownloadToFileA we can confirm these findings.
+
+Figure 11: Manually loading urlmon.dll to place a breakpoint on URLDownloadToFileA
+
+he download query to emshedulersvc[.]com/vc/vc returns a sample of Bitters second stage
+ownloader, which we will investigate next.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 8/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+gure 12: Breaking on URLDownloadToFile
+
+xxZ / MuuyDownloader
+nce approximately the second half of 2021 Bitter switched from their second-stage
+rtraDownloader to a new, but similar implementation named “ZxxZ” by Talos and
+
+MuuyDownloader” by Qi Anxin Threat Intelligence Center. It is implemented in Visual C++ and
+oes not appear to be packed on first inspection. The compilation timestamp suggests this binar
+as built on the 11th of May 2022, which matches the timeframe for the malicious document.
+
+gure 13: Detect it Easy parsing the PE file, Entropy graph
+
+omparing this fingerprinting function to the one documented by Cisco Talos we can see that
+tter abandoned the ZxxZ value separator (that gave the Downloader its name) in exchange for 
+mple underscore. This was possibly done to avoid detection through IDS/IPS systems based on
+is very specific separator. Looking back at older Bitter Research we can see that the threat grou
+
+kes to change up these patterns from time to time to avoid detection.
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 9/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 14: ZxxZ gathering system information
+
+he check-in with an attacker-controlled staging server contains the user account and hostname
+f the system. The function below manually assembles the HTTP GET request and sends it via a
+ocket connection to the C2 server.
+
+Figure 15: ZxxZ sending a GET request with the host
+fingerprint to the C2
+
+We verified this network communication using packet captures. Another common indicator
+cross Bitter infrastructure is the use of the LiteSpeed web server, which has been documented in
+der reports as well.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 10/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 16: Packet capture of the GET request above
+
+fter retrieving the next malware stage from a staging server ZxxZ writes the binary to the disk
+nd tries to execute it. In the screenshot below we can see that the Bitter group altered the C2
+pcode strings that Talos had previously documented as DN-S (download success) and RN_E
+un error) to just S and F, presumably short for Success and Failure. This is likely another
+easure to evade older detection rules. The payload execution was also changed to use
+reateProcessA instead of ShellExecuteA like in the older version of ZxxZ.
+
+Figure 17: ZxxZ retrieving and executing the next stage
+
+nfortunately the actual payload could not be retrieved from the staging server as it only returned
+n empty file named CAPT.msi.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 11/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 18: Request made to another staging server for the third stage
+
+Almond RAT
+formation on the Remote Access Trojans (RATs) deployed by Bitter (with one commonly referre
+
+o as BitterRAT) is limited and sometimes contradictory. We found that Bitter deploys different
+AT implementations / variants depending on the scenario and target.
+
+this case we analyzed a sample of a .NET-based RAT that we were not able to identify through
+revious reports or open source repositories. For the lack of an existing detection and a better
+ame we will refer to it as “Almond RAT” for this analysis. The sample was first mentioned by the
+witter user @binlmmhc. The recent report by Qi Anxin mentioned above refers to this RAT only a
+ghtweight remote control”.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 12/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 19: Detect it Easy parsing the Almond RAT PE file
+
+asic functionality
+he main function of the RAT checks for the mutex string saebamini.com SingletonApp before
+alling the StartClient function. Turns out even skilled threat actors need to look up the really
+mple things sometimes: in this case a short tutorial about Allowing Only One Instance of a C#
+pplication to Run which uses this same mutex string. As always they copied only half of the
+nswer and forgot to include the call to ReleaseMutex at the end…
+
+Figure 20: Main function, setting a Mutex
+
+mond RAT employs string encryption to hinder detection and reverse engineering. Important /
+vealing strings like the Command&Control (C2) IP address below are therefore wrapped in the
+phertext.Decrypt function.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 13/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 21: StartClient fuction, showing the AES string encryption
+
+he decryption function implements a default AES-256-CBC encryption scheme where the IV and
+ey are derived from the given plaintext password via PDKDF2. Since it is trivial to reimplement
+is in e.g. Python we decrypted all of the encrypted strings in the binary and modified the .NET
+
+ssembly to increase code readability for this report. The file hashes of the unaltered and modifie
+naries can be found in the IoC section at the end of the post.
+
+gure 22: String decryption function using AES CBC
+
+he StartClient function implements the socket-based C2 communication interface for Almond
+AT. In the samples we observed there were no domains or dynamic DNS services but only IPv4
+ddresses used to connect back to the threat actors. A characteristic property of the RAT is the
+sage of the tcp port  33638 . When first contacting the C2 server Almond RAT transmits gathere
+ystem information like hostname, OS version, internal IP address and MAC address and storage
+entifiers (disk info is not transmitted) to fingerprint the infected system. A 1024 byte buffer is
+sed for the C2 communication.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 14/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 23: StartClient function
+
+apabilities & C2 communication
+ext well will further investigate the functionality of Almond RAT.  At the beginning of the
+tartCommWithServer function the RAT sets a random receive timeout between 20 and 30
+econds for the socket. The analyzed sample accepts seven different commands in total. The
+EFRESH command is used as a heartbeat signal, letting the C2 server know that the RAT is still
+ctive and will reply with a simple OK.
+
+he DRIVE command returns a list of connected storage devices.
+
+With the DELETE* command the attackers can delete accessible files by supplying a path. In case
+f e.g. insufficient permissions it will return the exception. The * in the command string is used as
+separator between the command and the file path.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 15/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 24: Basic C2 functionality
+
+mond RAT allows for the execution of arbitrary commands via a wrapped cmd.exe instance. It
+as its own implementation for directory changes via cd and directory listings via OK. The CMD
+ommand uses a tilde instead of an asterisk to separate the parts of the command.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 16/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Figure 25: Command execution
+
+addition to the functionality of listing directories and files via the command prompt the RAT als
+upports a quite involved DIR* command. It is capable of verifying file accessibility and displaying
+eta data like the last file write-time.
+
+gure 26: Directory and File listings
+
+nce Bitters main objective is espionage they need a way to exfiltrate data to the C2 server from
+e system, which is done via the DOWNLOAD* command.
+
+o drop more malware or other files onto the system it also supports the UPLOAD* command
+hich uses the following file naming scheme: yyyyMMdd-hhmmss_filename
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 17/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+gure 27: DOWNLOAD* and UPLOAD* functions
+
+case the RAT receives an unknown command from the operator it will return the message XXX
+o indicate the error.
+
+Figure 28: Exception handling in case of an unknown command
+
+mond RATs main purposes seem to be file system discovery, data exfiltration and a way to load
+ore tools/establish persistence. The design of the tools seems to be layed out in way that it can
+
+e quickly modified and adapted to the current attack scenario.
+
+Hosting Infrastructure / Network Indicators
+WHOIS and DNS Records
+
+he staging server for the Downloader and the staging server for the RAT are hosted with Host
+ailor. The Command&Control server for the Downloader is hosted with Namecheap and the one
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 18/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+or Almond RAT is hosted with Nexeon Technologies. Except for the samples analysed in this
+port there was no other significant malware activity detected with these four domains.
+
+taging server ZxxZ downloader
+
+Domain emshedulersvc[.]com
+
+Registrar ENOM Inc.
+
+Hoster Host Sailor Ltd.
+
+Created 10.05.2022 – 91.195.240[.]103
+
+Updated 12.05.2022 – 194.36.191[.]196
+
+2 server ZxxZ downloader
+
+Domain huandocimama[.]com            
+
+Registrar Namecheap Inc.
+
+Hoster Namecheap Inc.
+
+Created 19.08.2021 – 162.0.232[.]109
+
+Updated N/A
+
+taging server third stage
+
+Domain diyefosterfeeds[.]com
+
+Registrar ENOM Inc.
+
+Hoster Host Sailor Ltd.
+
+Created 02.02.2022 – 194.36.191[.]196
+
+Updated N/A
+
+lmond RAT C2 server
+
+Domain 64.44.131[.]109
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 19/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Hoster Nexeon Technologies Inc.
+
+ASN AS20278
+
+Created 27.02.2014
+
+While investigating these DNS entries we also noticed that on the 30.05.2022 a new record for
+purshipbroker[.]com on 194.36.191[.]196 was created. This domain seems to be a so-called
+yposquat” (impersonation) of spurshipbrokers[.]com, an Indian Marine Shipping and Transport
+ompany. This record stood out between seemingly legitimate webhosting and typosquats for
+anking sites on this Webhost/IP used by Bitter. While we do not have further evidence at this
+oint in time that this is related to the Bitter activity it certainly does fit the approach of the group
+nd the Naval-themed lure.
+
+Yara Rules
+he Yara rule set we created for this report can be found below, in our Github Repository:
+Falcon/Detection and on Abuse.ch Yaraify.
+
+ara Rule Set
+
+uthor: SECUINFRA Falcon Team
+
+ate: 2022-06-23
+
+entifier: 0x03-yara_win-Bitter_T-APT-17
+
+eference: “https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-
+ontinues-to-target-bangladesh”
+
+
+Rule Set —————————————————————– */
+
+le APT_Bitter_Maldoc_Verify {
+
+eta:
+escription = “Detects Bitter (T-APT-17) shellcode in oleObject (CVE-2018-0798)”
+
+uthor = “SECUINFRA Falcon Team (@SI_FalconTeam)”
+
+p = “WHITE”
+
+ference = “https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-
+
+ontinues-to-target-bangladesh”
+
+ate = “2022-06-01”
+
+ash0 = “0c7158f9fc2093caf5ea1e34d8b8fffce0780ffd25191fac9c9b52c3208bc450”
+
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 20/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+ash1 = “bd0d25194634b2c74188cfa3be6668590e564e6fe26a6fe3335f95cbc943ce1d”
+
+ash2 = “3992d5a725126952f61b27d43bd4e03afa5fa4a694dca7cf8bbf555448795cd6”
+
+rings:
+
+This rule is meant to be used for verification of a Bitter Maldoc
+
+rather than a hunting rule since the oleObject it is matching is
+
+compressed in the doc zip
+
+xor_string0 = “LoadLibraryA” xor
+
+xor_string1 = “urlmon.dll” xor
+
+xor_string2 = “Shell32.dll” xor
+
+xor_string3 = “ShellExecuteA” xor
+
+xor_string4 = “MoveFileA” xor
+xor_string5 = “CreateDirectoryA” xor
+
+xor_string6 = “C:\\Windows\\explorer” xor
+
+padding = {000001128341000001128341000001128342000001128342}
+
+ondition:
+of ($xor_string*)
+
+nd $padding
+
+
+le APT_Bitter_ZxxZ_Downloader {
+
+eta:
+escription = “Detects Bitter (T-APT-17) ZxxZ Downloader”
+
+uthor = “SECUINFRA Falcon Team (@SI_FalconTeam)”
+
+p = “WHITE”
+
+ference = ” https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-
+
+ontinues-to-target-bangladesh”
+
+ate = “2022-06-01”
+
+ash0 = “91ddbe011f1129c186849cd4c84cf7848f20f74bf512362b3283d1ad93be3e42”
+
+ash1 = “90fd32f8f7b494331ab1429712b1735c3d864c8c8a2461a5ab67b05023821787”
+
+ash2 = “69b397400043ec7036e23c225d8d562fdcd3be887f0d076b93f6fcaae8f3dd61”
+
+ash3 = “3fdf291e39e93305ebc9df19ba480ebd60845053b0b606a620bf482d0f09f4d3”
+
+ash4 = “fa0ed2faa3da831976fee90860ac39d50484b20bee692ce7f0ec35a15670fa92”
+
+rings:
+
+old ZxxZ samples / decrypted strings
+
+
+old0 = “MsMp” ascii
+old1 = “SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion” ascii
+
+old2 = “&&user=” ascii
+
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 21/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+old3 = “DN-S” ascii
+old4 = “RN_E” ascii
+
+new ZxxZ samples
+
+c2comm0 = “GET /” ascii
+
+c2comm1 = “profile” ascii
+
+c2comm2 = “.php?” ascii
+
+c2comm3 = “data=” ascii
+
+c2comm4 = “Update” ascii
+c2comm5 = “TTT” ascii
+
+ondition:
+nt16(0) == 0x5a4d
+
+nd filesize > 39KB // Size on Disk/1.5
+
+nd filesize < 2MB // Size of Image*1.5
+
+nd (all of ($old*)) or (all of ($c2comm*))
+
+mport “pe”
+
+mport “dotnet”
+
+le APT_Bitter_Almond_RAT {
+
+eta:
+escription = “Detects Bitter (T-APT-17) Almond RAT (.NET)”
+
+uthor = “SECUINFRA Falcon Team (@SI_FalconTeam)”
+
+p = “WHITE” reference = ” https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-
+tter-apt-continues-to-target-bangladesh”
+
+ate = “2022-06-01” hash =
+5901c2d5489d6ac5a0671971d29a31f4cdfa2e03d56e18c1585d78547a26396”
+
+rings:
+
+function0 = “GetMacid” ascii
+
+function1 = “StartCommWithServer” ascii
+function2 = “sendingSysInfo” ascii
+dbg0 = “*|END|*” wide
+
+dbg1 = “FILE>” wide
+dbg2 = “[Command Executed Successfully]” wide
+
+ondition:
+nt16(0) == 0x5a4d
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 22/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+nd dotnet.version == “v4.0.30319”
+
+nd filesize > 12KB // Size on Disk/1.5
+
+nd filesize < 68KB // Size of Image*1.5
+nd any of ($function*)
+
+nd any of ($dbg*)
+
+
+le APT_Bitter_PDB_Paths {
+
+eta:
+escription = “Detects Bitter (T-APT-17) PDB Paths”
+
+uthor = “SECUINFRA Falcon Team (@SI_FalconTeam)”
+
+p = “WHITE”
+
+ference = “https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-
+
+ontinues-to-target-bangladesh”
+
+ate = “2022-06-22”
+
+ash0 = “55901c2d5489d6ac5a0671971d29a31f4cdfa2e03d56e18c1585d78547a26396”
+
+rings:
+
+Almond RAT
+
+
+pdbPath0 = “C:\\Users\\Window 10 C\\Desktop\\COMPLETED WORK\\” ascii
+
+pdbPath1 = “stdrcl\\stdrcl\\obj\\Release\\stdrcl.pdb”
+
+found by Qi Anxin Threat Intellingence Center
+
+reference: https://mp.weixin.qq.com/s/8j_rHA7gdMxY1_X8alj8Zg
+
+
+pdbPath2 = “g:\\Projects\\cn_stinker_34318\\”
+
+pdbPath3 = “renewedstink\\renewedstink\\obj\\Release\\stimulies.pdb”
+
+ondition:
+nt16(0) == 0x5a4d
+
+nd any of ($pdbPath*)
+
+
+ndicators of Compromise
+amples
+l of the samples mentioned in this report have been made available through the public Malware
+positories MalwareBazaar and Malshare for verification and further research.
+
+aldoc
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 23/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+lename: Repair of different csoc cstc, china supplied system – BNS BIJOY.xlsx
+
+D5: 1bf615946ad9ea7b5a282a8529641bf6
+
+
+HA1: 358867f105b517624806c3315c5426803f7c42a7
+
+HA256: bc03923e3cc2895893571068fd20dd0bc626764d06a009b91dac27982e40a085
+
+xtracted oleObject:
+
+D5: a1d9e1dccfbba118d52f95ec6cc7c943
+
+HA1: 8efa4d5574a0c80733e9824ec146521385a68424
+
+HA256: 0c7158f9fc2093caf5ea1e34d8b8fffce0780ffd25191fac9c9b52c3208bc450
+
+xxZ / Muuy Downloader
+
+lename: vc
+
+D5: 6e4b4eb701f3410ebfb5925db32b25dc
+
+
+HA1: c330ef43bbee001296c6c120cf68e4c90d078d9c
+
+HA256: 91ddbe011f1129c186849cd4c84cf7848f20f74bf512362b3283d1ad93be3e42
+
+lmond RAT
+
+lename: stdrcl.exe
+D5: 71e1cfb5e5a515cea2c3537b78325abf
+
+
+HA1: bcc9e35c28430264575831e851182eca7219116f
+
+HA256: 55901c2d5489d6ac5a0671971d29a31f4cdfa2e03d56e18c1585d78547a26396
+
+odified assembly with decrypted strings:
+
+D5: d58e6f93bd1eb81eacc965d530709246
+
+HA1: a47aec515f303ae7f427d98fc69fe828fa9c6ec6
+
+HA256: d83cb82be250604b2089a1198cedd553aaa5e8838b82011d6999bc6431935691
+
+ost-based Indicators
+File paths associated with the Downloader
+
+\$Drw\dsw
+
+\$Drw\fsutil.exe
+
+Almond RAT Mutex
+
+aebamini.com SingletonApp
+
+etwork-based Indicators
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 24/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+mshedulersvc[.]com/vc/vc
+.huandocimama[.]com
+yefosterfeeds[.]com
+
+1.195.240[.]103
+
+94.36.191[.]196
+
+62.0.232[.]109
+4.44.131[.]109
+
+MITRE ATT&CK TTPs
+
+irst stage – Initial Compromise
+
+Tactic Technique Description Observable
+
+Bitter is using
+Stage Capabilities:
+
+Resource legitimate Hosters: HostSailor,
+Upload Malware
+
+Development webhosting services Namecheap
+(T1608.001
+
+to stage malware
+
+Bitter is distributing Filename: Repair of
+Phishing:
+
+malicious Microsoft different csoc cstc,
+Spearphishing
+
+nitial Access Office documents china supplied
+Attachment
+
+with military / naval system – BNS
+(T1566.001)
+
+lures BIJOY.xlsx
+
+Exploitation of the
+Microsoft Office OLE file with stream
+
+Exploitation for Client
+Execution Equation Editor via a named: Equation
+
+Execution (T1203)
+Memory Corruption Native
+(CVE-2018-0798)
+
+ntermediate Stage – Downloading additional tooling
+
+Tactic Technique Description Observable
+
+Defense Obfuscate Important Example string: vSCbLAsUGPVbnCW
+Evasion d Files or strings in
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 25/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+Informatio ZxxZ/MuuyDow
+n (T1027) nloader
+
+executables are
+XOR encrypted
+
+Gather
+Victim
+Host ZxxZ/MuuyDow Requested URL:
+
+Reconnais Informatio nloader hxxp://m.huandocimama[.]com/JvQKLsTYuM
+sance n: fingerprints the e/xAexyBbnDxW/profiles.php?profiles=
+
+Software attacked system <USERNAME_HOSTNAME>
+(T1592.00
+2)
+
+ZxxZ/MuuyDow
+Ingress nloader is
+
+Command
+Tool
+
+and capable of Command: UPLOAD*filepath, File naming
+Transfer downloading scheme: yyyyMMdd-hhmmss_filename
+
+Control
+(T1105) files from the C2
+
+onto the system
+
+inal stage – Espionage
+
+Tactic Technique Description Observable
+
+Encrypted:
+Important strings in
+
+4CjJPGsn5qweV7CE
+Almond RAT
+
+Obfuscated Files or MgTzXtD/2oxaXj/Cd
+Defense Evasion executables are
+
+Information (T1027) dgsjl8tJGU=,
+encrypted using AES-
+
+Decrypted:
+CBC
+
+64.44.131.109
+
+Generated
+Gather Victim Host
+
+Almond RAT Fingerprint:
+Information:
+
+Reconnaissance fingerprints the HOSTNAME*MAC_A
+Software
+
+attacked system DDRESS*OS_VERSIO
+(T1592.002)
+
+N
+
+Command and Non-Standard Port Almond RAT Network port:
+Control (T1571) communicates with 33638/tcp
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 26/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+the C2 via a non-
+standard port
+
+Almond RAT is
+Command:
+
+capable of
+Command and Ingress Tool Transfer UPLOAD*filepath,
+
+downloading files
+Control (T1105) Network Port:
+
+from the C2 onto the
+33638/tcp
+
+system
+
+Almond RAT is
+Command:
+
+capable of uploading
+Exfiltration over C2 DOWNLOAD*filepath
+
+Exfiltration accessible files from
+Channel (T1041) Network Port:
+
+the system to a C2
+33638/tcp
+
+server
+
+Almond RAT is using
+Data Transfer Size a 1024 byte buffer for Network buffer: 1024
+
+Exfiltration
+Limits (T1030) C2 communication bytes
+
+and Exfiltration
+
+Almond RAT is
+File and Directory capable of
+
+Discovery Command: DIR*
+Discovery (T1083) enumerating
+
+directories and files
+
+Almond RAT is
+Data Destruction capable of deleting Command:
+
+mpact
+(T1485) accessible files on DELETE*filepath
+
+the system
+
+Conclusion
+The Bitter threat group is continues to use their exploitation approach in Asia with themed
+lures and internal changes to avoid existing detections. To protect from such attacks
+network and endpoint detection and response measures should be put into place and
+commonly exploited software like Microsoft Office should be patched regularly. We will
+continue to monitor this threat group and report on changes in their Tactics, Techniques and
+Procedures.
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 27/28
+
+
+
+2022/7/7 10:53 Bitter APT continues to target Bangladesh |  SECUINFRA Falcon Team
+
+hank you for taking the time to read our analysis report! If you would like to stay up to date
+ith our research consider following us on Twitter.
+
+eitrag teilen auf: Twitter LinkedIn Xing
+
+SECUINFRA Falcon Team · Author
+Digital Forensics & Incident Response experts
+In addition to the activities that are the responsibility of custome
+orders, the Falcon team takes care of the operation, further
+development and research of various projects and topics in the
+DF/IR area.
+> All posts
+
+CONTACT LINKS NEWS
+
+Start SECUINFRA GmbH 29. June 2022 - “Communication
+Services Headquarters is everything…!” – An insight into
+
+Solutions Stefan-Heym-Platz 1 our executive coaching
+
+Careers 10367 Berlin
+06. May 2021 - Minimizing the
+
+News Frankfurt Office
+Münchener Straße 36 damage caused by today’s
+
+About us
+60329 Frankfurt/Main ransomware attacks
+
+Contact
+www.secuinfra.com/en
+
+©2022 SECUINFRA GmbH. All rights reserved. Imprint  | Privacy policy
+
+https://www.secuinfra.com/en/techtalk/whatever-floats-your-boat-bitter-apt-continues-to-target-bangladesh/ 28/28

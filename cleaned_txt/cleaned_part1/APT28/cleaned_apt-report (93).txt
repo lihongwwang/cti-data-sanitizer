@@ -1,0 +1,29 @@
+Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station
+
+The Ukrainian Secret Service (SBU) said today it stopped a cyber-attack with the VPNFilter malware on a chlorine distillation plant in the village of Aulska, in the Dnipropetrovsk region.
+
+"The continuation of the cyberattack could have led to a breakdown of technological processes and possible crash," the SBU said today in a press release in which it accused Russia of operating the malware and launching the attack.
+
+No other technical details were included in the SBU announcement in regards to how the cyber-attack unfolded.
+
+VPNFilter is a malware strain that targets a large number of router models. It's a modular threat that can survive router reboots and that can monitor and intercept traffic passing through the router and look for signs of traffic meant for Modbus-based industrial SCADA equipment. The malware can also temporarily brick the device it infects.
+
+In the case reported by the SBU, the malware has most likely infected the chlorine distillation station's networking equipment.
+
+The danger here lies in the malware's ability to detect a "sensitive" target and warn its operators, who can use it to pivot inside the infected organization and launch further attacks.
+
+The group behind VPNFilter isn't your regular botnet herder, but an advanced nation-state actor, known as APT28, according to the FBI, and believed to be a unit of Russia's military intelligence services.
+
+Ever since its silent war with Russia that started in 2014 after Russia's annexation of Crimea, Ukraine has been under a barrage of cyber-attacks, such as the BlackEnergy attacks against its power grid in 2015 and 2016, and the NotPetya and Bad Rabbit ransomware outbreaks in 2017, all believed to been carried out by Russia.
+
+VPNFilter was supposed to be this year's next giant cyber-attack aimed at Ukraine, but security firms detected the 500,000-strong botnet before it was deployed in a full-scale attack.
+
+The FBI took over the original VPNFilter botnet's command and control servers days after it was discovered, but APT28 started building a new one weeks later.
+
+It is unclear if VPNFilter infection at the Aulska chlorine station was an intentional attack or just an accidental infection, but it would have made a perfect target to attack as Ukrainian news outlets report that it is the country's only chlorine distillation station.
+
+The plant's chlorine product is used across Ukraine for drinking water and sewage treatment (chlorination). Shutting down the plant would cause the type of damage previous cyber-attacks on the Ukraine have sought to inflict.
+
+But at the time of writing, there is no evidence to suggest this was a malicious and orchestrated attack. The VPNFilter malware spreads by randomly scanning all Internet IPv4 addresses, and it most likely landed on the plant's network by chance and because of routers running vulnerable firmware.
+
+Nonetheless, the alarming tone of the SBU press release is justified knowing how dangerous VPNFilter and the group behind can be.

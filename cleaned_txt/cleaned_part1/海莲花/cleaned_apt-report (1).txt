@@ -1,0 +1,96 @@
+1.组织概述
+OceanLotus（海莲花、APT32、APT-Q-31）是一个长期针对中国及周边东南亚国家（地区）发起APT攻击的东南亚黑客组织，由于其多年来对我国党政机关、国防军工、科研院所等核心要害单位发起攻击，近两年攻击范围甚至延伸到了关键信息基础设施、能源、医疗、军民融合等各个领域。此后至今，海莲花依旧针对以中国和越南周边国家为主的东亚及东南亚多国，及国内反对派人士，采取鱼叉攻击手段，发动以信息窃取为主的攻击活动。
+
+2.组织TTPs
+检测规避
+利用dll镂空技术加载shellcode，并利用VEH异常处理的回调机制执行shellcode，最终内存释放Havoc Demon远控木马外连C2服务器地址144.202.46.221。
+持久化
+创建系统自启动注册表实现持久化。
+HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\MicrosoftMPI
+
+3.样本分析
+3.1 加载器(msmpi.dll)
+加载器msmpi.dll，大小为82432字节，编译时间为2025-06-18 23:40:04，MD5为64062595582c36d0aed322e98108ff4b。它利用dll镂空技术加载shellcode，设置VEH异常处理的回调函数执行shellcode。
+msmpi.dll存在多个导出函数，其中MPI_init与MPI_Wtick为主要功能函数。
+首先执行DllEntryPoint函数，遍历ldr链表与特征码比较，来加载相应模块（比如0x811DA56A为advapi32.dll特征码）。由于rundll32.dll默认不加载advapi32.dll，需要通过插件注入advapi32.dll，保证样本顺利执行。
+循环读取dllname每字节的值，判断是否大于0x60，若大于则减去0x20转为大写ASCII码，然后加33*v15将结果赋值给v15。
+使用API哈希的方式获取函数地址。
+执行导出函数MPI_Init，首先创建互斥体Global\MicrosoftMPI，确保单实例运行。命令行参数校验，检查参数是否为trace，用于规避沙箱自动化执行，若比对成功则将启动命令行添加至注册表自启动项。最后将执行Shellcode的函数利用RtlAddVectoredExceptionHandler API设为VEH异常处理的回调函数等待Dllmain函数触发用户异常调用。
+ExecShellcode_180080B70函数判断全局变量ptr_shellcode，是否存在若存在则执行shellcode。
+导出函数MPI_Wtick主要功能为加载系统文件certmgr.dll，使用DLL镂空将Shellcode代码替换certmgr.dll模块.text节的代码，将shellcode地址写入全局变量ptr_shellcode。
+复制大小为0x18BFF的shellcode到text节区地址，并通过触发用户异常执行shellcode。
+
+3.2 Havoc远控木马(shellcode.dll)
+shellcode.dll是Havoc远控木马，大小为99840字节，编译时间为2025-06-16 19:01:16，MD5为0c3b714f649008f059625c1527dcfc1a，C2服务器地址为144.202.46.221。
+shellcode自身保存PE数据，内存映射PE文件并执行Dllmain函数。
+Dll文件包含3个主要函数，动态加载模块、元数据配置、远控外连等功能。
+DemonInit函数，首先动态导入Ntdll.dll模块，利用API哈希获取Rtl系列和Nt系统函数地址。
+动态导入Kernel32.dll模块，利用API哈希获取常用的导出函数地址。
+动态加载iphlpapi.dll并获取以下导出函数地址：CorBindToRuntime、ReleaseDC、CommandLineToArgvW、SysAllocString、WinHttpGetProxyForUrl、GetSidSubAuthority、LsaEnumerateLogonSessions、swprintf_s、GetAdaptersInfo。
+DLL文件的数据段保存Havoc Demon配置信息。
+C:\Windows\System32\SyncHost.exe
+C:\Windows\SysWOW64\SyncHost.exe
+POST
+144.202.46.221
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, 
+Accept-Language: en-US,en;q=0.9
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Site: cross-site
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: image
+Accept: image/webp,image/avif,image/jxl,image/heic,image/heic-sequence,video/
+Connection: upgrade
+Accept-Encoding: gzip, deflate, br
+/_next/static/chunks/pages/signin-8770198039ce8a4c.js
+/_next/static/chunks/pages/signin-d79d1c677ed6ad59.js
+/_next/static/chunks/pages/custom-3e9f473a8157ee50.js
+/_next/static/chunks/pages/custom-25c0d94c0c5e6746.js
+/_next/static/chunks/pages/auth-03d5f1e76f5d6b02.js
+/_next/static/chunks/pages/auth-58fdfbd1c8ab25ac.js
+/_app/immutable/assets/BIB5-fb0fbe.css
+/_app/immutable/assets/BIB5-913368.css
+/_app/immutable/assets/BIB5-43842e.css
+/_app/immutable/assets/BIB5-9a00de.min.css
+/_app/immutable/assets/BIB5-c44aa2.min.css
+/_app/immutable/assets/BIB5-a3c09c.min.css
+/wp-content/uploads/2025/06/82bb4-meme.jpeg?resize=557,557&ssl=1
+/wp-content/uploads/2025/06/b68cf-sync.jpeg?resize=640-480&ssl=1
+/wp-content/uploads/2025/06/18d95-name-not.png?resize=640-480&ssl=1
+/wp-content/uploads/2025/06/70180-company.png?resize=640-480
+/wp-content/uploads/2025/06/c3033-return-resource.png?resize=555,555
+/wp-content/uploads/2025/06/ec9f3-about-all-group.jpg?resize=555,555
+/wp-content/uploads/2025/06/cf61f-similar.jpg?resize=555,555&ssl=1
+Havoc Demon是通过Havoc框架生成的恶意核心payload，该框架是由@C5pider创建的后渗透C2框架。
+DemonMetaData函数，首先随机生成AES密钥与IV初始向量，保存到全局元数据中。
+DemonRoutine函数，以POST方法发送加密数据到C2服务器144.202.46.221。
+POST Body请求数据长度为260（0x104），数据内容如下，包含自定义数据头和AES key与IV、加密的主机基本信息：
+数据长度（260）00 00 01 04 
+Havoc魔术头D7 56 25 39 
+Customer ID34 A4 01 68 
+未知00 00 00 63 00 00 00 00 00 00 00 00 
+AES KEY88 64 CA 4C 92 BE A8 EC 80 82 70 C6 B0 CC 9E B6 BA 36 0A 7A A8 9A C0 04 DE FA C6 D8 12 C4 12 E0 
+IVBC 38 3A AC 4E BC 9C EC BA 40 64 F0 5C 1C E6 CC 
+加密数据7A 76 65 5C 66 3F 5D E1 0A D5 D2 30 12 0A 54 97 4A 7F DD 38 3A D1 C2 B7 C5 C2 C7 …… 5A 45 D7 50 02 C3 
+使用AES-256-CTR算法解密。
+发送的数据结构：
+Magic Value 4 bytes
+Demon ID 4 bytes
+Host Name size + bytes
+User Name size + bytes
+Domain size + bytes
+IP Address 16 bytes
+Process Name size + bytes
+Process ID 4 bytes
+Parent PID 4 bytes
+Process Arch 4 bytes
+Elevated 4 bytes
+Base Address 8 bytes
+OS Info ( 5 * 4 ) bytes
+OS Arch 4 bytes
+SleepDelay 4 bytes
+SleepJitter 4 bytes
+Killdate 8 bytes
+
+4.IoC
+144.202.46.221
+64062595582c36d0aed322e98108ff4b

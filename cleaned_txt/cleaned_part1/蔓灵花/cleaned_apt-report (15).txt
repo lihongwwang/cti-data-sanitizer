@@ -1,0 +1,121 @@
+背景介绍
+
+蔓灵花组织，又称为BITTER、APT-C-08。是一支据称有南亚背景的高级持久性威胁组织。最早活跃于2013年，以东南亚地区周边国家为主要活动区域，专注于对高价值单位，如政府部门、能源企业、军工企业、高校等等进行长期的数据监控和信息窃取。本次山石情报中心将针对近期海外设备发现的一个蔓灵花相关的样本功能进行分析。
+
+总体流程
+
+样本分析
+
+MSI：
+
+通过解析msi结构，可以看到msi中包含了一个文件“msrete.exe”。
+
+Msrete.exe：
+
+查看msrete.exe中pe信息，可以看到该文件为.Net文件。
+
+加载到dnspy进行分析，在main函数可以看到如下结构。
+
+其中在ProcessClient.Initialize函数中可以看到注册功能函数。
+
+函数指令和指定代码对应如下：
+
+Name opcode
+
+FileMgr get drives 18
+
+FileMgr get Folders 19
+
+Get Comand 35
+
+Sart Comand Prompt 36
+
+FileTransfer Begin 38
+
+FileTransfer Data 39
+
+FileTransfer Complete 40
+
+FileTransfer for downloading start 41
+
+Get Command 48
+
+Start Command Prompt 49
+
+Stop Command Prompt 50
+
+Connection Status 51
+
+指令详解：
+
+“FileMgr get drives”
+
+上传设备硬盘信息数据：
+
+“FileMgr get Folders”
+
+该函数分为两部分，第一部分上传文件夹信息，第二部分上传文件信息。
+
+发送指定文件夹内包含子文件夹路径。
+
+发送文件夹内文件信息，包含文件名、最后更改时间、拓展名、文件大小等。
+
+“Get Comand”
+
+通过”powershell”执行指定命令，并将执行结果发送给服务器。
+
+“Sart Comand Prompt”
+
+创建powershell.exe进程，通过管道进行通信，向远端服务器提供shell。
+
+“FileTransfer Begin”
+
+添加指定文件路径到传输列表，并置空传输数据。
+
+若当前路径已有文件存在，则将文件重命名为“原名称 + {1}“
+
+“FileTransfer Data”
+
+向指令路径文件写入数据。
+
+“FileTransfer Complete”
+
+从文件传输列表中删除指定文件路径。
+
+“FileTransfer for downloading start”
+
+ 将指定文件上传至服务器。
+
+该指令与上述提到的三个指令类似，但不同的是该指令是将文件传输至服务器。核心代码如下，在传输的过程中会将文件拆分为30000000字节大小的数据块进行传输。
+
+“Get Command”
+
+创建“cmd”进程执行指令：
+
+编号35和48的两个进程之间指令不一样的点在于启动的进程不同，该程序使用硬编码保留了两个进程的路径，两者路径区别如下：
+
+上方为35编号的进程路径
+下发为48编号的进程路径
+
+“Start Command Prompt”
+
+“Stop Command Prompt”
+
+编号49和50的指令为一组，向远端服务器提供shell，与编号“36”的指令相类似，不同的在于49和50的指令创建的进程为cmd.exe。
+
+“Connection Status”
+
+无动作，推测功能为心跳包。
+
+IOC
+
+Md5：
+de7080b60f2dc1f5c92fc126d8c668bf
+c65ec525f6c7738e75404ef734fef4d4
+
+domain：
+loganwcshost.com
+
+处置建议
+
+可使用山石网科防火墙和NIPS产品的C2和AV防护模块来防范该风险，请确保将特征库升级最新版本。山石网科防火墙与态势感知云景可以有效地预警并拦截与APT组织相关的威胁情报（IOC）和恶意行为。

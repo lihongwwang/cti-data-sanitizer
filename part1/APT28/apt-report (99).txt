@@ -1,0 +1,268 @@
+﻿2018/12/7 From Russia with Love? – JASK
+
+Weekly product demo webinar every Wednesday at 11am PT. Register Now!
+
+1-800-335-0403 Blog Careers Contact Us
+MENU
+
+POST
+
+From Russia with Love?
+
+MAY 31, 2018 | CYBER SECURITY | BY KEVIN STEAR
+
+Never miss a blog post.
+
+Email Address
+
+Subscribe
+
+Recent Posts
+
+BGP Hijacking: A Series of Unfortunate “Accidents”?
+
+Building Collaborative AI from the Ground Up
+
+Spam In the Browser
+
+Categories
+
+From Russia with Love?
+Alarm bells went off last week as the United States Department of Justice (DOJ) reported that a large number
+of small office home office (SOHO) routers and storage devices were being actively targeted by an ongoing
+nation state campaign.  The bulletin went as far as to provide named attribution to Russia’s ‘Fancy Bear’ aka
+‘apt28’ group, the same GRU ( ˈɡlavnəjə rɐz ˈv ʲɛdɨvət ʲɪl ʲnəjə ʊprɐ ˈvl ʲen ʲɪjə) outfit that may have compromised the
+Democratic National Committee (DNC) in 2016.
+
+https://jask.com/from-russia-with-love/ 1/6
+
+
+
+2018/12/7 From Russia with Love? – JASK
+
+Weekly product demo webinar every Wednesday at 11am PT. Register Now!
+
+MENU
+
+Figure 1. United States Department of Justice
+
+ 
+
+Based on the co-released Talos VPNFilter report ,  it is believed that around 54 countries are currently affected
+in this attack, and that this nation-state campaign targets Netgear, TP-Link, Mikrotik, Linksys, and QNAP
+devices, on x86, MIPS, and ARM architectures with approximately 500.000 devices already compromised.  
+
+ 
+
+VPNFilter Malware
+
+The VPNFilter malware itself consists of a persistent loader (stage 1) and a non-persistent unix RAT (stage 2)
+that supports a number of stage 3 plugins.  Known capabilities include packet sniffing, tor command and
+control (C2), destruction of the victim device, and monitoring for modbus traffic (tcp 502), an aging but still
+prevalent Industrial Control Systems (ICS) protocol.  (Note: Western Europe and North America may be at
+increased risk for a potential ICS attack against critical infrastructure.)
+
+The Talos VPNFilter report provides a thorough technical walkthrough, and we wanted to highlight a number of
+commonalities observed within all these stage 1 and stage 2 binaries.  Outside of the obvious use
+http://api.ipify.org?format=json to check the victim IP address, we also observed common name servers, user
+agent strings, Internet browsing tools, file paths, and certificates.
+
+ 
+
+8.8.8.8 (Google) 
+8.8.4.4 (Google) 
+208.67.222.222 (OpenDNS) 
+208.67.220.220 (OpenDNS) 
+209.244.0.3 (Level3) 
+64.6.64.6 (Verisign)
+Figure 2. VPNFilter name servers found in payloads for connectivity checking
+
+ 
+
+Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:52.0) Gecko/20100101 Firefox/52.0 
+Mozilla/5.0 (Windows NT 6.1; rv:52.0) Gecko/20100101 Firefox/52.0 
+Mozilla/6.1 (compatible; MSIE 9.0; Windows NT 5.3; Trident/5.0) 
+Google Chrome/64.0.3282.140 Windows 
+Google Chrome/64.0.3282.140 Linux 
+Lynx/2.8.8pre.4 libwww-FM/2.14
+Figure 3. VPNFilter user agent strings
+
+ 
+
+https://jask.com/from-russia-with-love/ 2/6
+
+
+
+2018/12/7 From Russia with Love? – JASK
+
+curl/7.47.0 Weekly product demo webinar every Wednesday at 11am PT. Register Now!
+Wget/1.17.1 (linux-gnu) 
+git/2.7.4 MENU
+python-requests/2.18.4
+Figure 4. VPNFilter Internet browsing tools for multistage payload delivery
+
+ 
+
+/bin/sh 
+/bin/ash 
+/bin/bash 
+bash 
+/bin/shell 
+shell 
+/var/run/tord 
+/etc/config/crontab 
+/proc/%d/cmdline 
+/etc/resolv.conf 
+/etc/mtab
+Figure 5. VPNFIlter common paths found in payloads
+
+ 
+
+With the exception of: 50ac4fcd3fbc8abcaa766449841b3a0a684b3e217fc40935f1ac22c34c58a9ec (stage 1
+binary),  all other digital certficates are expired.
+
+Figure 6. Observed VPNFilter certificates
+
+ 
+
+All this being said, perhaps the most significant commonality is Talos’s identification of faulty code reuse
+between VPNFilter and BlackEnergy malware ,  which the US government asserts was used by apt 28 to turn the
+lights out in Georgia and the Ukraine just prior to Russian incursions in 2008 and 2014 respectively.
+
+https://jask.com/from-russia-with-love/ 3/6
+
+
+
+2018/12/7 From Russia with Love? – JASK
+Figure 7. Code reuse of broWkeeenk lRy Cpr4o dfuucnt cdetmioon webinar every Wednesday at 11am PT. Register Now!
+ 
+
+While the FBI claims to have mitigated the immediate threat, it is important to note that a large subset of MENU
+
+infected devices were discovered in Ukraine, and that number appears to have continued to grow.  In fact, Talos
+researchers observed spikes in Ukrainian specific VPNFilter infection activity on May 8th (with separate stage
+2 C2 infrastructure via 46.151.209[.]33) and again on May 17th.
+
+ 
+
+Ongoing Indications of VPNFilter?
+
+JASK actively partners with GreyNoise Intelligence (GNI) to establish better access and visibility for global
+and regional SYN traffic.  Preliminary analysis of GNI results identifies a number of source IPs exclusively
+scanning for port 2000 (MikroTik devices) in Ukrainian networks.  
+
+   ip    |  country, city        | network details      
+————+————————+——————————- 
+138.186.2.250   | Brazil, Andradina   | Noroestecom Telecomunicacoes Ltda, r-250.2.186.138.static.nrttelecom.com.br 
+178.78.13.69,    | Russia, Volgograd |  LLC Columbia Telecom 
+178.78.6.224     | Russia, Volgograd |  LLC Columbia Telecom 
+187.85.58.107   | Brazil, Magalhães  | LENCO TECNOLOGIA LTDA 
+192.157.214.6   | United States, Los Angeles |   Enzu Inc 
+77.45.243.188   | Russia, Lisk |   Regional multiservice network access, 188.243.c10008-a53.dsl-dynamic.vsi.ru 
+88.213.189.253 |   Switzerland, Schaffhausen |  sasag Kabelkommunikation AG9.110.0.5           | United States, |   IBM
+Figure 8. Sample source IPs exclusively scanning Ukrainian networks for port 2000
+
+ 
+
+Activity like this raises some interesting questions about indications of ongoing Ukraine targeted campaigns, a
+likely subject for future research.
+
+ 
+
+The Digital Horizon
+
+VPNFilter is a disturbing example (recent Turla activity is yet another) of the increasingly aggressive cyber
+activity, which is a core component of today’s complex international political climate.
+
+If they haven’t already, the public needs to recognize that there are ongoing cyber and information warfare
+campaigns happening right in their own backyards.  On the flip side, security professionals need to pick their
+heads up out of the bits in order to see the myriad of other potential connections outside of their normal
+perspectives.  
+
+The timeline below attempts to capture context of military events in Ukraine and Syria, known information
+warfare campaigns (e.g., the destabilization of Moldova), a multi-front trade war for liquefied natural gas
+(LNG) exports, and ever evolving Iranian and Israeli dynamics.  (With regard to Russia specifically, this seems
+straight out of the Gerasimov doctrine).  These are all parts and pieces of the rapidly deteriorating diplomatic
+situation between Russia and the West. 
+
+https://jask.com/from-russia-with-love/ 4/6
+
+
+
+2018/12/7 From Russia with Love? – JASK
+Figure 9. 2018 contextual eWveeenktlsy  pfroord u‘Rctu dsesmioa w aenbdin atrh eev eWrye Wsetd’ nesday at 11am PT. Register Now!
+ 
+
+Maybe this all boils down to the evolution of modern warfare, are we effectively moving us past a virtual MENU
+
+Balmer’s peak of conventional conflict?  Are bits are now everything?  The very fabric of our culture has
+become connectedness, but in that reliance haven’t we also made nations, communities, and even ourselves
+just more vulnerable?
+
+Thanks to Brandon Levene ,  Andrew Morris (GreyNoise Intelligence), and Rod Soto for research.
+
+ 
+
+About JASK.AI
+
+JASK is modernizing security operations to reduce organizational risk and improve human efficiency. Through
+technology consolidation, enhanced AI and machine learning, the JASK Autonomous Security Operations
+Center (ASOC) platform automates the correlation and analysis of threat alerts, helping SOC analysts focus on
+high-priority threats, streamline investigations and deliver faster response times.
+
+ 
+
+Appendix
+
+VPNFilter hashes evaluated
+
+Stage 1 binary hashes
+
+0e0094d9bd396a6594da8e21911a3982cd737b445f591581560d766755097d92
+
+50ac4fcd3fbc8abcaa766449841b3a0a684b3e217fc40935f1ac22c34c58a9ec
+Stage 2 binary hashes
+
+0649fda8888d701eb2f91e6e0a05a2e2be714f564497c44a3813082ef8ff250b
+
+37e29b0ea7a9b97597385a12f525e13c3a7d02ba4161a6946f2a7d978cc045b4
+
+4b03288e9e44d214426a02327223b5e516b1ea29ce72fa25a2fcef9aa65c4b0b
+
+776cb9a7a9f5afbaffdd4dbd052c6420030b2c7c3058c1455e0a79df0e6f7a1d
+
+8a20dc9538d639623878a3d3d18d88da8b635ea52e5e2d0c2cce4a8c5a703db1
+
+9683b04123d7e9fe4c8c26c69b09c2233f7e1440f828837422ce330040782d17
+
+9eb6c779dbad1b717caa462d8e040852759436ed79cc2172692339bc62432387
+
+D6097e942dd0fdc1fb28ec1814780e6ecc169ec6d24f9954e71954eedbc4c70e
+Some current VPNFilter yara sigs 
+
+Share on   
+
+SOLUTIONS
+
+COMPANY
+
+RESOURCES
+
+PARTNERS
+
+Receive the latest news from JASK
+
+SUBSCRIBE
+
+https://jask.com/from-russia-with-love/ 5/6
+
+
+
+2018/12/7 From Russia with Love? – JASK
+Copyright © 2018 JASK  |  1-800-335-0403 |  info@jask.com |  Privacy Policy |  Terms of Service |  Site Map
+
+Weekly product demo webinar every Wednesday at 11am PT. Register Now!
+
+MENU
+
+https://jask.com/from-russia-with-love/ 6/6

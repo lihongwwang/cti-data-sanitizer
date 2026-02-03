@@ -1,0 +1,54 @@
+近 日 ， 微 步 在 线 威 胁 情 报 云 捕 获 到 多 个 “ 蔓 灵 花 ” 团 伙 相 关 样 本 ， 其 中 部 分 样 本 的 C & C 注 册 于 2 0 1 9 年 ， 据 此 判 断 该 团 伙 于 近 期 发 起 了 新 一 轮 的 攻 击 活 动 。 具 体 内 容 包 括 :
+➢ “ 蔓 灵 花 ” ， 又 名 B i t t e r ， 长 期 针 对 中 国 及 巴 基 斯 坦 的 政 府 、 军 工 、 电 力 、 核 等 部 门 发 动 网 络 攻 击 ， 具 有 较 强 的 政 治 背 景 。
+➢ 最 新 捕 获 木 马 样 本 延 续 原 有 核 心 木 马 框 架 进 行 攻 击 ， 攻 击 目 标 疑 似 巴 基 斯 坦 。
+➢ 木 马 最 新 C & C 域 名 h e a l t h d e v i c e t r a c k e r . c o m 和 f r a m e w o r k s u p p o r t . n e t 分 别 注 册 于 2 0 1 9 年 1 月 2 日 和 4 日 ， 说 明 攻 击 活 动 仍 在 继 续 。
+➢ 微 步 在 线 通 过 对 相 关 样 本 、 I P 和 域 名 的 溯 源 分 析 提 取 的 相 关 情 报 1 2 条 ， 可 用 于 威 胁 情 报 检 测 。 微 步 在 线 的 威 胁 情 报 平 台 ( T I P ) 、 威 胁 检 测 平 台 ( T D P ) 、 A P I 等 均 已 支 持 此 次 攻 击 事 件 和 团 伙 的 检 测 。
+自 2 0 1 9 年 1 月 8 日 以 来 ， 微 步 在 线 威 胁 情 报 云 陆 续 捕 获 到 一 批 具 备 “ 蔓 灵 花 ” 团 伙 木 马 特 征 恶 意 样 本 ， 从 样 本 来 源 地 区 初 步 推 断 认 为 ， 此 次 攻 击 疑 似 针 对 的 目 标 位 于 巴 基 斯 坦 。
+本 报 告 分 析 的 样 本 捕 获 于 2 0 1 9 年 1 月 8 日 ， 样 本 基 本 信 息 如 下 表 所 示 :
+文件类型 PE32 executable (console) Intel 80386, for MS Windows
+文件大小 31KB
+MD5 8d42c01180be7588a2a68ad96dd0cf85
+SHA1 89a7861acb7983ad712ae9206131c96454a1b3d8
+SHA256 0b2a794bac4bf650b6ba537137504162520b67266449be979679afbb14e8e5c0
+时间戳 2019-01-07 15:13:47
+PDB c:\Users\Asterix\Documents\Visual Studio 2008\Projects\28NovDwn\Release\28NovDwn.pdb
+C&C frameworksupport.net
+1 、 样 本 文 件 名 为 U p d a t e R e q u i r e d C a s e E n q N o 1 9 2 _ 2 0 1 8 . d o c x . c o m ， 系 伪 装 成 O f f i c e 文 档 的 P E 文 件 ， 主 要 用 于 实 现 木 马 自 启 动 和 接 收 并 执 行 C & C 加 载 核 心 木 马 指 令 。 启 动 后 利 用 简 单 的 位 移 将 配 置 信 息 解 密 。 图 1 解 密 配 置 信 息
+2 、 在 系 统 盘 创 建 i n t e l 目 录 ， 存 放 恶 意 代 码 备 份 木 马 。 图 2 创 建 目 录 备 份 恶 意 代 码
+3 、 通 过 创 建 注 册 表 启 动 项 ， 实 现 恶 意 代 码 自 启 动 功 能 。 图 3 创 建 注 册 表 实 现 恶 意 代 码 自 启 动
+4 、 与 C & C 域 名 f r a m e w o r k s u p p o r t . n e t 连 接 ， 接 收 并 执 行 核 心 木 马 加 载 指 令 。 图 4 获 取 并 执 行 木 马 加 载 指 令
+对比发现，本次捕获的样本与“蔓灵花”团伙惯用的下载器执行流基本一致，如下图所示: 图 5 木 马 执 行 流 对 比
+该下载器的C&C并未主动下发加载核心恶意代码指令，但根据同时捕获到的同类型样本分析发现，其后续阶段会加载远控模块，并根据C&C的指令实施主机信息获取、指定文件窃取、 远程命令执行等活动。具体指令如下表所示:
+表 - 1 远 程 指 令 功 能
+指令值 调用Function 功能
+BB8 GetRatState 获取系统配置状态信息
+BB9 GetDriveInfo 获取计算机硬盘信息
+BBA GetDriveInfo 获取指定目录下的文件列表信息
+BBC GetLogs 获取RAT日志1
+BBD CreateNewFile 创建指定文件
+BBE WriteFile 向创建文件写入数据
+BBF OpenFile 打开指定文件
+BC1 ReadTheFile 读取指定文件内容
+BC4 GetControl 创建远程控制台
+BC5 GetComandShell 执行远程命令
+BC7 ReadLogs2 获取RAT日志2
+BC8 EndControl 结束远程控制台
+BC9 CloseHandle 关闭指定句柄
+BCB GetUPDLinkInfo 获取存在UPD活动链接的进程
+BCD GetLog3 获取RAT日志3
+BCE EndProcess 结束指定进程
+BCF GetSysInfo 获取系统中进程信息
+BD1 GetLog4 获取RAT日志4
+此外，在同一批捕获的样本中还发现伪装成Windows音频设备图形隔离程序“audiodq.exe”， 该样本会同时尝试访问aroundtheworld123.net和healthdevicetracker.com两个域名，其中前者为已被曝光“蔓灵花”的C&C，后者注册于2019年1月2日，目前被用于存放后续阶段的恶意代码。
+威胁指标（IOC）
+域名 子域名 历史IP 样本 标签
+frameworksupport.net 5 0 2 3
+healthdevicetracker.… 4 0 1 3
+netwareservice.ddns… 1 0 1 5
+wcnsservice.ddns.net 1 0 1 5
+Hash 检测结果 样本 标签
+096e6546b5ca43adb… 9/25 0 1
+0b2a794bac4bf650b… 5/25 0 0
+aa0e4216867d68fca… 7/25 0 1
+af43bff869b4c91032… 7/25 0 0
+ba8f68f1a9c886e66… 6/25 0 1

@@ -1,0 +1,21 @@
+US seizes domains used by APT29 in recent USAID phishing attacks
+
+The US Department of Justice has seized two Internet domains used in recent phishing attacks impersonating the U.S. Agency for International Development (USAID) to distribute malware and gain access to internal networks.
+
+The two domains seized by the DOJ are theyardservice[.]com and worldhomeoutlet[.]com and were used to receive data exfiltrated from victims of the targeted phishing attacks and send further commands malware to execute on infected machines.
+
+Microsoft first disclosed these attacks last Thursday and stated that they were conducted by a Russian state-affiliated hacking group known as NOBELIUM (APT29, Cozy Bear, and The Dukes). This group is believed to be affiliated with the Russian Foreign Intelligence Service (SVR), a Russian intelligence service.
+
+To conduct the phishing attacks, NOBELIUM compromised a Contact Contact account for USAID using for email campaigns. Using this account, the threat actors impersonated USAID in phishing emails sent to approximately 3,000 email accounts at more than 150 different organizations, including government agencies and human rights organizations.
+
+Targeted recipients who received these emails and clicked on the enclosed links would be prompted to download HTML attachments that would install four new malware created by the threat actors.
+
+The installed malware would eventually lead to installing remote access software, such as Cobalt Strike beacons that provided full access to victims' computers, and ultimately the network.
+
+"Upon a recipient clicking on a spear-phishing email’s hyperlink, the victim computer was directed to download malware from a sub-domain of theyardservice[.]com. Using that initial foothold, the actors then downloaded the Cobalt Strike tool to maintain persistent presence and possibly deploy additional tools or malware to the victim’s network," says the Department Of Justice.
+
+"The actors’ instance of the Cobalt Strike tool received C2 communications via other subdomains of theyardservice[.]com, as well as the domain worldhomeoutlet[.]com. It was those two domains that the Department seized pursuant to the court’s seizure order."
+
+In indicators of compromise (IOCs) for this campaign shared by Microsoft, there are a total of thirty-four domains used in some capacity during the attacks, which includes the two domains seized by the FBI.
+
+This operation was conducted by the FBI Washington Field Office and may allow law enforcement to gain a better understanding of who was breached during this attack and notify victims.

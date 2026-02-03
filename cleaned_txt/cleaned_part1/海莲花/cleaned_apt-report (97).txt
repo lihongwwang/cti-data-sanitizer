@@ -1,0 +1,29 @@
+Two East Asian APT groups stage cyber-espionage attacks
+
+OceanLotus hits targets in Southeast Asia, while PlugX malware steals pharmaceutical data. APT groups are targeting high-profile corporate and government targets in Southeast Asia, security researchers have discovered.
+
+According to investigations by Kaspersky Lab, the PlugX malware has been detected in pharmaceutical organisations in Vietnam, aimed at stealing precious drug formulas and business information. Meanwhile, Eset researchers have discovered a new backdoor attack campaign from APT hacking group, OceanLotus, that has its sights set on high-profile corporate and government targets in Southeast Asia, particularly in Vietnam, the Philippines, Laos, and Cambodia.
+
+The PlugX malware has been detected several times before and has been used by various Chinese-speaking cyber-threat-actors, including Deep Panda, NetTraveler or Winnti. Currently the APT using PlugX is interested in information from pharmaceutical organisations. 
+
+“We were able to identify victims in South East Asia, or more precisely, in Vietnam and Bangladesh. The criminals had targeted servers and used the infamous PlugX malware or Cobalt Strike to exfiltrate data,” said Yury Namestnikov, security researcher at Kaspersky Lab in a blog post.
+
+The malware actors, allows criminals to perform various malicious operations on a system without the user's knowledge or authorisation, including but not limited to copying and modifying files, logging keystrokes, stealing passwords and capturing screenshots of user activity. PlugX, as well as Cobalt Strike, is used by cyber-criminals to discreetly steal and collect sensitive or profitable information.
+
+Kaspersky said that while it was unable to track the initial attack vectors, there are signs that there could be attacks exploiting vulnerable software on servers.
+
+“Private and confidential healthcare data is steadily migrating from paper to digital form within medical organisations. While the security of the network infrastructure of this sector is sometimes neglected, the hunt by APTs for information on advancements in drug and equipment innovation is truly worrying. Detections of PlugX malware in pharmaceutical organisations demonstrate yet another battle that we need to fight – and win - with cyber-criminals,” said Namestnikov.
+
+Another APT group attacking in Vietnam is OceanLotus. Discovered by researchers at Eset, the APT continues its activity particularly targeting company and government networks in East-Asian countries.  The apparently well-resourced and determined group, often assumed to be Vietnamese, is known for integrating its custom-built creations with techniques long known to be successful.
+
+In a blog post, Tomas Foltyn at Eset, said that an attack typically begins with an attempt – most probably via a spearphishing email – to lure the intended victim into running the malicious dropper, which is attached to the email. “In order to increase the likelihood that the unsuspecting victim will actually click on it, the malicious executable masquerades as a document or spreadsheet by displaying a fake icon,” he said.
+
+When the victim clicks on the attachment, the dropper opens a password-protected document that is intended as a ‘red herring' to divert the victim's attention while the dropper goes about its nefarious business. No software exploits are needed, and the attackers use a number of decoy documents. 
+
+He added that OceanLotus is also known to use ‘watering hole attacks', which involve the compromise of a website that the victim is likely to visit. “In this scenario, the ‘prey' is tricked into downloading and executing a fake installer or fake update for popular software from the booby-trapped website. Whatever the method of compromise, ultimately the same backdoor is deployed,” said Foltyn.
+
+Alexis Dorais-Joncas, security intelligence team lead at ESET, said: "OceanLotus' activities demonstrate that the group wants to remain as undiscovered as possible by carefully selecting its targets.”
+
+Andy Norton, director of threat intelligence at Lastline, told SC Media UK that there is a “lot of intellectual property in pharmaceutical products stealing this information enables cheaper generic versions to be produced.”
+
+He added that users should “ensure their email and web transactions are secured with behavioural intelligence.”

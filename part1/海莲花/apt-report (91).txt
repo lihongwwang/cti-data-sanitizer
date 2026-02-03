@@ -1,0 +1,105 @@
+﻿2018/5/24 [原创]白象的舞步之移动端攻击-『Android安全』-看雪安全论坛
+
+这是 Google 对 https://bbs.pediy.com/thread-226981.htm 的缓存。 这是该网页在 2018年5月24日 06:48:05 GMT 的快照。 当前页在此期间可能已经更改。 了解详情.
+
+完整版本 纯文字版本 查看源代码
+提示：要在此页面上快速找到您的搜索字词，请按 Ctrl+F 或者 ⌘-F（Mac），然后使用查找栏搜索。
+
+ 看雪论坛 > 『Android安全』 发新帖
+
+[原创]白象的舞步之移动端攻击
+AVLTeam 39分钟前  34
+
+  包括安天在内的安全厂商曾发布过关于白象的多份分析报告[1]，报告揭露的攻击主要集中在PC端，攻击手段往往以鱼叉攻击和钓鱼
+攻击为主，移动端的攻击并不多见。然而，由于移动互联网的发展，个人手机往往除了包含个人隐私之外，也会带有使用者的社会属性，
+基于该因素，针对移动端的攻击也成为了整个攻击链条中的重要一环。在此，安天移动安全联合猎豹移动，将揭露白象组织针对我国的一
+起移动端攻击事件。
+
+1.样本基本信息
+
+  该样本伪装为正常应用，被安装运行后便隐藏图标，并在后台释放恶意子包。其可接收远程控制指令，窃取用户短信、联系人、通话
+记录、地理位置、浏览器记录等隐私信息，私自下载apk、拍照、录音，并将用户隐私上传至服务器，给用户隐私安全造成危害。
+
+2.样本分析
+  该应用启动后会打开LicenseService服务：
+
+  该服务会开启f线程用于注册和释放间谍子包：
+
+https://webcache.googleusercontent.com/search?q=cache:iJRcTrvPs4cJ:https://bbs.pediy.com/thread-226981.htm+&cd=1&hl=zh-CN&ct=clnk 1/5
+
+
+
+2018/5/24 [原创]白象的舞步之移动端攻击-『Android安全』-看雪安全论坛
+
+  注册url：http://ckoen.dmkatti.com
+
+  动态加载间谍子包：
+
+https://webcache.googleusercontent.com/search?q=cache:iJRcTrvPs4cJ:https://bbs.pediy.com/thread-226981.htm+&cd=1&hl=zh-CN&ct=clnk 2/5
+
+
+
+2018/5/24 [原创]白象的舞步之移动端攻击-『Android安全』-看雪安全论坛
+
+  子包分析：
+  主包反射调用com.android.preferences.AndroidR类的Execute方法：
+
+  建立socket连接：
+
+  socket地址：mtk.baimind.com
+  该地址用于与手机建立通讯，发送控制指令和上传短信、联系人、通话记录、地理位置、浏览器记录等部分隐私信息。
+
+  此外该间谍子包还建立了https通讯用于上传录音、截图、文档、相片、电影等大文件：
+
+https://webcache.googleusercontent.com/search?q=cache:iJRcTrvPs4cJ:https://bbs.pediy.com/thread-226981.htm+&cd=1&hl=zh-CN&ct=clnk 3/5
+
+
+
+2018/5/24 [原创]白象的舞步之移动端攻击-『Android安全』-看雪安全论坛
+
+  https地址：https://jang.goongnam.com/resource/request.php
+
+  签名Subject中包含HackingTeam，Christian Pozz(可能为Hacking team的一个管理员)字样，同时代码中的注册功能，可以认定是对
+外出售的商业间谍软件：
+
+  结合安天移动安全移动威胁情报分析系统，我们推断mtk.baimind.com属于白象组织。
+
+3.拓展分析
+  根据注册CC的同源性，我们查找到如下样本（倾向认为属于hacking team）
+
+  和我们分析的样本不同，以上样本有了明显的功能改进，增加了提权功能。以45AE1CB1596E538220CA99B29816304F为例，对其
+assets目录名为dataOff.db的文件进行解密，解密之后的文件中带有提权配置文件，如下所示：
+
+https://webcache.googleusercontent.com/search?q=cache:iJRcTrvPs4cJ:https://bbs.pediy.com/thread-226981.htm+&cd=1&hl=zh-CN&ct=clnk 4/5
+
+
+
+2018/5/24 [原创]白象的舞步之移动端攻击-『Android安全』-看雪安全论坛
+
+  由此可见，hacking team在发生代码泄漏之后,该组织CEO表示泄漏的代码只是很小一部分的言论是有依据的，另一方面也从侧面反
+映出商业军火商一定程度上降低了APT攻击的门槛，使得网络攻击具有更多的不确定性。
+
+4.总结
+  该样本伪装WPS Office办公应用，攻击目标为我国大陆地区用户，该间谍应用窃取大量用户隐私，带来严重的信息泄露风险，这一
+定程度上反映了我国是网络攻击的主要受害国之一的事实。在移动互联网的大潮之下，保障网络安全也是所有安全厂商的责任与义务，面
+对越来越多的mAPT事件，安全厂商应该持续关注并提升对抗能力，为移动安全保驾护航。
+附录： [1]《白象的舞步》 http://www.antiy.com/response/WhiteElephant/WhiteElephant.html
+  更多信息详见公司官网：http://www.avlsec.com  
+  转载请注明来源：http://blog.avlsec.com/?p=5243
+
+1
+  
+
+ 收藏
+
+最新回复 (0)
+
+返回
+
+ 
+ 
+
+©2000-2018 看雪学院 | Based on Xiuno BBS  联系我们 | 企业服务  
+域名：加速乐 | SSL证书：又拍云 | 安全网易云易盾 | 公众号：ikanxue Processed: 0.013s, SQL: 10 / 京ICP备10040895号-17
+
+https://webcache.googleusercontent.com/search?q=cache:iJRcTrvPs4cJ:https://bbs.pediy.com/thread-226981.htm+&cd=1&hl=zh-CN&ct=clnk 5/5

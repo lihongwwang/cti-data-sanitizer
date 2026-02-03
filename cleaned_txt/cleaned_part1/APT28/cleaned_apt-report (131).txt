@@ -1,0 +1,44 @@
+Background
+There has been some recent news regarding further activities of a group variously described as Sofacy. We are releasing this flash bulletin containing network indicators to aid security professionals in detecting this activity.
+
+Recent Reports
+In the past few days Trend Micro and FireEye have both released reports relating to similar activity:
+Trend Micro described spear phishes containing links to malicious websites that deploy malware through apparent browser exploits and phishing for web-mail credentials.
+FireEye have recently described the use of CVE-2015-3043 and CVE-2015-1701 exploits in suspected Sofacy attacks.
+Interestingly, despite the use of zero-day exploits for delivery, there is some evidence that the attackers continue to use old variants of their malware.
+
+Network Indicators
+Below we list a number of domains which you may wish to review network logs for. Typically registered domains are employed for phishing and/or malware command and control. This is a redacted list of domains that are likely related to Sofacy and we note that related domains have been observed by others, as well as in the cited reports.
+
+defencereview[.]net
+brnlv-gv[.]eu
+militaryobserver[.]net
+netassistcache[.]com
+asus-service[.]net
+aolnets[.]com
+natopress[.]org
+natopress[.]com
+defencereview[.]eu
+intelsupport[.]net
+globalnewsweekly[.]com
+osce-oscc[.]org
+enisa-europa[.]com
+enisa-europa[.]org
+techcruncln[.]com
+nato-hq[.]com
+iacr-tcc[.]org
+nato-int[.]com
+nato-info[.]com
+bmlv-gv[.]eu
+foreignreview[.]com
+mediarea[.]org
+osce-military[.]org
+europeanda[.]com
+softupdates[.]info
+settings-yahoo[.]com
+settings-live[.]com
+delivery-yahoo[.]com
+privacy-yahoo[.]com
+privacy-live[.]com
+westinqhousenuclear[.]com
+webmail.westinqhousenuclear[.]com

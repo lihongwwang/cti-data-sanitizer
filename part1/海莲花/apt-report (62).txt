@@ -1,0 +1,331 @@
+﻿2019/5/30 安天移动安全
+
+关于海莲花组织针对移动设备攻击的分析报告
+
+安天移动安全 安天移动安全 6天前
+
+海莲花是什么？
+
+"海莲花"（又名APT-TOCS、APT32、OceanLotus），被认为是来自中南半岛某国的
+
+APT攻击组织，自2012年活跃以来，一直针对中国的敏感目标进行攻击活动，是近几年来针对中
+
+国大陆进行攻击活动的最活跃的APT攻击组织之一。
+
+安天及其他安全厂商在之前已经发布过多份关于海莲花的分析报告，报告的内容主要集中在PC端，攻
+
+击手段往往以鱼叉攻击和钓鱼攻击为主，移动端的攻击并不多见。然而，随着移动互联网的发展，一方面人
+
+们的手机逐渐出现两用性，除了包含使用者的个人隐私外，也往往会带有其社会属性，另一方面，智能手机
+
+的无线通信可以绕过内部安全监管设备，故而针对移动端的攻击也成为了整个攻击链条中的重要一环。下
+
+面，安天移动安全以发生于我国的一起移动端攻击事件为蓝本进行具体分析说明。
+
+ 
+ 具体分析
+
+ 
+MD5 包名 程序图标截图
+
+86C5495B048878EC903E6250 com .tornado .next launcher.theme .
+
+600EC308  w indows8pro
+
+ 
+F29DFFD9817F7FDA040C9608 com .andro id .wps
+
+C14351D3
+
+表1 .  典型样本基本信息
+
+该应用伪装正常应用，在运行后隐藏图标，并于后台释放恶意子包并接收远程控制指令，窃
+
+取用户短信、联系人、通话记录、地理位置、浏览器记录等隐私信息，私自下载apk、拍照、录
+
+音，并将用户隐私上传至服务器，造成用户隐私泄露。
+
+ 
+
+ 样本分析
+
+  
+
+https://mp.weixin.qq.com/s/L-tCvLPOOMhP0ndgdqhkNQ 1/8
+
+
+
+2019/5/30 安天移动安全
+
+该应用启动后会打开LicenseService服务：  
+
+该服务会开启f线程用于注册和释放间谍子包：
+
+注册ur l：http://ckoen.dmkatt i .com  
+
+动态加载间谍子包：
+
+https://mp.weixin.qq.com/s/L-tCvLPOOMhP0ndgdqhkNQ 2/8
+
+
+
+2019/5/30 安天移动安全
+
+子包分析
+
+主包反射调用com.android.preferences.AndroidR类的Execute方法：
+
+首先建立socket连接：
+
+socket地址：mtk.baimind.com
+
+通过与手机建立通讯，发送控制指令和上传短信、联系人、通话记录、地理位置、浏览器记录等部分隐
+
+私信息。
+
+https://mp.weixin.qq.com/s/L-tCvLPOOMhP0ndgdqhkNQ 3/8
+
+
+
+2019/5/30 安天移动安全
+
+此外该间谍子包还建立了https通讯，用于上传录音、截图、文档、相片、视频等大文件。
+
+https地址：
+
+https://jang.goongnam.com/resource/request.php，目前已经失活， 该C2属于海莲花组织资产。
+
+CC 所在位置
+
+mtk.baimind.com dex文件，Socket通信接收远程指令
+
+jang.goongnam.com dex文件，上传截图、录音文件、文档等
+
+表2. CC所在位置及作用
+
+如下图所示：首先，签名Subject中包含HackingTeam、Christian Pozz(Hacking Team中一个管理员
+
+的名字)字样；其次，代码中的注册功能，可以认定是对外出售的商业间谍软件；最后，根据后期Hacking
+
+Team泄漏资料来看，海莲花组织所属国家亦在其客户名单之中。
+
+https://mp.weixin.qq.com/s/L-tCvLPOOMhP0ndgdqhkNQ 4/8
+
+
+
+2019/5/30 安天移动安全
+
+ 
+ 拓展分析
+
+ 
+ 
+
+根据注册CC的同源性，我们查找到如下样本：
+
+MD5 程序名
+
+C630AB7B51F0C0FA38A4A0F45C793E24 Google Play services
+
+BF1CA2DAB5DF0546AACC02ABF40C2F19 ChromeUpdate
+
+45AE1CB1596E538220CA99B29816304F FlashUpdate
+
+CE5BAE8714DDFCA9EB3BB24EE60F042D Google Play services
+
+D1EB52EF6C2445C848157BEABA54044F AdAway
+
+50BFD62721B4F3813C2D20B59642F022 Google Play services
+
+表3. 通过CC检索到的同源样本
+
+与 我 们 分 析 的 样 本 不 同 ， 以 上 样 本 有 了 明 显 的 功 能 改 进 ， 增 加 了 提 权 功 能 ， 以
+
+45AE1CB1596E538220CA99B29816304F为例，对其assets目录名为dataOff.db的文件进行解密，解密
+
+之后的文件中带有提权配置文件，如下所示：
+
+由此可见，在代码泄漏后HackingTeam组织的CEO表示“泄漏的代码只是很小一部分”的言论是有依据
+
+的，这也从侧面反映出网络军火商在一定程度上降低了APT攻击的门槛，使得网络攻击出现更多的不确定
+
+性。 
+https://mp.weixin.qq.com/s/L-tCvLPOOMhP0ndgdqhkNQ 5/8
+
+
+
+2019/5/30 安天移动安全
+
+同时我们也注意到，该系列恶意代码有通过国内第三方应用市场和文件共享网站进行的投递。
+
+Hash URL
+
+641f0cc057e2ab43f5444c5547 http://download****.mediafire.com/sj*m*p**h1rg/so**lfeh*****rb/T
+
+e80976 OS_Multi_Backup_V1.1.apk
+
+c20fa2c10b8c8161ab8fa21a2ed http://ws.yingyonghui.com/4d*****a197ad8be*****d88d3c*****/552
+
+6272d 3a87c/apk/******/com.slhapp.khogameandroid.*************.apk
+
+表4. 样本分发链接 
+
+ 
+ 总结
+
+ 
+ 
+
+海莲花组织总是在演进变化，不断地通过更新其攻击手法和武器库以达到绕过安全软件防御的目的。除
+
+了武器库的不断更新，该组织也相当熟悉中国的情况，包括政策、使用习惯等。这不仅迷惑了相关人员，增
+
+加了其攻击成功率，同时也可能给目标受害群体带来不可估量的损失。因此对于个人来讲，要切实提高网络
+
+安全意识，不要被网络钓鱼信息所蒙蔽；对于安全厂商来讲，更需要对其加深了解并持续进行针对性的对
+
+抗，提升安全防护能力，真正为用户侧的移动安全保驾护航。
+
+ 
+ 附录（ IOC)
+
+ 
+ 
+
+5079CB166DF41233A1017D5E0150C17A 
+F29DFFD9817F7FDA040C9608C14351D3
+
+0E7C2ADDA3BC65242A365EF72B91F3A8
+
+C630AB7B51F0C0FA38A4A0F45C793E24
+
+CE5BAE8714DDFCA9EB3BB24EE60F042D
+
+BF1CA2DAB5DF0546AACC02ABF40C2F19
+
+D1EB52EF6C2445C848157BEABA54044F
+
+45AE1CB1596E538220CA99B29816304F
+
+50BFD62721B4F3813C2D20B59642F022
+
+86c5495b048878ec903e6250600ec308
+
+780a7f9446f62dd23b87b59b67624887
+
+DABF05376C4EF5C1386EA8CECF3ACD5B
+
+86C5495B048878EC903E6250600EC308
+
+F29DFFD9817F7FDA040C9608C14351D3
+
+C83F5589DFDFB07B8B7966202188DEE5
+
+229A39860D1EBEAFC0E1CEF5880605FA
+
+A9C4232B34836337A7168A90261DA410
+
+877138E47A77E20BFFB058E8F94FAF1E
+
+5079CB166DF41233A1017D5E0150C17A
+
+https://mp.weixin.qq.com/s/L-tCvLPOOMhP0ndgdqhkNQ 6/8
+
+
+
+2019/5/30 安天移动安全
+
+2E780E2FF20A28D4248582F11D245D78
+
+0E7C2ADDA3BC65242A365EF72B91F3A8
+
+315F8E3DA94920248676B095786E26AD
+
+D1EB52EF6C2445C848157BEABA54044F
+
+DABF05376C4EF5C1386EA8CECF3ACD5B
+
+AD32E5198C33AA5A7E4AEF97B7A7C09E
+
+DF2E4CE8CC68C86B92D0D02E44315CC1
+
+C20FA2C10B8C8161AB8FA21A2ED6272D
+
+55E5B710099713F632BFD8E6EB0F496C
+
+CF5774F6CA603A748B4C5CC0F76A2FD5
+
+66983EFC87066CD920C1539AF083D923
+
+69232889A2092B5C0D9A584767AF0333
+
+C6FE1B2D9C2DF19DA0A132B5B9D9A011
+
+CE5BAE8714DDFCA9EB3BB24EE60F042D
+
+50BFD62721B4F3813C2D20B59642F022
+
+C630AB7B51F0C0FA38A4A0F45C793E24
+
+810EF71BB52EA5C3CFE58B8E003520DC
+
+BF1CA2DAB5DF0546AACC02ABF40C2F19
+
+45AE1CB1596E538220CA99B29816304F
+
+5AF0127A5E97FB4F111ECBA2BE1114FA
+
+74646DF14970FF356F33978A6B7FD59D
+
+DF845B9CAE7C396CDE34C5D0C764360A
+
+C20FA2C10B8C8161AB8FA21A2ED6272D
+
+641F0CC057E2AB43F5444C5547E80976
+
+ 
+
+ 致谢
+
+ 
+ 
+
+感谢奇安信红雨滴团队（原360企业安全威胁情报小组）对于因sinkhole造成的域名归因疏漏的热心指
+
+正。
+
+ 
+
+企业简介
+
+武汉安天信息技术有限责任公司（简称“安天移动安全”）成立于2010年，是安天集团旗下专
+
+注于移动互联网安全技术与安全产品研发的高科技企业。公司以武汉光谷为核心基地，先后在上
+
+海、成都和美国硅谷设立子公司，员工近300人。
+
+安天移动反病毒引擎为全球超过15亿部设备提供了内置的防护能力，为有效遏制移动恶意代
+
+码的泛滥做出了贡献。以此为基础，公司研发了融合无线安全、支付安全、URL安全、漏洞跟踪
+
+等的安全中间件，为移动智能设备提供全方位的威胁防御能力；在大数据与威胁情报、人工智能
+
+的网络安全领域应用等方面，公司有大量前瞻性创新成果和成熟工程体系。
+
+https://mp.weixin.qq.com/s/L-tCvLPOOMhP0ndgdqhkNQ 7/8
+
+
+
+2019/5/30 安天移动安全
+
+官网：www.avlsec.com
+
+电话：027-8768-8199
+
+邮箱：cooperation@avlsec.com
+
+ 
+
+ 
+
+https://mp.weixin.qq.com/s/L-tCvLPOOMhP0ndgdqhkNQ 8/8

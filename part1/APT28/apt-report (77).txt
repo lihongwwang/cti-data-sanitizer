@@ -1,0 +1,191 @@
+﻿2018/12/3 APT28 / Fancy Bear still targeting military institutions
+
+About Me Contact
+
+Emanuele De Lucia
+on Security
+
+APT28 / Fancy Bear still targeting News
+
+military institutions Seagate NAS Firmware vulnerable to
+remote attacks 
+March 3, 2015  
+
+Posted on November 30, 2018 — Leave a Comment
+Chicago police dept. pays over $600 after
+
+APT28, aka Fancy Bear, the famous hacker group likely state-sponsored from being hit by a ransomware attack 
+Russia, seems to be targeting NATO / military institutions in these hours. Spear- February 24, 2015  
+phishing emails with attached a malicious document referring to a “nato simulation” “Carbanak CyberGang” steals at least
+event (the name of the doc is “NATO Simulation.doc“), has been used to try to $300 million from financials institutions
+compromise some institutional entities (likely from north /  east europe). The hunting wordwide 
+group is composed by @MD0ugh, @DrunkBinary, @r0ny_123, @Manu_De_Lucia February 18, 2015  
+
+ShellShock vulnerability still widely
+The spear-phishing payload has been designed to drop a first malicious component exploited more than four months after it
+belonging to APT28 / Fancy Bear arsenal.  An high rate of code reuse and internal was discovered 
+analysis confirms it is a SedUploader variant. Meta-data analysis seems to suggest February 16, 2015  
+that the malicious infrastructure and components have been setted up only few
+days ago.
+
+Recent Posts
+Technical Details:
+
+APT28 / Fancy Bear still targeting military
+
+A screenshot of part of the decoy document is shown following: institutions
+APT29 threat group seems to be back
+targeting US public / gov /defense sector
+ICT Security Magazine – Il traffico di rete
+nella gestione degli incidenti:
+implementazioni e tecnologie
+Update: Hands in the MuddyWater –
+Playing with Iranian Cyber-Espionage
+Campaign
+Hands in the MuddyWater – Playing with
+Iranian Cyber-Espionage Campaign
+
+Recent Comments
+Giova M on Hands in the MuddyWater –
+
+This spear-phishing document (md5: 43D7FFD611932CF51D7150B176ECFC29) is Playing with Iranian Cyber-Espionage
+armed with macro code designed to work through two main events controlled by Campaign
+sub AutoOpen(), AutoClose(). Thank to @MD0ugh for sharing the sample! arrigo on Hands in the MuddyWater –
+
+Playing with Iranian Cyber-Espionage
+On offset 0x00006460 the .bin embedded content. Campaign
+
+https://www.emanueledelucia.net/apt28-targeting-military-institutions/ 1/4
+
+
+
+2018/12/3 APT28 / Fancy Bear still targeting military institutions
+
+Emanuele on Exobot Source Code
+Available
+hakan on Exobot Source Code Available
+Elyx on Anti-Rootkit Evasion (blinding
+GMER)
+
+Posts Categories
+On macro activation the instructions are designed to read specific xml node of the Defensive Security (16)
+document itself through xmlParser and extract / decode the base64 encoded
+
+Digital Forensic Investigations (12)
+retrieved content. Extracted VBA macro code seems to be very similar to that used
+previously in APT28 “hospitality campaign”. General and Notices (10)
+
+Network Security (3)
+Offensive Security (6)
+Reverse Engineering (10)
+Threat Intelligence (4)
+
+The payload is no more than an PEDLL executable file. Search ...
+
+This is dropped under %APPDATA%⧵Uplist.dat and
+%ALLUSERSPROFILE%⧵UpdaterUI.dll. Files are written with vbHidden attributes.
+
+Following a part of base64 encoded pyaload:
+
+Macro instructions within sub_AutoOpen() function are designed to achieve
+persistency also, writing under the following RegKey
+
+“HKCU⧵Software⧵Microsoft⧵Windows⧵CurrentVersion⧵Run⧵UIMgr“
+
+with a REG_SZ value
+
+“C:⧵Windows⧵System32⧵rundll32.exe “%ALLUSERSPROFILE%⧵UpdaterUI.dll “,
+“#1″”
+
+sub_AutoClose() has similar functionality writing a PE with a rnd generated name.
+
+First run performed through WMI.
+
+SedUploader
+
+The content dropped is a    SedUploader variant identified with MD5 hash:
+549726B8BFB1919A343AC764D48FDC81 
+
+From the first malware components under my lenses [NOT shared in Virus Total at
+the time of first analysis] actor is proposing the same TTPs observed in similar
+operation conducted in the past.
+
+According to some DNS hits observed, may be that at least one of these spear-
+phishing documents achieved the mission of first phase access.
+
+https://www.emanueledelucia.net/apt28-targeting-military-institutions/ 2/4
+
+
+
+2018/12/3 APT28 / Fancy Bear still targeting military institutions
+
+A quick exploding of the main cycle of the malware is reported following:
+
+T
+h
+e
+o
+u
+t
+s
+i
+d
+e
+
+word is contacted through requests like the following:
+
+[+] POST hxxps://beatguitar.com/aadv/gJNn/X2/ep/VQOA/3.SMPTE292M/?
+ct=+lMQKtXi0kf+3MVk38U=
+
+[+] POST hxxps://beatguitar.com/n2qqSy/HPSe0/SY/yAsFy8/mSaYZP/lw.sip/?
+n=VxL0BnijNmtTnSFIcoQ=
+
+after to have collected several infos about the victim system and performed some
+minimal anti-VM checks (like disk drives enum over the registry)
+[ControlSet001⧵services⧵Disk⧵Enum⧵0]
+
+IoC:
+
+beatguitar[.]com [Contacted domain name]
+
+185.99.133[.]72 [Stage 1 CnC] 
+
+md5: 43D7FFD611932CF51D7150B176ECFC29 [Spear-phishing DOC]
+
+md5: 549726B8BFB1919A343AC764D48FDC81 [SedUploader variant]
+
+The firt list of IoC reported are compatible with the modus operandi of group in
+question, both for registration than for fingerprint.
+
+At time of writing, others   further malicious domain names likely related to the
+campaign are under investigations. Anyway, analysis is ongoing…
+
+Posted in: Digital Forensic Investigations, General and Notices, Threat Intelligence | Tagged: 
+APT28, Fancy Bear, NATO
+
+https://www.emanueledelucia.net/apt28-targeting-military-institutions/ 3/4
+
+
+
+2018/12/3 APT28 / Fancy Bear still targeting military institutions
+
+← APT29 threat group seems to be back targeting US public / gov /defense sector
+
+Leave a Reply
+Your email address will not be published. Required fields are marked *
+
+Name *
+
+Email *
+
+Website
+
+2 +  = 8
+
+Comment
+
+POST COMMENT
+
+Emanuele De Lucia, on Security @ 2018
+
+https://www.emanueledelucia.net/apt28-targeting-military-institutions/ 4/4

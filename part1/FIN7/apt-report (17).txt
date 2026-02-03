@@ -1,0 +1,409 @@
+﻿2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+MENU ● US
+
+ MUST READ:  Coronavirus and 3D printing: How makers are stepping up to supply vital
+medical kit
+
+Rare BadUSB attack detected in the wild against US hospitality
+provider
+
+Hackers use snail-mail to send target company an envelope with a malware-laced
+USB thumb drive.
+
+By Catalin Cimpanu for Zero Day | March 26, 2020 -- 13:00 GMT (06:00 PDT) | Topic: Security
+
+A US hospitality provider has recently been the target of an incredibly rare BadUSB attack,
+ZDNet has learned from cyber-security firm Trustwave.
+
+The attack happened after the company received an envelope containing a fake BestBuy
+gift card, along with a USB thumb drive.
+
+The receiving company was told to plug the USB thumb drive into a computer to access a
+list of items the gift card could be used for.
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 1/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+Image: Trustwave
+
+But in reality, the USB thumb drive was what security experts call a "BadUSB" -- a USB
+thumb drive that actually functions as a keyboard when connected to a computer, where it
+emulates keypresses to launch various automated attacks.
+
+Trustwave, who couldn't reveal the target company's name for confidentiality reasons, said
+the victim recognized the attempted hack and called it in to investigate the incident.
+
+In a report published today (https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/would-you-
+
+exchange-your-security-for-a-gift-card/) and shared with ZDNet, Trustwave said that once they
+plugged the BadUSB into a test workstation, the BadUSB triggered a series of automated
+keypresses that launched a PowerShell command.
+
+This Powershell command downloaded a bulkier PowerShell script from an internet site and
+then installed malware on the test machine -- a JScript-based bot.
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 2/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+Image: Trustwave
+
+"At the time of the analysis, we did not found a similar strain of malware," Phil Hay, Senior
+Research Manager at Trustwave, told ZDNet in an email yesterday.
+
+"The malware is unknown to us. It is also hard to say if it is custom-built, but it probably is,
+because it is not wide spread and seems to be targeted," Hay added.
+
+However, the Trustwave researcher also told us that since their initial analysis, a file similar
+to the malware they analyzed
+(https://www.virustotal.com/gui/file/7be4f1309d52ae8b0e710caedf8b49f044d5e9bbb20b40b4d8bbe9b77818483b
+
+was later uploaded on VirusTotal, a web-based file scanning engine. Per subsequent
+analysis from Facebook (https://twitter.com/michael_yip/status/1243168680650964998) and Kaspersky
+(https://twitter.com/craiu/status/1243167791483686913) researchers, the file is believed to be the work
+of a hacking group known as FIN7 (https://malpedia.caad.fkie.fraunhofer.de/actor/anunak).
+
+It is unclear who uploaded this file, or if it comes from another cyber-security vendor also
+investigating a BadUSB attack at another victim.
+
+But the lesson here is that someone actually detected a BadUSB attack in the real world.
+BadUSB attacks were first detailed at the start of the 2010s, and for many years they
+represented a theoretical attack scenario, something that employees are often warned
+about, but which has rarely been seen in the wild.
+
+"These sorts of [BadUSB] attacks are often simulated in penetration testing and used during
+red teaming exercises," Hay told ZDNet. "Seeing these types of attacks in the real world is
+much more rare."
+
+An FBI spokesperson told ZDNet that any users or companies who receive malware-laced
+USBs should report the incident to their local FBI office for further investigations.
+
+LAST KNOWN ATTACK HAPPENED TWO YEARS AGO IN EASTERN EUROPE
+
+The last known case of a BadUSB attack (https://www.zdnet.com/article/eastern-european-banks-lose-
+
+tens-of-millions-of-dollars-in-hollywood-style-hacks/) -- also known as a Bash Bunny attack -- was
+detailed in December 2018 by Russian cyber-security firm Kaspersky.
+
+At the time, the company said it found BadUSB devices, along with cheap laptops and
+Raspberry Pi boards, on location at eight banks in Eastern Europe. The banks called
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 3/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+Kaspersky to investigate a series of mysterious cyber-heists during which hackers stole
+tens of millions of dollars.
+
+10 worst hacks and data breaches of 2019... (/pictures/10-worst-hacks-cyberattacks-and-data-breaches-of-2019-in-
+
+pictures/)
+
+SEE FULL GALLERY (/pictures/10-worst-hacks-cyberattacks-and-data-breaches-of-2019-in-pictures/)
+
+(/pictures/10-worst- (/pictures/10-worst- (/pictures/10-worst- (/pictures/10-worst- (/pictures/10-worst-
+
+1 - 5 of 10 NEXT  ()
+
+SECURITY
+
+Windows, Ubuntu, macOS, VirtualBox fall at Pwn2Own hacking contest
+(https://www.zdnet.com/article/windows-ubuntu-macos-virtualbox-fall-at-pwn2own-hacking-contest/)
+
+COVID-19: With everyone working from home, VPN security has now become paramount
+(https://www.zdnet.com/article/covid-19-with-everyone-working-from-home-vpn-security-has-now-become-paramount/)
+
+APT28 has been scanning vulnerable email servers for more than a year
+(https://www.zdnet.com/article/apt28-has-been-scanning-and-exploiting-vulnerable-email-servers-for-more-than-a-year/)
+
+Scam, spam and phishing texts: How to spot SMS fraud and stay safe (https://www.zdnet.com/article/scam-
+spam-and-phishing-texts-how-to-spot-sms-fraud-and-stay-safe/)
+
+Best security keys in 2020: Hardware-based two-factor authentication for online protection
+(https://www.zdnet.com/article/best-security-keys/)
+
+How to protect yourself from mobile malware attacks (ZDNet YouTube) (https://www.youtube.com/watch?
+v=91BDJPk4YIg)
+
+Best home security of 2020: Professional monitoring and DIY (CNET) (https://www.cnet.com/how-to/best-
+home-security-systems-for-2020/?ftag=CMG-01-10aaa1b)
+
+How to set up secure credential storage for Docker (TechRepublic) (https://www.techrepublic.com/article/how-
+to-setup-secure-credential-storage-for-docker/?ftag=CMG-01-10aaa1b)
+
+RELATED TOPICS:  SECURITY TV  DATA MANAGEMENT  CXO  DATA CENTERS
+
+By Catalin Cimpanu for Zero Day | March 26, 2020 -- 13:00 GMT (06:00 PDT) | Topic: Security
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 4/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+Recommended For You Sponsored Links by Taboola
+
+1 Mistake Users Make While Trying to Safely Clean Their Mac
+MacKeeper
+
+Is this the most addictive World War 1 strategy game? Register and play Supremacy 1914 now for free!
+Supremacy 1914 | Bytro Labs
+
+Ultra Fast WiFi Booster Flying Off Shelves In Canada
+Ultra Fast WiFi Booster
+
+Learning a new language this year? – This app gets you speaking in just 3 weeks
+Babbel
+
+Revolutionary Device Solves The Neck Pain Problem
+https://streetsignals.com
+
+If You Like to Play, this Strategy Game is a Must-Have
+Forge of Empires - Free Online Game
+
+This App Applies Every Coupon On The Internet To Your Cart – And It's Awesome
+Honey
+
+2016 To 2018 Unsold Cars For Sale To People In Toronto
+Discount Drivers
+
+ SHOW COMMENTS
+
+MORE RESOURCES
+
+IT Security: Concerns, budgets, trends and plans (TechRepublic Premium)
+Research from TechRepublic Premium
+
+ READ NOW
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 5/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+IT security and privacy: Concerns, initiatives, and predictions (TechRepublic
+Premium)
+Research from TechRepublic Premium
+
+ READ NOW
+
+P2P File Sharing Policy
+Tools & Templates from TechRepublic Premium
+
+ READ NOW
+
+STATES OF SHOCK
+
+Assessing the depths of our new tech recession
+
+JUST IN
+
+Tencent releases video conferencing tool for international markets
+26 minutes ago
+
+ACSC issues warning around coronavirus-themed malicious cyber activity
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 6/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+30 minutes ago
+
+How Asia Pacific airlines are handling coronavirus travel restrictions
+1 hour ago
+
+Swoop Aero remotely piloting drones with critical medical supplies for African villages
+2 hours ago
+
+Finance seeks provision of SAP Commonwealth HANA Enterprise Cloud
+2 hours ago
+
+Dell, VMware withdraw 2021 financial guidance due to COVID-19 pandemic
+2 hours ago
+
+Australian government to return AU$550m from false robo-debts: Report
+3 hours ago
+
+Fujitsu creates business integration company to focus on Japan
+3 hours ago
+
+TODAY ON ZDNET
+
+            
+
+ SPECIAL FEATURE
+
+Working from home: The future of business is remote
+
+Five ways to fix that failed Windows 10 upgrade
+3 hours ago by ZDNet Editors in Windows 10
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 7/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+State governments launch online resources to help teaching
+at closed schools
+3 hours ago in Tech Industry
+
+Coronavirus tech conference cancellations list: Apple WWDC,
+Microsoft Build, E3, NAB, Gartner, Dell World and more
+4 hours ago by Bill Detwiler in Tech & Work
+
+Whatever happened to Microsoft's plan to bring its unified search
+feature to Windows 10?
+5 hours ago by Mary Jo Foley in Windows 10
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 8/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+Progress Software reports mixed Q1 results
+5 hours ago by Natalie Gagliordi in Enterprise Software
+
+         
+
+VIDEO
+
+Coronavirus: How hackers are exploiting the
+epidemic to steal your information
+
+Lanmodo night vision system hands-on: Impressive vision assistance
+at a price
+6 hours ago by Eileen Brown in Hardware
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 9/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+Security Awareness and Training policy
+from TechRepublic Premium
+
+7 ways to boost Wi-Fi speed and reliability in your home
+office
+6 hours ago by Jason Perlow in Networking
+
+As classes remain empty, a big moment for online learning
+6 hours ago by ZDNet Editors in Cloud
+
+C3.ai, Microsoft help launch the C3.ai Digital Transformation Institute
+6 hours ago by Stephanie Condon in Digital Transformation
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 10/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+Home Wi-Fi: How to improve your home office network
+6 hours ago by Jason Perlow in Networking
+
+         
+
+GALLERY
+
+Coronavirus: How to clean and disinfect your
+tech gadgets
+
+LOAD MORE
+
+Recommended For You Sponsored Links by Taboola
+
+Ontario: Canadians Wanted for Paid Surveys
+Survey Compare
+
+The Real Reason You're Getting Dark Spots (it isn’t the sun!)
+Dark Spot Diminisher
+
+The cost of plumber in Toronto might surprise you
+Plumber | Search Ads
+
+This $89 Device Lets You Speak 43 Languages Instantly. The Idea? Genius
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 11/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+MUAMA Enence Instant Translator Device
+
+Collection
+Coronavirus: Business and technology in a pandemic
+
+Tencent releases video conferencing tool for international markets
+
+Five ways to fix that failed Windows 10 upgrade
+
+State governments launch online resources to help teaching at closed schools
+
+As classes remain empty, a big moment for online learning
+
+Home Wi-Fi: How to improve your home office network
+
+Point of impact: How will the tech economy recover from COVID-19?
+
+Article
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 12/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+Top cloud providers 2019: AWS, Microsoft Azure, Google
+Cloud; IBM makes hybrid move
+
+Wyndham Hotels & Resorts tackled technical debt, cloud, hybrid cloud in a hurry
+[Cloud TV]
+
+HSBC charts out its move to the cloud [Cloud TV]
+
+How Brinker International thinks through cloud, data, Apple iPads [Cloud TV]
+
+Why security is the top barrier in enterprise cloud adoption [Hybrid Cloud TV]
+
+How New Belgium Brewing evaluated managed vs. private cloud [Hybrid Cloud TV]
+
+With Red Hat, IBM to become the leading hybrid cloud provider
+
+MORE RESOURCES
+
+Power checklist: Securing Windows Server 2016
+Tools & Templates from TechRepublic Premium
+
+ READ NOW
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 13/14
+
+
+
+2020/3/27 Rare BadUSB attack detected in the wild against US hospitality provider | ZDNet
+
+Auditing and logging policy
+Tools & Templates from TechRepublic Premium
+
+ READ NOW
+
+Eliminate spyware challenges with these 10 tips
+eBooks from TechRepublic Premium
+
+ READ NOW
+
+TechRepublic Pro Fast Facts: Antispyware Report
+eBooks from TechRepublic Premium
+
+ READ NOW
+
+https://www.zdnet.com/article/rare-badusb-attack-detected-in-the-wild-against-us-hospitality-provider/ 14/14

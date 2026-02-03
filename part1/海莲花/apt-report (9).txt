@@ -1,0 +1,206 @@
+﻿2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+高级威胁研究院 360威胁情报中心 2024年09月23日 18:34 北京
+
+APT-C-00
+   海莲花
+
+APT-C-00（海莲花）（也称OceanLotus）组织是一个有政府背景的境外黑客组织，自
+2015年360曝光海莲花以来，360高级威胁研究院一直持续跟进监测海莲花组织的最新攻
+击。
+
+360高级威胁研究院在APT威胁狩猎中发现并捕获了2024年海莲花针对高价值目标发起
+的网络攻击。此次攻击中与以往不同的是海莲花对使用近两年半的双重后门加载器进行了
+“加工”，利用VMProtect软件对加载器进行了加壳保护，在反静/动态分析层面进一步加
+强了安全对抗程度。
+
+ 样本分析 
+
+1. 双重加载器
+
+模块1   
+
+MD5 2109479e62f3c45bab00768553b158b8
+文件类型 DLL动态链接库
+文件大小 225280  Bytes
+编译信息 MSVC
+
+该模块是一个MSVC DLL文件，通过分析可以发现该DLL是在Visual Studio生成的默认桌面应
+
+用程序项目基础上进行修改和“加料”，主要工作流程如下:
+
+首先，攻击者会收集主机名和磁盘信息；
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 1/9
+
+
+
+2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+然后创建目录%Temp%\NVidiaSetup\kd8812u，以文件流的方式写入此前收集的主机信
+息，在等待一定时长后调用函数ShellExecute打印文件流，其寓意暂时未知。    
+
+随后则是加载一个包含加密载荷的DLL文件，参数为加载的DLL文件模块句柄和解密
+Key，参数格式：小写十六进制模块句柄_解密Key。    
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 2/9
+
+
+
+2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+模块2   
+
+MD5 d21c4b1c1db2c9f443c4ba271f738c91
+文件类型 DLL动态链接库
+文件大小 2503168 Bytes
+编译信息 GoLang
+
+该模块由Go语言编写，其中包含多个开源项目，主要工作流程如下：
+
+利用开源项目gopsutil[1]收集主机信息并写到指定路径。    
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 3/9
+
+
+
+2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+利用开源项目screenshot[2]截取屏幕图像并写到指定路径，截屏图像的路径则写入如
+上提到的信息收集文件。
+
+接下来是该组件的主要流程，解密并执行恶意载荷。
+
+首先将上级MSVC加载器传入的解密Key进行十六进制解码。
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 4/9
+
+
+
+2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+然后解码资源中的Base64编码数据，再利用解密Key解密恶意载荷（此处使用的是RC4算
+法），最后调用恶意载荷。
+
+载荷
+
+恶意载荷共有两段，第一段载荷功能主要为循环解密并调用第二段载荷。    
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 5/9
+
+
+
+2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+第二段载荷则主要是反射加载CobaltStrike Beacon模块。
+
+通 过 解 析 Beacon 模 块 配 置 信 息 可 知 C2 ： strengthening-memories-reports-
+restoration.trycloudflare.com:443。    
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 6/9
+
+
+
+2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+2. VMP双重加载器  
+
+在日常APT狩猎中我们发现了一组后门加载器，第一时间进行分析后确认了这组加载器
+是海莲花双重加载器的VMP版本。
+
+（以下对比图左侧均为无壳加载器，右侧均为VMP加载器代码中未被VM或混淆的部
+分。）
+
+模块1  
+
+MD5 26669891d83b8a706d2c0af91292247c
+文件类型 DLL动态链接库
+文件大小 7072768 Bytes
+保护器 VMProtect 3.XX x64
+
+通过绝对路径加载GoLang恶意模块部分代码对比：
+
+模块2 
+
+MD5 4ce5ea38c4d486bed7f6d9e9208133c6
+文件类型 DLL动态链接库
+文件大小 8276480 Bytes
+保护器 VMProtect 3.XX x64
+
+Base64解码及解密恶意载荷部分代码对比：
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 7/9
+
+
+
+2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+载荷  
+
+解密第二阶段恶意载荷部分代码对比：
+
+最后同样是反射加载CobaltStrike Beacon模块，通过解析Beacon模块配置信息可知
+C2：64.176.58.16:80。
+
+总结
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 8/9
+
+
+
+2024/9/24 11:58 APT-C-00（海莲花）双重加载器及同源VMP加载器分析
+
+近年APT组织皆有使用Rust、Nim、GoLang等多种编程语言开发后门程序的先例，海莲花
+
+组织执行假旗行动的效果较为显著，将攻击细节[3][4]模仿为已披露的APT组织（APT29、
+
+Gamaredon等），目的就是诱导安全人员错误的归属攻击，淡化自身的活跃度。本次攻击活
+
+动在VMP源代码泄露后使用其保护加载器，也让分析成本大大增加。因此我们可以预见未来
+
+在捕获攻击，样本分析，归属研判等方面或将面临巨大的挑战。  
+
+附录 IOC
+
+MD5
+
+4a8756b22029a88506744ab7864c9b83
+
+2109479e62f3c45bab00768553b158b8
+
+d21c4b1c1db2c9f443c4ba271f738c91
+
+9ad37ce054ca1523d26bb49fbc80dff6
+
+26669891d83b8a706d2c0af91292247c
+
+4ce5ea38c4d486bed7f6d9e9208133c6
+
+C&C
+
+strengthening-memories-reports-restoration.trycloudflare.com:443
+
+64.176.58.16:80
+
+参考
+
+[1] https://github.com/shirou/gopsutil
+
+[2] https://github.com/kbinani/screenshot
+
+[3] https://mp.weixin.qq.com/s/IB2w86cXcpmGS8qrOnprKw
+
+[4] https://ti.defender.microsoft.com/articles/541a465f
+
+团队介绍
+
+TEAM INTRODUCTION
+
+360高级威胁研究院
+360高级威胁研究院是360政企安全集团的核心能力支持部门，由360资深安全专家组成，专注于高级威胁的
+发现、防御、处置和研究，曾在全球范围内率先捕获双杀、双星、噩梦公式等多起业界知名的0day在野攻
+击，独家披露多个国家级APT组织的高级行动，赢得业内外的广泛认可，为360保障国家网络安全提供有力支
+撑。
+
+https://mp.weixin.qq.com/s/YFT0Bx4Suph5yCv6OQiHzA 9/9

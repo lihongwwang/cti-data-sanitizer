@@ -1,0 +1,441 @@
+The Growth of SectorF01 Group’s Cyber Espionage Activities
+
+Abstract
+Since 2013, there has been a hacking group receiving support from the national level which conducts cyber espionage campaigns against countries in the South China Sea. We refer to this group as SectorF01. From 2017, their activities have increased significantly. They mainly carry out these campaigns against government agencies and diplomatic, military, and research institutions in neighboring countries, and surveillance activities against opposing forces in their own countries.
+In recent years, the SectorF01 group has been engaged in cyber espionage against various industries for its own benefit. They put extra focus on the automobile industry, and their targets countries have expanded to include South Korea and Japan as well, which are in the East Asian region. We decided to take a step-by-step look at more than 800 types of malware used by the SectorF01 group from 2013 until now (H1 2019). In this post, we will focus on the initial penetration methods that the SectorF01 group uses against their targets. We will see that they love using DLL side-loading.
+
+Targets
+Target Countries
+The SectorF01 group conducts cyber espionage mainly in countries in Southeast Asia and East Asia. The victims are the countries around the South China Sea, and these countries belong to the Association of Southeast Asian Nations (ASEAN).
+The SectorF01 group’s intensive attack targets are in the following countries:
+• Vietnam
+• China
+• Cambodia
+• Laos
+• Thailand
+• Myanmar
+• Phillipines
+• Malaysia
+• Indonesia
+• Singapore
+Recently, they have also been expanding their cyber espionage activities to the following countries in East Asia:
+• Japan
+• South Korea
+Targets of the SectorF01 group
+The ellipses marked with red dotted lines are the range of countries targeted by the SectorF01 group, and the dark red ellipses are the range of countries where the attack is more concentrated. The ellipses, marked with orange dotted lines, are a range of countries that have recently been included in the attack target as the SectorF01 group expands their activities.
+
+Target Industries
+The SectorF01 group conduct cyber espionage activities against various fields as follows:
+• Vietnamese dissidents, journalists, and activists
+• ASEAN-related organizations
+• Government institutions
+• Diplomatic institutions
+• Military institutions
+• Marine-related organizations : Maritime organizations, marine research institutes, shipping companies, etc
+• Scientific research institutes
+• Universities and educational institutions
+• Foreign companies in Vietnam
+• Automotive Industry
+
+Statistics for Cyber Espionage Activities in SectorF01 Group
+The SectorF01 group has seen steady annual grown since its inception as a cyber espionage player in 2013 and has become one of the most influential threat actor groups in Southeast Asia. We created statistics about their activities through the more than 800 malware executables that the SectorF01 group used to attack.
+About 800 malwares used in the statistics are all Windows executables. Polymorphic binaries which are executed by sandboxes and whose file hashes change each time they are run are excluded from these statistics, so only the initial file is included. We are excluding such polymorphic binaries which are not used in attacks to minimize statistical errors and misinterpretation.
+This is a graph aggregating the number of malwares used in attacks by the SectorF01 group every year. It can be seen that the number of malware that they use each year is steadily increasing.
+The Growth of the SectorF01 group’s Malware
+The following are the statistics for the time and day when the SectorF01 group created the malware. We have analyzed about seven years of cyber espionage activity of the SectorF01 group and have concluded that they are highly likely to be threat actor groups sponsored by the Vietnamese government. We created statistics on compile times with the timestamp of about 500 binaries, after excluding those considered to have modified timestamps among the 800 binaries.
+Assuming that the SectorF01 group is active in Vietnam, we set the time zone to “UTC+7″(Vietnam time zone) and created statistics based on that. Considering that the business hours in Vietnam are mainly from 8:00 am to 5:00 pm, about 68% of the malwares were created in Vietnam business hours. Also, binaries were rarely created at lunch time.
+SectorF01 Group’s Malware Compile Time (UTC+7)
+Next, we created statistics for the days when the SectorF01 group created binaries. The SectorF01 group made binaries on weekdays rather than weekends. About 86% of malware were made on weekdays. Among them, most binaries were produced on Mondays.
+The days of the week that the SectorF01 group compiled their binaries
+
+SectorF01 Groups’s Initial Access Tactics
+The SectorF01 group uses a variety of methods for initial penetration. They mainly use malware delivered to the target via email attachments and at other times, infect specific targets that access websites via watering hole attacks. Here we describe the various initial penetration methods they have used.
+
+Spearphishing Attachment & Spearphishing Link
+The SectorF01 group usually delivers their malware through email attachments or links. The definition of these techniques can be found in the MITRE ATT&CK Framework.
+“Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email. All forms of spearphishing are electronically delivered social engineering targeted at a specific individual, company, or industry. In this scenario, adversaries attach a file to the spearphishing email and usually rely upon User Execution to gain execution.”
+MITRE ATT&CK – T1193, Spearphishing Attachment
+“Spearphishing with a link is a specific variant of spearphishing. It is different from other forms of spearphishing in that it employs the use of links to download malware contained in email, instead of attaching malicious files to the email itself, to avoid defenses that may inspect email attachments.”
+MITRE ATT&CK – T1192, Spearphishing Link
+Below, we can see the various ways malware is sent through attachments or links in emails used by the SectorF01 group.
+
+Delivery Method 1: How Executable Files are Delivered
+(1.1) Executable file disguised as normal document file
+The SectorF01 group uses a executable that masquerades as a normal document file, such as a Word or PDF document, etc., causing the user to mistake the document file for execution. They change the icon of the file to the icon of the document program or add a document file extension such as “.doc” or “.pdf” before the “.exe” executable file extension. This causes the user to mistake the file as a document file. These executables are usually compressed and delivered in the form of email attachments.
+Executable file disguised as Word document Executable file disguised as PDF document
+(1.2) Malware disguised as normal program
+The SectorF01 group changes the malware file name to be a file name of a normal program such as a web browser installation file (Firefox, Chrome), or an Adobe Flash web browser plug-in installation file. In addition, malware was distributed by disguising as a normal program used only in the target country.
+Malware disguised as normal program installation file
+(1.3) Malware using the “Space after Filename” technique
+The SectorF01 group uses the “Space after Filename” technique to make the executable look like a normal document file. Inserting the document file extension, such as “.doc”, “.docx”, before the “.exe” extension, and inserting many spaces in the middle. Depending on the size of the filename field, the long “.exe” extension will not be visible due to the long space, and the user might misunderstand the executable as a document file.
+Executable file disguised as document file through “Space after Filename” technique
+(1.4) Malware contained in RAR archive
+The SectorF01 group mainly creates malware in the form of compressed archives for delivering malicious executable files or document files and delivers them to the attack target. The compression formats they have used in the past are RAR, ZIP, GZIP, though the SectorF01 group mainly uses the RAR compression format.
+Malware included in RAR archive
+(1.5) SFXZIP autorun compressed file malware
+The SectorF01 group also uses SFX (self-extracting archive) autorun compression file malware. They utilize the WinRAR program’s ability to generate SFX compressed files to generate malware with the ZIP compression format rather than the RAR compression format.
+SFX compressed file creation method of ZIP compression format using WinRAR program
+ZIP compression format SFX compressed file type malware
+(1.6) Malware distribution method using HTA
+The SectorF01 group uses HTA to spread malware. HTA stands for Microsoft HTML Applications and uses the “.hta” extension. A typical HTA file is configured to be similar to a HTML file, but is run as a separate utility program called “mshta.exe”, not a web browser like Internet Explorer. The SectorF01 group spreads malware by including VBScript in the “.hta” file, and that VBScript works by dropping the embedded malware or downloading additional malware. The advantage here is that while VBScript has limited privileges in a web browser due to security controls, these security controls are bypassed when the VBScript is executed via a HTA file.
+Malware delivered in the form of an HTA file
+VBScript to generate malware contained in HTA file
+(1.7) Malware distribution method using Shortcut (LNK)
+The SectorF01 group uses shortcut (“.lnk”) files to spread malware. Such LNK files can execute commands. They set the LNK file to run VBScript code using the “mshta.exe” program. It is delivered to the target by disguising icons and extensions which look like word document files. If the target mistakes the LNK file for a document file and executes it, then the VBScript code is executed to download and execute an additional malware file from a server.
+The following is a malicious LNK file used by the SectorF01 group:
+Malware delivered in the form of an LNK file
+Malicious LNK files to download and run additional malware
+(1.8) Deliver malware download link using cloud service
+The SectorF01 group uses Amazon’s AWS S3 and Dropbox cloud storage services to upload malware, and that link is delivered via email.
+
+Delivery Method 2: How malware is executed using macros
+(2.1) Attacks using macros contained in a document
+The SectorF01 group mainly delivers word documents containing macros to the target. The filename of the document is set to be something the target might be interested in and they attach the document to their email. The victim will not be infected if the malicious macro does not run, so the document body contains a social engineering technique to encourage the user to activate the macro.
+Malicious Word document file with macros
+Malicious macros contained in Word documents
+(2.2) Attacks that convert macros to ActiveMime form
+Word document files containing traditional malicious macros are more easily detected by security solutions such as antivirus and anti-spam filters. To bypass this, the SectorF01 group also uses the ActiveMime format. ActiveMime is an undocumented Microsoft file format that encodes macros in Microsoft Office. When you convert a Microsoft Office document that contains a macro to the “.mht (Microsoft Web Archive)” format, the macro is included in the “.mht” file in ActiveMime format.
+These converted macros can bypass security solutions because they can be detected only by analyzing the ActiveMime format.
+The SectorF01 group changed the extension of the malicious document which was converted to “.mht” file format to the “.doc” extension and attached it to the email and delivered it to the target.
+MHT malware with ActiveMime masquerading as a DOC file
+ActiveMime format with malicious macros
+A screen Run Word document file containing macro converted to ActiveMime
+
+Delivery Method 3: Deploy malware using vulnerabilities
+The SectorF01 group exploits vulnerabilities that are frequently used. These exploits are already used by many attackers, so it can mask the attacker’s characteristics to some extent.
+(3.1) CVE-2017-0199
+The CVE-2017-0199 vulnerability is a vulnerability that occurs because Microsoft Office programs does not properly handle OLE objects. A malicious file such as HTA (HTML Application) can be downloaded and executed from a remote server through a vulnerability that occurs when MS Office processes URL Moniker object.
+The SectorF01 group used the CVE-2017-0199 vulnerability to deliver an RTF document containing a malicious OLE2link object to the target. The OLE2link object downloads the VBScript HTA file containing the Powershell command to run.
+(3.2) CVE-2017-8570
+The CVE-2017-8570 vulnerability is a vulnerability that occurs because Microsoft Office programs can not properly handle OLE objects. This vulnerability exists in the way MS Office handles Composite Moniker objects and can execute SCT (Windows Script Component) scripts included in OLE packages.
+The SectorF01 group uses the CVE-2017-8570 vulnerability to deliver an RTF document containing a malicious “.sct” file that generates malware to the target.
+Malicious documents using CVE-2017-8570 vulnerability
+(3.3) CVE-2017-11882
+The CVE-2017-11882 vulnerability is a vulnerability that occurs when the Equation Editor (EQNEDT32.EXE), a component of the MS Office program, fails to properly handle certain objects. While MS Office is processing certain objects in memory, it can execute arbitrary code through the vulnerability.
+The SectorF01 group attacked by delivering a malicious RTF document with shellcode for generating malware using the CVE-2017-11882 vulnerability to the target.
+Malicious documents using CVE-2017-11882 vulnerability
+CVE-2017-11882 Vulnerability Code
+(3.4) CVE-2018-20250
+The CVE-2018-20250 vulnerability occurs in UNACEV2.dll, which is included in the compression program WinRAR. This is a vulnerability that can generate a file in a specific path by manipulating the file name field in the processing of ACE compression format. This allows an attacker to create an executable file in a path where the file can be executed automatically at system boot time, such as a “startup program”.
+As many threat actor groups began to use the CVE-2018-20250 vulnerability, the SectorF01 group also did the same.
+Malware using CVE-2018-20250 vulnerability
+
+Delivery Method 4: Drive-by Compromise (Watering Hole)
+The SectorF01 group infects targets that access legitimate sites by inserting malicious scripts into the normal website after hacking it in order to steal account information or to infect malware. This attack is known as Drive-by Compromise. Attackers choose websites that are frequently visited by specific targets rather than indiscreet website hacking, and this attack is also called a watering hole attack.
+“A drive-by compromise is when an adversary gains access to a system through a user visiting a website over the normal course of browsing. With this technique, the user’s web browser is targeted for exploitation.”
+MITRE ATT&CK – T1189, Drive-by Compromise
+The SectorF01 group targeted specific individuals or organizations by attacking websites that were primarily visited by key personnel and activists who opposed the Vietnamese government. They have also attacked websites of government, diplomacy, defense and research areas of Vietnam, including Cambodia, China, Laos and the Philippines, and hacked ASEAN-related websites.
+The following is the timing of the large-scale watering hole attacks by the SectorF01 group:
+• May 2014, September 2014
+• January 2015, March 2015
+• May 2017
+• September 2018, December 2018
+• January 2019
+When a target accesses a specific web site, the attacker distributes malware disguised as a web browser program or a plug-in, or displays a fake login page for collecting credential data. They also created domains similar to a normal website or online services and malicious scripts were inserted into fake domain websites to collect information about their targets.
+
+TOO MUCH LOVE for DLL Side-Loading
+The SectorF01 group prefers the “DLL Side-Loading” technique to execute their malware. DLL side-loading technique is also called “DLL Hijacking”, “DLL Preloading”, and “DLL Planting”. The MITRE ATT&CK Framework defines “DLL Side-Loading” as follows.
+“Programs may specify DLLs that are loaded at runtime. Programs that improperly or vaguely specify a required DLL may be open to a vulnerability in which an unintended DLL is loaded. Side-loading vulnerabilities specifically occur when Windows Side-by-Side (WinSxS) manifests are not explicit enough about characteristics of the DLL to be loaded. Adversaries may take advantage of a legitimate program that is vulnerable to side-loading to load a malicious DLL. Adversaries likely use this technique as a means of masking actions they perform under a legitimate, trusted system or software process.”
+Definition of DLL Side-Loading
+When DLLs are loaded in Windows OS, the order of searching is as follows:
+1. The directory from which the application loaded.
+2. The current directory.
+3. The system directory. Use the GetSystemDirectory function to get the path of this directory.
+4. The 16-bit system directory. There is no function that obtains the path of this directory, but it is searched.
+5. The Windows directory. Use the GetWindowsDirectory function to get the path of this directory.
+6. The directories that are listed in the PATH environment variable. Note that this does not include the per-application path specified by the App Paths registry key. The App Paths key is not used when computing the DLL search path.
+Dynamic-Link Library Search Order
+Because the DLL file is in the same directory path as the executable file, that DLL is loaded as it has the load highest priority. The SectorF01 group distributes the legitimate file and the malicious DLL file together so that they are in the same path. This will load the malicious DLLs together when the normal file is executed.
+This will make it seem as though it is a DLL file being loaded by a legitimate program and this can bypass detection of an endpoint security solution that performs behavior-based detection.
+The SectorF01 group has distributed MS Windows OS files or popular programs with DLLs to load their malicious DLL files. In some cases, the legitimate files of famous anti-virus software are also used to load malicious DLLs.
+The SectorF01 group loves the “DLL Side-Loading” technique so much that they abused many legitimate programs. We wondered how many normal programs were exploited, so we summarized all the normal programs we found.
+The normal program files used by the SectorF01 group for “DLL Side Loading” are as follows:
+• Microsoft Office Word (WINWORD.EXE)
+• Windows Search (SearchIndexer.exe)
+• Windows Search (SearchProtocolHost.exe)
+• Google Update (GoogleUpdate.exe)
+• Adobe AcroTranscoder (AcroTranscoder.exe)
+• Adobe Flash Player Control Panel Applet (FlashPlayerApp.exe)
+• Adobe Acrobat 3D Utility (A3DUtility.exe)
+• WeChat (WeChat.exe)
+• Coc Coc Browser Update (CocCocUpdate.exe)
+• 360安全浏览器 (360 Secure Browser) (360se.exe)
+• 60软件管家 (360 Software Manager) (SoftManager.exe)
+• Neuber Software Typograf font manager (FontSets.exe)
+• McAfee VirusScan On-Demand Scan (mcods.exe)
+• McAfee Oem Module (mcoemcpy.exe)
+• Symantec Network Access Control (rastlsc.exe)
+• Kaspersky Anti-Virus Installation assistant host (avpia.exe)
+• Kaspersky Light Plugin Extension Registrar (plugins-setup.exe)
+• Avast Antivirus remediation (wsc_proxy.exe)
+They used major programs from Microsoft, Google and Adobe, and used popular local programs such as WeChat, Coc Coc Browser, and 360 Secure Browser. They also used programs from anti-virus vendors such as McAfee, Symantec, Kaspersky, and Avast.
+
+Side Load 1 – Microsoft Office Word (WINWORD.EXE)
+The SectorF01 group used the normal “WINWORD.EXE” file from “Microsoft Office Word” to utilize the “DLL Side-Loading” technique. The normal “WINWORD.EXE” file loads a “wwlib.dll” DLL file.
+The normal “WINWORD.EXE” file sequentially searches the following paths to check if it exists in order to load the “wwlib.dll”.
+The file “Ho so dang ky lam dai ly uy quyen chinh thuc cua Huyndai – Thanh Cong – Nguyen Thi Mai Phuong.exe” file has a filename related to the topic that the target may be interested in. This is the normal file “WINWORD.EXE” with only the name changed.
+They set the file name of their malicious DLL to be “wwlib.dll” and deploy it in the same path along with the renamed normal “WINWORD.EXE” file. When the victim executes this renamed “WINWORD.EXE”, the malicious “wwlib.dll” file is loaded and malware is executed.
+The following shows the code in “WINWORD.EXE” that loads the “wwlib.dll” exported “FMain”.
+The malicious DLL “wwlib.dll” is loaded and calls the Export function “FMain”.
+The “FMain” of the malicious DLL “wwlib.dll” contains the malicious code.
+
+Side Load 2 – Windows Search (SearchIndexer.exe)
+The SectorF01 group used the normal “SearchIndexer.exe” file from “Windows Search” to utilize the “DLL Side-Loading” technique. The normal “SearchIndexer.exe” file loads a “msfte.dll” DLL file.
+They set the file name of their malicious DLL to be “msfte.dll” and deploy it in the same path along with the renamed normal “SearchIndexer.exe” file. When the victim executes this renamed “SearchIndexer.exe”, the malicious “msfte.dll” file is loaded and malware is executed.
+The following shows the code in “SearchIndexer.exe” loading the “msfte.dll”.
+
+Side Load 3 – Windows Search (SearchProtocolHost.exe)
+The SectorF01 group used the normal “SearchProtocolHost.exe” file from “Windows Search” to utilize the “DLL Side-Loading” technique. The normal “SearchProtocolHost.exe” file loads a “msfte.dll” DLL file.
+They set the file name of their malicious DLL to be “msfte.dll” and deploy it in the same path along with the renamed normal “SearchProtocolHost.exe” file. When the victim executes this renamed “SearchProtocolHost.exe”, the malicious “msfte.dll” file is loaded and malware is executed.
+The following shows the code in “SearchProtocolHost.exe” loading the “msfte.dll”.
+
+Side Load 4 – Google Update (GoogleUpdate.exe)
+The SectorF01 group used the normal “GoogleUpdate.exe” file from “Windows Search” to utilize the “DLL Side-Loading” technique. The normal “GoogleUpdate.exe” file loads a “goopdate.dll” DLL file.
+They set the file name of their malicious DLL to be “goopdate.dll” and deploy it in the same path along with the renamed normal “GoogleUpdate.exe” file. When the victim executes this renamed “GoogleUpdate.exe”, the malicious “goopdate.dll” file is loaded and malware is executed.
+
+Side Load 5 – Adobe AcroTranscoder (AcroTranscoder.exe)
+The SectorF01 group used the normal “AcroTranscoder.exe” file from AcroTranscoder software to utilize the “DLL Side-Loading” technique.
+The normal “AcroTranscoder.exe” file loads a “Flash Video Extension.dll” DLL file.
+The following is a malicious word document “FW Report on demonstration of former CNRP in Republic of Korea.doc” used by the SectorF01 group.
+When this document is executed, the malicious DLL “Flash Video Extension.dll” and the renamed legitimate “AcroTranscoder.exe” are deployed in the same path. When the normal “AcroTranscoder.exe” is executed, the malicious “Flash Video Extension.dll” file is loaded and malware is executed.
+The malicious DLL “Flash Video Extension.dll” is loaded and calls the Export API functions. The SectorF01 group put their malicious code in the “FLVCore :: Uninitialize” function, while all other functions point to the same address as the “FLVCore :: Uninitialize” function. Thus, as long as any Export API of the “Flash Video Extension.dll” is called, the malware is executed.
+The “FLVCore :: Uninitialize” export function of the malicious DLL “Flash Video Extension.dll” contains code that performs malicious actions.
+
+Side Load 6 – Adobe Flash Player Control Panel Applet (FlashPlayerApp.exe)
+The SectorF01 group used the normal “FlashPlayerApp.exe” (Adobe Flash Player Control Panel Applet software) to utilize the “DLL Side-Loading” technique. The normal “FlashPlayerApp.exe” file loads a “UxTheme.dll” DLL file.
+They set the file name of their malicious DLL to be “UxTheme.dll” and deploy it in the same path along with the renamed normal “FlashPlayerApp.exe” file. When the victim executes this renamed “FlashPlayerApp.exe”, the malicious “UxTheme.dll” file is loaded and malware is executed.
+
+Side Load 7 – Adobe Acrobat 3D Utility (A3DUtility.exe)
+The SectorF01 group used the normal “A3DUtility.exe” (Adobe Acrobat 3D Utility software) to utilize the “DLL Side-Loading” technique. The normal “A3DUtility.exe” file loads DLLs such as a “BIB.dll” DLL file.
+The SectorF01 group sets the name of their malicious DLLs to “ACE.dll”, “AGM.dll”, “CoolType.dll”, “MSVCP80.dll”, “MSVCR80.dll” in addition to “BIB.dll”. They distribute these files together with the renamed normal “A3DUtility.exe” in the same path. These different DLL files are all loaded by the normal “A3DUtility.exe”.
+The following shows the code in “A3DUtility.exe” loading the “AGM.dll”, “BIB.dll”, “CoolType.dll”, and so on.
+“BIB.dll” is loaded and the Export API function is called. The malicious code of the SectorF01 group is inserted into the “BIB_12” function, and all other function addresses point to the “BIB_12” function address. This allows their malware to work no matter what Export API in “BIB.dll” is called. The other malicious DLLs are configured in the same way.
+The exported functions of “BIB.dll”
+The “BIB_12” function in “BIB.dll” contains the malicious code.
+When the normal “A3DUtility.exe” is executed, the malicious DLL files is loaded and malware is executed.
+
+Side Load 8 – WeChat (WeChat.exe)
+The SectorF01 group used the normal “WeChat.EXE” (WeChat software) to utilize the “DLL Side-Loading” technique. The normal “WeChat.EXE” file loads a “WeChatWin.dll” DLL file.
+WeChat is a famous Chinese messenger program.
+They set the file name of their malicious DLL to be “WeChatWin.dll” and deploy it in the same path along with the renamed normal “WeChat.exe” file. When the victim executes this renamed “WeChat.exe”, the malicious “WeChatWin.dll” file is loaded and malware is executed.
+
+Side Load 9 – Coc Coc Browser Update (CocCocUpdate.exe)
+The SectorF01 group used the normal “CocCocUpdate.exe” (Coc Coc Browser Update Software) to utilize the “DLL Side-Loading” technique. The normal “CocCocUpdate.exe” file loads a “coccocpdate.dll” DLL file.
+“Coc Coc Browser” is a famous web browser in Vietnam.
+The following shows the code in “CocCocUpdate.exe” that loads the “coccocpdate.dll” “DllEntry” function.
+They set the file name of their malicious DLL to be “coccocpdate.dll” and deploy it in the same path along with the renamed normal “CocCocUpdate.exe” file. When the victim executes this renamed “CocCocUpdate.exe”, the malicious “coccocpdate.dll” file is loaded and malware is executed.
+The “DllEntry” function in “coccocpdate.dll” contains the malicious code.
+
+Side Load 10 – 360安全浏览器 (360 Secure Browser) (360se.exe)
+The SectorF01 group used the normal “360se.exe” (360安全浏览器 – 360 Secure Browser) to utilize the “DLL Side-Loading” technique. The normal “360se.exe” file loads a “chrome_elf.dll” DLL file.
+“360安全浏览器(360 Secure Browser)” is a famous web browser in China.
+The following shows the code in “360se.exe” that loads the “chrome_elf.dll” “SignalInitializeCrashReporting” Export API function.
+They set the file name of their malicious DLL to be “chrome_elf.dll” and deploy it in the same path along with the renamed normal “360se.exe” file. When the victim executes this renamed “360se.exe”, the malicious “chrome_elf.dll” file is loaded and malware is executed.
+“chrome_elf.dll” is loaded and the Export API function “SignalInitializeCrashReporting” is called.
+The “SignalInitializeCrashReporting” function in “chrome_elf.dll” contains the malicious code.
+
+Side Load 11 – 360软件管家 (360 Software Manager) (SoftManager.exe)
+The SectorF01 group used the normal “SoftManager.exe” (360软件管家 – 360 Software Manager) to utilize the “DLL Side-Loading” technique. The normal “SoftManager.exe” file loads a “dbghelp.dll” DLL file.
+“360软件管家(360 Software Manager)” is a famous software management program in China.
+They set the file name of their malicious DLL to be “dbghelp.dll” and deploy it in the same path along with the renamed normal “SoftManager.exe” file. When the victim executes this renamed “SoftManager.exe”, the malicious “dbghelp.dll” file is loaded and malware is executed.
+
+Side Load 12 – Neuber Software Typograf font manager (FontSets.exe)
+The SectorF01 group used the normal “FontSets.exe” (Neuber Software Typograf font manager) to utilize the “DLL Side-Loading” technique. The normal “FontSets.exe” file loads a “FaultRep.dll” DLL file.
+“Neuber Software Typograf font manager” is a famous font management program.
+“FontSets.exe” loads the “FaultRep.dll” file from the same path as the program executed according to the DLL load order of Windows DLLs, before the file is loaded from the Windows system folder.
+The following shows the code in “FontSets.exe” that loads the “FaultRep.dll” DLL.
+They set the file name of their malicious DLL to be “FaultRep.dll” and deploy it in the same path along with the renamed normal “FontSets.exe” file. When the victim executes this renamed “FontSets.exe”, the malicious “FaultRep.dll” file is loaded and malware is executed.
+
+Side Load 13 – McAfee VirusScan On-Demand Scan (mcods.exe)
+The SectorF01 group used the normal “mcods.exe” (McAfee VirusScan On-Demand Scan) to utilize the “DLL Side-Loading” technique. The normal “mcods.exe” file loads a “McVsoCfg.dll” DLL file.
+The SectorF01 group utilized normal files of Anti-Virus programs and exploited the fact that these files are usually whitelisted by other security products and that their behavior might be exempted from monitoring.
+The normal “mcods.exe” file loads a “McVsoCfg.dll” DLL file.
+“McVsoCfg .dll” is loaded and the Export API function “McVsoCfgGetObject” is called. The “McVsoCfgGetObject” function in “McVsoCfg.dll” contains the malicious code.
+They set the file name of their malicious DLL to be “McVsoCfg.dll” and deploy it in the same path along with the renamed normal “mcods.exe” file. When the victim executes this renamed “mcods.exe”, the malicious “McVsoCfg.dll” file is loaded and malware is executed.
+
+Side Load 14 – McAfee Oem Module (mcoemcpy.exe)
+The SectorF01 group used the normal “mcoemcpy.exe” (McAfee Oem Module) to utilize the “DLL Side-Loading” technique. The normal “mcoemcpy.exe” file loads a “McUtil.dll” DLL file.
+They set the file name of their malicious DLL to be “McUtil.dll” and deploy it in the same path along with the renamed normal “mcoemcpy.exe” file. When the victim executes this renamed “mcoemcpy.exe”, the malicious “McUtil.dll” file is loaded and malware is executed.
+
+Side Load 15 – Symantec Network Access Control (rastlsc.exe)
+The SectorF01 group used the normal “rastlsc.exe” (Symantec Network Access Control) to utilize the “DLL Side-Loading” technique. The normal “rastlsc.exe” file loads a “RasTls.dll” DLL file.
+They set the file name of their malicious DLL to be “RasTls.dll” and deploy it in the same path along with the renamed normal “rastlsc.exe” file. When the victim executes this renamed “rastlsc.exe”, the malicious “RasTls.dll” file is loaded and malware is executed.
+
+Side Load 16 – Kaspersky Anti-Virus Installation assistant host (avpia.exe)
+The SectorF01 group used the normal “avpia.exe” (Kaspersky Anti-Virus Installation Assistant host) to utilize the “DLL Side-Loading” technique. The normal “avpia.exe” file loads a “product_info.dll” DLL file.
+They set the file name of their malicious DLL to be “product_info.dll” and deploy it in the same path along with the renamed normal “avpia.exe” file. When the victim executes this renamed “avpia.exe”, the malicious “product_info.dll” file is loaded and malware is executed.
+
+Side Load 17 – Kaspersky Light Plugin Extension Registrar (plugins-setup.exe)
+The SectorF01 group used the normal “plugins-setup.exe” (Kaspersky Light Plugin Extension Registrar) to utilize the “DLL Side-Loading” technique. The normal “plugins-setup.exe” file loads a “product_info.dll” DLL file.
+They set the file name of their malicious DLL to be “product_info.dll” and deploy it in the same path along with the renamed normal “plugins-setup.exe” file. When the victim executes this renamed “plugins-setup.exe”, the malicious “product_info.dll” file is loaded and malware is executed.
+
+Side Load 18 – Avast Antivirus remediation (wsc_proxy.exe)
+The SectorF01 group used the normal “wsc_proxy.exe” (Avast Antivirus remediation) to utilize the “DLL Side-Loading” technique. The normal “wsc_proxy” file loads a “wsc.dll” DLL file.
+They set the file name of their malicious DLL to be “wsc.dll” and deploy it in the same path along with the renamed normal “wsc_proxy.exe” file. When the victim executes this renamed “wsc_proxy.exe”, the malicious “wsc.dll” file is loaded and malware is executed.
+
+The lures related to South Korea
+The SectorF01 group used more than 800 malwares for about seven years and used keywords related to various countries. We will summarize the attacks that contain keywords related to South Korea among those malwares. They mainly attacked countries in Southeast Asia; however, a Japanese automobile company, one of the East Asian countries, is likely to have been attacked by the SectorF01 group recently as well, and similar malware have been found at a similar time, which we suspect to be related to a South Korean automobile company.
+We cannot be sure that this attack was carried out on South Korea just because it contained keywords related to South Korea. However, the SectorF01 group is using subjects related to South Korea in their attack, and it is possible that the attack was directly or indirectly related to South Korea. The SectorF01 group has carried out a number of attacks against foreign companies that have entered Vietnam, and so there is a possibility that South Korean companies may be targeted.
+
+Lure 1 – Hyundai Thành Công
+There is one malware that the SectorF01 group used in January 2019 to attack specific targets using the “DLL Side-Loading” technique. The file name of the malware used in this attack is “Ho so dang ky lam dai ly uy quyen chinh thuc cua Huyndai – Thanh Cong – Nguyen Thi Mai Phuong.exe”. “Huyndai” in the file name is likely to be a typo of “Hyundai”. “Hyundai – Thanh Cong (Hyundai Thành Công)” is a joint venture established by a South Korean automobile company in cooperation with a large Vietnamese company.
+Malware distributed using the subject of “Huyndai [sic] – Thanh Cong”
+“HYUNDAI THANH CONG” Website
+Both “wwlib.dll” and the following normal document are executed, causing the user to believe that the document is executed as per normal, without loading any executable file.
+Normal document executed by “wwlib.dll”
+
+Lure 2 – Cambodia National Rescue Party in Republic of Korea
+There is a malicious document called “FW Report on demonstration of former CNRP in Republic of Korea.doc” that the SectorF01 group used to attack using “CVE-2017-11882” vulnerability in July 2018. “CNRP” in the file name is likely to be an abbreviation of “Cambodia National Rescue Party”, and there are many supporters of the Cambodia National Rescue Party (CNRP) in South Korea. Indeed, in April 2019, thousands of CNRP supporters gathered in Gwangju, South Korea, to protest the liberation of democracy in Cambodia.
+“CNRP” supporters’ demonstrations in Gwangju,Korea, The Phnom Penh Post
+When executing the document, the malware is executed by the vulnerability “CVE-2017-11882”. The following screen is displayed when the document is viewed.
+“FW Report on demonstration of former CNRP in Republic of Korea.doc” document
+
+Lure 3 – KoreanTimesSSK Font
+The SectorF01 group attacked using fonts as lure subjects and pretends to be a font management program or font file. They seem to utilize font-related programs in attacks because most of the countries that the group attacks have a non-English native language and they have to use various fonts accordingly. The SectorF01 group used a file disguised as a Korean font in June 2017, and the “KoreanTimesSSK” font used in the attack was a Korean font created by Southern Software.
+
+Conclusion
+We have traced the SectorF01 group, which has been steadily conducting cyber espionage activities in Southeast Asia for the past seven years, and examined their initial penetration methods. They conduct hacking activities against neighboring countries and opposition forces in order to maintain their own regime and economic profit. It is likely that it is hacking at the national level for the benefit of the state and recently also hacking other industries such as the automobile industries of more advanced countries to contribute to the industrial development of their own country. These attacks are spreading to the East Asian region, which is a huge threat to the neighboring countries as well as to the national institutions.
+The scope of activities and number of malware that the group uses every year for attacks is increasing, and we need to understand them more and prepare for their attacks. We should be prepared to effectively detect and respond to their attacks through steady threat hunting and intelligence activities.
+
+Indicators of Compromise
+The IOCs containing the malware hashes (827 total) that the SectorF01 group used from 2013 until end of the June 2019 for cyber espionage can be found here.
+More information about the SectorF01 group is available to customers of ThreatRecon Intelligence Service (RA.global@nshc.net).
+
+MITRE ATT&CK Techniques
+The following is a list of MITRE ATT&CK Techniques we have observed based on our analysis of these malware.
+
+Initial Access
+Drive-by Compromise
+Exploit Public-Facing Application
+Spearphishing Attachment
+Spearphishing Link
+Valid Accounts
+
+Execution
+Command-Line Interface
+Compiled HTML File
+Control Panel Items
+Execution through API
+Execution through Module Load
+Exploitation for Client Execution
+Mshta
+PowerShell
+Regsvr32
+Rundll32
+Scheduled Task
+Scripting
+Service Execution
+Signed Script Proxy Execution
+Trusted Developer Utilities
+User Execution
+Windows Management Instrumentation
+
+Persistence
+Component Object Model Hijacking
+DLL Search Order Hijacking
+Hidden Files and Directories
+Modify Existing Service
+New Service
+Office Application Startup
+Registry Run Keys / Startup Folder
+Scheduled Task
+Valid Accounts
+Web Shell
+
+Privilege Escalation
+Bypass User Account Control
+DLL Search Order Hijacking
+Exploitation for Privilege Escalation
+New Service
+Process Injection
+Scheduled Task
+Valid Accounts
+Web Shell
+
+Defense Evasion
+Binary Padding
+Bypass User Account Control
+Compiled HTML File
+Component Object Model Hijacking
+Control Panel Items
+Deobfuscate/Decode Files or Information
+DLL Search Order Hijacking
+DLL Side-Loading
+File Deletion
+File Permissions Modification
+Hidden Files and Directories
+Indicator Removal on Host
+Masquerading
+Modify Registry
+Mshta
+NTFS File Attributes
+Obfuscated Files or Information
+Process Injection
+Regsvr32
+Rundll32
+Scripting
+Signed Script Proxy Execution
+Software Packing
+Template Injection
+Timestomp
+Trusted Developer Utilities
+Valid Accounts
+Virtualization/Sandbox Evasion
+Web Service
+
+Credential Access
+Credential Dumping
+Input Capture
+Network Sniffing
+
+Discovery
+Account Discovery
+File and Directory Discovery
+Network Service Scanning
+Network Sniffing
+Process Discovery
+Query Registry
+Remote System Discovery
+System Information Discovery
+System Network Configuration Discovery
+System Network Connections Discovery
+System Owner/User Discovery
+Virtualization/Sandbox Evasion
+
+Lateral Movement
+Application Deployment Software
+Distributed Component Object Model
+Exploitation of Remote Services
+Pass the Hash
+Pass the Ticket
+Remote File Copy
+Windows Admin Shares
+
+Collection
+Automated Collection
+Data from Local System
+Input Capture
+Man in the Browser
+Screen Capture
+
+Command and Control
+Commonly Used Port
+Custom Command and Control Protocol
+Data Encoding
+Data Obfuscation
+Domain Generation Algorithms
+Multi-Stage Channels
+Multiband Communication
+Remote File Copy
+Standard Application Layer Protocol
+Uncommonly Used Port
+Web Service
+
+Exfiltration
+Data Compressed
+Data Encrypted
+Exfiltration Over Alternative Protocol
+Exfiltration Over Command and Control Channel
+
+Impact
+Transmitted Data Manipulation

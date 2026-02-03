@@ -1,0 +1,200 @@
+1. 蔓灵花组织(BITTER)近期攻击样本分析
+
+BITTER(中文名称：蔓灵花)是一个主要针对中国和巴基斯坦进行网络犯罪攻击活动的APT组织。该组织主要针对政府、军工、电力等单位进行攻击，窃取敏感资料。该组织疑似归属南亚某国，近年持续针对我国敏感单位进行网络攻击。近日，启明星辰金睛安全研究团队通过VenusEye威胁情报中心狩猎系统捕获到一个可疑文件，经过分析确认其都为BITTER最新攻击样本。
+
+样本分析
+
+首先原始文档使用了Word模板注入技术，在文档内存在settings.xml.rels文件，其中含有模板的URL地址。
+
+执行原始文档，从URL下载新的恶意文档并打开，提取出来是一个rtf文件。
+
+这个rtf文件存在CVE-2018-0798公式编辑器漏洞，漏洞原理不多赘述，定位到漏洞触发点，会执行恶意的shellcode。
+
+Shellcode会从  http://maq.com.pk/wehs这个域名下载文件，经分析，下载的文件为ArtraDownloader木马下载器。
+
+将ArtraDownloader命名为smss.exe存放到C:\Temp文件夹下，并备份一份自身放到C:\ProgramData\Ntuser\winlgn.exe，然后调用ShellExecuteA函数，利用explorer.exe启动C:\Temp\smss.exe，这样做使smss.exe的父进程为程序管理器而不是公式编辑器，然后shellcode执行结束，将流程交给smss.exe。
+
+首先ArtraDownloader通过创建一个隐藏的窗口执行恶意代码来达到隐藏自身的目的。
+
+然后创建了一个SeT的环境变量，开机自启动SeT环境变量表示的目录下的ArtraDownloader木马下载器。
+
+然后会获取用户计算机的许多基本信息，获取计算机的信息，如计算机名，ProductID，系统版本信息，用户信息，套接字信息等，由于用户不会操作到隐藏的窗口，所以通过LoadAcceleratorsA和TranslateAcceleratorA这两个函数，将用户按下的键盘消息转化为命令消息，每当用户点击了快捷键表中记录的按键时，就会执行窗口回调函数，快捷键如下：
+
+在回调函数内会设置计时器，每隔6s调用一次计时器的回调函数，回调函数会创建套接字，将获取的消息进行加密，发送到93.123.73.193:80，等待接收消息，对流量抓包如下：
+
+将报文中的加密数据进行二进制减一，即可获得原报文。
+
+对接收到的数据进行判断，如果存在 “DWN”命令，就向 93.123.73.193:80发送请求数据包，将接收到的数据存储到C:\ProgramData\Ntuser下的nCach文件。
+
+最后创建新的进程执行这个文件，进而可执行C&C发过来的PE文件，完成后门功能。
+
+ATT&CK模型匹配情况：
+
+矩阵类别 使用方法 详细说明
+
+Initial Access T1193 样本格式为Word文档，通常作为邮件接收
+
+Execution T1204 需用户打开Word文档以执行恶意代码
+
+Persistence T1060 在注册表中添加自启动以建立持久性
+
+Privilege Escalation
+
+1.隐藏恶意文件的文件夹以隐藏自身
+Defence Evasion T1158/T1221
+
+2.通过模板注入方式获取真正的恶意文件
+
+Credential Access T1214 通过注册表获取用户账户信息
+
+恶意代码获取了计算机名字，产品ID，系统版本消息，套接字版本，当前登陆用户
+Discovery T1033/T1016/T1082/T1012
+
+等信息
+
+Lateral Movement
+
+Collection
+
+Command and Control T1071/T1065/T1024 使用非常用的端口，向目标ip发送http协议内容，协议的数据经过了加密处理
+
+Exfiltration
+
+Inmpact
+
+威胁指标（IOC）：
+
+域名: maq.com.pk/onlinejohnline99.org
+
+MD5: 02C2A68CE9A35F5F0E1B3456E09D6CC9
+
+URL: 93.123.73.193:80
+
+2.海莲花组织(OceanLotus)近期攻击样本分析
+
+海莲花(OceanLotus)，又称APT32，2012年4月至今，该境外组织对中国政府、科研院所、海事机构、海域建设、航运企业等相关重要领域展开了有组织、有计划、有针对性的长时间、不间断的攻击。
+
+近日，启明星辰金睛安全研究团队通过VenusEye威胁情报中心狩猎系统捕获到两个可疑文件，经过分析确认其都为OceanLotus攻击样本。
+
+样本一分析
+
+攻击样本为一个压缩文件，经解压后会出现越南语字样的4个文件，经翻译后大体意思为“更新捐款名单，帮助良心犯”。
+
+其中主文件是具有Word签名的白文件，利用白加黑利用技术，加载wwlib.dll中的恶意代码。
+
+wwlib.dll模块的入口函数会hook掉LdrLoadDll函数的后几个字节，进而跳转执行shellcode_1。
+
+hellcode_1会通过PEB动态获取各dll加载基址，进而获取必要的API函数，使用InternetConnect连接cloud.doomdns.org，调用GET请求获取接下在执行的数据。经分析，获取到的是Cobalt Strike Beacon木马后门，然后执行这段木马后门代码。
+
+Beacon木马后门首先获取了系统中的关键信息，分别获取了当前进程PID，系统主要版本号，次要版本号，用户名，电脑名，当前系统是64还是32位，IP地址等关键信息。
+
+然后通过连接cloud.doomdns.org发送GET请求包，对接收到的请求包进行switch判断，共有76种执行方法，其中包含进程注入、文件创建、服务创建、文件释放、修改进程属性、修改目录、远程线程等操作。
+
+在 本 次 实 验 中 ， 先 执 行 case 54 ， 创 建 目 录 C:\ProgramData\Googlephoto ， 在 目 录 下 生 成 3 个 文 件 ， 分 别 为Googleupdata.exe、goopdate.dll、word.bat。
+
+其中Googleupdata.exe为谷歌产品的升级程序，这是一个白文件，而goopdate.dll为KerrDown木马下载器，而word.bat的作用是提升病毒持久性，在word.bat之中有这样的代码：
+
+Schtasks/create/scMINUTE/tn"Googlephotosyn"/tr"c:\programdata\Googlephoto\Googleupdate.exe"/mo 10 /F，意思是每10分钟启动一次Googleupdate.exe。
+
+在名为goopdate.dll的代码中，首先会从自身的内存中解密出KerrDown的shellcode_2，然后执行这段代码。
+
+这段shellcode_2与原始文件被hook之后调用的shellcode_1的是基本一样的，同样是使用InternetConnect连接cloud.doomdns.org，调用GET请求到一段数据，这段数据就是Cobalt Strike Beacon木马后门，通过内存dump与之前获取的Beacon文件进行比对，这两个文件完全一致。
+
+总结：
+
+这个样本的流程就是先调用KerrDown获取Beacon木马后门，立即接收的C&C指令再将KerrDown木马下载器隐藏放到用户磁盘上，然后每10分钟执行一次，使用Http获取不落地的Beacon木马后门进而接受后续C&C指令。
+
+ATT&CK模型匹配情况：
+
+矩阵类别 使用方法 详细说明
+
+Initial Access T1193 样本为Word白文件，通常作为邮件接收，需用户点击执行
+
+Execution T1204/T1218 使用白签名迷惑用户点击程序进行执行恶意代码
+
+Persistence T1053 使用Windows任务计划程序建立持久性
+
+Privilege Escalation T1053/T1157 分别劫持了wwlib.dll和goopdate.dll，使用白加黑提权
+
+Defence Evasion T1158/T1140/T1027 除原文件外，所有的shellcode均是解密出来的，用于隐藏自身
+
+Credential Access
+
+T1012/T1082/T103 获取了当前进程PID，系统主要版本号，次要版本号，用户名，电脑名，当前系统是64还是32位，IP地址等关键信息
+Discovery
+
+3
+
+Lateral Movement
+
+Collection
+
+T1071/T1065/T102 使用非常用的端口，向目标ip发送http协议内容，协议的数据经过了加密处理
+Command and Control
+
+4
+
+Exfiltration
+
+Inmpact
+
+样本二分析
+
+攻击样本为一个名为简历的word白文件，以及一个隐藏的dll文件，这是典型的白加黑的利用方式，根据名字可知这是针对中国的一次攻击行动。
+
+执行wwlib.dll中的恶意代码，将自身复制到当前用户的Temp文件夹下，使用命令行创建白进程rundll32.exe加载Temp目录下的wwlib.dll，执行其中的恶意代码函数。
+
+这个函数从自身的WORD资源中解析出迷惑文档，用以隐藏自身。
+
+然后从自身的CODE资源中解密出shellcode数据并调用，经分析，解密出的shellcode代码就是KerrDown木马下载器的变种。
+
+KerrDown木马下载器会连接182.61.175.57/rpc，经查询，这个IP是中国香港的IP地址，如果连接成功，即使使用Http接收数据并执行，接收到的dll就是 Cobalt Strike Beacon木马后门的变种，在关键的switch函数中更是高达92种处理函数。
+
+两个样本都使用了KerrDown下载Cobalt Strike Beacon payload执行的方式，这种攻击方式可以让真正的Beacon后门只存在于内存之中，APT32至少自 2018 年开始积极使用 KerrDown 下载器，用于投递 Cobalt Strike Beacon 等后门。
+
+ATT&CK模型匹配情况：
+
+矩阵类别 使用方法 详细说明
+
+Initial Access T1193 样本为Word白文件，通常作为邮件接收，需用户点击执行
+
+Execution T1204/T1218 使用白签名迷惑用户点击程序进行执行恶意代码
+
+Persistence T1137 修改Word环境变量中的路径基于office组件启动
+
+Privilege Escalation T1157 劫持了wwlib.dll，使用白加黑提权
+
+Defence Evasion T1158/T1027/T1143 除原文件外，所有的shellcode均是解密出来的，且创建隐藏的窗口来隐藏自身
+
+Credential Access
+
+获取了当前进程PID，系统主要版本号，次要版本号，用户名，电脑名，当前系统是64还是32位，IP地址等关键信息
+Discovery T1012/T1082/T1033
+
+Lateral Movement
+
+Collection
+
+Command and Control T1071/T1065/T1024 使用非常用的端口，向目标ip发送http协议内容，协议的数据经过了加密处理
+
+Exfiltration
+
+Inmpact
+
+威胁指标总结（IOC）
+
+MD5:
+
+9efc7ee0d13642e8aec46d3c2e72e1d5
+
+0e84ac6b10b60303fd3c79cb9e181079
+
+e3d881a6b4941aca14e2829a303a9476
+
+URL: 
+
+http://182.61.175.57/rpc
+
+域名: 
+
+cloud.doomdns.org

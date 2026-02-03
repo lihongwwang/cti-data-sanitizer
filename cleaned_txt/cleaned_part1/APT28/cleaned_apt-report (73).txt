@@ -1,0 +1,67 @@
+Another APT28 / Sofacy supposed decoy document related to defence and security [md5: f8a778d21003098075c9aef8ed58c6c3] has been captured in the wild yesterday evening.
+It’s likely targeting at least one eastern europe country. The spear-phishing document collected seems to work primarly through the use of macro code to complete the cycle of infection.
+
+It seems similar, for some pieces of internal code, to the document analyzed by me on 01/12 during a similar malicious campaign.
+
+However, for some elements, it differs from the previous one while retaining the same functional logic. Some core functions in fact are quite the same between the two files, as shown below:
+
+1st “NATO Theme” campaign macro code frame:
+
+2nd “Defense and Security” Theme campaign macro code frame:
+
+The main difference is that the present one is not going to exctract the malicious payload through the parsing of the document xml structure but it has a directly embedded base64 encoded string from which to extract a new variant of the SedUploader malware, using the variable name “adobe”, as shown with the image below:
+
+On macro execution the files %TEMP%⧵clnb.dat and “%ALLUSERSPROFILE%⧵adobe.dll” are created. Fisrt run performed with reference to “Path” variable (clnb.dat) through WMI and persistency achieved adding the RegKey
+HKCU⧵Software⧵Microsoft⧵Windows⧵CurrentVersion⧵Run⧵AdobeAcrobat
+with the REG_SZ value “%ALLUSERSPROFILE%⧵adobe.dll“.
+
+A SedUploader for Christmas:
+Even in this case (in respect to the “NATO theme” campaign), the payload dropped from this macro is a SedUploader variant [md5:EBDC6098C733B23E99DAA60E55CF858B].
+
+I performed a first statical analysis and code comparison activity obtaining the following file characteristics and code match results
+
+Interesting enough to shown, it’s a comparison between the dynamic calls made by the two samples that seems to show the same operating core logic:
+
+1st “NATO theme” campaign SedUploader:
+
+2nd “Defense and Security theme” campaign SedUploader:
+
+This confirms that the main structure / code of this malware family is almost the same of all previous versions and it has not been updated in the last 2 / 3 years.
+
+Malware Features:
+Even in this case the malware is going to perform some minimal Anti-VM and connectivity checks before completing the infection cycle. The connectivity check is performed through a request to google[.]com extracting the user agent infos storing it in a base64 encoded string
+
+The sample is able to grab the local network proxy config if the first connectivity check fails, trying is this way to use an alternative way to reach the outside world.
+The main strings decryption routine is located at loc_10002F63:
+
+This is also the routine responsible to decrypt the mutex string vBQA5vjd0gKHLwQyJK86NhVS. A subsequent call to CreateMutexA will create the mutex.
+
+Malware is able to perform code injection into the local browser through a CreateRemoteThread call after an hash comparison. Calls to functions GetAdapterAddresses, GetSystemInfo, CreateToolHelp32SnapShot are used to perform system reconnaissance.
+
+GdipCreateBitmapFromHBITMAP and related functions are used to take a screenshot of the victim desktop.
+
+No much more to say than what already stated by other reserch paper about this malware family. SedUploader is mainly a reconnaissance tool able to collect information about the victim system and open the way for further malicious components.
+
+Finally, outgoing requests are similar to those already observed in other variants and they are like to the following:
+hxxp://photopoststories.com/5aa/NN/NX/XXbb/bdb.vnd.vivo/?333=yFZI5OntnKb1opjc7qU=
+
+Insights:
+Even in this case the campaign seems to have been designed only few days ago (on the half of december more or less).
+Interesting to note is that this specific SedUploader variant could have been used in conjunction with other droppers too.
+
+Conclusions:
+APT28 / Sofacy confirms to be a very active group. However it was at least difficult to expect now another op from it conducted in a very similar way as the previous one. Hoping some major vendor will express deeper over this aspect.
+
+IoC:
+MD5: 0b803922a629f440f3a34e168d4639e2
+MD5: ebdc6098c733b23e99daa60e55cf858b
+MD5: f8a778d21003098075c9aef8ed58c6c3
+File: UDS 2019 Current Agenda.doc
+File: %TEMP%⧵clnb.dat
+File: %ALLUSERSPROFILE%⧵adobe.dll
+RegKey: HKCU⧵Software⧵Microsoft⧵Windows⧵CurrentVersion⧵Run⧵AdobeAcrobat
+IP: 185.86.150[.]193
+Domain: photopoststories[.]com
+SubDomain: mail.photopoststories[.]com
+Mutex:vBQA5vjd0gKHLwQyJK86NhVS
+Email : chakozkan@protonmail.com

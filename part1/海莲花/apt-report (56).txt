@@ -1,0 +1,306 @@
+﻿2019/9/9 ⾦睛安全播报 NO.098
+
+⾦睛安全播报 NO.098
+From:⾦睛 启明星⾠⾦睛安全研究团队 3 days ago
+
+1. 蔓灵花组织(BITTER)近期攻击样本分析
+
+BITTER(中⽂名称：蔓灵花)是⼀个主要针对中国和巴基斯坦进⾏⽹络犯罪攻击活动的APT组织。该组织主要针对政府、军⼯、电⼒
+
+等单位进⾏攻击，窃取敏感资料。该组织疑似归属南亚某国，近年持续针对我国敏感单位进⾏⽹络攻击。近⽇，启明星⾠⾦睛安全研究
+
+团队通过VenusEye威胁情报中⼼狩猎系统捕获到⼀个可疑⽂件，经过分析确认其都为BITTER最新攻击样本。
+
+样本分析
+
+⾸先原始⽂档使⽤了Word模板注⼊技术，在⽂档内存在settings.xml.rels⽂件，其中含有模板的URL地址。
+
+执⾏原始⽂档，从URL下载新的恶意⽂档并打开，提取出来是⼀个rtf⽂件。
+
+这个rtf⽂件存在CVE-2018-0798公式编辑器漏洞，漏洞原理不多赘述，定位到漏洞触发点，会执⾏恶意的shellcode。
+
+Shellcode会从  http://maq.com.pk/wehs这个域名下载⽂件，经分析，下载的⽂件为ArtraDownloader⽊⻢下载器。
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 1/9
+
+
+
+2019/9/9 ⾦睛安全播报 NO.098
+
+将ArtraDownloader命名为smss.exe存放到C:\Temp⽂件夹下，并备份⼀份⾃身放到C:\ProgramData\Ntuser\winlgn.exe，然
+
+后调⽤ShellExecuteA函数，利⽤explorer.exe启动C:\Temp\smss.exe，这样做使smss.exe的⽗进程为程序管理器⽽不是公式编辑
+
+器，然后shellcode执⾏结束，将流程交给smss.exe。
+
+⾸先ArtraDownloader通过创建⼀个隐藏的窗⼝执⾏恶意代码来达到隐藏⾃身的⽬的。
+
+然后创建了⼀个SeT的环境变量，开机⾃启动SeT环境变量表示的⽬录下的ArtraDownloader⽊⻢下载器。
+
+然后会获取⽤户计算机的许多基本信息，获取计算机的信息，如计算机名，ProductID，系统版本信息，⽤户信息，套接字信息
+
+等，由于⽤户不会操作到隐藏的窗⼝，所以通过LoadAcceleratorsA和TranslateAcceleratorA这两个函数，将⽤户按下的键盘消息转
+
+化为命令消息，每当⽤户点击了快捷键表中记录的按键时，就会执⾏窗⼝回调函数，快捷键如下：
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 2/9
+
+
+
+2019/9/9 ⾦睛安全播报 NO.098
+
+在回调函数内会设置计时器，每隔6s调⽤⼀次计时器的回调函数，回调函数会创建套接字，将获取的消息进⾏加密，发送到
+
+93.123.73.193:80，等待接收消息，对流量抓包如下：
+
+将报⽂中的加密数据进⾏⼆进制减⼀，即可获得原报⽂。
+
+对接收到的数据进⾏判断，如果存在 “DWN”命令，就向 93.123.73.193:80发送请求数据包，将接收到的数据存储到
+
+C:\ProgramData\Ntuser下的nCach⽂件。
+
+最后创建新的进程执⾏这个⽂件，进⽽可执⾏C&C发过来的PE⽂件，完成后⻔功能。
+
+ATT&CK模型匹配情况：
+
+矩阵类别 使⽤⽅法 详细说明
+
+Initial Access T1193 样本格式为Word⽂档，通常作为邮件接收
+
+Execution T1204 需⽤户打开Word⽂档以执⾏恶意代码
+
+Persistence T1060 在注册表中添加⾃启动以建⽴持久性
+
+Privilege Escalation
+
+1.隐藏恶意⽂件的⽂件夹以隐藏⾃身
+Defence Evasion T1158/T1221
+
+ 2.通过模板注⼊⽅式获取真正的恶意⽂件
+
+Credential Access T1214 通过注册表获取⽤户账户信息
+
+恶意代码获取了计算机名字，产品ID，系统版本消息，套接字版本，当前登陆⽤户
+Discovery T1033/T1016/T1082/T1012
+
+等信息
+
+Lateral Movement
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 3/9
+
+
+
+2019/9/9 ⾦睛安全播报 NO.098
+Collection
+
+Command and Control T1071/T1065/T1024 使⽤⾮常⽤的端⼝，向⽬标ip发送http协议内容，协议的数据经过了加密处理
+
+Exfiltration
+
+Inmpact
+
+注：详情参考：https://attack.mitre.org/matrices/enterprise/
+
+威胁指标（IOC）：
+
+域名: maq.com.pk/onlinejohnline99.org
+
+MD5:  02C2A68CE9A35F5F0E1B3456E09D6CC9
+
+URL:  93.123.73.193:80
+
+2.海莲花组织(OceanLotus)近期攻击样本分析
+
+海莲花(OceanLotus)，⼜称APT32，2012年4⽉⾄今，该境外组织对中国政府、科研院所、海事机构、海域建设、航运企业等相关
+
+重要领域展开了有组织、有计划、有针对性的⻓时间、不间断的攻击。
+
+近⽇，启明星⾠⾦睛安全研究团队通过VenusEye威胁情报中⼼狩猎系统捕获到两个可疑⽂件，经过分析确认其都为OceanLotus攻
+
+击样本。
+
+样本⼀分析
+
+攻击样本为⼀个压缩⽂件，经解压后会出现越南语字样的4个⽂件，经翻译后⼤体意思为“更新捐款名单，帮助良⼼犯”。
+
+其中主⽂件是具有Word签名的⽩⽂件，利⽤⽩加⿊利⽤技术，加载wwlib.dll中的恶意代码。
+
+wwlib.dll模块的⼊⼝函数会hook掉LdrLoadDll函数的后⼏个字节，进⽽跳转执⾏shellcode_1。
+
+hellcode_1会通过PEB动态获取各dll加载基址，进⽽获取必要的API函数，使⽤InternetConnect连接cloud.doomdns.org，调⽤
+
+GET请求获取接下在执⾏的数据。经分析，获取到的是Cobalt Strike Beacon⽊⻢后⻔，然后执⾏这段⽊⻢后⻔代码。
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 4/9
+
+
+
+2019/9/9 ⾦睛安全播报 NO.098
+
+Beacon⽊⻢后⻔⾸先获取了系统中的关键信息，分别获取了当前进程PID，系统主要版本号，次要版本号，⽤户名，电脑名，当前
+
+系统是64还是32位，IP地址等关键信息。
+
+然后通过连接cloud.doomdns.org发送GET请求包，对接收到的请求包进⾏switch判断，共有76种执⾏⽅法，其中包含进程注⼊、
+
+⽂件创建、服务创建、⽂件释放、修改进程属性、修改⽬录、远程线程等操作。
+
+在 本 次 实 验 中 ， 先 执 ⾏ case 54 ， 创 建 ⽬ 录 C:\ProgramData\Googlephoto ， 在 ⽬ 录 下 ⽣ 成 3 个 ⽂ 件 ， 分 别 为
+
+Googleupdata.exe、goopdate.dll、word.bat。
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 5/9
+
+
+
+2019/9/9 ⾦睛安全播报 NO.098
+
+其中Googleupdata.exe为⾕歌产品的升级程序，这是⼀个⽩⽂件，⽽goopdate.dll为KerrDown⽊⻢下载器，⽽word.bat的作⽤是
+
+提升病毒持久性，在word.bat之中有这样的代码：
+
+Schtasks/create/scMINUTE/tn"Googlephotosyn"/tr"c:\programdata\Googlephoto\Googleupdate.exe"/mo 10 /F，意思
+
+是每10分钟启动⼀次Googleupdate.exe。
+
+在名为goopdate.dll的代码中，⾸先会从⾃身的内存中解密出KerrDown的shellcode_2，然后执⾏这段代码。
+
+这段shellcode_2与原始⽂件被hook之后调⽤的shellcode_1的是基本⼀样的，同样是使⽤InternetConnect连接
+
+cloud.doomdns.org，调⽤GET请求到⼀段数据，这段数据就是Cobalt Strike Beacon⽊⻢后⻔，通过内存dump与之前获取的Beacon
+
+⽂件进⾏⽐对，这两个⽂件完全⼀致。
+
+总结：
+
+这个样本的流程就是先调⽤KerrDown获取Beacon⽊⻢后⻔，⽴即接收的C&C指令再将KerrDown⽊⻢下载器隐藏放到⽤户磁盘
+
+上，然后每10分钟执⾏⼀次，使⽤Http获取不落地的Beacon⽊⻢后⻔进⽽接受后续C&C指令。
+
+ATT&CK模型匹配情况：
+
+矩阵类别 使⽤⽅法 详细说明
+
+Initial Access T1193 样本为Word⽩⽂件，通常作为邮件接收，需⽤户点击执⾏
+
+Execution T1204/T1218 使⽤⽩签名迷惑⽤户点击程序进⾏执⾏恶意代码
+
+Persistence T1053 使⽤Windows任务计划程序建⽴持久性
+
+Privilege Escalation T1053/T1157 分别劫持了wwlib.dll和goopdate.dll，使⽤⽩加⿊提权
+
+Defence Evasion T1158/T1140/T1027 除原⽂件外，所有的shellcode均是解密出来的，⽤于隐藏⾃身
+
+Credential Access
+
+T1012/T1082/T103 获取了当前进程PID，系统主要版本号，次要版本号，⽤户名，电脑名，当前系统是64还是32位，IP地址等关
+Discovery
+
+3 键信息
+
+Lateral Movement
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 6/9
+
+
+
+2019/9/9 ⾦睛安全播报 NO.098
+Collection
+
+T1071/T1065/T102 使⽤⾮常⽤的端⼝，向⽬标ip发送http协议内容，协议的数据经过了加密处理
+Command and Control
+
+4
+
+Exfiltration
+
+Inmpact
+
+注：详情参考：https://attack.mitre.org/matrices/enterprise/
+
+样本⼆分析
+
+攻击样本为⼀个名为简历的word⽩⽂件，以及⼀个隐藏的dll⽂件，这是典型的⽩加⿊的利⽤⽅式，根据名字可知这是针对中国的⼀
+
+次攻击⾏动。
+
+执⾏wwlib.dll中的恶意代码，将⾃身复制到当前⽤户的Temp⽂件夹下，使⽤命令⾏创建⽩进程rundll32.exe加载Temp⽬录下的
+
+wwlib.dll，执⾏其中的恶意代码函数。
+
+这个函数从⾃身的WORD资源中解析出迷惑⽂档，⽤以隐藏⾃身。
+
+然后从⾃身的CODE资源中解密出shellcode数据并调⽤，经分析，解密出的shellcode代码就是KerrDown⽊⻢下载器的变种。
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 7/9
+
+
+
+2019/9/9 ⾦睛安全播报 NO.098
+KerrDown⽊⻢下载器会连接182.61.175.57/rpc，经查询，这个IP是中国⾹港的IP地址，如果连接成功，即使⽤Http接收数据并执
+
+⾏，接收到的dll就是 Cobalt Strike Beacon⽊⻢后⻔的变种，在关键的switch函数中更是⾼达92种处理函数。
+
+两个样本都使⽤了KerrDown下载Cobalt Strike Beacon payload执⾏的⽅式，这种攻击⽅式可以让真正的Beacon后⻔只存在于
+
+内存之中，APT32⾄少⾃ 2018 年开始积极使⽤ KerrDown 下载器，⽤于投递 Cobalt Strike Beacon 等后⻔。
+
+ATT&CK模型匹配情况：
+
+矩阵类别 使⽤⽅法 详细说明
+
+Initial Access T1193 样本为Word⽩⽂件，通常作为邮件接收，需⽤户点击执⾏
+
+Execution T1204/T1218 使⽤⽩签名迷惑⽤户点击程序进⾏执⾏恶意代码
+
+Persistence T1137 修改Word环境变量中的路径基于office组件启动
+
+Privilege Escalation T1157 劫持了wwlib.dll，使⽤⽩加⿊提权
+
+Defence Evasion T1158/T1027/T1143 除原⽂件外，所有的shellcode均是解密出来的，且创建隐藏的窗⼝来隐藏⾃身
+
+Credential Access
+
+获取了当前进程PID，系统主要版本号，次要版本号，⽤户名，电脑名，当前系统是64还
+Discovery T1012/T1082/T1033
+
+是32位，IP地址等关键信息
+
+Lateral Movement
+
+Collection
+
+Command and Control T1071/T1065/T1024 使⽤⾮常⽤的端⼝，向⽬标ip发送http协议内容，协议的数据经过了加密处理
+
+Exfiltration
+
+Inmpact
+
+注：详情参考：https://attack.mitre.org/matrices/enterprise/
+
+威胁指标总结（IOC）
+
+MD5:
+
+9efc7ee0d13642e8aec46d3c2e72e1d5
+
+0e84ac6b10b60303fd3c79cb9e181079
+
+e3d881a6b4941aca14e2829a303a9476
+
+URL: 
+
+http://182.61.175.57/rpc
+
+域名: 
+
+cloud.doomdns.org
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 8/9
+
+
+
+2019/9/9 ⾦睛安全播报 NO.098
+
+https://mp.weixin.qq.com/s/px4mTCsVd4i7zYOrqgUfPA 9/9

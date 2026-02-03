@@ -1,0 +1,17 @@
+Alleged Vietnamese Ocean Lotus (APT32) hackers breached the networks of the car manufacturers BMW and Hyundai to steal automotive trade secrets.
+According to German media, hackers suspected to be members of the Vietnam-linked APT Ocean Lotus (APT32) group breached the networks of the car manufacturers BMW and Hyundai. The intrusion aimed at stealing automotive trade secrets.
+“The attack the alleged Vietnamese hacker group began in the spring of 2019. Last weekend, the automobile company from Munich finally took the computers concerned off the grid. Previously, the group’s IT security experts had been monitoring the hackers for months. This is the result of research by the Bayerischer Rundfunk.” reported the Bayerischer Rundfunk (BR). “Also on the South Korean car manufacturer Hyundai, the hackers had it apart.”
+The APT32 group, also known as OceanLotus Group, has been active since at least 2012 targeting organizations across multiple industries and foreign governments, dissidents, and journalists.
+Since at least 2014, experts at FireEye have observed APT32 targeting foreign corporations with an interest in Vietnam’s manufacturing, consumer products, and hospitality sectors. The APT32 also targeted peripheral network security and technology infrastructure corporations, and security firms that may have connections with foreign investors.
+The APT32 used both Windows and Mac malware in its campaigns delivered to the victims via watering hole attacks, it leveraged sophisticated techniques to evade detection.
+In the recent attacks against the car manufacturers, the attackers managed to deploy in the target network the Cobalt Strike hacking tool “Cobalt Strike”.
+The Cobalt Strike platform was developed for Adversary Simulations and Red Team Operations, but it has also become popular among threat actors over the past years (including APT29 and FIN7).
+It is quite easy to find pirated versions of the software that were used by attackers in the wild.
+The attackers set up a website that posed as the BMW branch in Thailand, a similar technique was employed in the attack aimed at Hyundai.
+Once the staff at BMW has spotted the intrusion, it did not lock out the hackers, instead, it attempted to track them while they attempted lateral movements in the breached networks. BMW finally locked out the attackers at the end of November.
+Neither BMW nor Hyundai commented on the report published by the BR media outlet.
+Ocean Lotus attackers were linked to other attacks against car vendors, including Toyota Australia, Toyota Japan, and Toyota Vietnam.
+Experts believe that the group is interested in stealing intellectual property for its government and help state-owned companies.
+The German Federal Office for the Protection of the Constitution also warned of cyber espionage activities carried out by the OceanLotus cyberespionage group.
+“The OceanLotus group has already become important, and we should keep an eye on its evolution, especially because of the target range automotive industry,” said a spokeswoman.
+In the summer, the German Association of the Automotive Industry (VDA) sent an e-mail to its members. The subject was: “Warning message from the Federal Office for the Protection of the Constitution about possible cyber attacks on German automobile companies.”

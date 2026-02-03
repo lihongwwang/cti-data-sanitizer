@@ -1,0 +1,863 @@
+﻿A Trend Micro Research Paper
+
+Operation Pawn Storm
+Using Decoys to Evade Detection
+
+Loucif Kharouni 
+Feike Hacquebord 
+Numaan Huq 
+Jim Gogolinski 
+Fernando Mercês 
+Alfred Remorin 
+Douglas Otis 
+Forward-Looking Threat Research Team
+
+
+
+Trend Micro | Operation Pawn Storm
+
+CONTENTS
+
+Introduction ....................................................................................................................................1
+
+Ties That Bind the Operation Pawn Storm Attacks Together .........................................................2
+
+SEDNIT....................................................................................................................................2
+
+Attack Timeline ........................................................................................................................2
+
+Attack Details ...........................................................................................................................4
+
+Attack Evolution .......................................................................................................................5
+
+Exploits Spread SEDNIT Malware in Poland .........................................................................11
+
+Next-Level Phishing Targets ..................................................................................................11
+
+Case 1: Ministry of Defense, Hungary .............................................................................12
+
+Case 2: OSCE, Austria ....................................................................................................13
+
+Case 3: SAIC, United States ...........................................................................................13
+
+Case 4: ACADEMI ...........................................................................................................14
+
+Other Webmail Services ........................................................................................................15
+
+Conclusion ...................................................................................................................................16
+
+References ..................................................................................................................................17
+TREND MICRO LEGAL DISCLAIMER
+
+The information provided herein is for general information and educational purposes only. It is not intended and should not be construed to constitute legal advice. 
+The information contained herein may not be applicable to all situations and may not reflect the most current situation. Nothing contained herein should be relied on 
+or acted upon without the benefit of legal advice based on the particular facts and circumstances presented and nothing herein should be construed otherwise. Trend 
+Micro reserves the right to modify the contents of this document at any time without prior notice.
+
+Translations of any material into other languages are intended solely as a convenience. Translation accuracy is not guaranteed nor implied. If any questions arise 
+related to the accuracy of a translation, please refer to the original language official version of the document. Any discrepancies or differences created in the 
+translation are not binding and have no legal effect for compliance or enforcement purposes.
+
+Although Trend Micro uses reasonable efforts to include accurate and up-to-date information herein, Trend Micro makes no warranties or representations of any kind 
+as to its accuracy, currency, or completeness. You agree that access to and use of and reliance on this document and the content thereof is at your own risk. Trend 
+Micro disclaims all warranties of any kind, express or implied. Neither Trend Micro nor any party involved in creating, producing, or delivering this document shall 
+be liable for any consequence, loss, or damage, including direct, indirect, special, consequential, loss of business profits, or special damages, whatsoever arising 
+out of access to, use of, or inability to use, or in connection with the use of this document, or any errors or omissions in the content thereof. Use of this information 
+constitutes acceptance for use in an “as is” condition.
+
+
+
+Trend Micro | Operation Pawn Storm
+
+INTRODUCTION
+
+Operation Pawn Storm refers to economic Access (OWA) users from the previously 
+and political espionage attacks instigated by mentioned organizations. The OWA phishing 
+a group of threat actors primarily targeting attacks seemed effective and so could be 
+military, embassy, and defense contractor particularly dangerous to any organization 
+personnel from the United States and its that allows employees to use OWA.
+allies. Opposing factions to and dissidents of 
+the Russian government, international media, An in-depth look at six multistage attacks 
+and even the national security department revealed one thing in common the use of 
+of a U.S. ally were also targeted. The threat SEDNIT/Sofacy malware [1], [2]. The use 
+actors used three attac  vectors spear of such multistage downloaders provided 
+phishing emails with malicious attachments, attackers additional protection against 
+an advanced network of phishing websites, detection. We believe the threat actors aimed 
+and exploits injected into legitimate Polish to confuse their targets’ IT administrators 
+websites. Among the targets of the advanced by making it hard for them to string attack 
+phishing attacks were ACADEMI, a defense components together, thus evading detection.
+contractor formerly known as “Blackwater,” 
+SAIC, and the Organization for Security This research paper details when certain 
+and Co-operation in Europe (OSCE). attacks occurred, what tools were used in 
+As discussed in this research paper, the attempts to get in to target networks, and 
+attackers used a simple but clever JavaScript target profiles to form a general picture of 
+trick to target Microsoft™ Outlook® Web Operation Pawn Storm.
+
+1
+
+
+
+Trend Micro | Operation Pawn Storm
+
+TIES THAT BIND THE OPERATION PAWN
+STORM ATTACKS TOGETHER
+
+SEDNIT Attack Timeline
+
+SEDNIT malware are mostly backdoors [3], [4] The investigation focused on a group of 
+and information stealers [5] that log affected attacks that has been dubbed “Operation 
+users’ keystrokes, steal system information, Pawn Storm” [6] due to the attackers’ use of 
+and send stolen information to remote two or more connected tools/tactics to attack 
+command-and-control (C&C) servers. a specific target similar to the chess strategy 
+
+it was named after. This paper illustrates how 
+Analyses of the SEDNIT infectors that arrived the Pawn Storm attacks were carried out with 
+as email attachments in the attacks featured the aid of five spear phishing emails, which 
+in this paper revealed six distinct chains [see used contextually relevant subjects to get 
+diagram on page 3]. specific targets from different countries to 
+
+open weaponized attachments designed to 
+compromise their systems.
+
+ 
+Timeline of spear-phishing emails sent to specific targets
+
+The attackers sent emails to potential victims, “International Military.rtf.” Trend Micro 
+including military, embassy, and defense received a sample of this on October 
+contractor personnel. The following emails 17, 2011 and has been detecting it as 
+were among those that were found related to TROJ_ARTIEF.AP [8] since then.
+this operation:
+
+• An email sent to a potential victim 
+• An email sent to a potential victim working from the Vatican Embassy 
+
+from the Ministry of Defense in France in Iraq used reports of a bombing 
+had an exploit for CVE-2010-3333 incident [9] that occurred on January 
+[7] disguised as a document named 9, 2012 as social engineering lure. 
+
+2
+
+
+
+Trend Micro | Operation Pawn Storm
+
+ 
+SEDNIT infectors attached to targeted attack campaign emails
+
+Sent a day after the incident, 
+the email had a Microsoft 
+
+ord  file attachment named 
+“IDF_Spokesperson_Terror_
+Attack_011012.doc,” which 
+exploited CVE-2012-0158 [10].
+
+ 
+Exploit for CVE-2012-0158 disguised as a 
+
+ Word (.DOC) file
+Sample email sent to recipients from the 
+
+Vatican Embassy in Iraq
+
+3
+
+
+
+Trend Micro | Operation Pawn Storm
+
+• An email sent on September 20, doc,” which exploited CVE-2012-
+ to military officials from several 0158.
+
+countries used the then-upcoming 
+Asia acific conomic ooperation 
+
+(APEC) Indonesia 2013” conference 
+as bait. The email had two Microsoft 
+
+cel  file attachments named 
+“APEC Media list 2013 Part1.xls,” 
+which exploited CVE-2012-0158, and 
+“APEC Media list 2013 Part2.xls,” 
+which was nonmalicious.
+
+ 
+Sample email sent to military officials from 
+
+Pakistan using the “Homeland Security Summit 
+Middle East” conference as bait
+
+• An email sent to Polish government 
+employees [12] on August 11, 2014 
+had a  T  . T  file 
+attachment named “MH17.doc,” which 
+exploited CVE-2012-0158.
+
+ 
+Sample email sent to military officials across 
+countries using the “APEC Indonesia 2013” 
+
+conference as bait
+
+ 
+Exploit for CVE-2012-0158 disguised as a MIME 
+
+HTML (.MHT) file
+
+Attack Details
+
+All of the observed Operation Pawn Storm 
+attacks comprised several stages. Each 
+attack had at least two phases:
+
+ 
+Exploit for CVE-2012-0158 disguised as an Excel • In phase 1, opening the email 
+
+(.XLS) file (APEC Media list 2013 Part1.xls) attachment displays a decoy 
+document while the exploit runs in 
+
+• An email sent to Pakistani military the background. The exploit drops 
+officials on anuary ,  used the a downloader component .  file  
+“Homeland Security Summit Middle named “netids.dll,” “netidt.dll,” or 
+East” [11] conference as bait. It had a “coreshell.dll.”
+
+ord file attachment named “Details.
+
+4
+
+
+
+Trend Micro | Operation Pawn Storm
+
+• In phase 2, the downloader capturing information from infected 
+component communicates with a C&C systems, the keylogger sends data 
+server and downloads a dropper that back to the C&C server.
+ultimately installs a keylogger. After 
+
+ 
+Phases 1 and 2 in an Operation Pawn Storm attack
+
+We only managed to collect latter- Although some of the C&C servers were still 
+stage payloads for two out of the six alive at the time of investigation, they did not 
+aforementioned attacks. The C&C servers respond to our infected systems. Repeated 
+tied to the other four attacks refused to serve attempts to trick the C&C servers into serving 
+the rest of the files to complete the attac  the ne t files in the incomplete attac  chains 
+chains. failed. The attacks they were tied to could be 
+
+time sensitive and it is possible that they no 
+Multistage attacks are a double-edged sword. longer hosted the files for succeeding stages.
+If one link in the attack chain, aside from 
+the end node, is detected and removed in Attack Evolution
+the initial infection stage, the entire attack 
+fails. On the other hand, having several 
+links in the attack chain makes detecting the ven though the filenames used for different 
+final component more difficult. Tracing the components remained fairly consistent from 
+previous and ne t lin s is also difficult when 2010 to the present, earlier attacks were 
+any of the components is inspected on its more elaborate and complex compared with 
+own outside the attack chain. those seen this year. The 2014 attacks we 
+
+have seen were more streamlined.
+
+5
+
+
+
+Trend Micro | Operation Pawn Storm
+
+ 
+Comparison of an Operation Pawn Storm attack in 2011 and another in 2014
+
+Although variations in past and current thing—detection evasion. The following table 
+attack chains exist, both are still being compares and contrasts the six Operation 
+used by threat actors to date to ensure one Pawn Storm attacks in greater detail.
+
+6
+
+
+
+Trend Micro | Operation Pawn Storm
+
+Operation Pawn Storm Attack Comparison
+
+Case 1 Case 2 Case 3 [13] Case 4 Case 5 Case 6
+
+Two .  files come 
+with spear-phishing . T file drops
+emails: • MH17.doc 
+
+• irst file (APEC (SHA-1: DAE7F 
+Media list 2013 
+Part1.xls; SHA- . T  file A  AA1725DB8192 
+
+Unknown exploit, . T  file e ploits 
+possibly disguised CVE-2010-3333 Unknown 1: a90921c182c 78d28072fdabf0b5a AD711D759B13 
+
+b90807102ef40 ac5e8f337dc768d07 F8195A18821), 
+as a .PDF, .DOC, (SHA-1: 956d1a360 exploit carries a 
+or . T  file, carries 55c903cb570890da dropper (Dropper 2719ee8060910 b63e1e) exploits a decoy 
+
+345) exploits CVE-2012-0158 document, 
+the top-level dropper 69deabaacb5a18a) DLL; SHA-1: 
+(dropper.exe; SHA- and drops saver.scr 9c622b39521183dd CVE-2012-0158 and drops saver.scr into <Local 
+
+• econd file (SHA-1: 7FBB5A2E4 Settings>\Temp\
+1: 72cfd996957bde0 (SHA-1: e8b55d9aef 71ed2a174031ca15 6FACD3EE0C945F3 • W.q (SHA-1: 8D 
+6a02b0adb2d66d8a f124df4008b0d372bf 9beb6479) (APEC Media 
+a9c25bf37) 2f2d3e5e5ae7) list 2013 Part2. 24414210C2199FF EF0A554F1913 
+
+xls; SHA-1: b30 B) into <Local 4A5DB3D2AE9 
+
+98f99db1f80e27 Settings>\Temp\ 49F9500CE3D 
+D2CE), a 
+
+aec0c9a5a625a dropper, 
+edaab5899a) into <Local 
+is a decoy Settings>\Temp\
+document
+
+7
+
+
+
+Trend Micro | Operation Pawn Storm
+
+Operation Pawn Storm Attack Comparison
+
+Case 1 Case 2 Case 3 [13] Case 4 Case 5 Case 6
+
+Saver.scr drops:
+• Decoy 
+
+document 
+(Military 
+Cooperation.
+
+Dropper.exe drops: doc; SHA-1: 0E Saver.scr drops:
+
+• ecoy file 12C8AB9B89B6 • IDF_
+
+(Letter to IAEA. EB6BAF16C4B Spokesperson_
+Targeted_ W.q drops:
+
+pdf; SHA-1: 6ad 3BBF9530067 Attack_101012. • Coreshell.dll 
+a11c71a5176a8 963F) into doc (SHA-1: F5 (SHA-1: A85513 
+2a8898680ed1e <Local 42C5F9259274 97E1F1A2C014 
+aa4e79b9bc3) Settings>\Temp\ Dropper DLL drops 
+into <Local • Skype.exe netids.dll (SHA-1: dd APEC Media list D94360013D14 8E6EADCB56F 
+
+2013 Part1.xls drops FFBECC43AAE A35EE6009CA) 
+Settings>\Temp\ (SHA-1: 550AB 61530076152dae56 
+
+• Downloader D71650BAEA05 8b4834b1899212c9 dw20.t (SHA-1: ac6b 552), a decoy into <Program 
+465a13370f87cf579 document, Files>\Common 
+
+(netids.dll; SHA- A0071C4E084A 6c1a02) into 
+1: c5ce5b7d10a 803CB413C31), <Local Settings>\ 29b7cfd1e45c36945 into <Local Files\System\
+
+85), a .  file Settings>\Temp\ • Tmp64.dat, 
+ccb04a4e45c3a a SEDNIT Application Data\ • Install.exe a copy of 
+4dcf10d16b192 variant, (SHA-1: BC58A coreshell.dll, 
+e2f) into <Local into <Local 8550C53689C8 into <Program 
+Settings>\ Settings>\Temp\ 148B021C917F Files>\Common 
+Application • Cryptmodule. B4AEEC62AC Files\System\
+Data\ exe (SHA-1: 4B 
+
+8806FE8E0CB4 1) into <Local 
+9E4AA5D8F877 Settings>\Temp\
+66415A2DB1E9 
+A9) into 
+<AppData>\
+Microsoft\Crypt\
+
+8
+
+
+
+Trend Micro | Operation Pawn Storm
+
+Operation Pawn Storm Attack Comparison
+
+Case 1 Case 2 Case 3 [13] Case 4 Case 5 Case 6
+
+• Military 
+Cooperation.
+doc has been 
+encoded 
+using Cyrillic 
+characters and 
+opens in Word
+
+• Skype.exe 
+drops:
+• Downloader 
+
+(netids.dll; 
+SHA-1: 6b87 
+5661a74c46 
+73ae6ee89a 
+cc5cb6927ca Netids.dll downloads Install.exe drops Coreshell.dll 
+
+Netids.dll 5fd0d), a and saves msmvs.
+communicates SEDNIT exe (SHA-1: 88f7e27 Dw20.t drops netids. netids.dll (SHA-1: 14 downloads conhost.
+
+dll (SHA-1: 3814eec BEEB0FC5C8C887 dll (SHA-1: B49FAD 
+with a C&C server variant, into 1e54c127912db4db 
+(200.106.145.122) <Windows>\ 49e37d93aea8a49c 8c45fc4313a9c7f65c D0435009730B6370 3E5E6787E96373A 
+
+e882a7899cf0405) BF94BC93) into C37ED58083F7572 
+system32\ 9) in <Local <Windows>\ D72A), a dropper, 
+
+• Copy of Settings>\Temp\ system32\ from a C&C server
+netids.dll 
+(mscsv.
+tmp) into 
+<Windows>\
+system32\
+
+• Cryptmodule.
+exe drops s.vbs 
+(actually a 
+.PE and not a 
+.  file  and 
+communicates 
+with a C&C 
+server (windous.
+kz)
+
+9
+
+
+
+Trend Micro | Operation Pawn Storm
+
+Operation Pawn Storm Attack Comparison
+
+Case 1 Case 2 Case 3 [13] Case 4 Case 5 Case 6
+
+• Netids.dll 
+communicates 
+with a C&C 
+server 
+(70.85.221.20)
+
+C&C server • S.vbs (SHA-1: 0 Msmvs.exe drops 
+confirms receipt of A3E6607D5E9 conhost.dll (SHA-1: Conhost.dll drops 
+
+Netids.dll Netids.dll advstoreshell.dll 
+communication from C59C712106C3 55318328511961EC communicates communicates (SHA-1: E338A57C3 
+infected systems 55962B11DA29 339DFDDCA044306 with a C&C server with a C&C server 5A4732BBB5F738E 
+then stops further 02FC) runs 8DCCE9CD2) into 
+interactions CreateFile C:\\ <Local Settings>\ (70.85.221.10) (70.85.221.10) 2387C1671A002BC 
+
+DOCUME~1\\ Temp\ B), a keylogger
+ADMINI~1\\
+LOCALS~1\\
+Temp\\update.
+exe but does 
+nothing else
+
+Conhost.dll drops 
+netui.dll (SHA-1: 
+5A452E7248A8D37 Advstoreshell.dll 
+45EF53CF2B1F3D7 sends logs of stolen 
+D8479546B9), data to a C&C server 
+a keylogger, into (software-update.
+<Windows>\ org)
+system32\
+
+Netui.dll sends 
+logs of stolen data 
+to a C&C server 
+(200.74.244.118)
+
+10
+
+
+
+Trend Micro | Operation Pawn Storm
+
+Exploits Spread SEDNIT Malware in the same time, tricked them into reentering 
+Poland their credentials. To do this, the attackers 
+
+redirected victims to fake OWA log-in pages 
+by setting their browsers’ open windows 
+
+The threat actors behind Operation Pawn property. The victims’ credentials thus ended 
+Storm spread SEDNIT malware via exploits up in the attackers’ hands.
+on legitimate Polish websites. In September 
+2014, for instance, the Power Exchange Note that two special conditions need to 
+website in Poland, www . irgit . pl, was be met for the attacks to succeed—victims 
+compromised. The attackers rigged it with an should use OWA and click the embedded 
+iframe that pointed to http :// defenceiq .  links via the web portal’s preview pane. The 
+us / 2rKYZ _ BGxPM and http :// api . akmicdn .  attacks worked on any popular browser such 
+com / gpw ? key = 1072726955. The first lin  as Firefox®, Safari®, Chrome™, and Internet 
+led to an exploit kit [14] that was responsible Explorer®. No vulnerabilities need to be 
+for spreading SEDNIT malware. The exploited for the JavaScript to work.
+ESET paper did not mention that an earlier 
+incident occurred in mid-July 2014 wherein Because many companies allow employees 
+a malicious iframe pointing to yovtube . co to use webmail services to access their 
+was injected into Polish government mailboxes while on business travel or at 
+websites though. And that the same domain, home, these attacks are likely to succeed. 
+defenceiq . us, was used against Japanese Once they do, attackers can gain access to 
+targets in September 2014. compromised mailboxes that they can then 
+
+use to gain a foothold in target networks.
+It is remarkable that a mass infection 
+methodology was used by the Pawn Storm Throughout the course of investigation, 
+actors even though the actual SEDNIT several targets have been identified, 
+samples were only served to particular including:
+targets. Actual exploitation was only triggered 
+when certain criteria that had to do with OS, • ACADEMI, formerly Blackwater 
+language settings, time zone, and installed (United States)
+software were met.
+
+• Broadcasting companies in various 
+Next-Level Phishing Targets countries
+
+• Military attachés from various 
+The attackers used specially crafted emails countries
+to redirect targets to any of several phishing 
+websites with domain names that were very • Ministry of Defense (France)
+similar to those of well-known conferences 
+and media outfits. These websites did not • Ministry of Defense (Hungary)
+host malicious content but visiting them 
+did lead to the automatic execution of a • Multinational company based in 
+nonmalicious JavaScript. Links to these fake Germany
+websites were then embedded in spear-
+phishing emails and sent to selected targets. • OSCE (Austria)
+
+Opening such an email and clicking the • a istani military officials
+link in OWA redirected victims to legitimate 
+websites. The JavaScript made it appear that • Polish government employees
+the victims’ OWA sessions ended while at 
+
+11
+
+
+
+Trend Micro | Operation Pawn Storm
+
+• SAIC (United States)
+
+• U.S. Department of State
+
+• Vatican Embassy (Iraq)
+
+The following case studies reveal more in-
+depth details on four specific attac s.
+
+CASE 1: MINISTRY OF DEFENSE, 
+HUNGARY
+
+• Malicious conference domain: 
+eurosatory2014 . com  
+
+Real “EUROSATORY 2014” conference website 
+• Real conference domain: opens in a new tab after clicking the link in a 
+
+eurosatory . com spear-phishing email viewed in OWA
+
+• Phished OWA domain: mail . hm .  
+qov . hu
+
+• Real OWA domain: mail.hm.gov.hu
+
+The attackers created a domain that was 
+very similar to eurosatory . com [15], a website 
+for an international land and air-land defense 
+and security exhibition. They then sent emails 
+with the link, http :// eurosatory2014 . com, to 
+selected employees of the target defense 
+ministry who might actually have been 
+expecting to hear from the conference staff 
+members.  
+
+“Closed” OWA session page (fake) victims will 
+Clicking the link embedded in the email see, forcing them to reenter their credentials
+via the OWA preview pane opens the real 
+conference website in a new tab. The victims’ In reality, the victims’ OWA session did not 
+OWA session in the other tab, meanwhile, end. The previously mentioned JavaScript 
+is redirected to a phished log-in page that just redirected them to a fake OWA log-
+makes it look like the session has ended. in page that looks just like the Ministry of 
+
+Defense in Hungary’s real one.
+
+Apart from “EUROSATORY 2014,” other 
+conferences were also used to target 
+employees of the Ministry of Defense in 
+Hungary as shown in the following table.
+
+12
+
+
+
+Trend Micro | Operation Pawn Storm
+
+Similar Attacks Against the Ministry of Defense, Hungary
+
+Conference Target Domain Malicious Domain
+
+“Africa Aerospace and Defence 
+2014” aadexpo . co . za aadexpo2014 . co . za
+
+“The 10th Special Operations 
+Forces Exhibition & Conference” sofexjordan . com sofexjordan2014 . com
+
+“ITEC” itec . co . uk itec2014 . co . uk
+
+CASE 2: OSCE, AUSTRIA Even though OSCE provides better security 
+for webmail users compared with the other 
+
+• Malicious news domain: vice - news .  targets via one-time session token use during 
+com log-in, attackers can still steal highly sensitive 
+
+data from victims by hijacking a single 
+• Real news domain: news . vice . com session.
+
+• Phished OWA domain: log-in - osce .  CASE 3: SAIC, UNITED STATES
+org
+
+• Malicious conference domain: 
+• Real OWA domain: log-in . osce . org natoexhibitionff14 . com
+
+This attack targeted OSCE employees in • Real conference domain: 
+Austria. Although the attackers used similar natoexhibition . org
+tactics, they did not spoof a conference 
+website. They instead used a fake version of • Phished OWA domain: webmail -  
+the news website, news . vice . com. saic . com
+
+• Real OWA domain: webmail . saic .  
+com
+
+This attack targeting SAIC was very similar 
+to the first case. The attac ers spoofed 
+the website of the “Future Forces 2014” 
+conference to trick email recipients into 
+handing over their webmail credentials.
+
+ 
+Comparison of the legitimate (top) and spoofed 
+
+(bottom) OWA log-in pages of OSCE
+
+13
+
+
+
+Trend Micro | Operation Pawn Storm
+
+ 
+Comparison of the legitimate (top) and spoofed 
+
+(bottom) OWA log-in pages of SAIC
+
+CASE 4: ACADEMI
+ 
+
+Comparison of the legitimate (top) and spoofed 
+• Malicious news domain: tolonevvs .  (bottom) OWA log-in pages of ACADEMI
+
+com
+Apart from the four specific cases presented 
+
+• Real news domain: tolonews . com above, evidence pointing to a fake OWA 
+server for a multinational company based in 
+
+• Phished OWA domain: academl .  Germany was also discovered. The threat 
+com actors registered a domain that looked 
+
+very similar to the target’s real domain and 
+• Real OWA domain: academi . com purchased a Secure Sockets Layer (SSL) 
+
+certificate for the fa e domain as part of 
+This attack targeted the employees of U.S. preparations for a targeted attack. Trend 
+defense contractor, ACADEMI, using the Micro was able to warn the target early on, 
+same phishing tactics as in the second case. which helped thwart the threat.
+
+14
+
+
+
+Trend Micro | Operation Pawn Storm
+
+Other Webmail Services webmail services such as Gmail™, Live Mail, 
+Yahoo!®, Hushmail, and Yandex.
+
+OWA users are not the only ones at risk 
+though, as the threat actors behind Operation 
+Pawn Storm also targeted users of free 
+
+ 
+Sample Gmail, Live Mail, Hushmail, and Yandex account phishing websites
+
+e lea ed specific credentials to the threat 46.166.162.90 (Latvia) and 192.154.110.244 
+actors in a couple of cases to see if the (United States), via Internet Message Access 
+fake webmail service log-in pages were Protocol (IMAP). No other forms of abuse 
+indeed intended for attack use. Within such as sending spam via the compromised 
+minutes of leaking the test credentials, accounts were witnessed. This showed that 
+unauthorized log-ins were recorded. The the attackers were indeed trying to obtain 
+first log in was usually an automated log sensitive data from their targets instead 
+in check from the same IP address as the of using their accounts for fraud and other 
+phishing website’s owner. The succeeding financially motivated scams.
+log-ins were made from the IP addresses, 
+
+15
+
+
+
+Trend Micro | Operation Pawn Storm
+
+CONCLUSION
+
+Operation Pawn Storm used next-level Messaging security solutions such as Trend 
+spear-phishing tactics to obtain the email Micro™ InterScan™ Messaging Security 
+credentials of primarily military, embassy, [16] and the ScanMail™ Suite for Microsoft 
+and defense contractor personnel from the Exchange [17] can send suspicious email 
+United States and its allies. The threat actors attachments to a sandbox for analysis, thus 
+used a mix of spear-phishing emails and protecting recipients from threats. Other 
+specially crafted webmail service phishing products such as ffice can  [18] for 
+websites to gain access to victims’ inboxes in endpoints and InterScan Web Security Virtual 
+hopes of getting better footholds inside target Appliance [19] for gateways can also block 
+organizations. So as not to raise suspicion, user access to known phishing websites.
+the attackers used well-known events and 
+conferences as social engineering bait. They For overall protection against targeted 
+have been quite persistent as well, as we attacks, Trend Micro™ Deep Discovery 
+have seen evidence that attacks have been [20] can help protect potential targets by 
+going on since 2007. sandboxing and analyzing suspicious 
+
+attachments to identify phishing emails via 
+Apart from effective phishing tactics, the Email Inspector. Via 360-degree monitoring 
+threat actors used a combination of proven of networ  traffic to get networ wide 
+targeted attack staples to compromise visibility and intelligence, Deep Discovery 
+systems and get in to target networks— allows users to detect and respond to 
+exploits and data-stealing malware. SEDNIT targeted attacks and advanced threats. 
+variants particularly proved useful, as It also monitors all ports and more than 
+these allowed the threat actors to steal all 80 protocols, giving users the broadest 
+manners of sensitive information from the protection available. Even more, specialized 
+victims’ computers while effectively evading detection engines and custom sandboxing 
+detection. help identify and analyze malware, C&C 
+
+communications, and evasive attacker 
+Trend icro has notified the targets that have activities that are invisible to standard 
+been identified in this paper. ndividuals and security solutions. Along with in-depth threat 
+their respective organizations, meanwhile, intelligence, it allows for rapid response 
+should use solutions that can help protect and automatic sharing with other security 
+against the various attack vectors that the products to create real-time custom defense 
+threat actors behind Operation Pawn Storm against attacks.
+used.
+
+16
+
+
+
+Trend Micro | Operation Pawn Storm
+
+REFERENCES
+
+[1] Trend Micro Incorporated. (2014). [9] Post Staff. (January 9, 2012). New York 
+Threat Encyclopedia. “SEDNIT.” Last Post. “Three Car Bombs Explode in Iraq, 
+accessed October 13, 2014, http:// Killing 17.” Last accessed October 16, 
+about-threats.trendmicro.com/us/search. 2014, http://nypost.com/2012/01/09/three-
+aspx?p=SEDNIT. car-bombs-explode-in-iraq-killing-17/.
+
+[2] ymantec orporation. . [10] The MITRE Corporation. (1999–
+Symantec. “Infostealer.Sofacy.” Last 2014). CVE. “CVE-2012-0158.” Last 
+accessed October 17, 2014, http:// accessed October 16, 2014, http://
+www.symantec.com/security_response/ www.cve.mitre.org/cgi-bin/cvename.
+writeup.jsp?docid=2011-090714-2907- cgi?name=CVE-2012-0158.
+99&tabid=2.
+
+[11] IQPC. (2014). Homeland Security 
+[3] Trend Micro Incorporated. (2014). Threat Summit Middle East. “Towards Total 
+
+Encyclopedia. “BKDR_SEDNIT.AE.” Last Preparedness: Advancing Command and 
+accessed October 13, 2014, http://about- Control and Communication for Increased 
+threats.trendmicro.com/us/malware/ dentification, Access, urveillance, 
+BKDR_SEDNIT.AE. Cyber Protection Capabilities.” Last 
+
+accessed October 16, 2014, http://www.
+[4] Trend Micro Incorporated. (2014). Threat homelandsecurityme.com/.
+
+Encyclopedia. “BKDR_SEDNIT.SM.” Last 
+accessed October 13, 2014, http://about- [12] Malware@prevenity. (September 11, 
+threats.trendmicro.com/us/malware/ 2014). “mht, MS12-27 oraz *malware*.
+BKDR_SEDNIT.SM. info.” Last accessed October 16, 2014, 
+
+http://malware.prevenity.com/2014/08/
+[5] Trend Micro Incorporated. (2014). malware-info.html.
+
+Threat Encyclopedia. “TROJ_SEDNIT.
+TOK.” Last accessed October 13, 2014, [13] R136a1. (December 27, 2012). 
+http://about-threats.trendmicro.com/us/ Analyzing Unknown Malware. “#3 
+malware/TROJ_SEDNIT.TOK. Disclosure of Another 0-Day Malware—
+
+Update and Additional Information.” 
+[6] Wikimedia Foundation Inc. (March 16, Last accessed October 17, 2014, 
+
+2014). Wikipedia. “Pawn Storm.” Last http://thegoldenmessenger.blogspot.
+accessed October 21, 2014, http:// ro/2012/12/3-disclosure-of-another-0day-
+en.wikipedia.org/wiki/Pawn_storm. malware_27.html.
+
+[7] The MITRE Corporation. (1999–2014). [14] ESET Research. (October 8, 2014). 
+CVE. “CVE-2010-3333.” Last accessed WeLiveSecurity. “Sednit Espionage 
+October 16, 2014, http://cve.mitre.org/cgi- Group Now Using Custom Exploit Kit.” 
+bin/cvename.cgi?name=CVE-2010-3333. Last accessed October 23, 2014, http://
+
+www.welivesecurity.com/2014/10/08/
+[8] Trend Micro Incorporated. (2014). sednit-espionage-group-now-using-
+
+Threat Encyclopedia. “TROJ_ARTIEF.” custom-exploit-kit/.
+Last accessed October 21, 2014, http://
+www.trendmicro.com/vinfo/us/threat- [15] COGES. (2013). EUROSATORY 2014. 
+encyclopedia/malware/TROJ_ARTIEF. “The Largest International Land and Air-
+
+Land Defence and Security Exhibition.” 
+
+17
+
+
+
+Trend Micro | Operation Pawn Storm
+
+Last accessed October 17, 2014, http:// Last accessed October 22, 2014, http://
+www.eurosatory.com/. www.trendmicro.com/us/enterprise/
+
+product security officescan .
+[16] Trend Micro Incorporated. (2014). Trend 
+
+Micro. “InterScan Messaging Security.” [19] Trend Micro Incorporated. (2014). Trend 
+Last accessed October 21, 2014, http:// Micro. “InterScan Web Security Virtual 
+www.trendmicro.com/us/enterprise/ Appliance.” Last accessed October 22, 
+network-security/interscan-message- 2014, http://www.trendmicro.com/us/
+security/. enterprise/network-security/interscan-
+
+web-security/virtual-appliance/.
+[17] Trend Micro Incorporated. (2014). Trend 
+
+Micro. “ScanMail Suite for Microsoft [20] Trend Micro Incorporated. (2014). Trend 
+Exchange.” Last accessed October 21, Micro. “Deep Discovery Advanced 
+2014, http://www.trendmicro.com/us/ Network Security.” Last accessed October 
+enterprise/network-web-messaging- 21, 2014, http://www.trendmicro.com/
+security/scanmail-microsoft-exchange/. us/enterprise/security-risk-management/
+
+deep-discovery/.
+[18] Trend Micro Incorporated. (2014). Trend 
+
+Micro. ffice can ndpoint rotection.  
+
+18
+
+
+
+Trend Micro Incorporated, a global leader in security software, strives to make the 
+world safe for exchanging digital information. Our innovative solutions for consumers, 
+businesses and governments provide layered content security to protect information 
+on mobile devices, endpoints, gateways, servers and the cloud. All of our solutions are 
+powered by cloud-based global threat intelligence, the Trend Micro™ Smart Protection 
+Network™, and are supported by over 1,200 threat experts around the globe. For more 
+information, visit www.trendmicro.com.
+
+©2014 by Trend Micro, Incorporated. All rights reserved. Trend Micro and the Trend 225 E. John Carpenter Freeway, Suite 1500
+Micro t-ball logo are trademarks or registered trademarks of Trend Micro, Incorporated. Irving, Texas 75062 U.S.A.
+All other product or company names may be trademarks or registered trademarks of 
+their owners. Phone: +1.817.569,8900

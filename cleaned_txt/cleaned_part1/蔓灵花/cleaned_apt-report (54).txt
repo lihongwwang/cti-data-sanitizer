@@ -1,0 +1,164 @@
+蔓灵花（BITTER）APT组织2020年初针对中国境内最新攻击活动分析报告
+
+一、概述
+
+蔓灵花（T-APT-17、BITTER）APT组织是一个长期针对中国、巴基斯坦等国家进行攻击活动的APT组织，该APT组织为目前活跃的针对境内目标进行攻击的境外APT组织之一。
+
+该组织主要针对政府、军工业、电力、核等单位进行攻击，窃取敏感资料，具有强烈的政治背景。此外，我们也多次在报告中指出，该组织跟疑似南亚某国的多个攻击组织，包括白象（Patchwork）、孔子（Confucius）、肚脑虫（donot）等有一定的关联。
+
+腾讯安全威胁情报中心，以及多个国内安全团队在2019年多次披露过该组织的一些攻击活动，但是该组织依旧没停下他的攻击步伐，依然在不断的对他所感兴趣的攻击目标进行攻击活动。我们还发现，该组织还使用跟新冠肺炎疫情相关的诱饵文档进行钓鱼活动，真是拙劣至极！
+
+二、攻击活动分析
+
+1.攻击诱饵
+攻击诱饵依然保持着之前的攻击习惯，使用伪装成word图标的winrar自解压程序：
+
+从自解压包里的文件的修改日期来看，攻击在2020年1月和2月进行。
+
+诱饵内容为：为跟新冠肺炎疫情相关的新闻。
+
+2.downloader分析
+
+解 压 释 放 在 C:\intel\logs 目 录 下 的 intel.exe 以 及 audiodq.exe 为 downloader ， 该downloader跟之前多次曝光的蔓灵花的downloader除C2不同外，其他的行为完全一致，本文就不再赘述。
+
+3.下发文件分析
+
+本次的下发文件的名字，跟之前曝光的有所不同，可能是因为之前的后台被人曝光，为了避免猜地址，而进行了调整。
+
+调整后的名字：
+
+1)RAT文件
+
+下载地址：
+http://[C&C]/RguhsT/RguhsT/scvhosts
+http://[C&C]/RguhsT/RguhsT/scvhost
+
+该 RAT 为 2019 年 才 被 蔓 灵 花 开 始 使 用 的 C# 编 写 的 RAT 。 该 RAT 由 开 源 代 码https://github.com/ilikenwf/DarkAgent改进编译而来。保留了该开源远控的大部分功能，包括文件管理、进程管理、CMDShell等：
+
+部分核心命令相关代码，功能和命令对应如下表：
+
+命令代码 功能
+tskmgr Start Taskmgr.exe
+getinfo- Get systeminfo
+prockill kill process
+proclist Get proclist
+startcmd Start cmdshell
+stopcmd Stop cmdshell
+cmd§ Execute cmdshell
+fdrive Drive list
+fdir§ Dir
+f1§ Dir
+fpaste§ Paste file
+fexec§ Execute file
+fhide§ Hide file
+fshow§ Show file
+fdel§ Delete file
+frename§ Rename file
+ffile§ Createfile
+fndir§ CreateDirectory
+getfile§ ReadFile ReadAllText
+putfile§ WriteFile WriteAllText
+fup upload file
+fdl§ download file
+
+2)窃密木马
+
+下载地址：
+http://[C&C]/RguhsT/RguhsT/lsapc
+
+该文件主要用于窃密，如收集并上传扩展名为以下类型文件：
+txt、ppt、pptx、pdf、doc、docx、xls、zip、z7、.zpk、.jpg等：
+
+3)注册表模块
+
+下载地址：
+http://[C&C]/RguhsT/RguhsT/rgdl
+
+跟之前披露的注册表模块没啥区别，主要用于写注册表启动项。
+
+三、关联分析
+
+1.其他未知的蔓灵花（bitter）活动
+
+我们在做日常监测的时候，发现了一个可疑地址：
+http://www.xianshangzhichi365.com/images/
+
+从文件的更新时间来看，攻击时间发生在9月到12月。但是由于未获取到完整的攻击链条，因此攻击背景未知。
+
+下载后的文件为加了密码的压缩包：
+
+解压后为：
+
+很明显为蔓灵花（T-APT-17、BITTER）的攻击文件：
+
+2.和MMCore的关联分析
+
+我们在2019年曾发现一起蔓灵花对巴基斯坦的攻击活动，诱饵如下：
+LIST_OF_ALL__COMMERCIAL_COUNSELLORS_AT_MISSIONS_ABROAD.docx （ a0dcbd63716b264f868cd38d7c4b494d）
+
+经 过 分 析 ， 我 们 对 其 中 的 一 个 内 存 模 块 非 常 感 兴 趣 ， 该 模 块 从 下 载 得 到 的jpg（http://kerbosim.com/dramtun/miskder/kipr.jpg）文件解密后所得：
+
+我们对该特征在腾讯御见威胁情报中心的样本库里进行检索，检索到了大量的类似样本，而文件的版本信息也随着时间的变化而变化，列表如下：
+
+Hash 版本号 时间戳
+060d13afdb2212a717666b251feda1d3 2.2-LNK BigBoss 2016-07-11 12:22:49
+bddb10729acb2dfe28a7017b261d63db 2.3-LNK SillyGoose 2016-09-19 05:43:44
+baa12a311b9029f33c4fc6de6fde06b0 2.4-LNK PwnMan 2018-06-04 08:55:58
+0490e54e4cce81d2ab24a6e7787fa595 2.5 FluffyBunny 2018-08-03 12:49:29
+5a477d4574983c2603c6f05ff5bae01e 2.5 WankyCat 2019-3-11 18:01:59
+0253a9b3ec0c2b18492a3aaf30aac3f4 2.5 FreshPass 2019-11-21 17:01:14
+
+而 该 些 文 件 为 之 前 forcepoint 曝 光 的 一 个 后 门 MMCore （ https://www.forcepoint.com/blog/x-labs/mm-core-memory-backdoor-returns-bigboss-and-sillygoose）。
+
+该报告中并未指出组织的背景，但是经过分析，可以发现该后门同样为疑似南亚某国的组织所拥有。
+
+四、安全建议
+
+我们建议国家重要机构、重要企业及科研单位参考以下几点加强防御：
+
+1.通过官方渠道或者正规的软件分发渠道下载相关软件；
+
+2.谨慎连接公用的WiFi网络。若必须连接公用WiFi网络，建议不要进行可能泄露机密信息或隐私信息的操作，如收发邮件、IM通信、银行转账等；最好不要在连接公用WiFi时进行常用软件的升级操作；
+
+3.提升全员安全意识，不要打开来历不明的邮件附件；除非文档来源可靠，用途明确，不要轻易启用Office的宏代码；
+
+4.及时安装操作系统和Office等重要软件的安全补丁；
+
+5.全网部署杀毒软件防御病毒木马攻击，对于企业用户，推荐使用腾讯T-Sec终端安全管理系统(腾讯御点)。腾讯御点同时内置全网漏洞修复和病毒防御功能，可有效降低病毒木马入侵风险；
+
+6.推荐部署腾讯T-Sec高级威胁检测系统（腾讯御界）及时捕捉黑客攻击行为。腾讯T-Sec高级威胁检测系统是基于腾讯安全反病毒实验室的安全能力、依托腾讯在云和端的海量数据，研发出的独特威胁情报和恶意检测模型系统。（https://s.tencent.com/product/gjwxjc/index.html）
+
+五、附录
+
+IOCs
+
+MD5：
+
+droper
+ff898dd42a8b620f2dd4514416366cbf
+a8af9653d61f0024fee203b813618e88
+d9ce6de8b282b105145a13fbcea24d87
+835177f2a913cbca1a75cb277d03c200
+
+downloader
+00ec58b67df5e2b97e8b3f1c9426d7c5
+1c72f6a31af9acac91c2dabfd66e504d
+c0a7c73b36adc5213651c934eeab9b68
+746adb944ae2dbf57c49a721404e0125
+
+RAT
+279d5a6fb991ea9ee92726ca1ba45329
+512029a6089aeb9140aa6ae966fb3071
+
+infostealer
+e74fe954d273f8904f1c2fea966abbe4
+
+rgdl
+99dd93a189fd734fb00246a7a37014d3
+
+C&C：
+clickcleverinfo[.]com
+63.250.38[.]240
+winqrcservice[.]net
+tongbanzhichi[.]net
+gongzuosousuo[.]net

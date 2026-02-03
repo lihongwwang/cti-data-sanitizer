@@ -1,0 +1,70 @@
+Bitter APT Group Using “Dracarys” Android Spyware
+Android Malware Disguised As A Messaging Application
+
+During our routine threat hunting exercise, Cyble Research Labs came across an article wherein the researchers mentioned Bitter APT delivering the Android Spyware “Dracarys.” Bitter aka T-APT-17 is a well-known Advanced Persistent Threat (APT) group active since 2013 and operates in South Asia. It has been observed targeting China, India, Pakistan, and other countries in South Asia.
+The Bitter APT is actively involved in both desktop and mobile malware campaigns and uses techniques like spear phishing emails, exploiting known vulnerabilities to deliver Remote Access Trojan (RAT) and other malware families.
+Dracarys Android Spyware impersonates genuine applications such as Signal, Telegram, WhatsApp, YouTube, and other chat applications and distributes through phishing sites.
+During analysis, we observed that one of the phishing sites is still live and distributing Dracarys. The phishing site mimics the genuine Signal site and delivers a trojanized Signal app.
+Upon in-depth analysis of the malware, we observed that the Threat Actor (TA) had inserted the malicious code into the Signal app source code to avoid being detected. The below image showcases the extra added spyware module “org.zcode.dracarys” in the trojanized version of the Signal App.
+
+Technical Analysis
+APK Metadata Information
+App Name: Signal
+Package Name: org.thoughtcrime.securesms.app
+SHA256 Hash: d16a9b41a1617711d28eb52b89111b2ebdc25d26fa28348a115d04560a9f1003
+
+Manifest Description
+The malicious application mentions 24 permissions, of which the TA exploits 10. The harmful permissions requested by the malware are:
+Permission Description
+READ_CONTACTS Access phone contacts
+RECEIVE_SMS Allows an application to receive SMS messages
+READ_SMS Access phone messages
+CAMERA Required to access the camera device.
+READ_CALL_LOG Access phone call logs
+READ_EXTERNAL_STORAGE Allows the app to read the contents of the device’s external storage
+RECORD_AUDIO Allows the app to record audio with the microphone, which the attackers can misuse
+WRITE_EXTERNAL_STORAGE Allows the app to write or delete files to the external storage of the device
+CALL_PHONE Allows an application to initiate a phone call without going through the Dialer user interface for the user to confirm the call
+ACCESS_FINE_LOCATION Allows an app to access precise location
+
+Source Code Review
+The trojanized version of the Signal application has registered the Accessibility Service in the Manifest file. The malware abuses the Accessibility permissions such as auto granting permission to run the application in the background, activating Device Admin, and performing auto clicks.
+The malware connects to the Firebase server and receives the commands to execute operations for collecting the data from the victim’s device, as shown in the below image.
+The malware collects all the contacts from the infected device and sends them to the Command and Control (C&C) server “hxxps://signal-premium-app[.]org“.
+Similarly, the malware collects SMS data, call logs, installed applications list, and files present on the infected device after receiving a command from the C&C server.
+The malware registers the “DracarysReceiver” broadcast receiver, which receives the event from the Firebase server and starts collecting Personal Identifiable Information (PII) data from the infected device.
+The malware can capture screenshots and record audio to spy on the victim’s device. The below figure shows the code used by the malware to send captured screenshots and recordings to its C&C server.
+The image below shows the C&C server and the URL path to which the stolen data is sent.
+
+Conclusion
+According to our research, the TA has injected malicious code into genuine messaging applications such as Signal. The TA also distributed the malware through a phishing site masquerading as a genuine website that tricks users into downloading a trojanized version of popular messaging applications.
+We have observed Bitter APT continuously attacking South Asian countries and changing its mode of attack with each new campaign. In this campaign, Bitter APT used a sophisticated phishing attack to infect devices with Dracarys Android Spyware.
+In the coming days, we may observe a change in the Bitter APT group’s activities, with different malware variants, enhanced techniques, and distribution modes.
+
+MITRE ATT&CK Techniques
+Tactic Technique ID Technique Name
+Initial Access T1476 Deliver Malicious App via Other Mean.
+Initial Access T1444 Masquerade as Legitimate Application
+Collection T1412 Capture SMS Messages
+Collection T1432 Access Contacts List
+Collection T1433 Access Call Logs
+Collection T1517 Access Notifications
+Collection T1533 Data from Local System
+Collection T1429 Capture Audio
+Exfiltration T1437 Standard Application Layer Protocol
+
+Indicators Of Compromise (IOCs)
+Indicator Type Indicators Description
+SHA256 d16a9b41a1617711d28eb52b89111b2ebdc25d26fa28348a115d04560a9f1003 Hash of the analyzed APK file
+SHA1 2c60fbb9eb22d0eb5e62f15d1e49028944c3ff51 Hash of the analyzed APK file
+MD5 761705bd1681b94e991593bdcf190743 Hash of the analyzed APK file
+URL hxxps://signal-premium-app[.]org C&C server
+URL hxxps://signalpremium[.]com/ Malware distribution site
+SHA256 43e3a0b0d5e2f172ff9555897c3d3330f3adc3ac390a52d84cea7045fbae108d Hash of the analyzed APK file
+SHA1 a35653c3d04aaaa76266db6cd253f086872a5d27 Hash of the analyzed APK file
+MD5 d9a39c41e9f599766b5527986e807840 Hash of the analyzed APK file
+URL hxxp://94[.]140.114[.]22:41322 C&C server
+SHA256 220fcfa47a11e7e3f179a96258a5bb69914c17e8ca7d0fdce44d13f1f3229548 Hash of the analyzed APK file
+SHA1 04ec835ae9240722db8190c093a5b2a7059646b1 Hash of the analyzed APK file
+MD5 07532dea34c87ea2c91d2e035ed5dc87 Hash of the analyzed APK file
+URL hxxps://youtubepremiumapp[.]com/ C&C server

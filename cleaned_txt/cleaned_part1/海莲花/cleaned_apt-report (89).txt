@@ -1,0 +1,8 @@
+Jacob Soo (@_jsoo_), Security Researcher, 发布于 2018年6月9日上午1:35  
+推文内容：  
+#OceanLotus  
+virustotal.com/#/file/cb8c176 …  
+Filename : 2018 Cambodia Outlook Conference.doc  
+Adds DsSvcCleanup.job & dropping payload to C:\Users\admin\AppData\Roaming\Intel\logs\DsSvcCleanup.cpl  
+(9b134dfdea2b4c50183e99bfee6c45a054fc0  
+网站：vxsecurity.sg

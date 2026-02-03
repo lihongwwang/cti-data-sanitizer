@@ -1,0 +1,36 @@
+使用恶意程序 CredoMap_v2 (CERT-UA # 4622) 对 APT28 组织进行网络攻击
+
+乌克兰 CERT-UA 计算机紧急事件应对政府小组收到了信息交换参与者发来的主题为“Cyberattack”的电子邮件，据称是代表 CERT-UA 发送的，并附有密码形式的附件——受保护的 RAR 存档“UkrScanner.rar”。
+
+确定上述存档包含同名的 SFX 文件，而该文件又包含恶意程序 CredoMap_v2。
+
+此版本的窃密程序与上一个版本的区别在于它使用 HTTP 协议来过滤数据。在 HTTP POST 请求的帮助下，窃取的身份验证数据被发送到部署在 Pipedream 平台上的 Web 资源。
+
+该活动与 APT28 组 (UAC-0028) 的活动相关联。
+CERT-UA 已采取措施封锁该资源。但是，如果收到此类信件，请立即通知。
+
+妥协指标
+文件：
+87b05a2442146a517e6aa1da5db8ae27
+8724ec45a26dd07023e755cbf2a3c02548f719a63d0ffbfc42954f2b4f7c1405
+UkrScanner.rar
+721521273d12775eb6518c0eeaeeac8b
+d1839e491b34764fbd9f51895b639a97bc7d5a1ef8f57ba87545f8b3b9bc7e7a
+UkrScanner.exe (SFX)
+d3b3aa56f1056df4c32cd2bc477e513b
+778eed2fb4bbce4755cdf923f3fddc16155a478b44f90dc613ed2811a8efe066
+scan.exe (CredoMap_v2)
+56a504a34d2cfbfc7eaa2b68e34af8ad
+9309fb2a3f326d0f2cc3f2ab837cfd02e4f8cb6b923b3b2be265591fd38f4961
+SQLite.Interop.dll (легітимна DLL)
+
+网络：
+mariachandran@ginaengg[.]com
+69[.]16.243.33（已接收）
+hxxps://eo2mxtqmeqzafqi.m.pipedream[.]net
+eo2mxtqmeqzafqi.m.pipedream[.]net
+
+建议
+1. 为传播恶意程序、链接等，攻击者使用当前主题和被泄露的乌克兰国家机构雇员的电子邮件地址。我们强调需要保持警惕（在附件之前的信中存在密码 - 潜在威胁迹象之一的示例）。
+2. CERT-UA 使用 MISP 平台和使用电子数字签名的电子邮件交换有关网络威胁的信息。
+3. 应在操作系统机制和/或安全功能级别阻止第三方可执行文件的启动。

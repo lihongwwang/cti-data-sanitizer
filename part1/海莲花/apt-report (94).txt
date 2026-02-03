@@ -1,0 +1,267 @@
+﻿2018/12/14 腾讯御见威胁情报中心
+
+海莲花APT组织最新攻击样本分析
+腾讯御见威胁情报中心 4月27日
+
+0x1 概况 
+
+        海莲花（OceanLotus）也叫APT32或APT‑C‑00，是一个长期针对中国及其他东亚、东南亚国家（地区）政府、科研机构、海运企业等领
+
+域进行攻击的APT组织。近日腾讯御见威胁情报中心捕获到了一个该组织的最新攻击样本。
+
+        在本次攻击事件中，该组织使用了CVE‑2017‑11882漏洞并结合白签名利用程序来最大化隐藏自己的后门木马。后门木马将常驻用户电脑，
+
+并根据云控指令伺机窃取机密信息或进行第二阶段攻击。 
+
+（攻击流程图）
+
+0x2 威胁等级（高危） 
+危害评估：★★★★☆ 
+
+        “海莲花”组织精心打造的攻击体系，对政府机关、要害企业网络信息安全构成严重威胁，攻击者可刺探国家机密、企业业务数据，亦可采取
+破坏性行动。
+
+影响评估：★★★★☆ 
+
+        主要威胁中国和其他东亚、东南亚地区的政府、科研机构和海运企业。 
+
+技术评估：★★★★☆ 
+
+        手段隐蔽，利用多种安全漏洞进行攻击尝试 
+
+0x3 影响面
+        主要目标是包括中国在内的东亚、东南亚多个国家政府、科研机构和海运企业。 
+
+0x4 载荷投递
+        本次攻击时使用了CVE‑2017‑11882漏洞文档，诱饵文档文件名为《Document_GPI Invitation‑UNSOOC China.doc》，内容为一模糊的
+
+图片。许多人看到模糊化的图片，会下意识的认为资源加载不全，需要点击或等待。而此时，利用漏洞攻击的恶意程序已经运行。 
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 1/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+(诱饵文档)
+
+        漏洞触发后，公式编辑器进程会在“C:Program FilesMicrosoft‑Windows‑DiskDiagnosticResolver_2021325962”目录下释放
+MicrosoftWindowsDiskDiagnosticResolver.exe、OUTLFLTR.DAT、rastls.dll 3个文件。
+
+        其中MicrosoftWindowsDiskDiagnosticResolver.exe有有效数字签名，原始名为dot1xtra.exe，这是典型的白加黑利用技术，带有效签名
+
+的exe运行后会自动加载木马文件rastls.dll。
+
+(签名信息) 
+  
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 2/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+（文件详细信息）
+
+0x5 RAT分析（ 结构解析） 
+
+1.rastls.dll 行为分析 
+
+        此dll会在DLLMain函数中加载OUTLFLTR.DAT，进行解密后得到一段shellcode。接着会将宿主exe即
+
+MicrosoftWindowsDiskDiagnosticResolver.exe 0x401000（默认基址为0x400000）开始的一大片代码修改为无实际作用的指令，宿主exe
+
+oep位置的指令也被修改了。当宿主exe从OEP位置开始执行时，就会跳转到木马的shellcode部分。
+
+        该组织在本次攻击中使用的关键模块文件都加入了大量混淆，混淆代码如下所示。 
+
+（混淆代码）
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 3/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+（宿主exe 0x401000处被修改后的指令）
+
+ 
+
+（宿主exe 被修改后OEP附近的代码）
+
+  
+
+（rastls.dll 跳转到shellcode执行）
+
+        OUTLFLTR.DAT中的shellcode被执行后，会自加载shellcode中存储的一个名为{92BA1818‑0119‑4F79‑874E‑
+
+E3BF79C355B8}.dll。接着执行此dll的导出函数DllEntry。 
+
+（dll内部名称及导出函数）
+
+        {92BA1818‑0119‑4F79‑874E‑E3BF79C355B8}.dll 又会从资源中解密出木马功能文件{A96B020F‑0000‑466F‑A96D‑
+
+A91BBF8EAC96}.dll，并自加载此dll，执行此dll的导出函数DllEntry。 
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 4/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+（木马功能文件导出函数及内部文件名）
+
+2. {A96B020F‑0000‑466F‑A96D‑A91BBF8EAC96}.dll 行为分析  
+
+        该dll执行后，会解密资源得到木马的c2等配置信息及3个通信相关的dll，名称分别为HttpProv.dll、DnsProvider.dll、HttpProv.dll。每个
+
+通信dll都导出一个"CreateInstance"函数。 
+
+(加载资源)
+
+（解密资源）
+
+ 
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 5/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+（解密资源的函数代码片断）
+
+（资源解密后的明文内容）
+
+        将解密后的资源进行分析后得到资源中各字段的值及部分含义 
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 6/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+（通信dll导出函数）
+
+        接着此dll会根据资源中的配置信息Sleep一定的时间后再开始后续的操作。后续会再利用自加载的方式将3个通信相关的dll全部加载起来。
+
+自加载时用到的函数主要有VirtualAlloc、 
+
+        RtlMoveMemory，木马还会创建名为“Microsoft‑Windows‑DiskDiagnosticResolver“的任务计划，达到常驻的目的。 
+
+（根据资源中的配置的信息，sleep一段时间）
+
+  
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 7/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+（自加载时分配内存）
+
+  
+
+（自加载时填充内存）
+
+        木马会根据资源中的c2，使用DGA（域名生成算法）生成通信时的域名信息，木马上线时会将用户名、计算机名、操作系统等信息加密后上
+
+报给c2。 
+
+（DGA得到的通信域名） 
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 8/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+(上线时的第一个明文包)
+
+        木马上线后，根据服务器下发的指令执行相应的功能，主要功能有：
+
+1. 文件操作，比如创建文件或目录、删除文件或目录、查找文件
+2. 注册表读写
+3. 远程执行代码，比如创建进程、执行dll等
+4. 设置环境变量 
+
+0x6 溯源 
+
+        从该RAT通信的C&C地址154.16.138.89在腾讯御见威胁情报中心平台进行反查，得到下列结果：  
+
+        随便选一个域名orinneamoure.com继续反查： 
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 9/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+        可以发现，该域名被腾讯御见威胁情报平台为标注为海莲花。而该域名也在之前友商对海莲花的报告中披露过。此外，该攻击使用的技术、
+
+网络通信协议等和以往的海莲花的攻击样本进行比对也完全一致。因而我们可以确认，该次攻击属于海莲花APT团队所为。
+
+0x7 总结 
+
+        从上文的分析可以看出“海莲花”组织在漏洞利用、白加黑利用技术、代码混淆等方面都有着很深的技术积累。后门木马不落地直接内存执
+行、签名程序白利用、shellcode隐藏可执行文件、多变的网络通信等技术手段大大增加了杀软的查杀难度。
+
+        因此，我们提醒政府、科研机构、企业等广大用户，切勿随意打开来历不明的文档，同时安装安全软件。
+
+        目前，腾讯御界高级威胁检测系统可以检测“海莲花”组织的此轮攻击。御界高级威胁检测系统，是基于腾讯反病毒实验室的安全能力、依托
+腾讯在云和端的海量数据，研发出的独特威胁情报和恶意检测模型系统。
+
+        凭借基于行为的防护和智能模型两大核心能力，御界高级威胁检测系统可高效检测未知威胁，并通过对企业内外网边界处网络流量的分析，
+
+感知漏洞的利用和攻击。通过部署御界高级威胁检测系统，及时感知恶意流量，检测钓鱼网址和远控服务器地址在企业网络中的访问情况，保护
+
+企业网络安全。 
+
+0x8 附录(IOCs) 
+Hash: 
+
+        02AE075DA4FB2A6D38CE06F8F40E397E (Document_GPI Invitation‑UNSOOC China.doc)
+        D7C172D4A88573B7E373F2B666C011AC(GPI Invitation‑UNSOOC China.doc) 
+        72A5AD375401F33A5079CAEE18884C9D ({92BA1818‑0119‑4F79‑874E‑E3BF79C355B8}.dll) 
+        79D06DD20768FD8CD4A043833C1F2D4B ({A96B020F‑0000‑466F‑A96D‑A91BBF8EAC96}.dll) 
+        EC505565E4CB5A22BFD3F63E4AD83FF3(HttpProv.dll) 
+        2559738D1BD4A999126F900C7357B759(HttpProv.dll) 
+        2DFAEDD9265642E430E6635F210FABB4(DnsProvider.dll) 
+        F775CC387A55831386E44DD00EF9723E(rastls.dll) 
+        B10F93CDBCDF43D4C5C5770872E239F4(OUTLFLTR.DAT) 
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 10/11
+
+
+
+2018/12/14 腾讯御见威胁情报中心
+
+C&C: 
+
+        andreagahuvrauvin.com 
+
+        byronorenstein.com 
+
+        straliaenollma.xyz 
+
+        dieordaunt.com  
+
+        christienoll.xyz 
+
+        illagedrivestralia.xyz 
+
+        154.16.99.85 
+
+        154.16.47.41 
+
+        154.16.138.89 
+
+注册表： 
+
+        “SOFTWAREAppAppXbf13d4ea2945444d8b13e2121cb6b663DefaultIcon” 
+        “SOFTWAREAppAppXbf13d4ea2945444d8b13e2121cb6b663Application” 
+
+腾讯御见威胁情报中心诚邀各路英豪加盟，一起为捍卫国家网络安全贡献力量。 
+
+https://mp.weixin.qq.com/s/E_cwiBj4-998o-bXKgi8Mw 11/11

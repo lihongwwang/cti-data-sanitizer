@@ -1,0 +1,70 @@
+“海莲花”，又名 APT32 和 OceanLotus，是越南背景的黑客组织。该组织至少自 2012 年开始活跃，长期针对中国能源相关行业、海事机构、海域建设部门、科研院所和航运企业等进行网络攻击。除中国外，“海莲花”的目标还包含全球的政府、军事机构和大型企业，以及本国的媒体、人权和公民社会等相关的组织和个人。
+
+近日，微步在线狩猎系统捕获到一个 APT32 最新针对我国进行攻击的诱饵文件，分析之后发现：
+⚫ 诱饵文件名为“2019 年第一季度工作方向附表.rar”，该诱饵在攻击过程中使用了两层白利用进行 DLL 劫持，第一层为 Word 白利用，第二层为 360 安全浏览器白利用。两层白利用是 APT32 新的攻击手法，截至报告时间，该诱饵尚无杀软检出。
+⚫ 此次攻击最终投递的木马为 Cobalt Strike Beacon 后门，具备进程注入、文件创建、服务创建、文件释放等功能，C2 通信使用 Safebrowsing 可延展 C2 配置。
+⚫ 微步在线通过对相关样本、IP 和域名的溯源分析，共提取 5 条相关 IOC，可用于威胁情报检测。微步在线的威胁情报平台(TIP)、威胁检测平台(TDP)、API 等均已支持此次攻击事件和团伙的检测。
+
+详情自活跃以来，APT32 一直持续针对我国进行网络攻击。在攻击过程中，APT32 一直在尝试不同方法以实现在目标系统上执行恶意代码和绕过安全检测，其中经常使用的包含白利用和 C2 流量伪装等。近日，微步在线狩猎系统捕获了一个 APT32 针对我国进行攻击的诱饵，该诱饵使用了两层白利用进行 DLL 劫持，第一层为 Word 白利用，第二层为 360 安全浏览器白利用，最终投递的木马为 Cobalt Strike Beacon 后门，C2通信使用 Safebrowsing 可延展 C2 配置。
+
+诱饵“2019 年第一季度工作方向附表.rar”整体攻击流程如下：
+截至报告发布时间，微步在线云沙箱多引擎检测和 VirusTotal 多引擎检测均为 0。
+
+样本分析
+诱饵“2019 年第一季度工作方向附表.rar”为一压缩文件，解压得到“2019 年第一季度工作方向附表.EXE”和“wwlib.dll”，其中“2019 年第一季度工作方向附表.EXE”为包含有效数字签名的 Word 2007 可执行程序，打开会加载同目录下的 wwlib.dll，wwlib.dll 被设置了系统和隐藏属性。
+1、下面对 wwlib.dll 进行分析。
+1) wwlib.dll 的基本信息如下：
+SHA256 236623cd3be93a832ae86bb7bfbf66e6d5e00abbc6ebc6555c09988412448391
+SHA1 fb46ed36c2f2dfd6ecfa898cd6cb176c4950df4f
+MD5 05e513c612b0384804db9bda5277087c
+文件格式 PE 文件(DLL)
+文件大小 1.37 MB
+文件名 wwlib.dll
+时间戳 2019-02-11 11:12:21
+2) DLL 通过白利用被加载之后，会获取系统盘符，然后在“\ProgramData\360seMaintenance\”目录写入“chrome_elf.dll”和“360se.exe”文件，其中“360se.exe”是带数字签名的白文件。
+3) 恶意“wwlib.dll”还会根据 EXE 程序名构造“2019 年第一季度工作方向附表.docx”字符串，然后在系统 Temp 目录写入带密码的 docx 文档，用于伪装自己是一个正常的文档。
+4) 如果首次运行，则会在注册表目录“Software\\Classes\\”创建“.doc”和“.docx”项，然后调用 WORD 程序打开释放到 Temp 目录的 .docx 文件。
+5) 第二次运行查询“Software\\Classes\\”存在“.doc”和“.docx”，则执行“360se.exe”文件，并附加 Temp 目录释放的 docx 文件路径为参数。
+2、下面对 chrome_elf.dll 进行分析。
+1) chrome_elf.dll 基本信息如下：
+SHA256 a2d2b9a05ed5b06db8e78b4197fc5ea515f26d5626d85f3b1b39210d50552af3
+SHA1 f49607fe57cc0016dce66c809e94d9750b049082
+MD5 3b132e407474bc1c830d5a173428a6e1
+文件格式 PE 文件(DLL)
+文件大小 191 KB
+文件名 chrome_elf.dll
+时间戳 2019-02-11 3:12:43
+2) chrome_elf.dll 被 360se.exe 加载，然后在 DLL 初始化中，解析参数，然后调用 WORD 程序打开参数中的文件，并调用 CryptAPI 函数解密内存中的 URL 链接，解密后的 URL 为“https://officewps.net/ultra.jpg”。
+3) 然后“360se.exe”调用 DLL 中的“SignalInitializeCrashReporting”执行判断是否存在“360se.exe”进程，如果不存在则不执行恶意代码。
+4) 然后从 https://officewps.net/ultra.jpg 下载 payload 进行第三阶段攻击。
+5) 下载完成后拷贝 payload 到新申请内存空间，跳转到 payload 的 0 偏移位置执行。
+3、第三阶段“ultra.jpg”分析：
+1) ultra.jpg 基本信息如下：
+SHA256 5ccfc54e083970d5c34b890d27d8a7af5eb4f8ae4ab0e93c61a6776e5d31b54c
+SHA1 7fa2446c948e25953dcd36b27a976a2691dca977
+MD5 802cb895c1f0085611c74edf2b177df6
+文件格式 shellcode
+文件大小 205 KB
+文件名 ultra.jpg
+2) 首先 payload 的 Shellcode 会获取相关 API 地址。
+3) 然后循环解密 payload 中的数据，解密完成后是一个 DLL 版的 Cobalt Strike Beacon 后门。
+4) 调用 CreateThread 创建线程，从解密出来的 0 偏移位置执行，进行反射加载 DLL。
+5) 连接 C2 地址和请求 URL 进行上线请求，C2 通信使用 Safebrowsing 可延展 C2 配置。
+6) 该后门包含的 C2 命令多达 76 个，具体包含进程注入、文件创建、服务创建、文件释放等等。
+
+关联分析
+根据此次攻击相关的 TTPs 和背景信息，我们认为背后攻击者为 APT32。此次攻击与此前的一些攻击的对比如下：
+此次：
+诱饵文件 RAR 压缩包，包含 Word 可执行文件和 wwlib.dll
+攻击手法 Word 白利用，360 安全浏览器白利用
+迷惑手法 wwlib.dll 设置系统和隐藏属性(攻击中国时)，释放并打开带密码的文档
+投递木马 Cobalt Strike Beacon
+C2 通信 Safebrowsing 可延展 C2 配置
+
+威胁指标（IOC）
+域名：officewps.net
+Hash 检测结果样本：
+236623cd3be93a832… 1/25
+27fdafd1da4c1f1f5e… 0/25
+5ccfc54e083970d5c… 0/0
+a2d2b9a05ed5b06d… 2/25

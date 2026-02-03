@@ -1,0 +1,27 @@
+Fancy Bear's SpyPress Malware
+
+**Executive Summary**
+Operation RoundPress, a Russia-aligned cyberespionage campaign attributed to Fancy Bear, deploys SpyPress malware via cross-site scripting (XSS) vulnerabilities to steal sensitive email data from high-value webmail servers. Active since 2023 and expanding in 2024, the campaign primarily targets Ukrainian government entities and Eastern European defense contractors, exploiting zero-day and known vulnerabilities across platforms like Roundcube, Horde, MDaemon, and Zimbra.
+
+**Key Takeaways**
+Fancy Bear uses spearphishing to deliver SpyPress, a malicious JavaScript payload, exploiting XSS vulnerabilities in webmail interfaces to exfiltrate email data and credentials.
+A zero-day XSS vulnerability (CVE-2024-11182) in MDaemon was exploited in 2024 to deploy SpyPress.
+SpyPress targets Ukrainian governmental organizations and defense firms in Bulgaria and Romania producing Soviet-era weapons for Ukraine.
+The campaign extends to government entities in Africa, the EU, and South America, reflecting SpyPress’s broad geopolitical reach.
+
+**What is SpyPress?**
+Operation RoundPress, uncovered by ESET researchers, is a sophisticated cyberespionage campaign attributed with medium confidence to the Russia-aligned Fancy Bear group. Active since 2023, the campaign leverages SpyPress malware, a malicious JavaScript payload, to exfiltrate sensitive email data from high-value webmail servers. It primarily targets Ukrainian governmental entities and defense contractors in Bulgaria and Romania, focusing on firms producing Soviet-era weapons for Ukraine. The campaign also affects government organizations in African countries, the EU, and South America, underscoring its geopolitical scope.
+
+The attack begins with spearphishing emails that exploit cross-site scripting (XSS) vulnerabilities, enabling Fancy Bear to inject SpyPress into victims’ webmail interfaces. In 2023, SpyPress was deployed against Roundcube webmail, exploiting CVE-2020-35730 to execute arbitrary JavaScript, granting access to email content, contacts, and credentials. By 2024, Fancy Bear expanded SpyPress’s deployment to Horde, MDaemon, and Zimbra platforms, exploiting platform-specific XSS flaws. A notable 2024 attack involved a zero-day XSS vulnerability in MDaemon (CVE-2024-11182), where SpyPress manipulated the HTML parser using a crafted `<img>` element and a `<noembed>` tag within a `<p>` element’s title attribute. ESET disclosed this flaw to MDaemon developers on November 1, 2024, prompting a patch in version 24.5.1. For Roundcube in 2024, SpyPress exploited CVE-2023-43770, patched in September 2023, which abused a regex flaw in the `rcube_string_replacer.php` script to create malicious hyperlinks.
+SpyPress is designed for stealth, enabling persistent access to webmail environments and efficient data exfiltration. Its adaptability across multiple webmail platforms highlights Fancy Bear’s technical prowess.
+
+**Who is Fancy Bear?**
+Fancy Bear, also known as APT28, Sofacy, Pawn Storm, Sednit, STRONTIUM, Tsar Team, and Threat Group-4127, is a Russian nexus threat actor group active since at least 2004. Fancy Bear is attributed with high confidence to the Main Directorate of the General Staff of the Armed Forces of the Russian Federation (GRU), specifically the 85th Main Special Service Centre (Unit 26165).
+
+Fancy Bear employs spearphishing emails with malicious attachments or links to spoofed websites for initial access, often leveraging social engineering to trick victims. The group deploys custom malware, such as XAgent, a remote access trojan for keylogging and file extraction, and Zebrocy, used in phishing campaigns. They exploit zero-day vulnerabilities, like CVE-2024-11182 in MDaemon webmail, to inject malicious JavaScript, as seen in Operation RoundPress. Fancy Bear uses look-alike domains to facilitate credential harvesting and maintains persistence through tools like CompuTrace, modified for malicious purposes. Their command-and-control infrastructure combines HTTP and DNS protocols to exfiltrate data stealthily.
+
+Fancy Bear targets governmental entities, military organizations, defense contractors, and media outlets, with a focus on NATO-aligned and Transcaucasian states. Key targeted regions include the United States, Ukraine, Germany, France, Bulgaria, Romania, and the Middle East, alongside African, EU, and South American governments. Notable campaigns include the 2016 US Democratic National Committee breach and the 2015 German Bundestag attack. The group’s espionage and disruption efforts align with Russian strategic interests, often aiming to sow political discord or gather intelligence.
+
+**IOCs**
+335b1cd7708284fc1c2c6678f2f8d6737d68935ec992d680ff540f2e72774665
+625e4c166c7a1d5a1becf56b27d4f76a2f95935cbd8d556c30a493263d10dbf8

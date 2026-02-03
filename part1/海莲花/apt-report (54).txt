@@ -1,0 +1,346 @@
+﻿2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+(http://blog.nsfocus.net/)
+
+海莲花（APT32）组织 wwlib-side-loading攻击链分析
+ about 16 hours ago (http://blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/)  伏影实验室 (http://blog.nsfocus.net/author/fuying-lab/)
+
+( )
+
+  阅读： 543
+2018年以后，海莲花组织开始使⽤⼀种新的攻击⼿法，并且在之后的时间⾥持续增加攻击诱饵的投放数量，同时不断改进攻击链条的细节。统计发现，这条我们称之为wwlib side-loading的攻
+击链⾄今已发展出多个版本，可以作为海莲花组织近年主要攻击链来看待。
+
+⽂章⽬录 
+
+前⾔
+
+攻击链概述
+
+攻击链流程分析
+
+侦察⽬标阶段
+
+制作⼯具阶段
+
+投递⼯具阶段
+
+触发⼯具阶段
+
+安装⽊⻢阶段
+
+建⽴连接阶段
+
+执⾏攻击阶段
+
+攻击链分⽀跟踪
+
+攻击链变种情况
+
+总结
+
+关于伏影实验室
+
+关于绿盟威胁情报中⼼
+
+前⾔
+⾃2015年⾸度披露以来，被报道的海莲花组织攻击链已经达到⼗余种，并伴有显著的时间活跃性特征。2018年以后，海莲花组织开始使⽤⼀种新的攻击⼿法，并且在之后的时间⾥持续增加攻
+击诱饵的投放数量，同时不断改进攻击链条的细节。统计发现，这条我们称之为wwlib side-loading的攻击链⾄今已发展出多个版本，可以作为海莲花组织近年主要攻击链来看待。
+
+ 
+
+攻击链概述
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 1/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+wwlib side-loading攻击链是上半年乃⾄2018年以来海莲花组织最主要的攻击⽅式，具有稳定、抗检测等特点。同时，该攻击链的组件在攻防对抗中演化出了多个变种，使得其恶意⾏为越来越
+难以被捕获。
+
+该攻击流程的主要⾏为及其在攻击链中的组成如下：
+
+此攻击链中，海莲花组织在触发⼯具和安装⽊⻢部分的⾏为⽐较有代表性，并且随时间发展出多个变化的⽀链，使得攻击链更为复杂和健壮。
+
+ 
+
+攻击链流程分析
+下⾯将以⼀个典型的攻击样本展示此攻击链的执⾏流程。
+
+侦察⽬标阶段
+海莲花组织会分析⽬标所在群体和社会类型，编写对应的诱饵⽂档。根据攻击样本的诱饵⽂档推断，海莲花组织跟踪并收集了越南多个商业组织或⾮盈利组织的信息，使⽤有⾼度欺骗性的⽂字
+
+或⽂档作为诱饵进⾏攻击，其攻击⽬标则推断为与被收集情报组织相关的⼯作⼈员及其设备。
+
+制作⼯具阶段
+该阶段，海莲花⼀般会准备两个⽂件作为武器包：
+
+⽂件名 属性和功能
+
+xxxx.exe Microsoft office word程序可执⾏⽂件，⽤于免杀和绕过UAC
+
+wwlib.dll 恶意程序主体，被word程序加载并调⽤恶意函数，执⾏攻击
+
+系统中显示为：
+
+可以看到wwlib.dll为隐藏⽂件，可执⾏⽂件有word图标，这在默认⽂件夹选项的系统中⽐较有欺骗性：
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 2/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+该武器包诱饵⽂件如下图：
+
+⽂档由图⽚和⽂本组成，但内容皆为乱码。
+
+该诱饵⽂档名称为“Noi dung chi tiet thu moi tham du hoi nghi va thong tin lich trinh dien ra hoi nghi tai Singapore”，⼤意为“使⽤这些信息可以获得新加坡最受关注的活动和信息”。
+
+投递⼯具阶段
+该攻击链中，海莲花组织使⽤⻥叉攻击的⽅式进⾏⽂件的投放，邮件中附件为rar压缩包形式，⽂件名为“Thu moi tham du 2019.rar”。⼤意为“邀请函2019”。
+
+触发⼯具阶段
+当⽤户下载解压并双击执⾏word可执⾏⽂件时，恶意wwlib.dll运⾏库被⾃动加载执⾏。
+
+该阶段为此攻击链的分化阶段，海莲花组织在不同时期构造了不同的wwlib.dll程序，其触发⽅式不尽相同，可以作为变种来看待。
+
+该程序使⽤的wwlib⽂件为本攻击链在2019年度的主要变种之⼀。该程序的主要恶意代码堆放在DllMain⼊⼝处，其主要功能hook LdrLoadDll函数，使得此函数运⾏⾄返回之前加载指定恶意
+shellcode并运⾏。
+
+程序hook系统函数LdrLoadDll，将注⼊函数写⼊LodrLoadDll返回位置，这样系统加载库⽂件后即会进⼊指定位置的InjectPayload函数。此处的hook代码⽐较规范：
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 3/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+InjectPayLoad函数中，程序⾸先修复了hook点，⽽后解密代码段中的shellcode，在内存中加载并执⾏：
+
+此shellcode分为多个层次，各层分别负责备运⾏环境、解密最终payload、下载远控⼯具等功能，各层shellcode间使⽤线程调⽤：
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 4/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+其最终下载链接为https://api.ciscofreak.com/Kgx2：
+
+安装⽊⻢阶段
+该Shellcode下载到的Kgx2为另外⼀段shellcode，其功能为解密⼀个pe⽂件并反射加载。解密出的pe⽂件为Cobalt Strike Beacon受控端程序。
+
+Shellcode Kgx2解密pe⽂件：
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 5/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+解密出的Cobalt Strike Beacon：
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 6/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+建⽴连接阶段
+该beacon受控端会与主控端api.ciscofreak.com建⽴连接，使⽤tls和443端⼝进⾏通信：
+
+执⾏攻击阶段
+该beacon⽊⻢接收控制端指令并展开攻击，具有以下功能：
+
+1. 远程线程注⼊，可指定⽬标进程名称或pid；
+2. Spawn，将beacon shell 派⽣⾄新的程序；
+3. 命名管道，连接、关闭指定命名管道，使⽤命名管道通信；
+4. ⽂件操作，上传与下载⽂件，修改⽂件时间；
+5. ⽂件系统操作，切换⽬录、创建删除⽂件夹、写⼊环境变量等；
+6. 命令⾏执⾏，直接执⾏指定的cmd命令；
+7. ⽹络监听，包括创建服务端并监听指定端⼝、本地⽹络通信转发等；
+8. 获取信息，查看所有进程信息，查看指定⽬录下⽂件信息；
+9. 创建服务，将指定程序以服务⽅式运⾏；
+
+10. 权限操作，包括检查权限，提升权限；
+11. Shellcode执⾏，使⽤powershell通过指定端⼝下载并运⾏；
+12. 域内渗透，使⽤kerberos票据。
+
+ 
+
+攻击链分⽀跟踪
+作为最暴⼒直接的攻击链，海莲花对wwlib side-loading攻击⼗分依赖，攻击次数较多。该攻击链载荷最早被观测到是在2018年之前，此时期使⽤的载荷相对单⼀。进⼊2019年后，该攻击链载
+荷的数量与变种种类皆⼤幅增加。
+
+我们对已发现的海莲花wwlib恶意程序进⾏了统计，结果如图：
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 7/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+由统计图可以看出，该攻击链在最近两年⼀直维持着⼀定的活跃度，⽽攻击链在不同时期的主要攻击载荷也不尽相同，呈现出了迭代的趋势。
+
+ 
+
+攻击链变种情况
+海莲花wwlib side-loading攻击链变种主要体现在投递和触发阶段，具体表现为使⽤不同的诱饵⽂档和⼀阶段恶意载荷，可以按时期分为三个⼤类：
+
+第⼀类：2018年⾄2019年第⼀季度；
+
+第⼆类：2019年上半年；
+
+第三类：2019年第⼆季度。
+
+对三类样本进⾏分析发现，随着时间的推移，wwlib side-loading变种载荷的代码复杂度逐渐上升，陆续增加了花指令、常量隐藏、rc4加密、⽩利⽤嵌套等对抗功能，增⼤了对其进⾏检测的难
+度。
+
+ 
+
+总结
+作为最暴⼒直接的攻击⽅式，wwlib side-loading是海莲花⼗分依赖的⼀条攻击链。该攻击链载荷最早被观测到是在2018年之前，此时期使⽤的载荷相对单⼀。进⼊2019年后，海莲花组织对该
+攻击链的流程和载荷进⾏了多次改进升级，并将其作为主要攻击⽅式来使⽤，攻击⾯涵盖中国、越南等国家。由于该攻击链具有⼀定的免杀和反检测能⼒，需要相关企业或组织的⼯作⼈员在保
+
+障安全检测设备正常运⾏的同时，进⼀步提升对未知邮件附件的敏感度，将海莲花组织的攻击拦截在⼊侵阶段之前。
+
+ 
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 8/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+关于伏影实验室
+
+伏影实验室专注于安全威胁研究与监测技术，包括但不限于威胁识别技术，威胁跟踪技术，威胁捕获技术，威胁主体识别技术。研究⽬标包括：僵⼫⽹络威胁，DDOS对抗，WEB对抗，流⾏
+服务系统脆弱利⽤威胁、身份认证威胁，数字资产威胁，⿊⾊产业威胁 及 新兴威胁。通过掌控现⽹威胁来识别⻛险，缓解威胁伤害，为威胁对抗提供决策⽀撑。
+
+  
+
+关于绿盟威胁情报中⼼
+绿盟威胁情报中⼼（NSFOCUS Threat Intelligence center, NTI）是绿盟科技为落实智慧安全2.0战略，促进⽹络空间安全⽣态建设和威胁情报应⽤，增强客户攻防对抗能⼒⽽组建的专业性安全
+研究组织。其依托公司专业的安全团队和强⼤的安全研究能⼒，对全球⽹络安全威胁和态势进⾏持续观察和分析，以威胁情报的⽣产、运营、应⽤等能⼒及关键技术作为核⼼研究内容，推出了
+
+绿盟威胁情报平台以及⼀系列集成威胁情报的新⼀代安全产品，为⽤户提供可操作的情报数据、专业的情报服务和⾼效的威胁防护能⼒，帮助⽤户更好地了解和应对各类⽹络威胁。
+
+⽂章分类： 技术前沿 (http://blog.nsfocus.net/category/techfront/) 
+⽂章关键词： APT32 (http://blog.nsfocus.net/tag/apt32/), OceanLotus (http://blog.nsfocus.net/tag/oceanlotus/), wwlib-side-loading
+(http://blog.nsfocus.net/tag/wwlib-side-loading/), 伏影实验室 (http://blog.nsfocus.net/tag/%e4%bc%8f%e5%bd%b1%e5%ae%9e%e9%aa%8c%e5%ae%a4/), 威胁
+情报中⼼ (http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81%e6%83%85%e6%8a%a5%e4%b8%ad%e5%bf%83/), 技术博客
+(http://blog.nsfocus.net/tag/%e6%8a%80%e6%9c%af%e5%8d%9a%e5%ae%a2/), 攻击 (http://blog.nsfocus.net/tag/%e6%94%bb%e5%87%bb/), 攻击链
+(http://blog.nsfocus.net/tag/%e6%94%bb%e5%87%bb%e9%93%be/), 海莲花 (http://blog.nsfocus.net/tag/%e6%b5%b7%e8%8e%b2%e8%8a%b1/), 绿盟科技
+(http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80/) 
+转载请注明：“转⾃绿盟科技博客”： 原⽂链接 (http://blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/).
+⽂章收录：
+
+← 【威胁通告】微软发布浏览器累积安全更新修复 IE 远程代码执⾏漏洞(CVE-
+2019-1367) (http://blog.nsfocus.net/cve-2019-1367/)
+
+发表评论
+要发表评论，您必须先登录 (http://blog.nsfocus.net/wp-login.php?redirect_to=http%3A%2F%2Fblog.nsfocus.net%2Fanalysis-wwlib-side-loading-attack-chain-
+apt32%2F)。
+
+绿盟科技博客精华⽂章
+
+学习⼿册：浅析DDoS的攻击及防御 (http://blog.nsfocus.net/analysis-ddos-attack-defense/)
+学习⼿册：盘点DDoS带来的误会 (http://blog.nsfocus.net/inventory-ddos-errors/)
+移动APP安全测试要点 (http://blog.nsfocus.net/mobile-app-security-security-test/)
+Dedecms远程写⽂件漏洞分析 (http://blog.nsfocus.net/dedecms-write-file-vuln/)
+【⼲货分享】XSS攻击进阶篇——那些年我们看不懂的XSS (http://blog.nsfocus.net/xss-advance/)
+
+两步邮件订阅，⽅便获取⽂章
+欢迎订阅！现在已有5 887个朋友订阅了。
+在后续邮件的尾部，您可以退订及修改订阅内容。
+选择订阅组：
+
+ 最新⽂章
+ 技术分享
+ 漏洞分析
+ 运维安全
+ Web安全
+ 安全报告
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 9/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+邮件 *
+⻢上订阅！
+
+绿盟科技博客功能
+
+注册 (http://blog.nsfocus.net/wp-login.php?action=register)
+登录 (http://blog.nsfocus.net/wp-login.php)
+⽂章RSS (Really Simple Syndication) (http://blog.nsfocus.net/feed/)
+评论RSS (Really Simple Syndication) (http://blog.nsfocus.net/comments/feed/)
+WordPress.org (https://cn.wordpress.org/)
+
+绿盟科技博客⽂章标签
+
+绿盟科技 (http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80/)   远程代码执⾏漏洞
+(http://blog.nsfocus.net/tag/%e8%bf%9c%e7%a8%8b%e4%bb%a3%e7%a0%81%e6%89%a7%e8%a1%8c%e6%bc%8f%e6%b4%9e/)   绿盟科技漏洞
+库 (http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e6%bc%8f%e6%b4%9e%e5%ba%93/)   漏洞
+(http://blog.nsfocus.net/tag/%e6%bc%8f%e6%b4%9e/)   EnglishVersion (http://blog.nsfocus.net/tag/englishversion/)   DDoS
+(http://blog.nsfocus.net/tag/ddos/)   NSFOCUS (http://blog.nsfocus.net/tag/nsfocus/)   云安全
+(http://blog.nsfocus.net/tag/%e4%ba%91%e5%ae%89%e5%85%a8/)   远程代码执⾏
+(http://blog.nsfocus.net/tag/%e8%bf%9c%e7%a8%8b%e4%bb%a3%e7%a0%81%e6%89%a7%e8%a1%8c/)   威胁情报
+(http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81%e6%83%85%e6%8a%a5/)   物联⽹安全
+(http://blog.nsfocus.net/tag/%e7%89%a9%e8%81%94%e7%bd%91%e5%ae%89%e5%85%a8/)   ⽹络安全
+(http://blog.nsfocus.net/tag/%e7%bd%91%e7%bb%9c%e5%ae%89%e5%85%a8/)   ⾼危漏洞
+(http://blog.nsfocus.net/tag/%e9%ab%98%e5%8d%b1%e6%bc%8f%e6%b4%9e/)   威胁通告
+(http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81%e9%80%9a%e5%91%8a/)   绿盟科技博客
+(http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e5%8d%9a%e5%ae%a2/)   rsa2018 (http://blog.nsfocus.net/tag/rsa2018/)  
+安全会议 (http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e4%bc%9a%e8%ae%ae/)   ddos攻击事件
+(http://blog.nsfocus.net/tag/ddos%e6%94%bb%e5%87%bb%e4%ba%8b%e4%bb%b6/)   安全周报
+(http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e5%91%a8%e6%8a%a5/)   DDoS攻击 (http://blog.nsfocus.net/tag/ddos%e6%94%bb%e5%87%bb/)  
+云计算 (http://blog.nsfocus.net/tag/%e4%ba%91%e8%ae%a1%e7%ae%97/)   ⼤数据 (http://blog.nsfocus.net/tag/%e5%a4%a7%e6%95%b0%e6%8d%ae/)   勒
+索软件 (http://blog.nsfocus.net/tag/%e5%8b%92%e7%b4%a2%e8%bd%af%e4%bb%b6/)   安全意识
+(http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e6%84%8f%e8%af%86/)   恶意软件
+(http://blog.nsfocus.net/tag/%e6%81%b6%e6%84%8f%e8%bd%af%e4%bb%b6/)   漏洞分析
+(http://blog.nsfocus.net/tag/%e6%bc%8f%e6%b4%9e%e5%88%86%e6%9e%90/)   物联⽹
+(http://blog.nsfocus.net/tag/%e7%89%a9%e8%81%94%e7%bd%91/)   态势感知
+(http://blog.nsfocus.net/tag/%e6%80%81%e5%8a%bf%e6%84%9f%e7%9f%a5/)   威胁 (http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81/)   绿盟科技威胁
+事件定级标准
+
+(http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e5%a8%81%e8%83%81%e4%ba%8b%e4%bb%b6%e5%ae%9a%e7%ba%
+a7%e6%a0%87%e5%87%86/)  
+
+最新⽂章
+
+海莲花（APT32）组织 wwlib-side-loading攻击链分析 (http://blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/)
+【威胁通告】微软发布浏览器累积安全更新修复 IE 远程代码执⾏漏洞(CVE-2019-1367) (http://blog.nsfocus.net/cve-2019-1367/)
+绿盟科技互联⽹安全威胁周报NSFOCUS-2019-38 (http://blog.nsfocus.net/nsfocus-2019-38/)
+【威胁通告】WebSphere任意⽂件读取（CVE-2019-4505） (http://blog.nsfocus.net/ns-2019-0040-cve-2019-4505/)
+【威胁通告】phpstudy后⻔植⼊事件 (http://blog.nsfocus.net/ns-2019-0039/)
+【威胁通告】phpMyAdmin跨站请求伪造(CVE-2019-12922) (http://blog.nsfocus.net/ns-2019-0038/)
+【威胁通告】泛微协同OA管理平台(e-cology)远程代码执⾏漏洞 (http://blog.nsfocus.net/weaver-e-cology/)
+【威胁通告】fastjson<=1.2.60远程代码执⾏漏洞预警通告 (http://blog.nsfocus.net/ns-2019-0036/)
+从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 (http://blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/)
+利⽤聚类算法进⾏数据分析的实例 (http://blog.nsfocus.net/data-analysis-clustering-algorithm/)
+
+友情链接
+
+绿盟科技官⽹ (http://www.nsfocus.com.cn)
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 10/11
+
+
+
+2019/9/25 海莲花（APT32）组织 wwlib-side-loading攻击链分析 | 绿盟科技博客
+
+绿盟威胁情报中⼼NTI (https://nti.nsfocus.com/)
+
+绿盟科技博客原创作者群  (http://shang.qq.com/wpa/qunwpa?
+
+idkey=8e92557f79faf7236be9b5b96a263deb2e937f55514f6d2cd694c8e246d21d25)
+
+© 2017 NSFOCUS Corporation (http://www.nsfocus.com), all rights reserved.
+
+blog.nsfocus.net/analysis-wwlib-side-loading-attack-chain-apt32/ 11/11

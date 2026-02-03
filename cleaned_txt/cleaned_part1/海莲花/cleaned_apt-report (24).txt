@@ -1,0 +1,147 @@
+假旗 or 升级？疑似海莲花利用Glitch平台的攻击样本再现
+
+概述
+奇安信红雨滴团队持续关注全球APT组织的攻击活动，其中包括海莲花（OceanLotus）APT组织。近期国外厂商Netskope发布了一篇关于mht格式文件（Web归档文件）通过携带的Office宏植入恶意软件的分析报告 [1]，因为其中提及的样本采用的攻击手法与海莲花组织存在相似之处，报告认为此次攻击活动是海莲花组织所为。
+经过红雨滴团队研究人员对此类样本的深入分析，发现攻击流程中也存在着一些不同于海莲花过往攻击活动的特点，因此不排除其他攻击团伙模仿海莲花的可能性。基于现有的公开信息，暂时还不能确定此次攻击活动背后团伙的具体身份。此外，我们注意到此类样本利用Glitch平台下发后续恶意软件，进一步发现它们与奇安信威胁情报中心去年12月披露的攻击样本[2]一脉相承。
+本文将深入分析此次攻击活动涉及的样本，梳理与之关联的其他攻击活动，并与海莲花组织历史攻击手法进行比较，总结攻击活动中相似的地方以及独有的特征。此类攻击样本具有如下特点：
+1. 宏代码会根据系统版本释放32位或64位恶意DLL，释放恶意DLL时会插入一段随机数据;
+2. 宏代码和恶意DLL均进行了代码混淆；
+3. 恶意DLL将收集的信息回传给Glitch平台托管的C2服务，然后下载经过7z压缩的后续恶意软件并执行。
+
+样本信息
+收集到的攻击样本信息如下
+MD5 文件类型 文件名
+0ee738b3837bebb5ce93be890a196d3e RAR HS.rar
+11d36c3b57d63ed9e2e91495dcda3655 RAR Tai_lieu.rar
+204cb61fce8fc4ac912dcb3bcef910ad RAR TL-3525.rar
+a7a30d88c84ff7abe373fa41c9f52422 RAR Note.rar
+b1475bdbe04659e62f3c94bfb4571394 RAR CV.rar
+b2eb3785e26c5f064b7d0c58bdd3abe0 RAR List Product.rar
+d8fa458192539d848ee7bb171ebed6bd RAR GiftProducts.rar
+e7ce1874ab781c7a14019b6a6e206749 RAR PaymentRequest.rar
+eb6cf9da476c821f4871905547e6a2b4 RAR DeliveryInformation.rar
+f5ea39b70f747e34ae024308298f70ac RAR Document.rar
+f8d30c45ed9d3c71ec0f8176ddd7fd8f RAR Gift  Products.rar
+收集到的攻击样本名字基本都是英文，只有Tai_lieu.rar为越南语，意为“文件”。RAR文件中包含携带Office宏的mht文件，样本执行流程如下。
+
+详细分析
+以样本11d36c3b57d63ed9e2e91495dcda3655为例进行分析。
+文件名 Tai_lieu.rar
+MD5 11d36c3b57d63ed9e2e91495dcda3655
+文件类型 RAR
+RAR中包含一个与RAR同名的mht格式文件Tailieu.doc ，打开后会提示受害者启用宏。
+启用宏后会打开Document.doc，文档没有具体内容，只有一段错误信息，用来迷惑受害者。
+VBA
+VBA经过混淆处理，采用的混淆手段除了名称混淆，还有通过Chr函数拼接关键字符串，以及用十六进制、八进制和十进制的混合运算得到常量数字。
+启用宏后，首先判断是否为VBA7，以及系统版本是否为64位，判断结果保存在全局变量hPY42J6w中。
+创 建 目 录 ”%ProgramData%\Microsoft Outlook Sync” ， 并 将 系 统 中 原 有 的guest.bmp文件复制到新建目录下，用于保存接下来释放的恶意DLL。
+调用函数kPW1Jdp7d4eP95n，将保存在mht文件末尾的doc文件和dll文件释放出来。拼接在mht文件末尾的文件数据依次是32位dll、64位dll和doc文件。文件释放顺序从后往前，所以每份文件数据结尾会跟一个4字节的数据标记文件数据的长度，释放时可以通过该长度定位文件数据的起始位置。
+之前保存机器版本判断结果的hPY42J6w变量决定了释放哪些文件：如果该变量为1，则当变量v2yHmJl5EO064cV为0和2时才执行文件释放操作，这时会释放doc文件和32位dll；反之如果hPY42J6w为2，则释放doc文件和64位dll。
+拼接在mht文件尾部的doc文件和dll文件数据未经过加密或者编码处理，不过dll文件数据的保存方式和释放方式比较特别。Doc文件数据以完整的形式保存在文件中，释放时直接提取。
+Dll文件数据保存形式如下：先是两个4字节的数据，然后是dll文件除去作为PE文件魔数的起始两个字节（即0x4D5A）余下的数据。因此保存在mht中的文件数据长度会比原始文件长度大6个字节。Dll文件数据在释放时首先从mht中读取2个用于后续修复DOS头的占位字节和除去0x4D5A余下的原始文件数据。然后向读取的数据中插入一段随机数据进行膨胀处理，插入数据的位置和长度分别由上面提到的两个4字节数据决定。最后将得到的数据保存在 ”%ProgramData%\Microsoft Outlook Sync”目录下的guest.bmp文件中。
+接着宏代码将保存了dll文件数据的guest.bmp复制为background.dll，将文件开头两个字 节 改 为 ”MZ” ， 从 而 修 复 DOS 头 ， 调 用 background.dll 的 OpenProfile 函 数 ， 删 除guest.bmp文件。
+最后将打开的mht文件属性设置为系统隐藏，然后关闭文件。
+
+释放的DLL
+VBA宏释放的32位和64位dll功能一致，因为dll文件释放时会被插入一段随机数据，所以dll文件的哈希值不固定，下面以释放的32位dll进行分析。
+文件名 background.dll
+MD5 fca9347b37c737930d0aaa976c3e234b  (不固定)
+文件类型 Win32 DLL
+文件大小 23712256字节
+释 放 的 dll 文 件 指 令 经 过 混 淆 处 理 ， 导 出 函 数 有 两 个 ， 函 数 名 称 为 OpenProfile 和SaveProfile。两个函数的功能分别为通过设置计划任务实现持久化，以及将后续载荷注入远程傀儡进程执行。
+Backgroud.dll的DllMain函数将导出函数要用到的关键字符串和其他参数保存在全局变量中。
+OpenProfile函数由VBA调用，该函数通过COM对象设置计划任务运行dll的另一个导出函数SaveProfile。
+SaveProfile 将 dll 中 内 嵌 的 PE 文 件 注 入 远 程 傀 儡 进 程 ， 创 建 远 程 进 程 时 的 命 令 为 ”rundll32.exe kernel32.dll,Sleep”。
+远程线程寄存器上下文中的指令寄存器所指向地址距存放注入数据的内存起始地址的偏移值为0x44C20，对应注入内存的PE被dump出来后，其唯一导出函数在磁盘文件中的位置。
+
+注入内存的DLL
+文件名 -
+MD5 9fd6ae7e608b3b7421f55b73f94b4861  
+文件类型 Win32 DLL
+文件大小 717824字节
+释放的32位dll和64位dll注入远程进程中的dll都是32位，文件大小相同，功能一致。
+Dll以未映射文件的形式注入内存，该dll唯一的导出函数的作用是在内存中反射加载自身。在分配内存加载dll自身之后，导出函数执行DllMain函数两次，两次执行时DllMain的第二个参数分别为1和4。Dll中的恶意行为只有在参数为4时才会触发。
+如background.dll一样，首先将关键字符串和其他配置数据保存在全局变量中。
+在”C:\ProgramData”目录下创建名为”Microsoft Edge Download”的子目录，收集主机信息，信息包括网卡MAC地址、用户名、主机名、当前所有进程名、ProgramData目录的文件和子目录名称。
+收集的信息经过加密处理后以POST请求回传给Glitch平台托管的C2服务，回传URL为hxxps://elemental-future-cheetah.glitch.me/afe92a2bd2P。
+然 后 以 GET 请 求 从 C2 获 取 后 续 ， 后 续 载 荷 以 7z 压 缩 文 件 传 输 。 获 取 后 续 的 URL 为hxxps://elemental-future-cheetah.glitch.me/afe92a2bd2D 。 后 续 载 荷 保 存 位 置 为“C:\ProgramData\Microsoft Edge Download\properties.bin”。
+7z压缩包中的恶意软件解压后保存在“C:\ProgramData\Microsoft Edge Download“目录下。通过COM对象设置计划任务的方式执行后续载荷，同时实现后续恶意软件的持久化，计划任务的名称为”Chrome Update”。
+由 于 C2 目 前 已 无 法 访 问 ， 无 法 获 取 后 续 恶 意 软 件 进 行 分 析 。 以 系 统 中 的 计 算 器 程 序（calc.exe）模拟获取的后续载荷展示设置的计划任务。
+该 dll 还 有 一 个 特 点 ， 使 用 GetCurrentThread/ GetCurrentProcess 和WaitForSingleObject代替Sleep进行休眠操作 。
+
+活动关联
+
+早期样本
+此类攻击样本最早可追溯至2021年8月，早期样本信息如下：
+MD5 文件类型 文件名 VT上传时间
+6d0ab5f4586166ac3600863bc9ac493 2021/08/23 12:52:31
+Win32 DLL 2zofrncu.dll
+e UTC
+0bd0f1dd8b03c11b3d59da2c5fba2e4 2021/08/26 03:55:13
+Win32 DLL mslog.dll
+5 UTC
+cc4a9d5248095e64c1f22e8a439416c 2021/08/26 03:57:57
+Win64 DLL mslog64.bin
+c  UTC
+mslog.dll 和 mslog64.bin 分 别 对 应 前 面 所 述 攻 击 流 程 中 释 放 的 32 位 dll 和 64 位 dll ，2zofrncu.dll为mslog.dll注入远程进程的PE。三个样本的结构和运行流程与此次攻击活动涉及的dll样本一样，相关URL如下：
+URL 功能
+hxxps://immense-plastic-pullover.glitch.me/T812P 回传收集的信息
+hxxps://immense-plastic-pullover.glitch.me/T812D 下载后续
+值得注意的是，在整个攻击流程中注入内存的PE不会落在磁盘上，但样本2zofrncu.dll上传VT的时间早于它的上级样本mslog.dll。此外，这三个样本均由同一上传者从越南上传VT。结合以上信息我们猜测这三个样本有可能是早期测试样本。
+
+之前披露的攻击样本
+此次攻击活动涉及的样本与奇安信威胁情报中心去年12月披露的攻击样本[2]具有强关联，可以认为来自于同一攻击团伙。首先是两次攻击活动中使用了相同内容的展示错误信息的文档。
+然后是恶意dll使用的代码混淆手法相同，并且运行流程一样：
+（1）会在“C:\ProgramData“目录下创建名称与Microsoft相关的子目录；
+（2）收集主机信息，加密后以POST请求回传给托管在Glitch平台的C2服务程序，回传的URL格式均为hxxps://[xxx]-[xxx]-[xxx].glitch.me/[xxx]P；
+（ 3 ） 然 后 从 C2 获 取 经 过 7z 压 缩 的 后 续 载 荷 并 执 行 ， 获 取 后 续 的 URL 格 式 均为hxxps://[xxx]-[xxx]-[xxx].glitch.me/[xxx]D。
+
+与海莲花历史攻击手法的比较
+攻击样本使用了海莲花组织的一些历史攻击手法。海莲花组织在过往攻击活动中使用过携带恶意宏的mht文件释放KerrDown下载器[3]，同样恶意宏会根据系统版本选择释放32位dll还是64位dll，作为KerrDown下载器的dll也以图片格式文件的后缀名保存在磁盘上。另外这批攻击样本涉及的恶意dll所采用的指令混淆方法与海莲花相似，样本执行过程中也采用了反射加载的方式在内存中加载PE。
+与海莲花之前攻击活动中的不同之处在于：
+（1）样本展示错误消息的文件名称与原始mht文件名称不一致，无法确定是攻击者的疏忽还是刻意为之。并且待释放的文件数据直接拼接在mht文件尾部，未经过加密或编码处理，海莲花则常将待释放文件数据以加密或编码之后的形式保存。
+（2）样本使用的反射加载方式与海莲花组织有所区别。海莲花组织常用shellcode作为反射加载PE的加载器，而这批攻击样本以被加载dll的导出函数作为加载器。
+上述不同之处，既可能源自海莲花组织尝试新的攻击手法，也可能是攻击活动由其他团伙所为。由于样本名称缺少针对性，C2服务托管于公开平台Glitch，且URL失效无法获取到后续恶意软件，目前还暂时不能明确攻击者的具体身份，有待后面进一步的线索信息发现。
+
+总结
+此类攻击样本借助mht文件携带的恶意宏向受害主机植入恶意软件，攻击过程中所用手法与海莲花组织存在相似之处，然而也有一些不同于海莲花历史攻击活动的特点。尽管目前暂时不能归属到具体攻击团伙，但通过梳理相关的一系列攻击活动可以发现背后的攻击者在不断改进自己的攻击手段，更新攻击武器。
+此次攻击活动暂未发现国内用户受影响，但防范之心不可无。奇安信红雨滴团队提醒广大用户，切勿打开社交媒体分享的来历不明的链接，不点击执行未知来源的邮件附件，不运行标题夸张的未知文件，不安装非正规途径来源的APP。做到及时备份重要文件，更新安装补丁。
+若 需 运 行 ， 安 装 来 历 不 明 的 应 用 ， 可 先 通 过 奇 安 信 威 胁 情 报 文 件 深 度 分 析 平 台（ https://sandbox.ti.qianxin.com/sandbox/page ） 进 行 判 别 。 目 前 已 支 持 包 括Windows、安卓平台在内的多种格式文件深度分析。
+目前，基于奇安信威胁情报中心的威胁情报数据的全线产品，包括奇安信威胁情报平台（TIP）、天擎、天眼高级威胁检测系统、奇安信NGSOC、奇安信态势感知等，都已经支持对此类攻击的精确检测。
+
+IOCs
+MD5
+0ee738b3837bebb5ce93be890a196d3e
+11d36c3b57d63ed9e2e91495dcda3655
+204cb61fce8fc4ac912dcb3bcef910ad
+a7a30d88c84ff7abe373fa41c9f52422
+b1475bdbe04659e62f3c94bfb4571394
+b2eb3785e26c5f064b7d0c58bdd3abe0
+d8fa458192539d848ee7bb171ebed6bd
+e7ce1874ab781c7a14019b6a6e206749
+eb6cf9da476c821f4871905547e6a2b4
+f5ea39b70f747e34ae024308298f70ac
+f8d30c45ed9d3c71ec0f8176ddd7fd8f
+6d0ab5f4586166ac3600863bc9ac493e
+0bd0f1dd8b03c11b3d59da2c5fba2e45
+cc4a9d5248095e64c1f22e8a439416cc
+
+URL
+hxxps://elemental-future-cheetah.glitch.me/afe92a2bd2D
+hxxps://elemental-future-cheetah.glitch.me/afe92a2bd2P
+hxxps://elemental-future-cheetah.glitch.me/559084b660P
+hxxps://elemental-future-cheetah.glitch.me/02d9169d60D
+hxxps://elemental-future-cheetah.glitch.me/02d9169d60P
+hxxps://confusion-cerulean-samba.glitch.me/e1db93941c
+hxxps://confusion-cerulean-samba.glitch.me/0627f41878D
+hxxps://confusion-cerulean-samba.glitch.me/0627f41878P
+hxxps://confusion-cerulean-samba.glitch.me/192f188023
+hxxps://confusion-cerulean-samba.glitch.me/2e06bb0ce9
+hxxps://confusion-cerulean-samba.glitch.me/55da2c2031
+hxxps://torpid-resisted-sugar.glitch.me/fb3b5e76b4D
+hxxps://torpid-resisted-sugar.glitch.me/fb3b5e76b4P
+hxxps://torpid-resisted-sugar.glitch.me/83a57b42f1D
+hxxps://torpid-resisted-sugar.glitch.me/83a57b42f1P
+hxxps://torpid-resisted-sugar.glitch.me/5db81501e9P
+hxxps://immense-plastic-pullover.glitch.me/T812D
+hxxps://immense-plastic-pullover.glitch.me/T812P

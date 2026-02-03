@@ -1,0 +1,426 @@
+﻿2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+(http://blog.nsfocus.net/)
+
+从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结
+ about 16 hours ago (http://blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/)  伏影实验室 (http://blog.nsfocus.net/author/fuying-lab/)
+
+( )
+
+  阅读： 60
+本⽂的内容将聚焦于近期海莲花攻击链的构成和特性，对各攻击链样本的详细分析请关注稍后发布的攻击链载荷分析⽂章。
+
+⽂章⽬录 
+
+前⾔
+
+组织介绍
+
+关于本⽂
+
+组织模型
+
+MITRE ATT&CK MATRIX
+典型攻击链
+
+攻击链1：wwlib side-loading攻击
+攻击链2：hta脚本投放恶意组件
+攻击链3：winrar漏洞释放恶意组件
+攻击链4：winrar⾃解压⽂件释放恶意组件
+攻击链⼩结
+
+总结
+
+ 关于伏影实验室
+关于绿盟威胁情报中⼼
+
+前⾔
+
+组织介绍
+海莲花组织，或称为OceanLotus、SeaLotus、Cobalt Kitty、APT32、APT-C-00，是⼀个活跃于越南的攻击组织。该组织最早在2015年被发现，在2017年之后进⼊活跃期⾄今。⼀般认为，海
+莲花组织的主要⽬标为越南及相邻国家的政企⼯作⼈员，主要⽬的为窃取政府与商业情报，中国是该组织的主要攻击国家之⼀。
+
+种种迹象表明，海莲花是⼀个多⼈分⼯合作的⾼效组织，该组织不断更新完善⾃⼰的攻击链条，并不断开发新的攻击⽅式和⼯具。⽬前，ATT&CK攻击矩阵显示海莲花使⽤的攻击⼯具超过10
+种，使⽤的攻击技术超过50种。
+
+2019年上半年，海莲花组织投递的恶意载荷产⽣了⼀定的变化，并且明显加强了抗检测能⼒，这表明该组织在攻防对抗⽅⾯的意识不断增强。
+
+绿盟科技伏影实验室对海莲花组织在2019上半年的攻击活动进⾏了捕获与梳理，并由此总结了部分攻击者与组织的特征，借此增强对该组织攻击的检测和防御能⼒。
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 1/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+ 
+
+关于本⽂
+本⽂的内容将聚焦于近期海莲花攻击链的构成和特性，对各攻击链样本的详细分析请关注稍后发布的攻击链载荷分析⽂章。
+
+ 
+
+ 
+
+组织模型
+
+MITRE ATT&CK MATRIX
+Initial Access Execution Persistence Privilege Escalation Defense Evasion Credential Access
+
+Drive-by Compromise Command-Line Hidden Files and Exploitation for Privilege Binary Padding Credential Dumping
+Interface Directories Escalation
+
+Spearphishing Exploitation for Client Modify Existing Service New Service DLL Side-Loading
+Attachment Execution
+
+Spearphishing Link Mshta New Service Scheduled Task File Deletion
+
+Valid Accounts PowerShell Office Application Valid Accounts File Permissions
+Startup Modification
+
+Regsvr32 Registry Run Keys / Web Shell Hidden Files and
+Startup Folder Directories
+
+Scheduled Task Scheduled Task Indicator Removal on
+Host
+
+Scripting Valid Accounts Masquerading
+
+Service Execution Web Shell Modify Registry
+
+Signed Script Proxy Mshta
+Execution
+
+User Execution NTFS File Attributes
+
+Windows Management Obfuscated Files or
+Instrumentation Information
+
+Regsvr32
+
+Scripting
+
+Signed Script Proxy
+Execution
+
+Software Packing
+
+Timestomp
+
+Valid Accounts
+
+ 
+
+Discovery Lateral Movement Collection Command and Control Exfiltration Impact
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 2/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+Account Discovery Application Deployment Commonly Used Port Data Compressed
+Software
+
+File and Directory Discovery Pass the Hash Custom Command and Control Data Encrypted
+Protocol
+
+Network Service Scanning Pass the Ticket Remote File Copy Exfiltration Over
+Command and Control
+Channel
+
+Query Registry Remote File Copy Standard Application Layer
+Protocol
+
+Remote System Discovery Windows Admin Shares Uncommonly Used Port
+
+System Information
+Discovery
+
+System Network
+Configuration Discovery
+
+System Network Connections
+Discovery
+
+System Owner/User
+Discovery
+
+ 
+
+ 
+
+典型攻击链
+上半年，海莲花组织使⽤多种不同的攻击链展开攻击，这些攻击链涉及的技术包括⽩利⽤、宏利⽤、shellcode packer、内存执⾏、hook等；投递的⽊⻢包括渗透⼯具载荷Cobalt Strike
+Beacon、远控⼯具DenesRAT等；主要涉及漏洞CVE-2018-20250；使⽤的语⾔包括中⽂、越南语、英⽂。经过归类，我们梳理了四条典型的攻击链，并发现了该组织在攻击时的⼀些偏好和特
+性。
+
+攻击链1：wwlib side-loading攻击
+该攻击链是上半年乃⾄2018年以来海莲花组织最主要的攻击⽅式，具有稳定、抗检测等特点。同时，该攻击链的组件在攻防对抗中演化出了多个变种，使得其恶意⾏为越来越难以被捕获。
+
+该攻击流程的主要⾏为及其在攻击链中的组成如下：
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 3/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+该攻击链主要特征为诱饵阶段使⽤了side-loading技术，通过⽆害程序启动加载恶意dll的⽅式执⾏攻击代码，典型诱饵为word.exe原始程序与恶意wwlib.dll运⾏库的组合：
+
+诱饵释放的欺骗⽂档多为乱码或⽆意义内容：
+
+除诱饵⽂档名多使⽤越南语外，该攻击链的⼀⼤主要特征是其shellcode loader形式。由wwlib.dll程序释放的shellcode loader⼀般由三层或更多层组成，各层的功能较为固定，有载⼊运⾏环
+境、解密最终payload、下载远控⼯具等，各层shellcode间使⽤线程调⽤：
+
+该攻击链最终释放的⽊⻢载荷为使⽤反射加载的Cobalt Strike Beacon受控端程序：
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 4/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+此攻击链中，海莲花组织在触发⼯具和安装⽊⻢部分的⾏为⽐较有代表性，并且随时间发展出多个变化的⽀链，使得攻击链更为复杂和健壮。
+
+ 
+
+ 
+
+攻击链2：hta脚本投放恶意组件
+该攻击链为2019年中旬所捕获到的较新攻击⽅式，攻击者通过⻥叉邮件投递恶意压缩包，通过迷惑性的主题及照⽚诱使⽤户打开伪装成html⽂档的hta脚本，并完成恶意软件的释放与安装。
+
+该攻击链特征为强混淆的hta dropper：
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 5/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+使⽤固定的shellcode loader加载dll⾄内存：
+
+释放带有随机可执⾏⽂件名的side-loading⽂件组合（该样本中实际加载了CoolType.dll中的攻击代码）：
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 6/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+最终释放⽊⻢为DenesRAT，该⽊⻢特征为通信使⽤LZMA压缩再由RC4编码：
+
+本样本释放的DenesRAT⽊⻢使⽤http协议通信：
+
+ 
+
+攻击链3：winrar漏洞释放恶意组件
+该攻击链也属于恶意诱饵的⼀种，但效果发⽣了变化。攻击链1中伪装成Word⽂档的可执⾏⽂件需要⽤户当场点击并运⾏，⽽使⽤WinRAR漏洞的恶意诱饵在解压后会将恶意程序放到了⾃启动
+⽬录下，重启即可执⾏，增强了隐蔽性，缺乏经验的⽤户很难觉察出其中的蹊跷。
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 7/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+该攻击流程的主要⾏为及其在攻击链中的组成如下：
+
+  
+
+该攻击链最主要特征为诱饵⽂件为使⽤了CVE-2018-20250漏洞的winrar压缩⽂件：
+
+最终释放的⽊⻢与攻击链2相同，为DenesRAT，该版本使⽤了tcp通信：
+
+ 
+
+攻击链4：winrar⾃解压⽂件释放恶意组件
+该攻击链利⽤⾃解压⽂件执⾏定义好的SFX脚本，实现诱骗攻击的⽬的，⾃解压⽂件⼀般以exe结尾，可⾃定义其功能脚本，实现静默执⾏，同时会执⾏程序原始功能，避免被察觉，此次攻击
+事件中则是以.doc.exe的形式来进⾏攻击。
+
+该攻击流程的主要⾏为及其在攻击链中的组成如下：
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 8/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 9/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+该攻击链使⽤的技术和⼯具似曾相识，包括在攻击链2中使⽤的shellcode loader与相同的指令混淆⽅式：
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 10/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+以及与攻击链3相同的tcp版本DenesRAT⽊⻢：
+
+ 
+
+攻击链⼩结
+通过对2019年上半年流⾏的攻击链的整理分析，我们发现海莲花组织的攻击⼿段多为⻥叉攻击+诱饵⽂件的形式，诱饵⽂件花样繁多，使⽤的攻击技术也各不相同。然⽽，这些攻击还是可以体
+现出海莲花组织的⼀些特点，如过分依赖某类攻击技术，以及热衷于使⽤少数⼏个⽊⻢载荷等。同时，上⽂所述的⼏条主要攻击链或多或少都出现了优化升级的现象，这说明海莲花组织对此类
+
+攻击⽅式⾮常重视，亦能侧⾯体现出此类攻击的⾼收益能⼒。
+
+此外，未在19年前两季度被捕获使⽤，但出现在历史记录中的海莲花攻击链还包括cve-2017-11882 office漏洞利⽤攻击（2018）、永恒之蓝漏洞利⽤攻击（2017）等。使⽤漏洞的攻击⽅式可
+以让攻击者在投递⼯具阶段更为主动，但该类攻击会受到操作系统或软件补丁的直接影响，这可能也是本年度海莲花组织更倾向于使⽤⾮漏洞类攻击的原因。
+
+通过海莲花组织活跃度及近半年以来的攻击频率推断，我们相信，未来将会有更多新的海莲花攻击链出现。
+
+ 
+
+总结
+海莲花组织作为具有较⾼攻击技术的⿊客团伙，在进⼊2019年后依然频繁攻击东南亚范围内的各类⽬标。我们发现，海莲花组织近期的攻击⽅式多样，攻击链条复杂，但使⽤的核⼼攻击技术
+与最终⽊⻢载荷较为固定。
+
+分析还发现，海莲花组织会积极尝试使⽤各类热⻔漏洞和攻击技术，但多数未形成规模，只有最稳定的⼏条攻击链实现了持久化。因此，安全⼈员需时刻关注新型攻击技术和漏洞的使⽤⽅式和
+
+原理，因为它们很容易被海莲花这样的⾼级APT组织在第⼀时间利⽤。
+
+ 
+
+ 
+
+ 关于伏影实验室
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 11/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+伏影实验室专注于安全威胁研究与监测技术，包括但不限于威胁识别技术，威胁跟踪技术，威胁捕获技术，威胁主体识别技术。研究⽬标包括：僵⼫⽹络威胁，DDOS对抗，WEB对抗，流⾏
+服务系统脆弱利⽤威胁、身份认证威胁，数字资产威胁，⿊⾊产业威胁 及 新兴威胁。通过掌控现⽹威胁来识别⻛险，缓解威胁伤害，为威胁对抗提供决策⽀撑。
+
+  
+
+关于绿盟威胁情报中⼼
+绿盟威胁情报中⼼（NSFOCUS Threat Intelligence center, NTI）是绿盟科技为落实智慧安全2.0战略，促进⽹络空间安全⽣态建设和威胁情报应⽤，增强客户攻防对抗能⼒⽽组建的专业性安全
+研究组织。其依托公司专业的安全团队和强⼤的安全研究能⼒，对全球⽹络安全威胁和态势进⾏持续观察和分析，以威胁情报的⽣产、运营、应⽤等能⼒及关键技术作为核⼼研究内容，推出了
+
+绿盟威胁情报平台以及⼀系列集成威胁情报的新⼀代安全产品，为⽤户提供可操作的情报数据、专业的情报服务和⾼效的威胁防护能⼒，帮助⽤户更好地了解和应对各类⽹络威胁。
+
+⽂章分类： 技术前沿 (http://blog.nsfocus.net/category/techfront/) 
+⽂章关键词： 2015绿盟科技⼯控安保框架⽩⽪书
+(http://blog.nsfocus.net/tag/2015%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e5%b7%a5%e6%8e%a7%e5%ae%89%e4%bf%9d%e6%a1%86%e6%9e
+%b6%e7%99%bd%e7%9a%ae%e4%b9%a6/), APT-C-00 (http://blog.nsfocus.net/tag/apt-c-00/), APT32 (http://blog.nsfocus.net/tag/apt32/), Cobalt Kitty
+(http://blog.nsfocus.net/tag/cobalt-kitty/), NSFOCUS (http://blog.nsfocus.net/tag/nsfocus/), NTI (http://blog.nsfocus.net/tag/nti/), OceanLotus
+(http://blog.nsfocus.net/tag/oceanlotus/), SeaLotus (http://blog.nsfocus.net/tag/sealotus/), 伏影实验室
+(http://blog.nsfocus.net/tag/%e4%bc%8f%e5%bd%b1%e5%ae%9e%e9%aa%8c%e5%ae%a4/), 威胁情报中⼼
+(http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81%e6%83%85%e6%8a%a5%e4%b8%ad%e5%bf%83/), 攻击链
+(http://blog.nsfocus.net/tag/%e6%94%bb%e5%87%bb%e9%93%be/), 海莲花 (http://blog.nsfocus.net/tag/%e6%b5%b7%e8%8e%b2%e8%8a%b1/), 绿盟科技
+(http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80/) 
+转载请注明：“转⾃绿盟科技博客”： 原⽂链接 (http://blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/).
+⽂章收录：
+
+← 利⽤聚类算法进⾏数据分析的实例 (http://blog.nsfocus.net/data-analysis-
+clustering-algorithm/)
+
+发表评论
+要发表评论，您必须先登录 (http://blog.nsfocus.net/wp-login.php?redirect_to=http%3A%2F%2Fblog.nsfocus.net%2Fsummary-major-attack-events-apt32-tissue-
+2019%2F)。
+
+绿盟科技博客精华⽂章
+
+学习⼿册：浅析DDoS的攻击及防御 (http://blog.nsfocus.net/analysis-ddos-attack-defense/)
+学习⼿册：盘点DDoS带来的误会 (http://blog.nsfocus.net/inventory-ddos-errors/)
+移动APP安全测试要点 (http://blog.nsfocus.net/mobile-app-security-security-test/)
+Dedecms远程写⽂件漏洞分析 (http://blog.nsfocus.net/dedecms-write-file-vuln/)
+【⼲货分享】XSS攻击进阶篇——那些年我们看不懂的XSS (http://blog.nsfocus.net/xss-advance/)
+
+两步邮件订阅，⽅便获取⽂章
+欢迎订阅！现在已有5 719个朋友订阅了。
+在后续邮件的尾部，您可以退订及修改订阅内容。
+选择订阅组：
+
+ 最新⽂章
+ 技术分享
+ 漏洞分析
+ 运维安全
+ Web安全
+ 安全报告
+
+邮件 *
+⻢上订阅！
+
+绿盟科技博客功能
+
+注册 (http://blog.nsfocus.net/wp-login.php?action=register)
+登录 (http://blog.nsfocus.net/wp-login.php)
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 12/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+⽂章RSS (Really Simple Syndication) (http://blog.nsfocus.net/feed/)
+评论RSS (Really Simple Syndication) (http://blog.nsfocus.net/comments/feed/)
+WordPress.org (https://cn.wordpress.org/)
+
+绿盟科技博客⽂章标签
+
+绿盟科技 (http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80/)   远程代码执⾏漏洞
+(http://blog.nsfocus.net/tag/%e8%bf%9c%e7%a8%8b%e4%bb%a3%e7%a0%81%e6%89%a7%e8%a1%8c%e6%bc%8f%e6%b4%9e/)   绿盟科技漏洞
+库 (http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e6%bc%8f%e6%b4%9e%e5%ba%93/)   漏洞
+(http://blog.nsfocus.net/tag/%e6%bc%8f%e6%b4%9e/)   EnglishVersion (http://blog.nsfocus.net/tag/englishversion/)   DDoS
+(http://blog.nsfocus.net/tag/ddos/)   云安全 (http://blog.nsfocus.net/tag/%e4%ba%91%e5%ae%89%e5%85%a8/)   威胁情报
+(http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81%e6%83%85%e6%8a%a5/)   NSFOCUS (http://blog.nsfocus.net/tag/nsfocus/)   物联⽹安全
+(http://blog.nsfocus.net/tag/%e7%89%a9%e8%81%94%e7%bd%91%e5%ae%89%e5%85%a8/)   远程代码执⾏
+(http://blog.nsfocus.net/tag/%e8%bf%9c%e7%a8%8b%e4%bb%a3%e7%a0%81%e6%89%a7%e8%a1%8c/)   ⽹络安全
+(http://blog.nsfocus.net/tag/%e7%bd%91%e7%bb%9c%e5%ae%89%e5%85%a8/)   ⾼危漏洞
+(http://blog.nsfocus.net/tag/%e9%ab%98%e5%8d%b1%e6%bc%8f%e6%b4%9e/)   绿盟科技博客
+(http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e5%8d%9a%e5%ae%a2/)   威胁通告
+(http://blog.nsfocus.net/tag/%e5%a8%81%e8%83%81%e9%80%9a%e5%91%8a/)   rsa2018 (http://blog.nsfocus.net/tag/rsa2018/)   安全会议
+(http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e4%bc%9a%e8%ae%ae/)   ddos攻击事件
+(http://blog.nsfocus.net/tag/ddos%e6%94%bb%e5%87%bb%e4%ba%8b%e4%bb%b6/)   安全周报
+(http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e5%91%a8%e6%8a%a5/)   DDoS攻击 (http://blog.nsfocus.net/tag/ddos%e6%94%bb%e5%87%bb/)  
+云计算 (http://blog.nsfocus.net/tag/%e4%ba%91%e8%ae%a1%e7%ae%97/)   ⼤数据 (http://blog.nsfocus.net/tag/%e5%a4%a7%e6%95%b0%e6%8d%ae/)   勒
+索软件 (http://blog.nsfocus.net/tag/%e5%8b%92%e7%b4%a2%e8%bd%af%e4%bb%b6/)   安全意识
+(http://blog.nsfocus.net/tag/%e5%ae%89%e5%85%a8%e6%84%8f%e8%af%86/)   恶意软件
+(http://blog.nsfocus.net/tag/%e6%81%b6%e6%84%8f%e8%bd%af%e4%bb%b6/)   漏洞分析
+(http://blog.nsfocus.net/tag/%e6%bc%8f%e6%b4%9e%e5%88%86%e6%9e%90/)   物联⽹
+(http://blog.nsfocus.net/tag/%e7%89%a9%e8%81%94%e7%bd%91/)   态势感知
+(http://blog.nsfocus.net/tag/%e6%80%81%e5%8a%bf%e6%84%9f%e7%9f%a5/)   绿盟科技威胁事件定级标准
+(http://blog.nsfocus.net/tag/%e7%bb%bf%e7%9b%9f%e7%a7%91%e6%8a%80%e5%a8%81%e8%83%81%e4%ba%8b%e4%bb%b6%e5%ae%9a%e7%ba%
+a7%e6%a0%87%e5%87%86/)   创新中⼼ (http://blog.nsfocus.net/tag/%e5%88%9b%e6%96%b0%e4%b8%ad%e5%bf%83/)  
+
+最新⽂章
+
+从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 (http://blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/)
+利⽤聚类算法进⾏数据分析的实例 (http://blog.nsfocus.net/data-analysis-clustering-algorithm/)
+【威胁通告】Microsoft Excel 远程代码执⾏漏洞 (CVE-2019-1297) (http://blog.nsfocus.net/cve-2019-1297/)
+GoBrut破解型僵⼫⽹络悄然再度来袭 (http://blog.nsfocus.net/gobrut-cracked-botnet-quietly-hit/)
+【威胁通告】微软发布9⽉补丁修复81个安全问题 (http://blog.nsfocus.net/microsoft-patch-tuesday-2019-09/)
+【威胁通告】Adobe 9⽉安全更新 (http://blog.nsfocus.net/adobe-2019-9/)
+物理安全之U盘数据恢复：三起U盘断裂引起的惨案(最终完美恢复数据) (http://blog.nsfocus.net/tragedies-caused-usb-breaks/)
+【威胁通告】Exim 远程代码执⾏漏洞（CVE-2019-15846） (http://blog.nsfocus.net/cve-2019-15846/)
+⽹络安全威胁⽉报NSFOCUS-2019-08 (http://blog.nsfocus.net/nsfocus-2019-08/)
+绿盟科技互联⽹安全威胁周报NSFOCUS-2019-36 (http://blog.nsfocus.net/nsfocus-2019-36/)
+
+友情链接
+
+绿盟科技官⽹ (http://www.nsfocus.com.cn)
+绿盟威胁情报中⼼NTI (https://nti.nsfocus.com/)
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 13/14
+
+
+
+2019/9/18 从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结 | 绿盟科技博客
+
+绿盟科技博客原创作者群  (http://shang.qq.com/wpa/qunwpa?
+
+idkey=8e92557f79faf7236be9b5b96a263deb2e937f55514f6d2cd694c8e246d21d25)
+
+© 2017 NSFOCUS Corporation (http://www.nsfocus.com), all rights reserved.
+
+blog.nsfocus.net/summary-major-attack-events-apt32-tissue-2019/ 14/14

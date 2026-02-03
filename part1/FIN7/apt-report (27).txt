@@ -1,0 +1,2153 @@
+﻿2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+
+Despite the arrests of three prominent members of the FIN7 cybercrime gang beginning in January 2018,
+attacks targeting businesses andE cxupslotorem er pa ymeEndtu ccaatred  inform atiEonng daigde n ot cease.  Contact Us  
+
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+May to July 2018, but could go back farther to January 2018.
+
+FIN7 has been active since at least 2015, targeting more than 100 U.S.-based companies in 47 states, as well
+as businesses in Europe and Australia. The U.S. companies affected were operating primarily in the hospitality,
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+announcing the arrest of three Ukrainian nationals alleged to be members of FIN7. Two were arrested in
+January in Germany and Poland, while the third—an alleged supervisor—was arrested in June in Spain.
+
+FIN7, which has also used a backdoor linked to Carbanak—another prolific cybercrime outfit responsible for
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+American businesses. The group, which operated behind a front company called Combi Security, has
+infiltrated more than 6,500 individual point-of-sale terminals at more than 3,600 business locations, according
+to the DoJ.
+
+New Attack Panel and Malware Samples
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers.
+
+Analysts discovered references to the FIN7 front company Combi Security in the Astra panel’s backend PHP
+code, connecting the group to these campaigns. According to the DoJ indictments, Combi Security purported
+itself as a penetration-testing and security services company based in Russia and Israel. The DoJ alleges FIN7
+portrayed Combi Security as a legitimate business in order to recruit other hackers to their operation.
+
+The attackers gain an initial foothold on targeted machines via phishing emails containing malicious
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+execute the attached document.
+
+One of the documents spreads what analysts are calling SQLRat, previously unseen malware that drops files
+and executes SQL scripts on the host system. The use of SQL scripts is ingenious in that they don’t leave
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+nothing left to be forensically recovered. This technique has not been observed in previous campaigns
+associated with FIN7.
+
+The second new malware sample discovered is a multiprotocol backdoor called DNSbot, which is used to
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+traffic, but can also switch to encrypted channels such as HTTPS or SSL, Flashpoint analysts discovered.
+
+The campaigns maintain persistence on machines by creating two daily scheduled task entries. The code,
+meanwhile, is still controlled by the FIN7 actors and may be leveraged in future attacks by the group.
+
+EN SBQy JLosRhuaa tP laTtteacndhJnasoicn aRela vDesetails About Products Services Partners Media Resources Careers
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 1/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveedn ta m luerme bdeorcsu omf ethnet  tFhIaNt 7in ccylubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  maneds scaugseto amskeirn pga tyhme eunset rc atord “ Uinnfolorcmka Ptiroonte dcitde dn oCt ocnetaesnet.s,” below, while showing a
+
+Explore  Educate  Engage  Contact Us  
+message box displaying “US SEC Unlock document service.”
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+May to July 2018, but could go back farther to January 2018.
+
+FIN7 has been active since at least 2015, targeting more than 100 U.S.-based companies in 47 states, as well
+as businesses in Europe and Australia. The U.S. companies affected were operating primarily in the hospitality,
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+announcing the arrest of three Ukrainian nationals alleged to be members of FIN7. Two were arrested in
+January in Germany and Poland, while the third—an alleged supervisor—was arrested in June in Spain.
+
+FIN7, which has also used a backdoor linked to Carbanak—another prolific cybercrime outfit responsible for
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+American businesses. The groIumpa,g we h1: iAcnh  iompageera otfe ad d boceuhminednt  au sferdo nint  ac toympicpaal ncaym cpaalilgend.  Combi Security, has
+infiltrated more than 6,500 individual point-of-sale terminals at more than 3,600 business locations, according
+Oton tchee  aD uosJ.er has double-clicked the embedded image, the form executes a VB setup script. The script writes
+files to the path %appdata%\Roaming\Microsoft\Templates\, then creates two task entries triggered to run
+daily.
+
+New Attack Panel and Malware Samples
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d teoo tbhfeu sFcIaNt7in fgro anntd c oemxepcauntiyn gC othme bmi Saienc uJarvitayS incr tiphte  fAiles tmras pparonmelo’s.d boatc. kTehned f iPleHP
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tshceastieo nca tmecphanigiqnuse. ,A mccaokirndgin igt  atop ptheea rD tooJ c ionndtiactinm Cenhtins,e Cseo mchbai rSaeccteurrsit.y purported
+itself as a penetration-testing and security services company based in Russia and Israel. The DoJ alleges FIN7
+portrayed Combi Security as a legitimate business in order to recruit other hackers to their operation.
+
+The attackers gain an initial foothold on taImrgageet e3d: O mbfaucschainteeds m vsipar opmhois fhilein. g emails containing malicious
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+
+Aexfteecru dtee othbefu astctaatcinhge dth deo fciluem, tehnet m. ain JavaScript is easily recognizable. It contains a number of functions
+designed to drop files and execute scripts on a host system.
+One of the documents spreads what analysts are calling SQLRat, previously unseen malware that drops files
+and executes SQL scripts on the host system. The use of SQL scripts is ingenious in that they don’t leave
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+nothing left to be forensically recovered. This technique has not been observed in previous campaigns
+associated with FIN7.
+
+The second new malware sample discovered is a multiprotocol backdoor called DNSbot, which is used to
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+traffic, but can also switch to encrypted channels such as HTTPS or SSL, Flashpoint analysts discovered.
+
+Image 4: Deobfuscated mspromo script.=
+
+The campaigns maintain persistence on machines by creating two daily scheduled task entries. The code,
+Tmheea SnwQhLiRlea, ti ss csrtiipll tc iosn dteroslilgende bdy t toh me FakINe 7a  adcitroercst  aSnQdL m coayn nbeec lteiovne rtaog ae dM inic rfoustuorfet  daatttaacbkass eb yc othnetr oglrloeudp b. y the
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+writes the file to disk. This file appears to primarily be a version of TinyMet—an open source Meterpreter
+
+EN SsBQtya gJLoesrR—huabau tPt tlaThteteaacnctdho rJnsashoiacnv aeRetlha evDeoseptitoan tiolsstore and execute anyAbbionuat ry lPoraodduecdts intoSetrhveicetsa blePartners Media Resources Careers
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 2/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+stager but the actors have the option to store and execute any binary loaded into the table.
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveedn ta m luerme bdeorcsu omf ethnet  tFhIaNt 7in ccylubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  maneds scaugseto amskeirn pga tyhme eunset rc atord “ Uinnfolorcmka Ptiroonte dcitde dn oCt ocnetaesnet.s,” below, while showing a
+
+Explore  Educate  Engage  Contact Us  
+message box displaying “US SEC Unlock document service.”
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+May to July 2018, but could go back farther to January 2018.
+
+FIN7 has been active since at least 2015, targeting more than 100 U.S.-based companies in 47 states, as well
+as businesses in Europe and Australia. The U.S. companies affected were operating primarily in the hospitality,
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+announcing the arrest of three Ukrainian nationals alleged to be members of FIN7. Two were arrested in
+January in Germany and PolanImda, gwe h5:i lCeo tdhee r ethspirodn—sibalen f oarl ldeogwendlo asduipnge rfrvoimso trh—e wdaatasb aasrere. sted in June in Spain.
+
+FIN7, which has also used a backdoor linked to Carbanak—another prolific cybercrime outfit responsible for
+Files associated with the SQLRat campaigns were all SFX RAR files. The files were 32/64-bit versions of a
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+custom-built TinyMet along with a recon.js file. The 32-bit file contained an XOR embedded .exe file. The file
+American businesses. The groIumpa,g we h1: iAcnh  iompageera otfe ad d boceuhminednt  au sferdo nint  ac toympicpaal ncaym cpaalilgend.  Combi Security, has
+was decoded out using the following:
+infiltrated more than 6,500 individual point-of-sale terminals at more than 3,600 business locations, according
+Oton tchee  aD uosJ.er has double-clicked the embedded image, the form executes a VB setup script. The script writes
+files to the path %appdata%\Roaming\Microsoft\Templates\, then creates two task entries triggered to run
+daily.
+
+New Attack Panel and Malware Samples
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d teoo tbhfeu sFcIaNt7in fgro anntd c oemxepcauntiyn gC othme bmi Saienc uJarvitayS incr tiphte  fAiles tmras pparonmelo’s.d boatc. kTehned f iPleHP
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tshceastieo nca tmecphanigiqnuse. ,A mccaokirndgin igt  atop ptheea rD tooJ c ionndtiactinm Cenhtins,e Cseo mchbai rSaeccteurrsit.y purported
+itself as a penetration-testing and security services company based in Russia and Israel. The DoJ alleges FIN7
+portrayed Combi SecuriItmy aagse  a6:  lDeegoitbifmusactaete b eumsbinededsesd  i“nT ionriMdeetr,”  tao c ruesctormuiizt eodt hveerrs iohna cofk Teirnsy Mtoe tt.heir operation.
+
+The attackers gain an initial foothold on targeted machines via phishing emails containing malicious
+The result is a customized version of TinyIMmaegte.  T3h: Oisb fvuesrcsaitoedn  mhsapsr olimmoi tfieled.  usage; it does reverse TCP, XOR
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+decodes the data retrieved for execution of the stager, and looks for TrendMicro processes. This file calls itself
+execute the attached document.
+TAifnteiMr deet:obfuscating the file, the main JavaScript is easily recognizable. It contains a number of functions
+designed to drop files and execute scripts on a host system.
+One of the documents spreads what analysts are calling SQLRat, previously unseen malware that drops files
+and executes SQL scripts on the host system. The use of SQL scripts is ingenious in that they don’t leave
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+nothing left to be forensically recovered. This technique has not been observed in previous campaigns
+associated with FIN7.
+
+The second new malware sample discovered is a multiprotocol backdoor called DNSbot, which is used to
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+traffic, but can also switch to encrypted channels such as HTTPS or SSL, Flashpoint analysts discovered.
+
+Image 4: Deobfuscated mspromo script.=
+
+The campaigns maintain persistence on machines by creating two daily scheduled task entries. The code,
+Tmheea SnwQhLiRlea, ti ss csrtiipll tc iosn dteroslilgende bdy t toh meIm FaakIgNee 7 a7 : a dTciintroeiMrcset  taS lonQodkL imn cgoa foynr n bTereec nltediovMneic rtaroog  paer doMc ienics srfeousst.uorfet  daatttaacbkass eb yc othnetr oglrloeudp b. y the
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+
+AwnriateSQLly
+ss tRthsa 
+
+ea tl
+fsil o
+
+e
+T 
+ utoen
+
+ cdco
+is
+hv
+ke. nr
+
+Tehdi
+i 
+s
+ca
+ 
+a 
+f“ilTeli
+
+ 
+ n
+a
+Dy
+pPpeS
+
+ea”t 
+rssat
+
+ atoig
+ 
+le
+p
+sr
+r:imarily be a version of TinyMet—an open source Meterpreter
+
+EN sBtya gJoesr—hubau Pt tlahtet aanctdo rJsashoanv eRethaeveosption to store and execute anyAbbionuat ry lPoraodduecdts intoSetrhveicetsa blePartners Media Resources Careers
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 3/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+stager but the actors have the option to store and execute any binary loaded into the table.
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveedn ta m luerme bdeorcsu omf ethnet  tFhIaNt 7in ccylubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  manedssage asking the user to “Unlock Protected Contents,” below, while showing a
+
+E cxupslotorem er pa ymeEndtu ccaatred  inform atiEonng daigde n ot cease.  Contact Us  
+message box displaying “US SEC Unlock document service.”
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+May to July 2018, but could go back farther to January 2018.
+
+FIN7 has been active since at least 2015, targeting more than 100 U.S.-based companies in 47 states, as well
+as businesses in Europe and Australia. The U.S. companies affected were operating primarily in the hospitality,
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+announcing the arrest of three Ukrainian nationals alleged to be members of FIN7. Two were arrested in
+January in Germany and PolanImda, gwe h5:i lCeo tdhee r ethspirodn—sibalen f oarl ldeogwendlo asduipnge rfrvoimso trh—e wdaatasb aasrere. sted in June in Spain.
+
+FIN7, which has also used a backdoor linked to Carbanak—another prolific cybercrime outfit responsible for
+Files associated with the SQLRat campaigns were all SFX RAR files. The files were 32/64-bit versions of a
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+custom-built TinyMet along with a recon.js file. The 32-bit file contained an XOR embedded .exe file. The file
+Afmteerr diceacno bduinsgin oeusts ethse.  Tbhloeb g, raonIumapaly,g wset h1s:  iAfconhu  iomnpdage aer a Potfeo adw d eborceSuhmhineednllt  sauc sferidop nitn.t   Tac htoyimsp icspacalr ncipaymt  cwpaaalilgsen ds.  iCmoilmarb tio S wechuarti twy,a hsa psreviously
+was decoded out using the following:
+dinoficlturamtedn tmedo rine thaen T r6u,5st0w0a ivned irveipdouratl  “pOopinetr-aotfi-osna lGe rtaenrmd iMnalrss a: Dt mefoerned tihnagn A 3g,a6i0n0s tb Cuasirnbeasnsa lko cCaytbioenr sA, tatcacokrsd.”ing
+TOtohn tech ese c aDr ipuostJ .ecro hnatasi ndeodu bthlee- cslaicmkee dX OthRe  keemyb beudtd deode ism naogte a, cthheie fvoer mpe ersxeiscteuntecse .a I tV iBs  osneltyu pin stecnridpet.d T thoe c srceraiptet  twhreites
+
+Mfileeste trop trheete pr astehs s%ioanp. pTdhaet afo%llo\Rwoinagm iisn tgh\eM PicorwoseorSfth\Teellm veprlasitoens\ o, ft hTeinni Mcreeta:tes two task entries triggered to run
+daily.
+
+New Attack Panel and Malware Samples
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d teoo tbhfeu sFcIaNt7in fgro anntd c oemxepcauntiyn gC othme bmi Saienc uJarvitayS incr tiphte  fAiles tmras pparonmelo’s.d boatc. kTehned f iPleHP
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tshceastieo nca tmecphanigiqnuse. ,A mccaokirndgin igt  atop ptheea rD tooJ c ionndtiactinm Cenhtins,e Cseo mchbai rSaeccteurrsit.y purported
+itself as a penetration-testing and security services company based in Russia and Israel. The DoJ alleges FIN7
+portrayed Combi SecuriItmy aagse  a6:  lDeegoitbifmusactaete b eumsbinededsesd  i“nT ionriMdeetr,”  tao c ruesctormuiizt eodt hveerrs iohna cofk Teirnsy Mtoe tt.heir operation.
+
+The attackers gain an initial foothold on targeted machines via phishing emails containing malicious
+The result is a customized version of TinyIMmaegte.  T3h: Oisb fvuesrcsaitoedn  mhsapsr olimmoi tfieled.  usage; it does reverse TCP, XOR
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+decodes the data retrieved for execution of the stager, and looks for TrendMicro processes. This file calls itself
+execute the attached document.
+TAifnteiMr deet:obfuscating the file, the main IJmavagaeS 9c:r Tipinty iPsS e Paoswileyr Srehcelol sgtnagizear bsnleip. pIte tc. ontains a number of functions
+designed to drop files and execute scripts on a host system.
+One of the documents spreads what analysts are calling SQLRat, previously unseen malware that drops files
+
+DaNndS exbecoutte sT SeQLc shcrnipitsc oan lt hDe heotsta syisltsem. The use of SQL scripts is ingenious in that they don’t leave
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+Anontahliynsgts l eaflts oto u bnec ofovrernesdic saullbys reeqcuoevnetr ecda.m Thpiasi gtencsh ansisqoucei ahtaesd  nwoit hb etheins poabnserl.v Tehde isne p craemviopuasig cnasm wpearieg nsismilar,
+basust olecviaetreadg ewdit ha dFoINc7u.ment containing an embedded JavaScript-based DNSbot. The document contained the
+same MsgBox display, but this time there was a single file and task. The task name is similar to “Microsoft
+uThped asteec soenrdv incee,w” b muta tlhwea roeb sfuasmcaptlee dd iJsSc ofivlee rise dd rios pap medu litnip %roltooccaolal pbpacdkadtao%or\ cSatollreadg De:NSbot, which is used to
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+traffic, but can also switch to encrypted channels such as HTTPS or SSL, Flashpoint analysts discovered.
+
+Image 4: Deobfuscated mspromo script.=
+
+The campaigns maintain persistence on mImacaghein 10e:s D bNyS Bcoret adrtoinpg lo tcwatoio nd.aily scheduled task entries. The code,
+Tmheea SnwQhLiRlea, ti ss csrtiipll tc iosn dteroslilgende bdy t toh meIm FaakIgNee 7 a7 : a dTciintroeiMrcset  taS lonQodkL imn cgoa foynr n bTereec nltediovMneic rtaroog  paer doMc ienics srfeousst.uorfet  daatttaacbkass eb yc othnetr oglrloeudp b. y the
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+Additionally, the same US SEC Unlock document service is displayed, though the Microsoft update service
+tA
+w
+an
+ri
+satekl y
+
+s
+iss
+
+ t
+ t
+h
+dse 
+
+ea lel
+fsilteo
+
+e
+d 
+ uto an
+
+ 
+nc
+d
+do
+is
+ v
+k
+re
+. 
+erTpe
+
+h
+ld
+
+i
+ac 
+
+sa e 
+f
+d“
+ilTe wi
+
+ naiy
+p
+thP
+
+p
+ S
+ea
+th”e 
+
+rss Dt
+ atoNg
+
+ eprimarily be a version of TinyMet—an open source Meterpreter
+Srb: ot.
+
+EN SsBQtya gJLoesrR—huabau tPt tlaThteteaacnctdho rJnsashoiacnv aeRetlha evDeoseptitoan tiolsstore and execute anyAbbionuat ry lPoraodduecdts intoSetrhveicetsa blePartners Media Resources Careers
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 4/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+stager but the actors have the option to store and execute any binary loaded into the table.
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveedn ta m luerme bdeorcsu omf ethnet  tFhIaNt 7in ccylubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  manedsE 
+
+scaxugpseloto
+ a
+rem
+
+sk
+ eirn pga t y
+
+hme euEnse
+dtu 
+
+r
+cc
+ 
+aa
+to
+tred
+ “
+  
+Uinnfolorcmk
+
+ a PtirEo
+o
+nn
+te
+g d
+
+c
+aitgd
+
+e
+e 
+dn 
+ oCt ocnetaesnet.s,” below, while showing a
+
+ Contact Us  
+message box displaying “US SEC Unlock document service.”
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+May to July 2018, but could go back farther to January 2018.
+
+FIN7 has been active since at least 2015, targeting more than 100 U.S.-based companies in 47 states, as well
+as businesses in Europe and Australia. TheI mUa.Sg.e  c11o: mDNpSabnoiet tsa sakff uepcdtaeted. were operating primarily in the hospitality,
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+Tanhne oJuavnacSincgri ptht eis a hrreeasvti loyf  othbrfeuesc Uakteradi.n Tiahne  nfirasttio vnaarilas ballele—gae—d itso  abne  amrreamy bofe orsb ofuf sFcIaNte7.d T wvaolu wese.r eT haerr seescteodn din line
+cJaonnutaairnys i na  Gfuenrcmtiaonny t oa ndde oPbofluasncate the values, while the call to that function is the second variable, b:
+
+Imda, gwe h5:i lCeo tdhee r ethspirodn—sibalen f oarl ldeogwendlo asduipnge rfrvoimso trh—e wdaatasb aasrere. sted in June in Spain.
+
+FIN7, which has also used a backdoor linked to Carbanak—another prolific cybercrime outfit responsible for
+Files associated with the SQLRat campaigns were all SFX RAR files. The files were 32/64-bit versions of a
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+custom-built TinyMet along with a recon.js file. The 32-bit file contained an XOR embedded .exe file. The file
+Afmteerr diceacno bduinsgin oeusts ethse.  Tbhloeb g, raonIumapaly,g wset h1s:  iAfconhu  iomnpdage aer a Potfeo adw d eborceSuhmhineednllt  sauc sferidop nitn.t   Tac htoyimsp icspacalr ncipaymt  cwpaaalilgsen ds.  iCmoilmarb tio S wechuarti twy,a hsa psreviously
+was decoded out using the following:
+dinoficlturamtedn tmedo rine thaen T r6u,5st0w0a ivned irveipdouratl  “pOopinetr-aotfi-osna lGe rtaenrmd iMnalrss a: Dt mefoerned tihnagn A 3g,a6i0n0s tb Cuasirnbeasnsa lko cCaytbioenr sA, tatcacokrsd.”ing
+TOtohn tech ese c aDr ipuostJ .ecro hnatasi ndeodu bthlee- cslaicmkee dX OthRe  keemyb beudtd deode ism naogte a, cthheie fvoer mpe ersxeiscteuntecse .a I tV iBs  osneltyu pin stecnridpet.d T thoe c srceraiptet  twhreites
+
+Mfileeste trop trheete pr astehs s%ioanp. pTdhaet afo%llo\Rwoinagm iisn tgh\eM PicorwoseorSfth\Teellm veprlasitoens\ o, ft hTeinni Mcreeta:tes two task entries triggered to run
+daily.
+
+New Attack Panel and Malware Samples
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d teoo tbhfeu sFcIaNt7inI mfgrao ganent 1d 2c :oe DmxNepcSaubnotityn o gCb fotuhsmcea bmtiio San.ienc uJarvitayS incr tiphte  fAiles tmras pparonmelo’s.d boatc. kTehned f iPleHP
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tshceastieo nca tmecphanigiqnuse. ,A mccaokirndgin igt  atop ptheea rD tooJ c ionndtiactinm Cenhtins,e Cseo mchbai rSaeccteurrsit.y purported
+
+Aits deelfo absf uas pceanteedtr vaetirosnio-tne sotfi nthge a DndN Sse sccurripitty  isse: rvices company based in Russia and Israel. The DoJ alleges FIN7
+portrayed Combi SecuriItmy aagse  a6:  lDeegoitbifmusactaete b eumsbinededsesd  i“nT ionriMdeetr,”  tao c ruesctormuiizt eodt hveerrs iohna cofk Teirnsy Mtoe tt.heir operation.
+
+The attackers gain an initial foothold on ta
+The result is a customized version of TinyIMm
+
+rgaeg
+e
+te
+t
+.  
+e
+T3
+d
+h: O
+ m
+isb f
+
+a
+vu
+
+c
+esrc
+
+h
+sa
+in
+itoe
+
+eds
+n  m
+
+ v
+hsiap
+
+a
+sr
+ 
+ o
+p
+lim
+h
+moisi tf
+
+hiele
+in
+d.
+
+g emails containing malicious
+ usage; it does reverse TCP, XOR
+
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+decodes the data retrieved for execution of the stager, and looks for TrendMicro processes. This file calls itself
+TA
+ex
+
+ifnt
+eeciMr
+
+u dteee 
+t:o
+
+thbefu astctaatcinhge dth deo fciluem, tehnet m. ain IJmavagaeS 9c:r Tipinty iPsS e Paoswileyr Srehcelol sgtnagizear bsnleip. pIte tc. ontains a number of functions
+designed to drop files and execute scripts on a host system.
+One of the documents spreads what analysts are calling SQLRat, previously unseen malware that drops files
+
+DaNndS exbecoutte sT SeQLc shcrnipitsc oan lt hDe heotsta syisltsem. The use of SQL scripts is ingenious in that they don’t leave
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+Anontahliynsgts l eaflts oto u bnec ofovrernesdic saullbys reeqcuoevnetr ecda.m Thpiasi gtencsh ansisqoucei ahtaesd  nwoit hb etheins poabnserl.v Tehde isne p craemviopuasig cnasm wpearieg nsismilar,
+basust olecviaetreadg ewdit ha dFoINc7u.ment containing an embedded JavaScript-based DNSbot. The document contained the
+same MsgBox display, but this time there was a single file and task. The task name is similar to “Microsoft
+uThped asteec soenrdv incee,w” b muta tlhwea roeb sfuasmcaptlee dd iJsSc ofivlee rise dd rios pap medu litnip %roltooccaolal pbpacdkadtao%or\ cSatollreadg De:NSbot, which is used to
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+traffic, but can also switch to encrypted chImanagnee 1ls3 : sDuNcShb oats d HeoTbTfuPscSa toerd .SSL, Flashpoint analysts discovered.
+
+Image 4: Deobfuscated mspromo script.=
+
+ATh see ccaomndp adiegonbsf umsaciantteadin t epsetrinsigs tsecnrcipet  oanls omI macaaghteicn 1h0ee:s dD b NcySo Bcmoretp adortnoinpeg nlo ttcswa tooiof n dt.haeily J asvcahSecdruipletd e mtasbke dednetrdie isn.  Tthhee  AcSodTeR,A
+The SQLRat script is designed to mImaakgee  a7:  dTiinreiMcet tS loQokLin cgo fonrn TerecntdioMnic troo  par oMceicssreoss.oft database controlled by the
+dmoecasn, wdehmileo, niss tsrtailtli ncgo nthtreo lslecdri pbty’s t hmeu FltIipNr7o taocctoolr su saen. dT hmea dy obme aleinv esrtaagtse2d5 -ing ofuotgulree[ .a]cttoamck ws absy  itnhcelu gdreodu pin.  a report
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+rAedledaitsioednablly , FthireEsyaemeeaUrliSerSinE CthUe nyleoacrk: document service is displayed, though the Microsoft update service
+tA
+w
+an
+riatelyss tths ea lfsiloe  uton cdoisvke. rTehdi sa  f“ilsk is deleted and replacedTe wi
+
+ naiy
+p
+thP
+
+p
+ S
+ea
+th”e 
+
+rss Dt
+ atog eprr:imarily be a version of TinyMet—an open source Meterpreter
+
+EN S NSbot.
+sBQtya gJLoesrR—huabau tPt tlaThteteaacnctdho rJnsashoiacnv aeRetlha evDeoseptitoan tiolsstore and execute anyAbbionuat ry lPoraodduecdts intoSetrhveicetsa blePartners Media Resources Careers
+
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 5/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+stager but the actors have the option to store and execute any binary loaded into the table.
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveedn ta m luerme bdeorcsu omf ethnet  tFhIaNt 7in ccylubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  manedsE 
+
+scaxugpseloto
+ a
+rem
+
+sk
+ eirn pga t y
+
+hme euEnse
+dtu 
+
+r
+cc
+ 
+aa
+to
+tred
+ “
+  
+Uinnfolorcmk
+
+ a PtirEo
+o
+nn
+te
+g d
+
+c
+aitgd
+
+e
+e 
+dn 
+ oCt ocnetaesnet.s,” below, while showing a
+
+ Contact Us  
+message box displaying “US SEC Unlock document service.”
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+May to July 2018, but could go back farther to January 2018.
+
+FIN7 has been active since at least 2015, targeting more than 100 U.S.-based companies in 47 states, as well
+as businesses in Europe and Australia. TheI mUa.Sg.e  c11o: mDNpSabnoiet tsa sakff uepcdtaeted. were operating primarily in the hospitality,
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+Tanhne oJuavnacSincgri ptht eis a hrreeasvti loyf  othbrfeuesc Uakteradi.n Tiahne  nfirasttio vnaarilas ballele—gae—d itso  abne  amrreamy bofe orsb ofuf sFcIaNte7.d T wvaolu wese.r eT haerr seescteodn din line
+cJaonnutaairnys i na  Gfuenrcmtiaonny t oa ndde oPbofluasncate the values, while the call to that function is the second variable, b:
+
+Imda, gwe h5:i lCeo tdhee r ethspirodn—sibalen f oarl ldeogwendlo asduipnge rfrvoimso trh—e wdaatasb aasrere. sted in June in Spain.
+
+FIN7, which has also used a backdoor linked to Carbanak—another prolific cybercrime outfit responsible for
+Files associated with the SQLRat campaigns were all SFX RAR files. The files were 32/64-bit versions of a
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+custom-built TinyMet along with a recIomna.gjse  f1i4le: S. Tcrhipet  r3e2la-tiboint  tfoil eo tcheorn rteapionretindg a. n XOR embedded .exe file. The file
+Afmteerr diceacno bduinsgin oeusts ethse.  Tbhloeb g, raonIumapaly,g wset h1s:  iAfconhu  iomnpdage aer a Potfeo adw d eborceSuhmhineednllt  sauc sferidop nitn.t   Tac htoyimsp icspacalr ncipaymt  cwpaaalilgsen ds.  iCmoilmarb tio S wechuarti twy,a hsa psreviously
+was decoded out using the following:
+dinoficlturamtedn tmedo rine thaen T r6u,5st0w0a ivned irveipdouratl  “pOopinetr-aotfi-osna lGe rtaenrmd iMnalrss a: Dt mefoerned tihnagn A 3g,a6i0n0s tb Cuasirnbeasnsa lko cCaytbioenr sA, tatcacokrsd.”ing
+TTOtohhn teech  eAse c SaDr TipuoRstJ .Aecro  bhnaatcaski ndeenodud b twhleea- scs laiincmskteea dlXl eOthdRe o  kenem ayb  Wbeudintd ddeoodwe isms  nsaoegtre va,e ctrhh weie ifvtoher  mMpe iecrsxreioscsteuontftec sSe Q.a I tLV i.Bs T  ohsneelt yup painn steeclnr widpeat.ds T  wthoer ic tstrecenraip tient   twPhrHeitPes
+aMfilneedst e mtropa trnheaeteg pre asdte htsh s%eio acnpo. pnTdtheaent atfo %inllo\ tRwhoeina tgma biisnl etgsh\.e MI tP ifcourwnocsetoriSoftnh\Teeedllm  vaepsr laasit oesncsr\ oi,p ftt hT meinnai Mncareegtae:tmese tnwt os ytsatsekm e.ntries triggered to run
+daily.
+
+New Attack Panel and Malware Samples
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d teoo tbhfeu sFcIaNt7inI mfgrao ganent 1d 2c :oe DmxNepcSaubnotityn o gCb fotuhsmcea bmtiio San.ienc uJarvitayS incr tiphte  fAiles tmras pparonmelo’s.d boatc. kTehned f iPleHP
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tshceastieo nca tmecphanigiqnuse. ,A mccaokirndgin igt  atop ptheea rD tooJ c ionndtiactinm Cenhtins,e Cseo mchbai rSaeccteurrsit.y purported
+
+Aits deelfo absf uas pceanteedtr vaetirosnio-tne sotfi nthge a DndN Sse sccurripitty  isse: rvices company based in Russia and Israel. The DoJ alleges FIN7
+portrayed Combi SecuriItmy aagse  a6:  lDeegoitbifmusactaete b eumsbinededsesd  i“nT ionriMdeetr,”  tao c ruesctormuiizt eodt hveerrs iohna cofk Teirnsy Mtoe tt.heir operation.
+
+The attackers gain an initial foothold on ta
+The result is a customized version of TinyIMm
+
+rgaeg
+e
+te
+t
+.  
+e
+T3
+d
+h: O
+ m
+isb f
+
+a
+vu
+
+c
+esrc
+
+h
+sa
+in
+itoe
+
+eds
+n  m
+
+ v
+hsiap
+
+a
+sr
+ 
+ o
+p
+lim
+h
+moisi tf
+
+hiele
+in
+d.
+
+g emails containing malicious
+ usage; it does reverse TCP, XOR
+
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+decodes the data retrieved for execution of the stager, and looks for TrendMicro processes. This file calls itself
+execute the attached document.
+TAifnteiMr deet:obfuscating the file, the main IJmavagaeS 9c:r Tipinty iPsS e Paoswileyr Srehcelol sgtnagizear bsnleip. pIte tc. ontains a number of functions
+designed to drop files and execute sImcraigpet s15 o: AnS aT RhAo sattt ascyks pteamne.l partially redacted.
+One of the documents spreads what analysts are calling SQLRat, previously unseen malware that drops files
+
+DaNndS exbecoutte sT SeQLc shcrnipitsc oan lt hDe heotsta syisltsem. The use of SQL scripts is ingenious in that they don’t leave
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+Anontahliynsgts l eaflts oto u bnec ofovrernesdic saullbys reeqcuoevnetr ecda.m Thpiasi gtencsh ansisqoucei ahtaesd  nwoit hb etheins poabnserl.v Tehde isne p craemviopuasig cnasm wpearieg nsismilar,
+basust olecviaetreadg ewdit ha dFoINc7u.ment containing anIm eamgeb 1e6d: FdIeNd7 fJraovnat cSocmripatn-yb anasmede. DNSbot. The document contained the
+same MsgBox display, but this time there was a single file and task. The task name is similar to “Microsoft
+uThped asteec soenrdv incee,w” b muta tlhwea roeb sfuasmcaptlee dd iJsSc ofivlee rise dd rios pap medu litnip %roltooccaolal pbpacdkadtao%or\ cSatollreadg De:NSbot, which is used to
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+traffic, but can also switch to encrypted chImanagnee 1ls3 : sDuNcShb oats d HeoTbTfuPscSa toerd .SSL, Flashpoint analysts discovered.
+
+Image 4: Deobfuscated mspromo script.=
+
+ATh see ccaomndp adiegonbsf umsaciantteadin t epsetrinsigs tsecnrcipet  oanls omI macaaghteicn 1h0ee:s dD b NcySo Bcmoretp adortnoinpeg nlo ttcswa tooiof n dt.haeily J asvcahSecdruipletd e mtasbke dednetrdie isn.  Tthhee  AcSodTeR,A
+The SQLRat script is designed to mImaakgee  a7:  dTiinreiMcet tS loQokLin cgo fonrn TerecntdioMnic troo  par oMceicssreoss.oft database controlled by the
+dmoecasn, wdehmileo, niss tsrtailtli ncgo nthtreo lslecdri pbty’s t hmeu FltIipNr7o taocctoolr su saen. dT hmea dy obme aleinv esrtaagtse2d5 -ing ofuotgulree[ .a]cttoamck ws absy  itnhcelu gdreodu pin.  a report
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+rAedledaitsioednablly , FthireEsyaemeeaUrliSerSinE CthUe nyleoacrk: document service is displayed, though the Microsoft update service
+tA
+w
+an
+ri
+satekl y
+
+s
+iss
+
+ t
+ t
+h
+dse 
+
+ea lel
+fsilteo
+
+e
+d 
+ uto an
+
+ 
+nc
+d
+do
+is
+ v
+k
+re
+. 
+erTpe
+
+h
+ld
+
+i
+ac 
+
+sa e 
+f
+d“
+ilTe wi
+
+ naiy
+p
+thP
+
+p
+ S
+ea
+th”e 
+
+rss Dt
+ atoNg
+
+ eprimarily be a version of TinyMet—an open source Meterpreter
+EN S Srb: ot.
+
+sBQtya gJLoesrR—huabau tPt tlaThteteaacnctdho rJnsashoiacnv aeRetlha evDeoseptitoan tiolsstore and execute anyAbbionuat ry lPoraodduecdts intoSetrhveicetsa blePartners Media Resources Careers
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 6/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+stager but the actors have the option to store and execute any binary loaded into the table.
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveedn ta m luerme bdeorcsu omf ethnet  tFhIaNt 7in ccylubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  maneds scaugseto amskeirn pga tyhme eunset rc atord “ Uinnfolorcmka Ptiroonte dcitde dn oCt ocnetaesnet.s,” below, while showing a
+
+Explore  Educate  Engage  Contact Us  
+message box displaying “US SEC Unlock document service.”
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+
+Image 17: The file types that
+May to July 2018, but could go back farther tow eJraen inusaerryte d2,0 a1lo8n. g with a
+
+table layout of the database
+FIN7 has been active since at least 2015, targetwinitgh  pmarotirael  rtehdaacnt io10n.0 U.S.-based companies in 47 states, as well
+as businesses in Europe and Australia. TheI mUa.Sg.e  c11o: mDNpSabnoiet tsa sakff uepcdtaeted. were operating primarily in the hospitality,
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+
+MTanhinet oiJuagvnaacSintcgrii potht enis a shrreeasvti loyf  othbrfeuesc Uakteradi.n Tiahne  nfirasttio vnaarilas ballele—gae—d itso  abne  amrreamy bofe orsb ofuf sFcIaNte7.d T wvaolu wese.r eT haerr seescteodn din line
+cJaonnutaairnys i na  Gfuenrcmtiaonny t oa ndde oPbofluasncate the values, while the call to that function is the second variable, b:
+
+Imda, gwe h5:i lCeo tdhee r ethspirodn—sibalen f oarl ldeogwendlo asduipnge rfrvoimso trh—e wdaatasb aasrere. sted in June in Spain.
+Flashpoint recommends watching for newly added Windows tasks, specifically those with a JScript switch.
+AFIlNso7,,  mwhoincihto hr afosr a alsttoe muspetds  ato b daeclkedteo othr eli nMkiecdro tsoo Cft aurpbdaantaek —searvniocteh.er prolific cybercrime outfit responsible for
+Files associated with the SQLRat campaigns were all SFX RAR files. The files were 32/64-bit versions of a
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+Fculassthopmo-ibnut ialtl sToin ryeMcoemt amloengd sw iimthp ale rmeceonnti.njsg f ihleo. sTt-hbea 3s2e-db dite ftileec ctiontsa fionre dn eawn fXilOesR i nembedded .exe file. The file
+Afmteerr diceacno bduinsgin oeusts ethse.  Tbhloeb g, raonIumapaly,g wset h1s:  iAfcIomnhu a iomngpdea ge 1a4er a:  PoStfeo cardw ipd ebto rcreeSuhlmahitneieodnlnlt   satuoc s feroidotph niten.tr    Tarce htopyimsop ricstpiacnalgr nci.paymt  cwpaaalilgsen ds.  iCmoilmarb tio S wechuarti twy,a hsa psreviously
+%wasp pddecaotad%ed\R oouat musiningg\ Mthiecr fooslloofwt\iTnegm: plates\ with a dot extension, as well as implementing host-based
+dinoficlturamtedn tmedo rine thaen T r6u,5st0w0a ivned irveipdouratl  “pOopinetr-aotfi-osna lGe rtaenrmd iMnalrss a: Dt mefoerned tihnagn A 3g,a6i0n0s tb Cuasirnbeasnsa lko cCaytbioenr sA, tatcacokrsd.”ing
+dTetections for files in %appdata%\local\Storage\. 
+TOtohhn teech  eAse c SaDr TipuoRstJ .Aecro  bhnaatcaski ndeenodud b twhleea- scs laiincmskteea dlXl eOthdRe o  kenem ayb  Wbeudintd ddeoodwe isms  nsaoegtre va,e ctrhh weie ifvtoher  mMpe iecrsxreioscsteuontftec sSe Q.a I tLV i.Bs T  ohsneelt yup painn steeclnr widpeat.ds T  wthoer ic tstrecenraip tient   twPhrHeitPes
+aMfilneedst e mtropa trnheaeteg pre asdte htsh s%eio acnpo. pnTdtheaent atfo %inllo\ tRwhoeina tgma biisnl etgsh\.e MI tP ifcourwnocsetoriSoftnh\Teeedllm  vaepsr laasit oesncsr\ oi,p ftt hT meinnai Mncareegtae:tmese tnwt os ytsatsekm e.ntries triggered to run
+
+Adtaitlya.Newc Ahtmtaecnkt sP aannedl  Daonwd nMloaalwdasre Samples
+The indicators of compromise (IOCs) for ASTRA panel, SQLRat, and DNSbot are available for download here.
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+Jason Reaves
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d teoo tbhfeu sFcIaNt7inI mfgrao ganent 1d 2c :oe DmxNepcSaubnotityn o gCb fotuhsmcea bmtiio San.ienc uJarvitayS incr tiphte  fAiles tmras pparonmelo’s.d boatc. kTehned f iPleHP
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tshceastiePo rncina tcmeicpphaanli giTqnhusre. ,Aa mtc Rcaokeirsndegian rigtc  ahtope prtheea rD tooJ c ionndtiactinm Cenhtins,e Cseo mchbai rSaeccteurrsit.y purported
+
+Aits deelfo absf uas pceanteedtr vaetirosnio-tne sotfi nthge a DndN Sse sccurripitty  isse: rvices company based in Russia and Israel. The DoJ alleges FIN7
+portrayed Combi SecuriItmy aagse  a6:  lDeegoitbJifmaussacotaente b  eRumesbianevdedesessd   ii“nsT  ioanri MdPeertri,”n  taoc c irpuesactolr muTiihzt eordet hvaeetr rsR iohnea scoefk Teairnrsyc Mhtoee ttr.h aetir  Folpaesrhaptioonin. t
+
+who specializes in malware reverse-engineering. He has
+The attackers gain an initial foothold on targeted machines via phishing emails containing malicious
+The result is a customized version of TinyIMmaegte.  T3h: Ospent the mais
+
+b fvuesrcsaitoedn  mhsapsr olimmoi tfijority of his caree
+led.er  utrsaacgkei;n itg d toherse raetvse irnse t hTeCP, XOR
+
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+decodes the data retrieved for execuCtrioimn eowf tahree s dtaogmera, ain,d i nlocoluksd ifnorg T renvdeMrsiec-roe npgroincesesreinsg. T dhaist afile calls itself
+execute the attached document.
+TAifnteiMr deet:obfuscating the file, the maisnt rIJmuavacgateuS 9rce:r Tispin tay iPnsS de P aaoswligleyor Srrehitcehlol msgtnasgiz efaro bsunlenip. dpIte  ticn. o nmtaailnws aar en uinm boerdr eorf  ftuon cctrieoantse
+designed to drop files and execute saImcuraitgpoetm s15 oa: AnteS aTd Rh fAor asattmt asceyksw pteaomnrek.l One of the documents spreads what analysts are calling SQspL aRf
+
+rotiaart, 
+ll
+ h
+y 
+parerer
+
+d
+vv
+a
+ie
+ct
+oseutdsi
+
+.
+lny gu ncsoenefnig muaralwtiaorne  athnadt drops files
+
+botnet data. Previously, he worked as a software developer
+DaNndS exbecoutte sT SeQLc shcrnipitsc oan lt hDe heost system. The use of SQL scripts is ingenious in that they don’t leave
+
+atnad iulsnix administrator in the financial industry and also
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+
+spent six years in the U.S. Army. Jason holds multiple
+Anontahliynsgts l eaflts oto u bnec ofovrernesdic saullbys reeqcuoevnetr ecda.m Thpiasi gtencsh ansisqoucei ahtaesd  nwoit hb etheins poabnserl.v Tehde isne p craemviopuasig cnasm wpearieg nsismilar,
+
+certifications related to reverse-engineering and application
+basust olecviaetreadg ewdit ha dFoINc7u.ment containing anIm eamgeb 1e6d: FdIeNd7 fJraovnat cSocmripatn-yb anasmede. DNSbot. The document contained the
+
+exploitation and has published numerous papers on topics
+same MsgBox display, but this times tuhcerhe  awsa ws ari tsiinngg lem failelw aanrde t assckri. pTthse p tareskte nnadmineg is t osi mbeila ar  tboo “Mt, icrosoft
+uThped asteec soenrdv incee,w” b muta tlhwea roeb sfuasmcaptlee dd iscovered is a multiprotocol backdoor called DNSbot, which is used to
+
+uJSn pfialec ikse drrso, pcpoendf iignu %raloticoanla pdpadtaa tha%ar\vSetsotreargse :and covert channel
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+
+utilities. He enjoys long walks in IDA and staring at RFCs for
+traffic, but can also switch to encrypted chImanagnee 1ls3 : sDuNcShb oats d HeoTbTfuPscSa toerd .SSL, Flashpoint analysts discovered.
+
+hoIumrasg.e 4: Deobfuscated mspromo script.=
+
+ATh see ccaomndp adiegonbsf umsaciantteadin t epsetrinsigs tsecnrcipet  oanls omI macaaghteicn 1h0ee:s dD b NcySo Bcmoretp adortnoinpeg nlo ttcswa tooiof n dt.haeily J asvcahSecdruipletd e mtasbke dednetrdie isn.  Tthhee  AcSodTeR,A
+T
+dm
+
+h
+oe
+
+e
+ca
+ S
+sn, w
+
+Q
+deh
+
+L
+mi
+Rleao, 
+
+ti ss csrtiipnstraltli 
+t
+nc
+ i
+go
+s
+ n
+ d
+tht
+
+ereo
+s
+ l
+i
+sl
+gen
+cd
+
+e
+ri pb
+
+d
+ty
+ t
+’s t
+
+o
+ h
+ m
+meImu F
+
+aak
+ltI
+
+g
+ipN
+ee 
+r7
+ a7
+o 
+
+: 
+ta
+ dT
+oc
+
+iin
+ct
+r
+oo
+eiM
+lr
+c
+ s
+et
+u 
+ t
+sa
+S lo
+en
+Qo
+. d
+
+kL
+T 
+i
+hm
+n cgo
+ea
+ fo
+ dy
+nr n ob
+
+Ter
+me
+
+ec nal
+tedioinv
+
+Mn
+ e
+ic 
+sr
+
+t
+ta
+roo
+ag  patse
+
+r 
+2d
+oMc
+5 -i
+
+enicsg srof
+eouss
+ot
+
+.
+gu
+o
+lr
+f
+ee
+t 
+[ 
+d
+.a
+
+a
+]ctt
+
+t
+oa
+a
+mc
+bka ws
+
+s eab
+ 
+sy
+c
+  
+o
+itnh
+
+n
+ce
+tr
+lu 
+ogl
+dr
+l
+eo
+e
+du
+d
+ p
+ b
+in.
+
+y the
+ a report
+
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+rAedledaitsioednablly , FthireEsyaemeeaUrliSerSinE CthUe nyleoacrk: document service is displayed, though the Microsoft update service
+tA
+w
+an
+riateSQskLl y
+
+s
+iss
+
+ t
+R t
+
+h
+dsae 
+
+ea letl
+fsilt eo
+
+e
+Td 
+ uto ean
+
+ 
+nc
+d
+cdo
+is
+ hv
+k
+re
+. 
+enr
+
+T
+pe
+
+h
+ld
+
+i
+aic 
+
+s
+ca
+ 
+ea 
+f
+d“
+ilTe lwi
+
+ 
+ n
+a
+iDy
+p
+thP
+
+p
+J e
+Sea
+t ”
+ohte
+
+ rss
+s at
+
+ ato
+hDuNi
+
+g 
+le
+p
+sr
+r:imarily be a version of TinyMet—an open source Meterpreter
+
+EN sBtya gJoesr—hubau Pt tlahtet aanctdo rJsashoanv eRethaeveosption toa
+Sb
+s tP
+
+o
+orl
+
+t.
+eaatntd execute anyAbbionuat ry lPoraodduecdts intoSetrhveicetsa blePartners Media Resources Careers
+
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 7/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+stager but the actors have the option to store and execute any binary loaded into the table.
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveePdnr itna m cluieprmael b dTeohrcrsue oamft  etRhnet s tFehIaaNrtc 7ihn cecyrlubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  maneds scaugseto amskeirn pga tyhme eunset rc atord “ Uinnfolorcmka Ptiroonte dcitde dn oCt ocnetaesnet.s,” below, while showing a
+
+Explore  Educate  Engage  Contact Us  
+message box displaying “US SEC Unlock document service.”
+
+Joshua Platt is a Principal Threat Researcher at Flashpoint
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+
+who specializes in investigating complex financial crimeware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+
+familiesI.m Aasge a 1 7f: oTrhme feiler  tnypeetsw thoatrk security engineer, he first
+May to July 2018, but could go back farther to January 2018.
+
+began rewvereer isnisnergte dm, aalolwnga wreith w a hile working in the financial
+servicesta ibnled luaysoturty o fn theea dralyta b10as eFIN7 has been active since at least 2015, targeting more than 100 Uye.Sa.-rbsa asgedo . cJoomshpuanai egsr aind 4u7a stetadt efsro, amwith partial redaction. s well
+the Un
+
+as businesses in Europe and Australia. TheIi mve
+Ua.Sg
+
+r
+.e
+s
+  
+i
+c1
+t1yo: mD oNf
+
+pS Nabnooiet trsat shak ffuTepecdxtaaetesd.  with a B.S. in criminal justice
+ were operating primarily in the hospitality,
+
+and has earned multiple certifications within the security
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+
+MTanhinet oiJuagvnaacSintcgrii potht enis a shrreeasvti loyf  othbrfeuesc Uakterad
+in
+i.n T
+
+d
+iah
+u
+ne
+s
+  nf
+tirryastt
+
+ 
+io 
+rvena
+
+la
+ari
+
+t
+la
+e
+
+s b
+d
+alle
+
+ 
+le—
+to
+ga re—ev
+
+d its
+e
+o  a
+
+rs
+bn
+
+e
+e  a
+
+ 
+mr
+erneamy
+
+g ibo
+nfe 
+
+eoersb
+r
+ of
+iunf s
+
+g
+Fc
+
+ 
+Ia
+a
+Nten7.d
+
+d
+ T 
+
+ 
+wv
+paeolu
+
+n
+ we
+
+este.r 
+r
+eT
+a
+ h
+ti
+ae
+
+o
+rr s
+
+n
+eescteodn din line
+
+cJaonnutaairnys i na  Gfuenrcmtiaonny t oa ndde oPbofluasncda, twe ht
+theilee
+
+s
+  
+t
+tv
+in
+hael
+
+gu. tehsir, dw—hailen  tahllee gceadll  tsou ptheartv ifsuonrc—tiwona sis a trhrees steecdo innd J uvnaeri ainb lSep, ba:
+Image 5: Code responsible for downloading from the database. in.
+
+Flashpoint recommends watching for newly added Windows tasks, specifically those with a JScript switch.
+AFIlNso7,,  mwhoincihto hr afosr a alsttoe muspetds  ato b daeclkedteo othr eli nMkiecdro tsoo Cft aurpbdaantaek —searvniocteh.er prolific cybercrime outfit responsible for
+Files associated with the SQLRat campaigns were all SFX RAR files. The files were 32/64-bit versions of a
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+Fculassthopmo-ibnut ialtl sToin ryeMcoemt amloengd sw iimthp ale rmecenting host-based detections for new files in
+Afmteerr diceacno bduinsgin oeusts ethse.  Tbhloeb g, raonIumapaly,g wset h1s:  iAfcI
+
+o
+om
+
+n
+nhu a
+
+.
+ iomng
+js
+pde
+ 
+
+a fge 1
+i
+a4
+le
+er a:  PoS
+
+. T
+tfeo car
+
+h
+dw ip
+
+e
+d ebto 
+
+ 
+rcr
+3
+ee
+
+2
+Suhlma
+
+-
+hitnei
+
+b
+eo
+
+i
+dnln
+t
+lt  
+ 
+ sat
+f
+uo
+ile c
+c s feroidotph niten.tr    Tar
+
+t
+ce
+a
+
+ htop
+ine
+
+yimsop ricstpiacn
+d
+alg
+ an XOR embedded .exe file. The file
+r nci.paymt  cwpaaalilgsen ds.  iCmoilmarb tio S wechuarti twy,a hsa psreviously
+
+%wasp pddecaotad%ed\R oouat musiningg\ Mthiecr fooslloofwt\iTnegm: plates\ with a dot extension, as well as implementing host-based
+dinoficlturamtedn tmedo rine thaen T r6u,5st0w0a ivned irveipdouratl  “pOopinetr-aotfi-osna lGe rtaenrmd iMnalrss a: Dt mefoerned tihnagn A 3g,a6i0n0s tb Cuasirnbeasnsa lko cCaytbioenr sA, tatcacokrsd.”ing
+dTetections for files in %appdata%\local\Storage\. 
+TOtohhn teech  eAse c SaDr TipuoRstJ .Aecro  bhnaatcaski ndeenodud b twhleea- scs laiincmskteea dlXl eOthdRe o  kenem ayb  Wbeudintd ddeoodwe isms  nsaoegtre va,e ctrhh weie ifvtoher  mMpe iecrsxreioscsteuontftec sSe Q.a I tLV i.Bs T  ohsneelt yup painn steeclnr widpeat.ds T  wthoer ic tstrecenraip tient   twPhrHeitPes
+aMfilneedst e mtropa trnheaeteg pre asdte htsh s%eio acnpo. pnTdtheaent atfo %inllo\ tRwhoeina tgma biisnl etgsh\.e MI tP ifcourwnocsetoriSoftnh\Teeedllm  vaepsr laasit oesncsr\ oi,p ftt hT meinnai Mncareegtae:tmese tnwt os ytsatsekm e.ntries triggered to run
+
+Adtaitlya.Newc Ahtmtaecnkt sP aannedl  Daonwd nMloaalwdasre Samples
+The indicators of compromise (IOCs) for ASTRA panel, SQLRat, and DNSbot are available for download here.
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+Jason Reaves
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d teoo tbhfeu sFcIaNt7inI mfgrao ganent 1d 2c :oe DmxNepcSaubnotityn o gCb fotuhsmcea bmtiio San.ienc uJarvitayS incr tiphte  fAiles tmras pparonmelo’s.d boatc. kTehned f iPleHP
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tshceastiePo rncina tcmeicpphaanli giTqnhusre. ,Aa mtc Rcaokeirsndegian rigtc  ahtope prtheea rD tooJ c ionndtiactinm Cenhtins,e Cseo mchbai rSaeccteurrsit.y purported
+
+Aits deelfo absf uas pceanteedtr vaetirosnio-tne sotfi nthge a DndN Sse sccurripitty  isse: rvices company based in Russia and Israel. The DoJ alleges FIN7
+portrayed Combi SecuriItmy aagse  a6:  lDeegoitbJifmaussacotaente b  eRumesbianevdedesessd   ii“nsT  ioanri MdPeertri,”n  taoc c irpuesactolr muTiihzt eordet hvaeetr rsR iohnea scoefk Teairnrsyc Mhtoee ttr.h aetir  Folpaesrhaptioonin. t
+
+who specializes in malware reverse-engineering. He has
+The attackers gain an initial foothold on taImrgageet e3d: O mbfaucschainteeds m vsipar opmhois fhilein. g emails containing malicious
+The result is a customized version osf pTeinnytM thete.  Tmhaisj ovreirtsyi oonf  hhaiss  lcimariteeedr  utrsaacgkei;n itg d toherse raetvse irnse t hTeCP, XOR
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+decodes the data retrieved for execuCtrioimn eowf tahree s dtaogmera, ain,d i nlocoluksd ifnorg T renvdeMrsiec-roe npgroincesesreinsg. T dhaist afile calls itself
+TA
+ex
+
+ifnt
+eeciMr
+
+u dteee 
+t:o
+
+thbefu astctaatcinhge dth deo fciluem, tehnet m. aisnt rIJmuavacgateuS 9rce:r Tispin tay iPnsS de P aaoswligleyor Srrehitcehlol msgtnasgiz efaro bsunlenip. dpIte  ticn. o nmtaailnws aar en uinm boerdr eorf  ftuon cctrieoantse
+designed to drop files and execute saImcuraitgpoetm s15 oa: AnteS aTd Rh fAor asattmt asceyksw pteaomnrek.l One of the documents spreads what analysts are calling SQspL aRf
+
+rotiaart, 
+ll
+ h
+y 
+parerer
+
+d
+vv
+a
+ie
+ct
+oseutdsi
+
+.
+lny gu ncsoenefnig muaralwtiaorne  athnadt drops files
+
+botnet data. Previously, he worked as a software developer
+DaNndS exbecoutte sT SeQLc shcrnipitsc oan lt hDe heost system. The use of SQL scripts is ingenious in that they don’t leave
+
+atnad iulsnix administrator in the financial industry and also
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+
+spent six years in the U.S. Army. Jason holds multiple
+Anontahliynsgts l eaflts oto u bnec ofovrernesdic saullbys reeqcuoevnetr ecda.m Thpiasi gtencsh ansisqoucei ahtaesd  nwoit hb etheins poabnserl.v Tehde isne p craemviopuasig cnasm wpearieg nsismilar,
+
+certifications related to reverse-engineering and application
+basust olecviaetreadg ewdit ha dFoINc7u.ment containing anIm eamgeb 1e6d: FdIeNd7 fJraovnat cSocmripatn-yb anasmede. DNSbot. The document contained the
+
+exploitation and has published numerous papers on topics
+same MsgBox display, but this times tuhcerhe  awsa ws ari tsiinngg lem failelw aanrde t assckri. pTthse p tareskte nnadmineg is t osi mbeila ar  tboo “Mt, icrosoft
+uThped asteec soenrdv incee,w” b muta tlhwea roeb sfuasmcaptlee dd iscovered is a multiprotocol backdoor called DNSbot, which is used to
+
+uJSn pfialec ikse drrso, pcpoendf iignu %raloticoanla pdpadtaa tha%ar\vSetsotreargse :and covert channel
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+
+utilities. He enjoys long walks in IDA and staring at RFCs for
+traffic, but can also switch to encrypted chImanagnee 1ls3 : sDuNcShb oats d HeoTbTfuPscSa toerd .SSL, Flashpoint analysts discovered.
+
+hoIumrasg.e 4: Deobfuscated mspromo script.=
+
+ATh see ccaomndp adiegonbsf umsaciantteadin t epsetrinsigs tsecnrcipet  oanls omI macaaghteicn 1h0ee:s dD b NcySo Bcmoretp adortnoinpeg nlo ttcswa tooiof n dt.haeily J asvcahSecdruipletd e mtasbke dednetrdie isn.  Tthhee  AcSodTeR,A
+Tmheea SnwQhLiRlea, ti ss csrtiipll tc iosn dteroslilgende bdy t toh meIm FaakIgNee 7 a7 : a dTciintroeiMrcset  taS lonQodkL imn cgoa foynr n bTereec nltediovMneic rtaroog  paer doMc ienics srfeousst.docs, demonstrating the script’s multiprotocol use. The domain stats25-googu
+
+o
+lr
+f
+ee
+t 
+[ 
+d
+.a
+
+a
+]ctt
+
+t
+oa
+a
+mc
+bka ws
+
+s eab
+ 
+sy
+c
+  
+o
+itnh
+
+n
+ce
+tr
+lu 
+ogl
+dr
+l
+eo
+e
+du
+d
+ p
+ b
+in.
+
+y the
+ a report
+
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+rAedledaitsioednablly , FthireEsyaemeeaUrliSerSinE CthUe nyleoacrk: document service is displayed, though the Microsoft update service
+tA
+writes the file to disk. This file appears to primarily be a version of TinyMet—an open source Meterpreter
+
+SsB
+aQnsakl yiss tdse alelsteod u anncdo vreerpeldac ae d“T winiythP Sth”e s DtaNgeSrb:
+
+EN tya gJLoesrR—huabau tPt tlaThteteaacnctdho rJnsashoiacnv aeRetlha evDeoJsepotitsoanhutiolass tPoorl
+t.
+eaatntd execute anyAbbionuat ry lPoraodduecdts intoSetrhveicetsa blePartners Media Resources Careers
+
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 8/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+stager but the actors have the option to store and execute any binary loaded into the table.
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveePdnr itna m cluieprmael b dTeohrcrsue oamft  etRhnet s tFehIaaNrtc 7ihn cecyrlubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  maneds scaugseto amskeirn pga tyhme eunset rc atord “ Uinnfolorcmka Ptiroonte dcitde dn oCt ocnetaesnet.s,” below, while showing a
+
+Explore  Educate  Engage  Contact Us  
+message box displaying “US SEC Unlock document service.”
+
+Joshua Platt is a Principal Threat Researcher at Flashpoint
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+
+who specializes in investigating complex financial crimeware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+
+familiesI.m Aasge a 1 7f: oTrhme feiler  tnypeetsw thoatrk security engineer, he first
+May to July 2018, but could go back farther to January 2018.
+
+began rewvereer isnisnergte dm, aalolwnga wreith w a hile working in the financial
+servicesta ibnled luaysoturty o fn theea dralyta b10as eFIN7 has been active since at least 2015, targeting more than 100 Uye.Sa.-rbsa asgedo . cJoomshpuanai egsr aind 4u7a stetadt efsro, amwith partial redaction. s well
+the Un
+
+as businesses in Europe and Australia. TheIi mve
+Ua.Sg
+
+r
+.e
+s
+  
+i
+c1
+t1yo: mD oNf
+
+pS Nabnooiet trsat shak ffuTepecdxtaaetesd.  with a B.S. in criminal justice
+ were operating primarily in the hospitality,
+
+and has earned multiple certifications within the security
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+
+MTanhinet oiJuagvnaacSintcgrii potht enis a shrreeasvti loyf  othbrfeuesc Uakterad
+in
+i.n T
+
+d
+iah
+u
+ne
+s
+  nf
+tirryastt
+
+ 
+io 
+rvena
+
+la
+ari
+
+t
+la
+e
+
+s b
+d
+alle
+
+ 
+le—
+to
+ga re—ev
+
+d its
+e
+o  a
+
+rs
+bn
+
+e
+e  a
+
+ 
+mr
+erneamy
+
+g ibo
+nfe 
+
+eoersb
+r
+ of
+iunf s
+
+g
+Fc
+
+ 
+Ia
+a
+Nten7.d
+
+d
+ T 
+
+ 
+wv
+paeolu
+
+n
+ we
+
+este.r 
+r
+eT
+a
+ h
+ti
+ae
+
+o
+rr s
+
+n
+eescteodn din line
+
+cJaonnutaairnys i na  Gfuenrcmtiaonny t oa ndde oPbofluasncda, twe ht
+theilee
+
+s
+  
+t
+tv
+in
+hael
+
+gu. tehsir, dw—hailen  tahllee gceadll  tsou ptheartv ifsuonrc—tiwona sis a trhrees steecdo innd J uvnaeri ainb lSep, ba:
+Image 5: Code responsible for downloading from the database. in.
+
+Flashpoint recommends watching for newly added Windows tasks, specifically those with a JScript switch.
+AFIlNso7,,  mwhoincihto hr afosr a alsttoe muspetds  ato b daeclkedteo othr eli nMkiecdro tsoo Cft aurpbdaantaek —searvniocteh.er prolific cybercrime outfit responsible for
+Files associated with the SQLRat campaigns were all SFX RAR files. The files were 32/64-bit versions of a
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+Fculassthopmo-ibnut ialtl sToin ryeMcoemt amloengd sw iimthp ale rmecenting host-based detections for new files in
+Afmteerr diceacno bduinsgin oeusts ethse.  Tbhloeb g, raonIumapaly,g wset h1s:  iAfcI
+
+o
+om
+
+n
+nhu a
+
+.
+ iomng
+js
+pde
+ 
+
+a fge 1
+i
+a4
+le
+er a:  PoS
+
+. T
+tfeo car
+
+h
+dw ip
+
+e
+d ebto 
+
+ 
+rcr
+3
+ee
+
+2
+Suhlma
+
+-
+hitnei
+
+b
+eo
+
+i
+dnln
+t
+lt  
+ 
+ sat
+f
+uo
+ile c
+c s feroidotph niten.tr    Tar
+
+t
+ce
+a
+
+ htop
+ine
+
+yimsop ricstpiacn
+d
+alg
+ an XOR embedded .exe file. The file
+r nci.paymt  cwpaaalilgsen ds.  iCmoilmarb tio S wechuarti twy,a hsa psreviously
+
+%wasp pddecaotad%ed\R oouat musiningg\ Mthiecr fooslloofwt\iTnegm: plates\ with a dot extension, as well as implementing host-based
+dinoficlturamtedn tmedo rine thaen T r6u,5st0w0a ivned irveipdouratl  “pOopinetr-aotfi-osna lGe rtaenrmd iMnalrss a: Dt mefoerned tihnagn A 3g,a6i0n0s tb Cuasirnbeasnsa lko cCaytbioenr sA, tatcacokrsd.”ing
+dTetections for files in %appdata%\local\Storage\. 
+TOtohhn teech  eAse c SaDr TipuoRstJ .Aecro  bhnaatcaski ndeenodud b twhleea- scs laiincmskteea dlXl eOthdRe o  kenem ayb  Wbeudintd ddeoodwe isms  nsaoegtre va,e ctrhh weie ifvtoher  mMpe iecrsxreioscsteuontftec sSe Q.a I tLV i.Bs T  ohsneelt yup painn steeclnr widpeat.ds T  wthoer ic tstrecenraip tient   twPhrHeitPes
+aMfilneedst e mtropa trnheaeteg pre asdte htsh s%eio acnpo. pnTdtheaent atfo %inllo\ tRwhoeina tgma biisnl etgsh\.e MI tP ifcourwnocsetoriSoftnh\Teeedllm  vaepsr laasit oesncsr\ oi,p ftt hT meinnai Mncareegtae:tmese tnwt os ytsatsekm e.ntries triggered to run
+
+Adtaitlya.Newc Ahtmtaecnkt sP aannedl  Daonwd nMloaalwdasre Samples
+The indicators of compromise (IOCs) for ASTRA panel, SQLRat, and DNSbot are available for download here.
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+Products & Services Company Resources Social
+Jason Reaves
+
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d Itneotoe tblhlifgeue sFnccIaNet 7iPnI mlfagrato fgaonenrt m1d 2c :oe DmxNepcSaubAnotbityn o gCub tfotuhsmcea bmtiio San.ienc uJarvitayS incr tiphFte l faAislehs  tmTrasl kppsaronmelo’s.d boatc. kTehned fL iPlienHkePdIn
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tsFhcleassthiePop rncoina itncmeti cpAphaPanlIi giTqnhusre. ,Aa mtc RcaokeirsndPegiaan rrigtcn  ahteopres prtheea rD tooJ c ionndtiactinm CePnhotidns,ce aCsseots mchbai rSaeccteurrsit.y purTpwoirttteerd
+
+Aits deelfo absf uas pceanteedtr vaetirosnio-tne sotfi nthge a DndN Sse sccurripitty  isse: rvices company based in Russia and Israel. The DoJ alleges FIN7
+Professional Services Media Blog Facebook
+
+portrayed Combi SecuriItmy aagse  a6:  lDeegoitbJifmaussacotaente b  eRumesbianevdedesessd   ii“nsT  ioanri MdPeertri,”n  taoc c irpuesactolr muTiihzt eordet hvaeetr rsR iohnea scoefk Teairnrsyc Mhtoee ttr.h aetirEvents Case Studies 
+ Folpaesrhaptioonin.Training Services t
+
+who specializes in malware reverse-engineering. He has
+The attackers gain an initial footAhleorldtin ogn taImrgageet e3d: O mbfaucschaiCnteeadrs em evsripasr opmhois fhilein. g emails containing malicious
+The result is a customized version osf pTeinnytM thete.  Tmhaisj ovreirtsyi oonf  hhaiss  lcimariteeedr  utrsaacgkei;n itg d toherse raetvse irnse t hTeCP, XOR
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+decodes the data retrieved for execuCtrioimn eowf tahree s dtaogmera, aiCno,d ni nltoaccoltuk Usd sifnorg T renvdeMrsiec-roe npgroincesesreinsg. T dhaist afile calls itself
+TA
+ex
+
+ifnt
+eeciMr
+
+u dteee 
+t:o
+
+thbefu astctaatcinhge dth deo fciluem, tehnet m. aisnt rIJmuavacgateuS 9rce:r Tispin tay iPnsS de P aaoswligleyor Srrehitcehlol msgtnasgiz efaro bsunlenip. dpIte  ticn. o nmtaailnws aar en uinm boerdr eorf  ftuon cctrieoantse
+designed to drop files and execute saImcuraitgpoetm s15 oa: AnteS aTd Rh fAor asattmt asceyksw pteaomnrek.l One of the documents spreads what analysts are calling SQspL aRf
+
+rotiaart, 
+ll
+ h
+y 
+parerer
+
+d
+vv
+a
+ie
+ct
+oseutdsi
+
+.
+lny gu ncsoenefnig muaralwtiaorne  athnadt drops files
+
+botnet data. Previously, he worked as a software developer
+DaNndS exbecoutte sT SeQLc shcrnipitsc oan lt hDe heost system. The use of SQL scripts is ingenious in that they don’t leave
+
+atnad iulsnix administrator in the financial industry and also
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+
+spent six years in the U.S. Army. Jason holds multiple
+© 2019 Flashpoint. AAnllon rtiaghlhiyntssgt rs el esaefltrs voteo du bnec ofovrernesdic saullbys reeqcuoevnetr ecda.m Thpiasi gtencsh ansisqoucei ahtaesd  nwoit hb etheins poabnserl.v TeThedre misnse  p ocfr aeSmveirovpiuacesig  cnasm wpeaPriergi vnsaiscmy iPlaorli,cy Cookie Policy
+
+certifications related to reverse-engineering and application
+basust olecviaetreadg ewdit ha dFoINc7u.ment containing anIm eamgeb 1e6d: FdIeNd7 fJraovnat cSocmripatn-yb anasmede. DNSbot. The document contained the
+
+exploitation and has published numerous papers on topics
+same MsgBox display, but this times tuhcerhe  awsa ws ari tsiinngg lem failelw aanrde t assckri. pTthse p tareskte nnadmineg is t osi mbeila ar  tboo “Mt, icrosoft
+uThped asteec soenrdv incee,w” b muta tlhwea roeb sfuasmcaptlee dd iscovered is a multiprotocol backdoor called DNSbot, which is used to
+
+uJSn pfialec ikse drrso, pcpoendf iignu %raloticoanla pdpadtaa tha%ar\vSetsotreargse :and covert channel
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+
+utilities. He enjoys long walks in IDA and staring at RFCs for
+traffic, but can also switch to encrypted chImanagnee 1ls3 : sDuNcShb oats d HeoTbTfuPscSa toerd .SSL, Flashpoint analysts discovered.
+
+hoIumrasg.e 4: Deobfuscated mspromo script.=
+
+ATh see ccaomndp adiegonbsf umsaciantteadin t epsetrinsigs tsecnrcipet  oanls omI macaaghteicn 1h0ee:s dD b NcySo Bcmoretp adortnoinpeg nlo ttcswa tooiof n dt.haeily J asvcahSecdruipletd e mtasbke dednetrdie isn.  Tthhee  AcSodTeR,A
+Tmheea SnwQhLiRlea, ti ss csrtiipll tc iosn dteroslilgende bdy t toh meIm FaakIgNee 7 a7 : a dTciintroeiMrcset  taS lonQodkL imn cgoa foynr n bTereec nltediovMneic rtaroog  paer doMc ienics srfeousst.docs, demonstrating the script’s multiprotocol use. The domain stats25-googu
+
+o
+lr
+f
+ee
+t 
+[ 
+d
+.a
+
+a
+]ctt
+
+t
+oa
+a
+mc
+bka ws
+
+s eab
+ 
+sy
+c
+  
+o
+itnh
+
+n
+ce
+tr
+lu 
+ogl
+dr
+l
+eo
+e
+du
+d
+ p
+ b
+in.
+
+y the
+ a report
+
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+rAedledaitsioednablly , FthireEsyaemeeaUrliSerSinE CthUe nyleoacrk: document service is displayed, though the Microsoft update service
+tA
+writes the file to disk. This file appears to primarily be a version of TinyMet—an open source Meterpreter
+
+SsB
+aQnsakl yiss tdse alelsteod u anncdo vreerpeldac ae d“T winiythP Sth”e s DtaNgeSrb:
+
+EN tya gJLoesrR—huabau tPt tlaThteteaacnctdho rJnsashoiacnv aeRetlha evDeoJsepotitsoanhutiolass tPoorl
+t.
+eaatntd execute anyAbbionuat ry lPoraodduecdts intoSetrhveicetsa blePartners Media Resources Careers
+
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 9/10
+
+
+
+2019/3/21 FIN7 Revisited: Inside Astra Panel and SQLRat Malware – Flashpoint
+stager but the actors have the option to store and execute any binary loaded into the table.
+
+SDQesLpRitaet  tchaem aprraeigstnss o tfy tphicreaell yp irnovmoilnveePdnr itna m cluieprmael b dTeohrcrsue oamft  etRhnet s tFehIaaNrtc 7ihn cecyrlubderecdr imane i mgaangge  boevgeirnlanyinedg  biny  Jaa nVuBa rFyo 2rm01 8tr,igger.
+Tathtea cdkosc tuamrgeentitnsg c bonustainineesdse as  maneds scaugseto amskeirn pga tyhme eunset rc atord “ Uinnfolorcmka Ptiroonte dcitde dn oCt ocnetaesnet.s,” below, while showing a
+
+Explore  Educate  Engage  Contact Us  
+message box displaying “US SEC Unlock document service.”
+
+Joshua Platt is a Principal Threat Researcher at Flashpoint
+The latest evidence involves the discovery of a new administrative panel and previously unseen malware
+
+who specializes in investigating complex financial crimeware
+samples that Flashpoint analysts are linking to this notorious group. Activity from this campaign dates from
+
+familiesI.m Aasge a 1 7f: oTrhme feiler  tnypeetsw thoatrk security engineer, he first
+May to July 2018, but could go back farther to January 2018.
+
+began rewvereer isnisnergte dm, aalolwnga wreith w a hile working in the financial
+servicesta ibnled luaysoturty o fn theea dralyta b10as eFIN7 has been active since at least 2015, targeting more than 100 Uye.Sa.-rbsa asgedo . cJoomshpuanai egsr aind 4u7a stetadt efsro, amwith partial redaction. s well
+the Un
+
+as businesses in Europe and Australia. TheIi mve
+Ua.Sg
+
+r
+.e
+s
+  
+i
+c1
+t1yo: mD oNf
+
+pS Nabnooiet trsat shak ffuTepecdxtaaetesd.  with a B.S. in criminal justice
+ were operating primarily in the hospitality,
+
+and has earned multiple certifications within the security
+restaurant, and gaming industries, according to a U.S. Department of Justice press release last Aug. 1
+
+MTanhinet oiJuagvnaacSintcgrii potht enis a shrreeasvti loyf  othbrfeuesc Uakterad
+in
+i.n T
+
+d
+iah
+u
+ne
+s
+  nf
+tirryastt
+
+ 
+io 
+rvena
+
+la
+ari
+
+t
+la
+e
+
+s b
+d
+alle
+
+ 
+le—
+to
+ga re—ev
+
+d its
+e
+o  a
+
+rs
+bn
+
+e
+e  a
+
+ 
+mr
+erneamy
+
+g ibo
+nfe 
+
+eoersb
+r
+ of
+iunf s
+
+g
+Fc
+
+ 
+Ia
+a
+Nten7.d
+
+d
+ T 
+
+ 
+wv
+paeolu
+
+n
+ we
+
+este.r 
+r
+eT
+a
+ h
+ti
+ae
+
+o
+rr s
+
+n
+eescteodn din line
+
+cJaonnutaairnys i na  Gfuenrcmtiaonny t oa ndde oPbofluasncda, twe ht
+theilee
+
+s
+  
+t
+tv
+in
+hael
+
+gu. tehsir, dw—hailen  tahllee gceadll  tsou ptheartv ifsuonrc—tiwona sis a trhrees steecdo innd J uvnaeri ainb lSep, ba:
+Image 5: Code responsible for downloading from the database. in.
+
+Flashpoint recommends watching for newly added Windows tasks, specifically those with a JScript switch.
+AFIlNso7,,  mwhoincihto hr afosr a alsttoe muspetds  ato b daeclkedteo othr eli nMkiecdro tsoo Cft aurpbdaantaek —searvniocteh.er prolific cybercrime outfit responsible for
+Files associated with the SQLRat campaigns were all SFX RAR files. The files were 32/64-bit versions of a
+billions in losses in the financial services industry—has stolen more than 15 million payment card records from
+Fculassthopmo-ibnut ialtl sToin ryeMcoemt amloengd sw iimthp ale rmecenting host-based detections for new files in
+Afmteerr diceacno bduinsgin oeusts ethse.  Tbhloeb g, raonIumapaly,g wset h1s:  iAfcI
+
+o
+om
+
+n
+nhu a
+
+.
+ iomng
+js
+pde
+ 
+
+a fge 1
+i
+a4
+le
+er a:  PoS
+
+. T
+tfeo car
+
+h
+dw ip
+
+e
+d ebto 
+
+ 
+rcr
+3
+ee
+
+2
+Suhlma
+
+-
+hitnei
+
+b
+eo
+
+i
+dnln
+t
+lt  
+ 
+ sat
+f
+uo
+ile c
+c s feroidotph niten.tr    Tar
+
+t
+ce
+a
+
+ htop
+ine
+
+yimsop ricstpiacn
+d
+alg
+ an XOR embedded .exe file. The file
+r nci.paymt  cwpaaalilgsen ds.  iCmoilmarb tio S wechuarti twy,a hsa psreviously
+
+%wasp pddecaotad%ed\R oouat musiningg\ Mthiecr fooslloofwt\iTnegm: plates\ with a dot extension, as well as implementing host-based
+dinoficlturamtedn tmedo rine thaen T r6u,5st0w0a ivned irveipdouratl  “pOopinetr-aotfi-osna lGe rtaenrmd iMnalrss a: Dt mefoerned tihnagn A 3g,a6i0n0s tb Cuasirnbeasnsa lko cCaytbioenr sA, tatcacokrsd.”ing
+dTetections for files in %appdata%\local\Storage\. 
+TOtohhn teech  eAse c SaDr TipuoRstJ .Aecro  bhnaatcaski ndeenodud b twhleea- scs laiincmskteea dlXl eOthdRe o  kenem ayb  Wbeudintd ddeoodwe isms  nsaoegtre va,e ctrhh weie ifvtoher  mMpe iecrsxreioscsteuontftec sSe Q.a I tLV i.Bs T  ohsneelt yup painn steeclnr widpeat.ds T  wthoer ic tstrecenraip tient   twPhrHeitPes
+aMfilneedst e mtropa trnheaeteg pre asdte htsh s%eio acnpo. pnTdtheaent atfo %inllo\ tRwhoeina tgma biisnl etgsh\.e MI tP ifcourwnocsetoriSoftnh\Teeedllm  vaepsr laasit oesncsr\ oi,p ftt hT meinnai Mncareegtae:tmese tnwt os ytsatsekm e.ntries triggered to run
+
+Adtaitlya.Newc Ahtmtaecnkt sP aannedl  Daonwd nMloaalwdasre Samples
+The indicators of compromise (IOCs) for ASTRA panel, SQLRat, and DNSbot are available for download here.
+Flashpoint analysts recently uncovered a new attack panel used by this group in campaigns they have called
+Astra. The panel, written in PHP, functions as a script-management system, pushing attack scripts down to
+compromised computers. Image 2: Executing scripts on disk.
+
+Products & Services Company Resources Social
+Jason Reaves
+
+TAhnea lsycsrtisp dtsis acroev reersepdo rnesfeibrleen fcoers d Itneotoe tblhlifgeue sFnccIaNet 7iPnI mlfagrato fgaonenrt m1d 2c :oe DmxNepcSaubAnotbityn o gCub tfotuhsmcea bmtiio San.ienc uJarvitayS incr tiphFte l faAislehs  tmTrasl kppsaronmelo’s.d boatc. kTehned fL iPlienHkePdIn
+
+ucosedse ,a c cohnanreaccttienrg i nthsee rgtiroonu po btofu tsFhcleassthiePop rncoina itncmeti cpAphaPanlIi giTqnhusre. ,Aa mtc RcaokeirsndPegiaan rrigtcn  ahteopres prtheea rD tooJ c ionndtiactinm CePnhotidns,ce aCsseots mchbai rSaeccteurrsit.y purTpwoirttteerd
+
+Aits deelfo absf uas pceanteedtr vaetirosnio-tne sotfi nthge a DndN Sse sccurripitty  isse: rvices company based in Russia and Israel. The DoJ alleges FIN7
+Professional Services Media Blog Facebook
+
+portrayed Combi SecuriItmy aagse  a6:  lDeegoitbJifmaussacotaente b  eRumesbianevdedesessd   ii“nsT  ioanri MdPeertri,”n  taoc c irpuesactolr muTiihzt eordet hvaeetr rsR iohnea scoefk Teairnrsyc Mhtoee ttr.h aetir  Folpaesrhaptioonin.Training Services Events Case Studies t
+who specializes in malware reverse-engineering. He has
+
+The attackers gain an initial footAhleorldtin ogn taImrgageet e3d: O mbfaucschaiCnteeadrs em evsripasr opmhois fhilein. g emails containing malicious
+The result is a customized version osf pTeinnytM thete.  Tmhaisj ovreirtsyi oonf  hhaiss  lcimariteeedr  utrsaacgkei;n itg d toherse raetvse irnse t hTeCP, XOR
+attachments. The emails are often industry-specific and crafted to entice a victim to open the message and
+decodes the data retrieved for execuCtrioimn eowf tahree s dtaogmera, aiCno,d ni nltoaccoltuk Usd sifnorg T renvdeMrsiec-roe npgroincesesreinsg. T dhaist afile calls itself
+TA
+ex
+
+ifnt
+eeciMr
+
+u dteee 
+t:o
+
+thbefu astctaatcinhge dth deo fciluem, tehnet m. aisnt rIJmuavacgateuS 9rce:r Tispin tay iPnsS de P aaoswligleyor Srrehitcehlol msgtnasgiz efaro bsunlenip. dpIte  ticn. o nmtaailnws aar en uinm boerdr eorf  ftuon cctrieoantse
+designed to drop files and execute saImcuraitgpoetm s15 oa: AnteS aTd Rh fAor asattmt asceyksw pteaomnrek.l One of the documents spreads what analysts are calling SQspL aRf
+
+rotiaart, 
+ll
+ h
+y 
+parerer
+
+d
+vv
+a
+ie
+ct
+oseutdsi
+
+.
+lny gu ncsoenefnig muaralwtiaorne  athnadt drops files
+
+botnet data. Previously, he worked as a software developer
+DaNndS exbecoutte sT SeQLc shcrnipitsc oan lt hDe heost system. The use of SQL scripts is ingenious in that they don’t leave
+
+atnad iulsnix administrator in the financial industry and also
+artifacts behind the way traditional malware does. Once they are deleted by the attackers’ code, there is
+
+spent six years in the U.S. Army. Jason holds multiple
+© 2019 Flashpoint. AAnllon rtiaghlhiyntssgt rs el esaefltrs voteo du bnec ofovrernesdic saullbys reeqcuoevnetr ecda.m Thpiasi gtencsh ansisqoucei ahtaesd  nwoit hb etheins poabnserl.v TeThedre misnse  p ocfr aeSmveirovpiuacesig  cnasm wpeaPriergi vnsaiscmy iPlaorli,cy Cookie Policy
+
+certifications related to reverse-engineering and application
+basust olecviaetreadg ewdit ha dFoINc7u.ment containing anIm eamgeb 1e6d: FdIeNd7 fJraovnat cSocmripatn-yb anasmede. DNSbot. The document contained the
+
+exploitation and has published numerous papers on topics
+same MsgBox display, but this times tuhcerhe  awsa ws ari tsiinngg lem failelw aanrde t assckri. pTthse p tareskte nnadmineg is t osi mbeila ar  tboo “Mt, icrosoft
+uThped asteec soenrdv incee,w” b muta tlhwea roeb sfuasmcaptlee dd iscovered is a multiprotocol backdoor called DNSbot, which is used to
+
+uJSn pfialec ikse drrso, pcpoendf iignu %raloticoanla pdpadtaa tha%ar\vSetsotreargse :and covert channel
+exchange commands and push data to and from compromised machines. Primarily, it operates over DNS
+
+utilities. He enjoys long walks in IDA and staring at RFCs for
+traffic, but can also switch to encrypted chImanagnee 1ls3 : sDuNcShb oats d HeoTbTfuPscSa toerd .SSL, Flashpoint analysts discovered.
+
+hoIumrasg.e 4: Deobfuscated mspromo script.=
+
+ATh see ccaomndp adiegonbsf umsaciantteadin t epsetrinsigs tsecnrcipet  oanls omI macaaghteicn 1h0ee:s dD b NcySo Bcmoretp adortnoinpeg nlo ttcswa tooiof n dt.haeily J asvcahSecdruipletd e mtasbke dednetrdie isn.  Tthhee  AcSodTeR,A
+Tmheea SnwQhLiRlea, ti ss csrtiipll tc iosn dteroslilgende bdy t toh meIm FaakIgNee 7 a7 : a dTciintroeiMrcset  taS lonQodkL imn cgoa foynr n bTereec nltediovMneic rtaroog  paer doMc ienics srfeousst.docs, demonstrating the script’s multiprotocol use. The domain stats25-googu
+
+o
+lr
+f
+ee
+t 
+[ 
+d
+.a
+
+a
+]ctt
+
+t
+oa
+a
+mc
+bka ws
+
+s eab
+ 
+sy
+c
+  
+o
+itnh
+
+n
+ce
+tr
+lu 
+ogl
+dr
+l
+eo
+e
+du
+d
+ p
+ b
+in.
+
+y the
+ a report
+
+attackers and execute the contents of various tables. The script retrieves an item from the bindata table and
+rAedledaitsioednablly , FthireEsyaemeeaUrliSerSinE CthUe nyleoacrk: document service is displayed, though the Microsoft update service
+tA
+writes the file to disk. This file appears to primarily be a version of TinyMet—an open source Meterpreter
+
+Sansakl yiss tdse alelsteod u anncdo vreerpeldac ae d“T winiythP Sth”e s DtaNgeSrb:
+sQtagLerR—abutt tTheeaccthorns hiacvae tlh eDoJepotitsoanhutiolass tPoorl
+
+t.
+eaatntd execute any binary loaded into the table
+
+https://www.flashpoint-intel.com/blog/fin7-revisited-inside-astra-panel-and-sqlrat-malware/ 10/10

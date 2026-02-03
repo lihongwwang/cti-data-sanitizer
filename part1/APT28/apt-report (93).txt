@@ -1,0 +1,224 @@
+﻿2018/7/31 Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station
+
+Home  News  Security  Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station  79 28   
+
+Ukraine Says It Stopped a VPNFilter Attack on a
+Chlorine Distillation Station
+
+By Catalin Cimpanu  July 12, 2018 07:12 PM 0
+
+The Ukrainian Secret Service (SBU) said today it stopped a cyber-attack with the
+VPNFilter malware on a chlorine distillation plant in the village of Aulska, in the
+Dnipropetrovsk region.
+
+"The continuation of the cyberattack could have led to a breakdown of
+technological processes and possible crash," the SBU said today in a press release
+in which it accused Russia of operating the malware and launching the attack.
+
+No other technical details were included in the SBU announcement in regards to
+how the cyber-attack unfolded.
+
+Malware infected plant's routers
+VPNFilter is a malware strain that targets a large number of router models. It's a
+modular threat that can survive router reboots and that can monitor and intercept
+traffic passing through the router and look for signs of traffic meant for Modbus-
+based industrial SCADA equipment. The malware can also temporarily brick the
+device it infects.
+
+In the case reported by the SBU, the malware has most likely infected the chlorine
+distillation station's networking equipment.
+
+The danger here lies in the malware's ability to detect a "sensitive" target and warn
+its operators, who can use it to pivot inside the infected organization and launch
+further attacks. 
+
+https://www.bleepingcomputer.com/news/security/ukraine-says-it-stopped-a-vpnfilter-attack-on-a-chlorine-distillation-station/ 1/7
+
+
+
+2018/7/31 Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station
+
+The group behind VPNFilter isn't your regular botnet herder, but an advanced
+nation-state actor, known as APT28, according to the FBI, and believed to be a unit
+of Russia's military intelligence services.
+
+Chlorine station makes a perfect target
+Ever since its silent war with Russia that started in 2014 after Russia's annexation
+of Crimea, Ukraine has been under a barrage of cyber-attacks, such as the
+BlackEnergy attacks against its power grid in 2015 and 2016, and the NotPetya and
+Bad Rabbit ransomware outbreaks in 2017, all believed to been carried out by
+Russia.
+
+VPNFilter was supposed to be this year's next giant cyber-attack aimed at Ukraine,
+but security firms detected the 500,000-strong botnet before it was deployed in a
+full-scale attack.
+
+The FBI took over the original VPNFilter botnet's command and control servers
+days after it was discovered, but APT28 started building a new one weeks later.
+
+It is unclear if VPNFilter infection at the Aulska chlorine station was an intentional
+attack or just an accidental infection, but it would have made a perfect target to
+attack as Ukrainian news outlets report that it is the country's only chlorine
+distillation station.
+
+The plant's chlorine product is used across Ukraine for drinking water and sewage
+treatment (chlorination). Shutting down the plant would cause the type of damage
+previous cyber-attacks on the Ukraine have sought to inflict.
+
+But at the time of writing, there is no evidence to suggest this was a malicious and
+orchestrated attack. The VPNFilter malware spreads by randomly scanning all
+Internet IPv4 addresses, and it most likely landed on the plant's network by chance
+and because of routers running vulnerable firmware.
+
+Nonetheless, the alarming tone of the SBU press release is justified knowing how
+dangerous VPNFilter and the group behind can be.
+
+Related Articles:
+The VPNFilter Botnet Is Attempting a Comeback
+
+VPNFilter Can Also Infect ASUS, D-Link, Huawei, Ubiquiti, UPVEL, and ZTE
+Devices
+
+Reboot Your Router to remove VPNFilter? Why It's Not Enough
+
+Microsoft Says It Blocked Attempts at Hacking Midterm Campaigns
+
+Router Crapfest: Malware Author Builds 18,000-Strong Botnet in a Day
+
+ICS  ROUTER  RUSSIA  UKRAINE  VPNFILTER
+
+ 
+    
+
+https://www.bleepingcomputer.com/news/security/ukraine-says-it-stopped-a-vpnfilter-attack-on-a-chlorine-distillation-station/ 2/7
+
+
+
+2018/7/31 Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station
+
+CATALIN CIMPANU   
+Catalin Cimpanu is the Security News Editor for Bleeping Computer, where he covers
+topics such as malware, breaches, vulnerabilities, exploits, hacking news, the Dark Web,
+and a few more. Catalin previously covered Web & Security news for Softpedia between
+May 2015 and October 2016. The easiest way to reach Catalin is via his XMPP/Jabber
+address at campuscodi@xmpp.is. For other contact methods, please visit Catalin's author
+page.
+
+  PREVIOUS ARTICLE NEXT ARTICLE 
+
+Post a Comment Community Rules
+
+You need to login in order to post a comment
+
+Login
+
+Not a member yet? Register Now
+
+You may also like:
+
+
+
+https://www.bleepingcomputer.com/news/security/ukraine-says-it-stopped-a-vpnfilter-attack-on-a-chlorine-distillation-station/ 3/7
+
+
+
+2018/7/31 Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station
+
+RECOMMENDED VIDEOS
+
+macOS Bug Let's Take a Look
+Demo of No at the Image
+
+macOS High Anti-Israel
+Sierra Bug IsraBye Data
+
+Unwanted Add Extension to
+Chrome Leave
+
+VIEW MORE
+
+POPULAR STORIES
+
+Pentagon Creates 'Do Not
+Buy' List of Chinese and
+Russian Software Providers
+
+
+
+https://www.bleepingcomputer.com/news/security/ukraine-says-it-stopped-a-vpnfilter-attack-on-a-chlorine-distillation-station/ 4/7
+
+
+
+2018/7/31 Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station
+
+Windows 10 Maps App
+Updated With Several New
+Features for Insiders
+
+NEWSLETTER SIGN
+UP
+
+To receive periodic
+updates and news from
+
+BleepingComputer,
+please use the form
+
+below.
+Email Address...
+
+Submit
+
+
+
+https://www.bleepingcomputer.com/news/security/ukraine-says-it-stopped-a-vpnfilter-attack-on-a-chlorine-distillation-station/ 5/7
+
+
+
+2018/7/31 Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station
+
+NEWSLETTER SIGN UP
+
+Email Address...  
+SUBMIT
+
+Follow us:      
+    
+
+MAIN SECTIONS
+News
+Downloads
+Virus Removal Guides
+Tutorials
+Startup Database
+Uninstall Database
+File Database
+Glossary
+COMMUNITY
+Forums
+Forum Rules
+Chat
+USEFUL RESOURCES 
+Welcome Guide
+
+https://www.bleepingcomputer.com/news/security/ukraine-says-it-stopped-a-vpnfilter-attack-on-a-chlorine-distillation-station/ 6/7
+
+
+
+2018/7/31 Ukraine Says It Stopped a VPNFilter Attack on a Chlorine Distillation Station
+Sitemap
+COMPANY
+About BleepingComputer
+Contact Us
+Advertising
+Write for BleepingComputer
+Social & Feeds
+Changelog
+
+Terms of Use  - Privacy Policy
+
+Copyright @ 2003 - 2018 Bleeping Computer® LLC - All Rights Reserved
+
+
+
+https://www.bleepingcomputer.com/news/security/ukraine-says-it-stopped-a-vpnfilter-attack-on-a-chlorine-distillation-station/ 7/7

@@ -1,0 +1,242 @@
+﻿2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+原创 威胁情报中心 奇安信威胁情报中心 2024-04-22 10:13 北京
+
+团伙背景
+
+海莲花，又名OceanLotus、APT32，奇安信内部跟踪编号APT-Q-31，是由奇安信威胁
+情报中心最早披露并命名的一个APT组织。自2012年4月起，海莲花针对中国政府、科研院
+所、海事机构、海域建设、航运企业等相关重要领域展开了有组织、有计划、有针对性的长
+时间不间断攻击。海莲花组织的攻击目标包括中国和东南亚地区多国，覆盖政府机构、科研
+院所、媒体、企业等诸多领域。该组织攻击手法多样，拥有完备的攻击武器库，常结合自研
+恶意软件、开源项目和商业工具实施攻击。
+
+概述
+
+奇安信威胁情报中心观察到海莲花在针对国内某目标的攻击活动中使用了一款由Rust编
+写的加载器，内存加载Cobalt Strike木马。随后我们在开源平台发现了类似的恶意软件，这
+些恶意软件在Rust代码、中间阶段shellcode等方面的特征都与捕获的海莲花Rust加载器高
+度重合，因此我们认为它们也来自海莲花组织。接下来将以这些开源样本为基础对海莲花近
+期使用的Rust加载器进行分析。
+
+详细分析
+
+发现的Rust加载器样本如下
+
+MD5 VT上传时间 说明
+064cd0afb4dc27df 2024-01-24 16:3 64位EXE；
+9d30c7f5209a8e5b 8:44 UTC HTTPS类型beacon木马；
+
+C&C： oo-advances-computers-interests.trycloudflar
+e.com
+
+080c5ee76e27fb36 2024-02-26 08:0 64位EXE；
+1b2e2946afc05cb6 7:25 UTC SMB类型beacon木马；
+
+命名管道：\\.\pipe\mojo_b7
+96520d209bd3f49 2024-04-02 08:3 32位EXE；
+08843388a5643f4 6:23 UTC SMB类型beacon木马；
+98 命名管道：\\.\pipe\Winsock2\CatalogChangeListener
+
+-738-0
+3ada3a7ff12dbe5e 2024-04-08 09:3 64位EXE；
+129b4aec7705184 6:31 UTC HTTPS类型beacon木马；
+3 C&C：guilty-patricia-connecticut-pulled.trycloudflar
+
+e.com
+bf634036012335d 2024-04-11 07:4 64位EXE；
+802fc6abc1a7787b 7:43 UTC 尾部数据被删除
+d
+598544a350d496b 2024-04-14 12:3 64位EXE；
+acabfc5b905fae6a 3:32 UTC HTTPS类型beacon木马；
+4 C&C：ecom.dfizm.com
+
+其中部分CS木马还利用Cloudflare Tunnel服务（trycloudflare.com下的子域名）[1]作
+为C&C服务器，隐藏真实服务器IP。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 1/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+下面以样本598544a350d496bacabfc5b905fae6a4为例进行分析。
+
+Rust加载器
+
+首先读取EXE文件自身数据。
+
+加密数据的长度保存在文件末尾倒数24字节位置，长度为0x4D838，用于XOR解密的ke
+y从文件末尾倒数20字节开始。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 2/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+解密得到的内容如下，其中包含下一阶段的shellcode。
+
+根据计算，加密数据位于该样本文件的偏移位置0x462C1，而EXE最后一个段”.reloc”在
+0x45000处结束，可见加密数据是附加在原始EXE之后。
+
+加载器从"C:\\Windows\\system32\\"目录下选择一个DLL文件加载进内存。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 3/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+先将加载DLL的.text段对应内存空间访问权限修改为“读写”，再复制之前解密出的shellc
+ode内容到.text段，并修改权限为“读写可执行”，最后执行shellcode。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 4/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+第一阶段shellcode
+
+此次发现的大部分Rust加载器样本会使用第一阶段的shellcode再度解密并执行包含CS
+beacon木马的第二阶段shellcode，而个别样本的第一阶段shellcode直接运行CS beacon
+木马。
+
+如果是带有解密功能的第一阶段shellcode，首先定位配置数据的基地址位置，将其保存
+在rsi寄存器中。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 5/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+从rsi+0x428位置获取第二阶段shellcode的长度（这里为0x4C0D0），保存在r14d寄
+存器中，然后调用VirtualAlloc分配具有可读写执行权限的内存。
+
+分配内存的起始地址（这里为0x4E0000）保存在r15寄存器中，rsi+0x42C位置为第二
+阶段shellcode加密数据的起始地址。循环调用第一阶段shellcode偏移0x4C844（内存地址
+0x7FEFA9CD844）处的函数，每次解密8字节数据，解密结果保存在分配内存中。
+
+解密第二阶段shellcode完成后，直接调用执行。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 6/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+第二阶段shellcode
+
+第二阶段shellcode中包含一个CS beacon木马，内存加载执行。木马PE文件数据在偏
+移0x10C2处， File Header结构的magic number修改为”4E 4F”（0x4F4E）。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 7/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+提取beacon木马的配置信息，C2为ecom.dfizm[.]com:443。
+
+溯源关联
+
+这批Rust加载器恶意软件与之前捕获的海莲花攻击样本（MD5: c0271f7c0430f3ec464
+1e5a1436cf87f）在代码特征上高度重合。首先Rust部分代码几乎一致，第一阶段的shellco
+de也十分相似。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 8/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+捕获的海莲花样本第二阶段shellcode有些不同，采用如下代码定位CS beacon木马的位
+置，DOS Header结构的magic number改为0x5041，不过File Header结构的magic num
+ber仍使用0x4F4E。
+
+根据以上代码相似性，我们认为这些上传到VirusTotal平台的Rust加载器也与海莲花组
+织有关。
+
+此外，之前攻击活动中捕获到的海莲花样本CS配置数据中的license_id同样是98765432
+1。
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 9/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+实际上，开源样本中CS木马涉及的license_id共有2个。
+
+MD5 Beacon类型 License_id
+064cd0afb4dc27df9d30c7f5209a8e5b HTTPS 1359593325
+080c5ee76e27fb361b2e2946afc05cb6 SMB 1359593325
+96520d209bd3f4908843388a5643f498 SMB 987654321
+3ada3a7ff12dbe5e129b4aec77051843 HTTPS 1359593325
+598544a350d496bacabfc5b905fae6a4 HTTPS 987654321
+
+但值得注意的是，这两个license_id对应的可能是破解版Cobalt Strike，现已被多个攻
+击团伙使用[2,3]，推测海莲花组织想借此模糊对Cobalt Strike攻击活动的归属。
+
+总结
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 10/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+海莲花组织在近年来的攻击活动中不断更新攻击手法，此次发现的Rust加载器将后续载
+荷加密后附加到加载程序尾部，并试图用system32目录下合法DLL的内存空间存放待执行的s
+hellcode，以避免触发安全软件的检测，同时滥用被多个黑客团体使用的Cobalt Strike水印
+混淆攻击归属。
+
+防护建议
+
+奇安信威胁情报中心提醒广大用户，谨防钓鱼攻击，切勿打开社交媒体分享的来历不明
+的链接，不点击执行未知来源的邮件附件，不运行标题夸张的未知文件，不安装非正规途径
+来源的APP。做到及时备份重要文件，更新安装补丁。
+
+若需运行，安装来历不明的应用，可先通过奇安信威胁情报文件深度分析平台（https://
+sandbox.ti.qianxin.com/sandbox/page）进行判别。目前已支持包括Windows、安卓平
+台在内的多种格式文件深度分析。
+
+目前，基于奇安信威胁情报中心的威胁情报数据的全线产品，包括奇安信威胁情报平台
+（TIP）、天擎、天眼高级威胁检测系统、奇安信NGSOC、奇安信态势感知等，都已经支持
+对此类攻击的精确检测。
+
+IOC
+
+MD5
+064cd0afb4dc27df9d30c7f5209a8e5b
+080c5ee76e27fb361b2e2946afc05cb6
+96520d209bd3f4908843388a5643f498
+3ada3a7ff12dbe5e129b4aec77051843
+bf634036012335d802fc6abc1a7787bd
+598544a350d496bacabfc5b905fae6a4
+ 
+C&C
+oo-advances-computers-interests.trycloudflare.com
+guilty-patricia-connecticut-pulled.trycloudflare.com
+ecom.dfizm.com
+ 
+
+参考链接
+
+[1].https://developers.cloudflare.com/cloudflare-one/connections/connect-networ
+ks/do-more-with-tunnels/trycloudflare/
+[2].https://www.secrss.com/articles/60060
+[3].https://www.intrinsec.com/wp-content/uploads/2024/01/TLP-CLEAR-2024-01-0
+9-ThreeAM-EN-Information-report.pdf
+ 
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 11/12
+
+
+
+2024/4/25 09:46 海莲花（APT-Q-31）组织数字武器Rust加载器技术分析
+
+https://mp.weixin.qq.com/s/K-FUaffQx4g6d_hweXxCTg 12/12

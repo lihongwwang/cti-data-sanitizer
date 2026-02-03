@@ -1,0 +1,87 @@
+从剖析攻击⾯出发——2019上半年海莲花组织主要攻击事件总结
+前⾔
+组织介绍
+海莲花组织，或称为OceanLotus、SeaLotus、Cobalt Kitty、APT32、APT-C-00，是⼀个活跃于越南的攻击组织。该组织最早在2015年被发现，在2017年之后进⼊活跃期⾄今。⼀般认为，海莲花组织的主要⽬标为越南及相邻国家的政企⼯作⼈员，主要⽬的为窃取政府与商业情报，中国是该组织的主要攻击国家之⼀。
+种种迹象表明，海莲花是⼀个多⼈分⼯合作的⾼效组织，该组织不断更新完善⾃⼰的攻击链条，并不断开发新的攻击⽅式和⼯具。⽬前，ATT&CK攻击矩阵显示海莲花使⽤的攻击⼯具超过10种，使⽤的攻击技术超过50种。
+2019年上半年，海莲花组织投递的恶意载荷产⽣了⼀定的变化，并且明显加强了抗检测能⼒，这表明该组织在攻防对抗⽅⾯的意识不断增强。
+绿盟科技伏影实验室对海莲花组织在2019上半年的攻击活动进⾏了捕获与梳理，并由此总结了部分攻击者与组织的特征，借此增强对该组织攻击的检测和防御能⼒。
+关于本⽂
+本⽂的内容将聚焦于近期海莲花攻击链的构成和特性，对各攻击链样本的详细分析请关注稍后发布的攻击链载荷分析⽂章。
+组织模型
+MITRE ATT&CK MATRIX
+Initial Access Execution Persistence Privilege Escalation Defense Evasion Credential Access
+Drive-by Compromise Command-Line Hidden Files and Exploitation for Privilege Binary Padding Credential Dumping
+Interface Directories Escalation
+Spearphishing Exploitation for Client Modify Existing Service New Service DLL Side-Loading
+Attachment Execution
+Spearphishing Link Mshta New Service Scheduled Task File Deletion
+Valid Accounts PowerShell Office Application Valid Accounts File Permissions
+Startup Modification
+Regsvr32 Registry Run Keys / Web Shell Hidden Files and
+Startup Folder Directories
+Scheduled Task Scheduled Task Indicator Removal on
+Host
+Scripting Valid Accounts Masquerading
+Service Execution Web Shell Modify Registry
+Signed Script Proxy Mshta
+Execution
+User Execution NTFS File Attributes
+Windows Management Obfuscated Files or
+Instrumentation Information
+Regsvr32
+Scripting
+Signed Script Proxy
+Execution
+Software Packing
+Timestomp
+Valid Accounts
+Discovery Lateral Movement Collection Command and Control Exfiltration Impact
+Account Discovery Application Deployment Commonly Used Port Data Compressed
+Software
+File and Directory Discovery Pass the Hash Custom Command and Control Data Encrypted
+Protocol
+Network Service Scanning Pass the Ticket Remote File Copy Exfiltration Over
+Command and Control
+Channel
+Query Registry Remote File Copy Standard Application Layer
+Protocol
+Remote System Discovery Windows Admin Shares Uncommonly Used Port
+System Information
+Discovery
+System Network
+Configuration Discovery
+System Network Connections
+Discovery
+System Owner/User
+Discovery
+典型攻击链
+上半年，海莲花组织使⽤多种不同的攻击链展开攻击，这些攻击链涉及的技术包括⽩利⽤、宏利⽤、shellcode packer、内存执⾏、hook等；投递的⽊⻢包括渗透⼯具载荷Cobalt Strike Beacon、远控⼯具DenesRAT等；主要涉及漏洞CVE-2018-20250；使⽤的语⾔包括中⽂、越南语、英⽂。经过归类，我们梳理了四条典型的攻击链，并发现了该组织在攻击时的⼀些偏好和特性。
+攻击链1：wwlib side-loading攻击
+该攻击链是上半年乃⾄2018年以来海莲花组织最主要的攻击⽅式，具有稳定、抗检测等特点。同时，该攻击链的组件在攻防对抗中演化出了多个变种，使得其恶意⾏为越来越难以被捕获。
+该攻击链主要特征为诱饵阶段使⽤了side-loading技术，通过⽆害程序启动加载恶意dll的⽅式执⾏攻击代码，典型诱饵为word.exe原始程序与恶意wwlib.dll运⾏库的组合：
+诱饵释放的欺骗⽂档多为乱码或⽆意义内容：
+除诱饵⽂档名多使⽤越南语外，该攻击链的⼀⼤主要特征是其shellcode loader形式。由wwlib.dll程序释放的shellcode loader⼀般由三层或更多层组成，各层的功能较为固定，有载⼊运⾏环 境、解密最终payload、下载远控⼯具等，各层shellcode间使⽤线程调⽤：
+该攻击链最终释放的⽊⻢载荷为使⽤反射加载的Cobalt Strike Beacon受控端程序：
+此攻击链中，海莲花组织在触发⼯具和安装⽊⻢部分的⾏为⽐较有代表性，并且随时间发展出多个变化的⽀链，使得攻击链更为复杂和健壮。
+攻击链2：hta脚本投放恶意组件
+该攻击链为2019年中旬所捕获到的较新攻击⽅式，攻击者通过⻥叉邮件投递恶意压缩包，通过迷惑性的主题及照⽚诱使⽤户打开伪装成html⽂档的hta脚本，并完成恶意软件的释放与安装。
+该攻击链特征为强混淆的hta dropper：
+使⽤固定的shellcode loader加载dll⾄内存：
+释放带有随机可执⾏⽂件名的side-loading⽂件组合（该样本中实际加载了CoolType.dll中的攻击代码）：
+最终释放⽊⻢为DenesRAT，该⽊⻢特征为通信使⽤LZMA压缩再由RC4编码：
+本样本释放的DenesRAT⽊⻢使⽤http协议通信：
+攻击链3：winrar漏洞释放恶意组件
+该攻击链也属于恶意诱饵的⼀种，但效果发⽣了变化。攻击链1中伪装成Word⽂档的可执⾏⽂件需要⽤户当场点击并运⾏，⽽使⽤WinRAR漏洞的恶意诱饵在解压后会将恶意程序放到了⾃启动⽬录下，重启即可执⾏，增强了隐蔽性，缺乏经验的⽤户很难觉察出其中的蹊跷。
+该攻击链最主要特征为诱饵⽂件为使⽤了CVE-2018-20250漏洞的winrar压缩⽂件：
+最终释放的⽊⻢与攻击链2相同，为DenesRAT，该版本使⽤了tcp通信：
+攻击链4：winrar⾃解压⽂件释放恶意组件
+该攻击链利⽤⾃解压⽂件执⾏定义好的SFX脚本，实现诱骗攻击的⽬的，⾃解压⽂件⼀般以exe结尾，可⾃定义其功能脚本，实现静默执⾏，同时会执⾏程序原始功能，避免被察觉，此次攻击事件中则是以.doc.exe的形式来进⾏攻击。
+该攻击链使⽤的技术和⼯具似曾相识，包括在攻击链2中使⽤的shellcode loader与相同的指令混淆⽅式：
+以及与攻击链3相同的tcp版本DenesRAT⽊⻢：
+攻击链⼩结
+通过对2019年上半年流⾏的攻击链的整理分析，我们发现海莲花组织的攻击⼿段多为⻥叉攻击+诱饵⽂件的形式，诱饵⽂件花样繁多，使⽤的攻击技术也各不相同。然⽽，这些攻击还是可以体现出海莲花组织的⼀些特点，如过分依赖某类攻击技术，以及热衷于使⽤少数⼏个⽊⻢载荷等。同时，上⽂所述的⼏条主要攻击链或多或少都出现了优化升级的现象，这说明海莲花组织对此类攻击⽅式⾮常重视，亦能侧⾯体现出此类攻击的⾼收益能⼒。
+此外，未在19年前两季度被捕获使⽤，但出现在历史记录中的海莲花攻击链还包括cve-2017-11882 office漏洞利⽤攻击（2018）、永恒之蓝漏洞利⽤攻击（2017）等。使⽤漏洞的攻击⽅式可以让攻击者在投递⼯具阶段更为主动，但该类攻击会受到操作系统或软件补丁的直接影响，这可能也是本年度海莲花组织更倾向于使⽤⾮漏洞类攻击的原因。
+通过海莲花组织活跃度及近半年以来的攻击频率推断，我们相信，未来将会有更多新的海莲花攻击链出现。
+总结
+海莲花组织作为具有较⾼攻击技术的⿊客团伙，在进⼊2019年后依然频繁攻击东南亚范围内的各类⽬标。我们发现，海莲花组织近期的攻击⽅式多样，攻击链条复杂，但使⽤的核⼼攻击技术与最终⽊⻢载荷较为固定。
+分析还发现，海莲花组织会积极尝试使⽤各类热⻔漏洞和攻击技术，但多数未形成规模，只有最稳定的⼏条攻击链实现了持久化。因此，安全⼈员需时刻关注新型攻击技术和漏洞的使⽤⽅式和原理，因为它们很容易被海莲花这样的⾼级APT组织在第⼀时间利⽤。

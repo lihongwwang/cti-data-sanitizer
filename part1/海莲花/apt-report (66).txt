@@ -1,0 +1,252 @@
+﻿2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+海莲花 APT32 OceanLotus 高级可持续攻击 CobaltStrikeBeacon
+
+【 微 步 在 线 报 告 】 零 杀 软 检 出 ， 我 国 遭 到 “ 海 莲 花 ” 新 手 法 攻 击
+
+微步情报局
++ 关注
+
+2019-04-23 19:20:05 5981
+
+TAG:高级可持续攻击、海莲花、中国、APT32、OceanLotus、CobaltStrikeBeacon 
+
+TLP: 白（报告转发及使用不受限制）
+
+日期：2019-04-12
+
+概要
+“ 海 莲 花 ” ， 又 名   A P T 3 2   和   O c e a n L o t u s ， 是 越 南 背 景 的 黑 客 组 织 。 该 组 织 至 少 自   2 0 1 2   年 开 始 活 跃 ，
+长   期 针 对 中 国 能 源 相 关 行 业 、 海 事 机 构 、 海 域 建 设 部 门 、 科 研 院 所 和 航 运 企 业 等 进 行 网 络 攻 击 。 除 中 国
+外 ， “ 海   莲 花 ” 的 目 标 还 包 含 全 球 的 政 府 、 军 事 机 构 和 大 型 企 业 ， 以 及 本 国 的 媒 体 、 人 权 和 公 民 社 会 等 相 关
+的 组 织 和   个 人 。
+
+近 日 ， 微 步 在 线 狩 猎 系 统 捕 获 到 一 个   A P T 3 2   最 新 针 对 我 国 进 行 攻 击 的 诱 饵 文 件 ， 分 析 之 后 发 现 :
+
+⚫     诱 饵 文 件 名 为 “ 2 0 1 9   年 第 一 季 度 工 作 方 向 附 表 . r a r ” ， 该 诱 饵 在 攻 击 过 程 中 使 用 了 两 层 白 利 用 进 行   D L
+L 劫 持 ， 第 一 层 为   W o r d   白 利 用 ， 第 二 层 为   3 6 0   安 全 浏 览 器 白 利 用 。 两 层 白 利 用 是   A P T 3 2   新 的 攻 击 手 法 ，
+截 至 报 告 时 间 ， 该 诱 饵 尚 无 杀 软 检 出 。
+
+⚫     此 次 攻 击 最 终 投 递 的 木 马 为   C o b a l t   S t r i k e   B e a c o n   后 门 ， 具 备 进 程 注 入 、 文 件 创 建 、 服 务 创 建 、 文
+件 释 放 等 功 能 ， C 2   通 信 使 用   S a f e b r o w s i n g   可 延 展   C 2   配 置 。
+
+⚫     微 步 在 线 通 过 对 相 关 样 本 、 I P   和 域 名 的 溯 源 分 析 ， 共 提 取   5   条 相 关   I O C ， 可 用 于 威 胁 情 报 检 测 。 微 步
+在 线 的 威 胁 情 报 平 台 ( T I P ) 、 威 胁 检 测 平 台 ( T D P ) 、 A P I   等 均 已 支 持 此 次 攻 击 事 件 和 团 伙 的 检 测 。
+
+详 情 自 活 跃 以 来 ， A P T 3 2   一 直 持 续 针 对 我 国 进 行 网 络 攻 击 。 在 攻 击 过 程 中 ， A P T 3 2   一 直 在 尝 试 不 同 方 法 以
+实 现 在 目 标 系 统 上 执 行 恶 意 代 码 和 绕 过 安 全 检 测 ， 其 中 经 常 使 用 的 包 含 白 利 用 和   C 2   流 量 伪 装 等 。 近 日 ， 微
+步 在 线 狩 猎 系 统 捕 获 了 一 个   A P T 3 2   针 对 我 国 进 行 攻 击 的 诱 饵 ， 该 诱 饵 使 用 了 两 层 白 利 用 进 行   D L L   劫 持 ， 第
+一 层 为   W o r d   白 利 用 ， 第 二 层 为   3 6 0   安 全 浏 览 器 白 利 用 ， 最 终 投 递 的 木 马 为   C o b a l t   S t r i k e   B e a c o n   后
+门 ， C 2 通 信 使 用   S a f e b r o w s i n g   可 延 展   C 2   配 置 。
+
+诱 饵 “ 2 0 1 9   年 第 一 季 度 工 作 方 向 附 表 . r a r ” 整 体 攻 击 流 程 如 下 :  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 1/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+截 至 报 告 发 布 时 间 ， 微 步 在 线 云 沙 箱 多 引 擎 检 测 和   V i r u s T o t a l   多 引 擎 检 测 均 为   0 ， 如 下 图 :  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 2/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+样本分析
+诱 饵 “ 2 0 1 9   年 第 一 季 度 工 作 方 向 附 表 . r a r ” 为 一 压 缩 文 件 ， 解 压 得 到 “ 2 0 1 9   年 第 一 季 度 工 作 方 向 附 表 . E X
+E ”   和 “ w w l i b . d l l ” ， 其 中 “ 2 0 1 9   年 第 一 季 度 工 作 方 向 附 表 . E X E ” 为 包 含 有 效 数 字 签 名 的   W o r d   2 0 0
+7   可 执 行 程 序 ，   打 开 会 加 载 同 目 录 下 的   w w l i b . d l l ， w w l i b . d l l   被 设 置 了 系 统 和 隐 藏 属 性 。 相 关 截 图 如 下 :
+
+1、 下面对 wwlib.dll 进行分析。
+
+1) wwlib.dll 的基本信息如下:
+
+SHA256 236623cd3be93a832ae86bb7bfbf66e6d5e00abbc6ebc6555c09988412448391
+SHA1 fb46ed36c2f2dfd6ecfa898cd6cb176c4950df4f
+MD5 05e513c612b0384804db9bda5277087c
+文件格式 PE 文件(DLL)
+文件大小 1.37 MB
+文件名  wwlib.dll 
+时间戳  2019-02-11 11:12:21 
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 3/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+2 )     D L L   通 过 白 利 用 被 加 载 之 后 ， 会 获 取 系 统 盘 符 ， 然 后 在 “ \ P r o g r a m D a t a \ 3 6 0 s e M a i n t e n a n c e \ ” 目
+录 写   入 “ c h r o m e _ e l f . d l l ” 和 “ 3 6 0 s e . e x e ” 文 件 ， 其 中 “ 3 6 0 s e . e x e ” 是 带 数 字 签 名 的 白 文 件 ， 相 关 截
+图 如   下 :  
+
+3 )     恶 意 “ w w l i b . d l l ” 还 会 根 据   E X E   程 序 名 构 造 “ 2 0 1 9   年 第 一 季 度 工 作 方 向 附 表 . d o c x ” 字 符 串 ， 然 后
+在 系 统   T e m p   目 录 写 入 带 密 码 的   d o c x   文 档 ， 用 于 伪 装 自 己 是 一 个 正 常 的 文 档 ， 相 关 代 码 :  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 4/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+4 )   如 果 首 次 运 行 ， 则 会 在 注 册 表 目 录   “ S o f t w a r e \ \ C l a s s e s \ \ ” 创 建 “ . d o c ” 和 “ . d o c x ” 项 ， 然 后 调
+用   W O R D 程 序 打 开 释 放 到   T e m p   目 录 的 . d o c x   文 件 ， 相 关 代 码 :  
+
+5 )   第 二 次 运 行 查 询 “ S o f t w a r e \ \ C l a s s e s \ \ ” 存 在 “ . d o c ” 和 “ . d o c x ” ， 则 执 行 “ 3 6 0 s e . e x e ” 文 件 ，
+并 附 加 T e m p   目 录 释 放 的   d o c x   文 件 路 径 为 参 数 ， 相 关 代 码 :  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 5/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+2、 下面对 chrome_elf.dll 进行分析。
+
+1 )   c h r o m e _ e l f . d l l   基 本 信 息 如 下 :
+
+SHA256 a2d2b9a05ed5b06db8e78b4197fc5ea515f26d5626d85f3b1b39210d50552af3
+SHA1 f49607fe57cc0016dce66c809e94d9750b049082
+MD5 3b132e407474bc1c830d5a173428a6e1
+文件格式 PE 文件(DLL)
+文件大小 191 KB
+文件名 chrome_elf.dll
+时间戳 2019-02-11 3:12:43
+
+2 )   c h r o m e _ e l f . d l l   被   3 6 0 s e . e x e   加 载 ， 然 后 在   D L L   初 始 化 中 ， 解 析 参 数 ， 然 后 调 用   W O R D   程 序 打 开
+参   数 中 的 文 件 ， 并 调 用   C r y p t A P I   函 数 解 密 内 存 中 的   U R L   链 接 ，   解 密 后 的   U R L   为   “ h t t p s : / / o f f i c e w
+p s . n e t / u l t r a . j p g ” ， 部 分   C r y p t A P I   函 数 代 码 :
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 6/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+3 )     然 后 “ 3 6 0 s e . e x e ” 调 用   D L L   中 的 “ S i g n a l I n i t i a l i z e C r a s h R e p o r t i n g ” 执 行 判 断 是 否 存 在 “ 3 6 0
+s e . e x e ”   进 程 ， 如 果 不 存 在 则 不 执 行 恶 意 代 码 ， 相 关 代 码 :  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 7/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+4 )     然 后 从   h t t p s : / / o f f i c e w p s . n e t / u l t r a . j p g   下 载   p a y l o a d   进 行 第 三 阶 段 攻 击 ， 相 关 代 码 :  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 8/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+5 )     下 载 完 成 后 拷 贝   p a y l o a d   到 新 申 请 内 存 空 间 ， 跳 转 到   p a y l o a d   的   0   偏 移 位 置 执 行 ， 相 关 代 码 :  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 9/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+3、 第三阶段“ultra.jpg”分析:
+
+1 )     u l t r a . j p g   基 本 信 息 如 下 :
+
+2 )     首 先   p a y l o a d   的   S h e l l c o d e   会 获 取 相 关   A P I   地 址 ， 相 关   A P I   截 图 :
+
+SHA256 5ccfc54e083970d5c34b890d27d8a7af5eb4f8ae4ab0e93c61a6776e5d31b54c
+SHA1 7fa2446c948e25953dcd36b27a976a2691dca977
+MD5 802cb895c1f0085611c74edf2b177df6
+文件格式 shellcode
+文件大小 205 KB
+文件名 ultra.jpg
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 10/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+3 )     然 后 循 环 解 密   p a y l o a d   中 的 数 据 ， 解 密 完 成 后 是 一 个   D L L   版 的   C o b a l t   S t r i k e   B e a c o n   后 门 。  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 11/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+4 )     调 用   C r e a t e T h r e a d   创 建 线 程 ， 从 解 密 出 来 的   0   偏 移 位 置 执 行 ， 进 行 反 射 加 载   D L L 。  
+
+5 )     连 接   C 2   地 址 和 请 求   U R L   进 行 上 线 请 求 ， C 2   通 信 使 用   S a f e b r o w s i n g   可 延 展   C 2   配 置 。  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 12/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+6 )   该 后 门 包 含 的   C 2   命 令 多 达   7 6   个 ， 具 体 包 含 进 程 注 入 、 文 件 创 建 、 服 务 创 建 、 文 件 释 放 等 等  
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 13/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+
+关联分析
+根 据 此 次 攻 击 相 关 的   T T P s   和 背 景 信 息 ， 我 们 认 为 背 后 攻 击 者 为   A P T 3 2 。 此 次 攻 击 与 此 前 的 一 些 攻 击 的 对 比
+如 下 :
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 14/15
+
+
+
+2019/4/24 【微步在线报告】零杀软检出，我国遭到“海莲花”新手法攻击 - 微步在线情报社区
+          此次 此前
+
+诱饵文件 RAR 压缩包，包含 Word 可执行文件和wwlib.dll RAR/ZIP 压缩包，包含 Word 可执行文 件
+攻击手法 Word 白利用，360 安全浏览器白利用  Word、Adobe、Google、Neuber 等白利
+迷惑手法 wwlib.dll 设置系统和隐藏属性(攻击中 国时)，释放并打开带密码的文档 wwlib.dll 设置系统和隐藏属性(攻击中 国时
+投递木马 Cobalt Strike Beacon Cobalt Strike Beacon 
+C2 通信 Safebrowsing 可延展 C2 配置  Safebrowsing、Amazon 等可延展 C2 配
+
+威胁指标（IOC）
+
+域名 子域名 历史IP 样本 标签
+
+officewps.net 1 0 0 3
+
+Hash 检测结果 样本 标签
+
+236623cd3be93a832… 1/25 0 0
+
+27fdafd1da4c1f1f5e… 0/25 0 0
+
+5ccfc54e083970d5c… 0/0 0 0
+
+a2d2b9a05ed5b06d… 2/25 0 0
+
+7 赞
+
+评论
+
+已有2条评论，快来说说你的想法...
+
+hobby
+0
+
+2019-04-24 11:03:46
+
+邮件标题是什么啊？
+
+匿名用户
+0
+
+2019-04-23 20:37:21
+
+拜读了！
+
+已经到底了，没有更多内容了
+
+https://m.threatbook.cn/detail/1397?from=timeline&isappinstalled=0 15/15

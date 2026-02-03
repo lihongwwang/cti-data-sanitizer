@@ -1,0 +1,126 @@
+﻿2023/4/14 14:32 Bitter Group 分发针对中国机构的 CHM 恶意软件 - ASEC BLOG
+
+发布者  gygy0101 , 2023 年  4 月  4 日
+
+Bitter Group 传播针对中国机构的 CHM
+恶意软件
+
+Bitter（T-APT-17）组织是一个主要针对南亚地区政府机构的攻击组织，一直使用
+Word、Excel等Office文档散布恶意代码。AhnLab 安全应急响应中心（ASEC）近日
+确认了 Bitter 集团向中国特定组织分发 CHM 恶意软件的多个情况。CHM文件从今
+年年初开始就被各种攻击组织用来进行APT攻击，并通过ASEC博客多次介绍。
+
+本次攻击使用的CHM通过邮件附件进行分发，附件为压缩形式。压缩包内有一个
+CHM文件，目前确认的文件名如下。
+
+分发文件名
+Project Plan 2023 .chm
+以下官员的紧急护照查询.docx.chm
+SUSPECTED FOREIGN TERRORIST FIGHTERS.chm
+Forensic Evidence on Crime Scene.chm
+Patches updates.chm
+Ticktes.chm
+KC_16.11.chm
+
+https://asec.ahnlab.com/ko/50851/ 1/6
+
+
+
+2023/4/14 14:32 Bitter Group 分发针对中国机构的 CHM 恶意软件 - ASEC BLOG
+
+执行CHM文件时，会创建大部分帮助窗口，但也有一些与“中央统战部”和“中俄和平
+与发展委员会”有关，如下图所示。  
+
+运行CHM时的画面（一）
+
+https://asec.ahnlab.com/ko/50851/ 2/6
+
+
+
+2023/4/14 14:32 Bitter Group 分发针对中国机构的 CHM 恶意软件 - ASEC BLOG
+
+运行CHM时的画面（二）
+
+对应类型CHM中识别出的内部恶意脚本如下，用户很难识别恶意脚本的运行过程。
+相应脚本的一个共同特点是脚本中存在执行快捷方式对象的Click方法的部分被混淆
+了。与之前介绍的CHM不同，它似乎通过混淆来避免静态诊断。
+
+恶意脚本类型（一）
+
+https://asec.ahnlab.com/ko/50851/ 3/6
+
+
+
+2023/4/14 14:32 Bitter Group 分发针对中国机构的 CHM 恶意软件 - ASEC BLOG
+
+恶意脚本类型（二）
+
+恶意脚本类型（二）——Powershell反混淆
+
+当脚本运行时，这两种类型都会创建执行恶意命令的任务。每个恶意命令都会访问下
+面的地址并执行其他恶意文件。目前所有地址都无法访问，但推测从第一个地址下载
+的MSI文件已经确认。
+
+hxxps://bluelotus.mail-gdrive[.]com/Services.msi
+hxxps://coauthcn[.]com/hbz.php?id=%computername%
+
+MSI文件在执行时会创建一个正常的EXE文件和一个恶意的DLL，然后执行exe文件。
+生成的文件如下，执行MicrosoftServices.exe时会加载OLMAPI32.dll。加载的 DLL
+是攻击者创建的恶意文件，并使用DLL Side-Loading 技术 ( T1574.002 )。
+(https://attack.mitre.org/techniques/T1574/002/)
+
+https://asec.ahnlab.com/ko/50851/ 4/6
+
+
+
+2023/4/14 14:32 Bitter Group 分发针对中国机构的 CHM 恶意软件 - ASEC BLOG
+
+用于 DLL 侧加载的文件
+
+加载的恶意DLL函数如下。首先，通过以下命令收集用户信息，保存在
+“c:\Users\Public\cr.dat”文件中。
+
+IP 信息
+cmd.exe /c nslookup myip.opendns.com resolver1.opendns.com>>
+c:\Users\Public\cr.dat
+系统信息
+cmd.exe /c systeminfo>> c:\Users\Public\cr.dat
+目录信息
+cmd.exe /c dir “%userprofile%\Documents”>> c:\Users\Public\cr.dat
+cmd.exe /c dir “%userprofile%\Desktop”>> c:\Users\Public\cr .dat
+cmd.exe /c dir “%userprofile%\Downloads”>> c:\Users\Public\cr.dat
+
+创建一个运行名为“Microsoft Update”的 MicrosoftServices.exe 的任务以实现持久
+性。
+
+任务调度器
+
+https://asec.ahnlab.com/ko/50851/ 5/6
+
+
+
+2023/4/14 14:32 Bitter Group 分发针对中国机构的 CHM 恶意软件 - ASEC BLOG
+
+此外，它还会尝试连接到下面的C2，并可以根据攻击者的命令执行各种恶意操作。
+
+msdata.ddns[.]net:443
+
+近来，国内外利用CHM文件进行的攻击越来越多，被用于各种恶意代码中。用户应
+详细核对邮件发件人，切勿阅读来历不明的文件。此外，有必要定期进行 PC 检查并
+始终将安全产品更新到最新版本。
+
+[文件诊断]
+Trojan/Win.Generic.R560734 (2023.03.04.03)
+Dropper/CHM.Generic (2023.03.30.00)
+Dropper/MSI.Generic (2023.04.04.03)
+
+[IOC]
+8b15c4a11df2deea9ad4699ece085a6f
+cce89f4956a5c8b1bec82b21e371645b
+a7e8d75eae4f1cb343745d9dd394a154
+09a9e1b03f7d7de4340bc5f9e656b798
+hxxps://bluelotus.mail-gdrive[.]com/Services.msi
+hxxps://coauthcn[.]com/hbz.php?id=%computername%
+msdata.ddns[.]net :443
+
+https://asec.ahnlab.com/ko/50851/ 6/6

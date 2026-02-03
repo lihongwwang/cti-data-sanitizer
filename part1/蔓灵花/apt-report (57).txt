@@ -1,0 +1,986 @@
+﻿2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+APT组织“蔓灵花”对巴基斯坦攻击事件报告
+瑞星企业安全 Today
+
+⼀、背景介绍
+
+近期，瑞星威胁情报中⼼捕获到⼀起针对巴基斯坦攻击事件，攻击者疑似APT组织“蔓灵花”，该组织利
+
+CVE-2017-11882漏洞，通过投递带有恶意链接的DOCX⽂档对受害者进⾏攻击，⼀旦成功将获取受害者电
+
+脑内的所有敏感信息，并对其进⾏远程操控。
+
+ 
+
+据瑞星安全专家介绍，APT组织“蔓灵花”⼜名BITTER或T-APT-17，于2016年被国外某安全⼚商曝光，该组
+
+织⻓期针对中国、巴基斯坦等国家进⾏有组织，有计划地攻击，其⽬的以窃取政府、军⼯业、电⼒等领域的
+
+敏感资料为主，具有强烈的政治背景。
+
+ 
+
+此次“蔓灵花”组织攻击对巴基斯坦的攻击⼿法是，向其内部投放主题为List of Commercial Counsellor at
+
+Pakistanʼs Missions Abroad（中译为：巴基斯坦驻外使团商务参赞名单）的诱饵⽂档，并在诱饵⽂档中注
+
+⼊了恶意链接，该链接指向带有CVE-2017-11882漏洞RTF⽂档，其⽬的应在于盗取巴基斯坦政府及相关机
+
+构的内部机密资料，并进⾏远程操控等恶意⾏为。
+
+ 
+
+据悉，CVE-2017-11882漏洞作为⼀个典型的APT⾼危漏洞，影响着Office诸多版本，同时为众多攻击组织
+
+所⻘睐，⽽⽤于各类重⼤APT攻击事件中，因此没有及时修复漏洞的机构都存在巨⼤⻛险。同时由于蔓灵
+
+花”组织也曾对我国发起过类似的APT攻击，因此⼴⼤政府及企业应引起⾼度重视，做好相应的防御措施。
+
+ 
+
+⼆、攻击事件
+
+这起攻击事件主要针对巴基斯坦，攻击者投放的诱饵⽂档的主题是List of Commercial Counsellor at
+
+Pakistanʼs Missions Abroad，中译为：巴基斯坦驻外使团商务参赞名单。诱饵⽂档中列举了巴基斯坦驻外
+
+使团在中国，美国，法国，加拿⼤，印度等多个国家的联系地址，联系电话，传真，邮箱等详细信息。
+
+     
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 1/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：诱饵⽂档内容节选
+
+ 
+
+三、技术分析
+
+1. 攻击流程
+
+图：攻击流程
+
+ 
+
+2. 诱饵⽂档分析
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 2/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+攻击者在投放的诱饵⽂档中注⼊了恶意链接，该链接指向带有CVE-2017-11882漏洞，名为update的RTF⽂
+
+档。恶意链接为：http://quartzu.hol.es/mso/x64/x32/section/update。
+
+ 
+
+MD5 A0DCBD63716B264F868CD38D7C4B494D
+
+⽂件⼤⼩ 63.97  KB (65502 bytes)
+
+⽂件格式 DOCX
+
+创建时间 2018-10-22
+
+VT⾸次上传时间 2019-11-28
+
+VT检测结果 5/59
+
+涉及URL http://quartzu.hol.es/mso/x64/x32/section/update
+
+表：诱饵⽂档信息
+
+ 
+
+图：诱饵⽂档访问恶意链接
+
+ 
+
+恶意链接位于诱饵⽂档中的word\rels\settings.xml.rels中。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 3/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：诱饵⽂档中恶意链接所处位置
+
+ 
+
+3. update.rtf分析
+
+update.rtf⽂档带有CVE-2017-11882漏洞，攻击者利⽤漏洞下载执⾏恶意程序。以下是详细分析。
+
+ 
+
+MD5 78441ABDFF82636F9527D22AC0109BE7
+
+⽂件⼤⼩ 56.01  KB (57358 bytes)
+
+⽂件格式 RTF
+
+VT⾸次上传时间 2019-11-28
+
+VT检测结果 18/59
+
+漏洞利⽤ CVE-2017-11882
+
+涉及URL http://quartzu.hol.es/creatmong/tangkrdg/uplandjt
+
+表：update.rtf信息
+
+ 
+
+图：CVE-2017-11882漏洞处恶意代码
+
+ 
+
+3.1下载恶意程序X098765432198.exe
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 4/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+ 
+
+下载 http://quartzu.hol.es/creatmong/tangkrdg/uplandjt ,命名为 X098765432198.exe，存于本地
+
+C:\Users\win7\AppData\Local⽬录中。
+
+ 
+
+图：下载恶意程序
+
+ 
+
+3.2执⾏X098765432198.exe
+
+ 
+
+执⾏下载于本地的X098765432198.exe。
+
+ 
+
+图：执⾏程序
+
+ 
+
+4. X098765432198.exe分析
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 5/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+攻击者利⽤X098765432198.exe去访问恶意链接，获取并执⾏shellcode。shellcode内存解密出dll并执
+
+⾏。恶意链接为：http://kerbosim.com/dramtun/miskder/kipr.jpg。以下是对X098765432198.exe的详
+
+细分析。
+
+ 
+
+⽂件名 X098765432198.exe
+
+MD5 707B75D6C9EB5EAE30B10F6353ECAB4D
+
+⽂件⼤⼩ 312.00  KB (319488 bytes)
+
+⽂件格式 Win32  EXE
+
+创建时间 2019-11-21
+
+VT⾸次上传时间 2019-11-28
+
+VT检测结果 22/69
+
+涉及URL http://kerbosim.com/dramtun/miskder/kipr.jpg
+
+表：X098765432198.exe信息
+
+ 
+
+4.1访问恶意链接获取kipr.jpg
+
+ 
+
+访问http://kerbosim.com/dramtun/miskder/kipr.jpg，获取kipr.jpg的数据存放于申请的内存中。
+
+ 
+
+⽂件名 kipr.jpg
+
+MD5 31bcb31b2125297c08ddebaadd3479c3
+
+⽂件⼤⼩ 199.04  KB (203820 bytes)
+
+⽂件格式 JPEG
+
+VT⾸次上传时间 2019-11-29 
+
+VT检测结果 3/57
+
+表：kipr.jpg信息
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 6/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：读取kipr.jpg
+
+ 
+
+4.2创建线程去执⾏kipr.jpg中的shellcode
+
+ 
+
+①   定位到kipr.jpg中的shellcode，shellcode位于是kipr.jpg的头0x14个字节之后。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 7/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：定位kipr.jpg中的shellcode
+
+ 
+
+②   创建线程执⾏shellcode
+
+ 
+
+图：执⾏shellcode
+
+ 
+
+4.3shellcode内存解密出dll并执⾏
+
+ 
+
+①   shellcode对⾃身所携带的dll进⾏解密。解密算法是异或0x93。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 8/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：异或解密
+
+ 
+
+图：dll的具体位置
+
+ 
+
+②   跳转到解密出的dll⽂件的⼊⼝点，从⽽将dll执⾏起来。
+
+ 
+
+图：执⾏dll
+
+ 
+
+5. 攻击初期：shellcode解密出的dll分析
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 9/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+dll通过获取当前运⾏进程名，与进程名rundll32.exe进⾏对⽐判断，根据结果分为两种执⾏情况。第⼀种情
+
+况（攻击初期）是：进程名不为rundll32.exe，第⼆种情况（攻击后期）是进程名为rundll32.exe。此步骤
+
+为第⼀种情况（攻击初期），dll会在受害者机器上释放skydriveshell64.dll，并利⽤rundll32.exe执⾏
+
+skydriveshell64.dll，还会在Windows⾃启动菜单中创建执⾏skydriveshell64.dll的快捷⽅式。以下是对
+
+shellcode解密出的dll的详细分析过程。
+
+ 
+
+图：两种执⾏流程
+
+ 
+
+5.1获取dll中所存放的pe数据，pe⼤⼩为0x12E00
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 10/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：读取dll中的pe
+
+ 
+
+图：pe数据
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 11/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+ 
+
+5.2创建Common⽂件夹
+
+ 
+
+①   遍历进程，查询avgnt.exe进程是否存在。
+
+ 
+
+图：找寻avgnt.exe进程
+
+ 
+
+②   如果avgnt.exe进程存在，在%appdata%⽬录下创建Common⽂件夹。如果avgnt.exe进程不存在，
+
+在%programdata%⽬录下创建Common⽂件夹。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 12/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：创建Common⽂件夹
+
+ 
+
+图:创建Common⽂件夹
+
+ 
+
+5.3创建PE⽂件和快捷⽅式
+
+      
+
+在Common⽬录下创建PE⽂件skydriveshell64.dll，skydriveshell64.dll⽂件内容来⾃步骤5.1所获取的pe
+
+数据。在Windows启动菜单中创建名为OneDrive的快捷⽅式，快捷⽅式的作⽤是利⽤rundll32.exe执⾏
+
+skydriveshell64.dll中的IntRun函数。
+
+ 
+
+⽂件名 skydriveshell64.dll
+
+MD5 06AE12974694B6BBBADE3097EE25AFFF
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 13/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+⽂件⼤⼩ 75.50  KB (77312 bytes)
+
+⽂件格式 Win32  DLL
+
+创建时间 2019-11-21
+
+VT⾸次上传时间 2019-11-28
+
+VT检测结果 25/68
+
+设计URL http://kerbosim.com/dramtun/miskder/kipr.jpg
+
+表：skydriveshell64.dll信息
+
+ 
+
+图：创建skydriveshell64.dll和OneDrive.lnk
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 14/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：示例图
+
+ 
+
+5.4利⽤rundll32.exe执⾏skydriveshell64.dll中的IntRun函数
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 15/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：执⾏skydriveshell64.dll
+
+ 
+
+6. skydriveshell64.dll分析
+
+skydriveshell64.dll的技术分析和步骤4关于X098765432198.exe的技术分析进⾏对⽐，发现有很⼤的重
+
+合性，它们会访问相同恶意链接，获取并执⾏相同的shellcode。
+
+ 
+
+攻击者在skydriveshell64.dll中利⽤while(1)建⽴了⼀个⽆限循环，在循环过程中，样本会每隔5秒反复执
+
+⾏同⼀个恶意操作。此恶意操作的主要⾏为是：访问恶意链接，获取并执⾏shellcode。恶意链接为：
+
+http://kerbosim.com/dramtun/miskder/kipr.jpg。以下是对恶意操作的详细分析。
+
+ 
+
+⽂件名 skydriveshell64.dll
+
+MD5 06AE12974694B6BBBADE3097EE25AFFF
+
+⽂件⼤⼩ 75.50  KB (77312 bytes)
+
+⽂件格式 Win32  DLL
+
+创建时间 2019-11-21
+
+VT⾸次上传时间 2019-11-28
+
+VT检测结果 25/68
+
+设计URL http://kerbosim.com/dramtun/miskder/kipr.jpg
+
+表：skydriveshell64.dll信息
+
+ 
+
+6.1访问恶意链接获取kipr.jpg
+
+ 
+
+访问http://kerbosim.com/dramtun/miskder/kipr.jpg，获取kipr.jpg的数据存放于申请的内存之中。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 16/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：获取kipr.jpg数据
+
+ 
+
+6.2创建线程去执⾏kipr.jpg中的shellcode
+
+ 
+
+①   定位到kipr.jpg中的shellcode，shellcode位于是kipr.jpg的头0x14个字节之后。
+
+ 
+
+图：定位kipr.jpg中的shellcode
+
+ 
+
+②   创建线程执⾏shellcode
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 17/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+ 
+
+图：执⾏shellcode
+
+ 
+
+6.3shellcode内存解密出dll并执⾏
+
+ 
+
+①   shellcode对⾃身所携带的dll进⾏解密。解密算法是异或0x93。
+
+ 
+
+图：异或解密
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 18/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：dll的具体位置
+
+ 
+
+②   跳转到解密出的dll⽂件的⼊⼝点，从⽽将dll执⾏起来。
+
+ 
+
+图：执⾏dll
+
+ 
+
+7. 攻击后期：shellcode解密出的dll分析
+
+dll通过获取当前运⾏进程名，与进程名rundll32.exe进⾏对⽐判断，根据结果分为两种执⾏情况。第⼀种情
+
+况（攻击初期）是：进程名不为rundll32.exe，第⼆种情况（攻击后期）是进程名为rundll32.exe。此步骤
+
+为第⼆种情况（攻击后期），dll将会收集受害者机器上的进程信息，⽹络信息，⽬录信息，操作系统信息，
+
+电 脑 名 ， ⽤ 户 名 ， 加 载 的 模 块 信 息 ， 当 前 本 地 时 间 和 ⽇ 期 ， 并 将 它 们 打 包 发 送 到
+
+http://kerbosim.com/conpandre/quitzu/ctlizedr.php上。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 19/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：两种执⾏流程
+
+ 
+
+7.1创建互斥体
+
+ 
+
+防⽌多开，创建名为44cbdd8d470e88800e6c32bd9d63d341的互斥体。
+
+ 
+
+图：创建互斥体
+
+ 
+
+7.2创建临时⽂件，存储收集的进程信息
+
+ 
+
+样本利⽤GetTempFileNameW函数⽣成⽂件名，⽂件名由nnp和系统时间组成，例如nnp8059.tmp⽂件。
+
+创建名为nnp8059.tmp的临时⽂件，将机器上所以的进程信息存于此⽂件中。
+
+ 
+
+①   利⽤函数GetTempFileNameW函数⽣成⽂件名，例如nnp8059.tmp。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 20/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：⽣成⽂件名
+
+ 
+
+②   在%temp%⽬录下创建名为nnp8059.tmp的临时⽂件，nnp8059.tmp⽂件中记录了当前机器上所有的
+
+进程信息。
+
+ 
+
+图：创建⽂件
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 21/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：⽂件存储的进程信息
+
+ 
+
+7.3收集机器上所有的⽹络连接详细信息并存于临时⽂件
+
+ 
+
+①   在临时⽂件nnp8059.tmp中写⼊由“-”组成的分割线。
+
+ 
+
+图：写⼊分割线
+
+ 
+
+②   在临时⽂件nnp8059.tmp中新增的分割线后写⼊机器上所有⽹络连接的详细信息。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 22/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：写⼊⽹络相关信息
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 23/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：⽹络相关信息
+
+ 
+
+7.4收集盘符⽬录信息并存于临时⽂件
+
+ 
+
+①   在临时⽂件nnp8059.tmp中写⼊由“-”组成的分割线。
+
+ 
+
+图：写⼊分割线
+
+ 
+
+②   在临时⽂件nnp8059.tmp中新增的分割线后写⼊所收集盘符C、D、E、F、G、H的⽬录信息。
+
+ 
+
+图：收集盘符⽬录
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 24/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：盘符⽬录
+
+ 
+
+7.5将临时⽂件中的数据写⼊内存，删除临时⽂件
+
+ 
+
+将临时⽂件nnp8059.tmp中的所有数据写⼊申请的内存之中，然后将nnp8059.tmp⽂件删除。
+
+ 
+
+图：删除nnp8059.tmp⽂件
+
+ 
+
+7.6收集其他信息，并和之前信息汇总
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 25/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+①    收集操作系统版本信息，电脑名，⽤户名，当前本地的时间和⽇期，将他们拼接到前⾯所收集的信息的
+
+头部，并在信息的最前⾯附加上⼀些攻击者特定的标志，⽐如Tag：FreshPss和Version：2.5。
+
+ 
+
+图：汇总信息1
+
+ 
+
+②    收集加载的模块信息，将它们拼接到前⾯所收集信息的末尾。
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 26/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：汇总信息2
+
+ 
+
+7.7发送收集的数据，接收远控指令
+
+ 
+
+样本将上述所汇总的数据利⽤函数CryptBinaryToStringA转换成base64字符串，然后发送到HTTP服务器
+
+上，样本还会接收远控指令，对受害者机器进⾏远程操作。
+
+ 
+
+①   将所收集的数据利⽤函数CryptBinaryToStringA转换成base64字符串，发送到HTTP服务器上，服务器
+
+地址为：http://kerbosim.com/conpandre/quitzu/ctlizedr.php。
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 27/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：发送的请求
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 28/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：发送的请求
+
+ 
+
+②   根据返回的数据是否为“OK”字符串，来判断数据是否发送成功，如果不成功，则继续进⾏步骤①操作。
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 29/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：判断数据是否发送成功
+
+ 
+
+③   数据发送成功后，利⽤while(1)建⽴⽆限循环，向HTTP服务器发送由电脑名和⽤户名组成的Base64字
+
+符串，并接收和执⾏攻击者发送过来的远控指令。
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 30/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：建⽴⽆限循环
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 31/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：发送的请求
+
+ 
+
+④   接收攻击者发来的远程控制命令，执⾏相应的远程操作，远程操作共有5种。
+
+图：接收远控指令
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 32/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：远程操作
+
+ 
+
+命令 操作
+
+103 下载⽂件并执⾏
+
+105 执⾏shellcode
+
+120 下载⽂件并执⾏，删除OneDrive.lnk
+
+117 删除OneDrive.lnk
+
+115 获取⽂件于内存中
+
+表：命令对应的操作
+
+ 
+
+四、溯源分析
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 33/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+此次攻击事件和早期瑞星威胁情报中⼼捕获到的蔓灵花攻击事件进⾏对⽐，发现它们的攻击⼿法有很⼤的重
+
+合性，都是利⽤漏洞去下载执⾏功能相似的PE程序，再访问构造雷同的恶意链接去获取执⾏shellcode达到
+
+窃密和远程控制的⽬的。
+
+ 
+
+MD5 5A489FB81335A13DFF52678BBCE69771
+
+⽂件⼤⼩ 1.37  MB (1438306 bytes)
+
+⽂件格式 INP
+
+VT⾸次上传时间 2019-02-14
+
+VT检测结果 11/54
+
+漏洞利⽤ CVE-2017-12824
+
+涉及Domain burningforests.com
+
+表：早期样本信息
+
+ 
+
+图：对⽐
+
+ 
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 34/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+图：特定标志对⽐
+
+ 
+
+五、总结
+
+APT攻击有着针对性强、组织严密、持续时间⻓、⾼隐蔽性和间接攻击的显著特征，针对的⽬标都是具有重
+
+⼤信息资产，如国家军事、情报、战略部⻔和影响国计⺠⽣的⾏业如⾦融、能源等，国内相关政府机构和企
+
+业单位务必要引起重视，加强防御措施。
+
+ 
+
+六、预防措施
+
+1. 不打开可疑邮件，不下载可疑附件。
+
+ 
+
+此类攻击最开始的⼊⼝通常都是钓⻥邮件，钓⻥邮件⾮常具有迷惑性，因此需要⽤户提⾼警惕，企业更是要
+
+加强员⼯⽹络安全意识的培训。
+
+ 
+
+2. 部署⽹络安全态势感知、预警系统等⽹关安全产品。
+
+ 
+
+⽹关安全产品可利⽤威胁情报追溯威胁⾏为轨迹，帮助⽤户进⾏威胁⾏为分析、定位威胁源和⽬的，追溯攻
+
+击的⼿段和路径，从源头解决⽹络威胁，最⼤范围内发现被攻击的节点，帮助企业更快响应和处理。
+
+ 
+
+3. 安装有效的杀毒软件，拦截查杀恶意⽂档和⽊⻢病毒。
+
+ 
+
+杀毒软件可拦截恶意⽂档和⽊⻢病毒，如果⽤户不⼩⼼下载了恶意⽂档，杀毒软件可拦截查杀，阻⽌病毒运
+
+⾏，保护⽤户的终端安全。
+
+ 
+
+4. 及时修补系统补丁和重要软件的补丁。
+
+ 
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 35/36
+
+
+
+2019/12/9 APT组织“蔓灵花”对巴基斯坦攻击事件报告
+
+七、IOC信息
+
+URL
+
+http://quartzu.hol.es/mso/x64/x32/section/update
+
+http://quartzu.hol.es/creatmong/tangkrdg/uplandjt
+
+http://kerbosim.com/dramtun/miskder/kipr.jpg
+
+http://kerbosim.com/conpandre/quitzu/ctlizedr.php
+
+http://burningforests.com/nextra/aster/pic.jpg
+
+http://burningforests.com/nextra/aster/wix.php
+
+ 
+
+MD5
+
+A0DCBD63716B264F868CD38D7C4B494D
+
+78441ABDFF82636F9527D22AC0109BE7
+
+707B75D6C9EB5EAE30B10F6353ECAB4D
+
+31BCB31B2125297C08DDEBAADD3479C3
+
+06AE12974694B6BBBADE3097EE25AFFF
+
+5A489FB81335A13DFF52678BBCE69771
+
+86E3E98C1E69F887E23D119D0D30D51C
+
+https://mp.weixin.qq.com/s/el_woRl7_XUqUeMzw_0CSw 36/36

@@ -1,0 +1,233 @@
+﻿2018/12/7 Justice Department announces actions to disrupt the VPNFilter botnetSecurity Affairs
+
+MUST RHEHAoomDmeeFr aC cytubCreeryd  CbBrleoimcrke  CCarmi Cmpyabeigenr: Cw AaRrCfRayOrebTBeArT  A dwProTapprfera  Ddruaeptap oB rtrse Aa cdPhoTzen D eeDp aWteab Br Deiagictahl ID  D Heacekpin gWe Hback tivDisSmigeairtcah I.nl.. tIeDllige nce  
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+EXTENDED COOKIE POLICY  Contact me
+
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+Contact me
+
+   
+Justice Department announces actions to disrupt
+
+Sponsored Content
+
+the VPNFilter botnet   
+May 24, 2018  By Pierluigi Paganini Application Developer Jobs a
+
+IT Administrator Jobs a
+
+The Justice Department announced an effort to Safe Account Login a
+
+disrupt the VPNFilter botnet of hundreds of How To Make Money Online a
+
+thousands of infected home and office (SOHO) Earn Money Online a
+
+routers and other networked devices under the
+
+control of a Russia-linked APT group. Digging the Deep Web: Exploring the dark
+
+side of the web
+Yesterday Talos and other security firm revealed the discovery of a huge botnet tracked as VPNFilter
+composed of more than 500,000 compromised routers and network-attached storage (NAS)
+devices, now more details emerged on the case.
+
+The experts believe the VPNFilter was developed by Russia, the associated malware compromised
+devices across 54 countries, most of them in Ukraine.
+
+On May 8, Talos researchers observed a spike in VPNFilter infection activity, most infections in
+Ukraine and the majority of compromised devices contacted a separate stage 2 C2 infrastructure at
+the IP 46.151.209[.]33.
+
+The experts discovered the VPNFilter malware has infected devices manufactured by Linksys,
+MikroTik, Netgear, QNAP, and TP-Link.
+
+The US Justice Department announced it had seized a domain used as part of the command and
+control infrastructure, it explicitly refers the Russian APT groups (APT28, Pawn Storm, Sandworm,
+Fancy Bear and the Sofacy Group) as the operators behind the huge botnet,
+
+“The Justice Department today announced an effort to disrupt a global botnet of hundreds of
+thousands of infected home and office (SOHO) routers and other networked devices under the
+control of a group of actors known as the “Sofacy Group” (also known as “apt28,” “sandworm,” “x-
+agent,” “pawn storm,” “fancy bear” and “sednit”).” reads the press release published by the DoJ.
+
+“Today’s announcement highlights the FBI’s ability to take swift action in the fight against cybercrime
+and our commitment to protecting the American people and their devices,” said Assistant Director
+Scott Smith. “By seizing a domain used by malicious cyber actors in their botnet campaign, the FBI
+has taken a critical step in minimizing the impact of the malware attack. While this is an important first +Pierluigi Paganini
+
+step, the FBI’s work is not done. The FBI, along with our domestic and international partners, will
+continue our efforts to identify and expose those responsible for this wave of malware.” Pierluigi Paganini is member of the
+
+ENISA (European Union Agency for
+
+https://securityaffairs.co/wordpress/72851/apt/vpnfilter-botnet-doj.html 1/4
+
+
+
+2018/12/7 Justice Department announces actions to disrupt the VPNFilter botnetSecurity Affairs
+The VPNFilter botnet targets SOHO routers and network-access storage (NAS) devices and uses
+
+HHoommee  C ybCery Cbreimre Cri Cmybeer w arCfayreber  AwPTarfa Draeta B reaAcPhT  D eeDp aWteab Br Deiagictahl ID  ND Heetawcekopinrk gW ane dHb aIncfk otirvmDisamigtioitna  InSl teIeDclliugrei ntyc)e
+several stages of malware. The experts highlighted that the second stage of malware that
+
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Se)cTuhrriteyat L Saoncdiaslc Naeptew oSrtkaskeh oTeldrreorrism
+impleHmeanctsk minalgiciou s cHapaacbiklittieivs icsamn be  cleIanretde flrloimg ean dceveice  by Irnebtoeortnineg tit , owfh ilTe hthien figrsst sta geLaws aGnrdo urpe, gmuelamtbieorn osf C ybMer aGlw7 are  
+of malware implements a persistence mechanism. EXTENDED COOKIE POLICY  Contact me
+
+Workgroup of the Italian Ministry of
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+The Justice Department had obtained a warrant authorizing the FBI to seize the domain that is part Foreign Affairs and International
+of the command and control infrastructure of the VPNFilter botnet. Contact me Cooperation, Director of the Master
+
+Technically the operation conducted by the US authorities is called “sink holing,” the seizure of the in Cyber Security at the Link Campus
+
+domain will allow law enforcement and security experts to analyze the traffic associated with the University. He is also a Security
+
+botnet to gather further info on the threat and temporarily neutralize it. Evangelist, Security Analyst and
+
+Freelance Writer. Editor-in-Chief at
+“In order to identify infected devices and facilitate their remediation, the U.S. Attorney’s Office for the
+Western District of Pennsylvania applied for and obtained court orders, authorizing the FBI to seize a "Cyber Defense Magazine",
+
+domain that is part of the malware’s command-and-control infrastructure.” continues the DoJ.
+Yoroi Blog
+
+“This will redirect attempts by stage one of the malware to reinfect the device to an FBI-controlled
+server, which will capture the Internet Protocol (IP) address of infected devices, pursuant to legal
+process. A non-profit partner organization, The Shadowserver Foundation, will disseminate the IP
+addresses to those who can assist with remediating the VPNFilter botnet, including foreign CERTs
+and internet service providers (ISPs).”  
+
+The owners of the compromised SOHO and NAS devices should reboot their devices as soon as
+possible, the operation will temporarily remove the second stage malware and will cause the first
+stage malware to connect the C&C domain for instructions.
+
+“Although devices will remain vulnerable to reinfection with the second stage malware while
+connected to the Internet, these efforts maximize opportunities to identify and remediate the
+infection worldwide in the time available before Sofacy actors learn of the vulnerability in their
+command-and-control infrastructure.” continues the DoJ.
+
+Yoroi Blog
+
+Sponsored Content
+
+Experts are particularly concerned by the destructive features implemented by the malware that
+could allow attackers to burn users’ devices to cover up their tracks.
+
+Experts believe that the attack could be launched by threat actors during the Ukrainian celebration
+of the Constitution Day, last year the NotPetya wiper attack was launched on the same period.
+
+Both Justice and Cisco said they were releasing details of the problem before having found a strong,
+permanent fix. Justice said that by seizing control of one of the domains involved in running
+
+https://securityaffairs.co/wordpress/72851/apt/vpnfilter-botnet-doj.html 2/4
+
+
+
+2018/12/7 Justice Department announces actions to disrupt the VPNFilter botnetSecurity Affairs
+VNPFilter, it will give owners of infected routers a chance to reboot them, forcing them to begin
+
+HHoommee  C ybCery Cbreimre Cri Cmybeer w arCfayreber  AwPTarfa Draeta B reaAcPhT  D eeDp aWteab Br Deiagictahl ID  D Heacekpin gWe Hback tivDismigita Inl tIeDllige nce
+communicating with the now-neutralized command domain. IT Administrator Jobs
+
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+
+The vHulnaecrakbiilnityg will  remHaainc, Jkutsitvicies msaid,  butI nthtee mlloigvee wnicll aellow  thIenmt emronree ttim oef t oT idheinntigfys and Laws and regulations  Malware  
+EXTLEiNfeD LEDoc CkO SOeKcIuEr iPtyOLICY  Contact me
+
+intervene in other parts of the network.
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+Earn Money Online
+1. Discount Home Office Furniture a Contact me
+
+2. Home And Business a System Administrator Job
+
+3. Cheap Office Furnitures a Application Developer Jobs
+
+4. Quality Home Office Furniture a
+Best Affiliate Programs
+
+5. Home And Office a
+
+Graphic Designer Jobs
+
+Pierluigi Paganini
+How to Make Money Online
+
+(Security Affairs – VPNFilter botnet, hacking)
+
+Safe Account Login
+ botnet Hacking malware Pierluigi Paganini Russia Security Affairs
+
+Ukraine VPNFilter Identity Theft Protection
+
+ 
+SHARE ON             
+
+Sponsored Content
+
+Pierluigi Paganini  
+
+Pierluigi Paganini is member of the ENISA (European Union Agency for Network Sponsored Content
+
+and Information Security) Threat Landscape Stakeholder Group and Cyber G7
+Group, he is also a Security Evangelist, Security Analyst and Freelance Writer.
+Editor-in-Chief at "Cyber Defense Magazine", Pierluigi is a cyber security expert
+with over 20 years experience in the field, he is Certified Ethical Hacker at EC Sponsored Content
+
+Council in London. The passion for writing and a strong belief that security is
+founded on sharing and awareness led Pierluigi to find the security blog
+"Security Affairs" recently named a Top National Security Resource for US.
+Pierluigi is a member of the "The Hacker News" team and he is a writer for
+some major publications in the field such as Cyber War Zone, ICTTF, Infosec
+Island, Infosec Institute, The Hacker News Magazine and for many other
+Security magazines. Author of the Books "The Deep Dark Web" and “Digital
+Virtual Currency and Bitcoin”.
+
+ 
+
+ PREVIOUS ARTICLE
+Kaspersky discovered a backdoor NEXT ARTICLE
+account and other issues in D-Link Xenotime, Threat actors Behind Triton 
+
+DIR-620 Routers Malware broadens its activities
+ 
+
+YOU MIGHT ALSO LIKE
+
+https://securityaffairs.co/wordpress/72851/apt/vpnfilter-botnet-doj.html 3/4
+
+
+
+2018/12/7 Justice Department announces actions to disrupt the VPNFilter botnetSecurity Affairs
+
+HHoommee  C ybCery Cbreimre Cri Cmybeer w arCfayreber  AwPTarfa Draeta B reaAcPhT  D eeDp aWteab Br Deiagictahl ID  D Heacekpin gWe Hback tivDismigita Inl tIeDllige nce
+ 
+
+Internet of Things  Laws and regulations  Malware  Mobile  Reports  Security  Social Networks  Terrorism
+Hacking  Hacktivism  Intelligence  Internet of Things  Laws and regulations  Malware  
+
+EXTENDED COOKIE POLICY  Contact me
+
+Mobile  Reports  Security  Social Networks  Terrorism  EXTENDED COOKIE POLICY  
+
+Contact me
+
+Ukraine’s SBU: Russia carried out a
+Evidence in Marriott’s subsidiary cyberattack on Judiciary Systems
+Starwood hack points out to China
+
+December 6, 2018  By Pierluigi Paganini
+intel
+
+December 6, 2018  By Pierluigi Paganini
+
+Copyright 2015 Security Affairs by Pierluigi Paganini All Right Reserved. Back to top 
+
+https://securityaffairs.co/wordpress/72851/apt/vpnfilter-botnet-doj.html 4/4

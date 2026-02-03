@@ -1,0 +1,114 @@
+﻿2018/7/2 腾讯御见威胁情报中心
+
+海莲花APT组织针对中国、越南、柬埔寨等国的最新攻击活动通报
+腾讯御见威胁情报中心 1周前
+
+发现时间 2018-05-28
+
+文件名 Don khieu  nai.doc（投诉）
+
+大小 168,451 字节
+
+MD5 58b366b07b12c8cc8b4cbcd9a1905f33
+
+行为简述 1、利用office宏释放恶意脚本C:\ProgramData\Error.log计划任务长期驻留
+
+2、联网下载脚本，实现利用Excel对象执行vba脚本
+
+3、最终下载Cobalt Strike攻击平台注入rundll32进程
+
+C2 services.serveftp.net
+
+发现时间 2018-06-19
+
+文件名 01-报告-2018.05（修改部分已用红字标明）.doc
+
+大小 6,049,420 字节
+
+MD5 031a9dd69241ab6cbb052dcaa4cb75cc
+
+行为简述 1、利用CVE-2017-8570释放%appdata%\Intel\Logs\Proxy.cpl（8c9fb42dd4569d90f70e60e250526061）
+
+2、利用控制面板程序加载Proxy.cpl计划任务长期驻留
+
+3、从资源中解密出Denis后门新变种加载执行
+
+C2 andreagbridge.com
+
+christienollmache.xyz
+
+stienollmache.xyz
+
+发现时间 2018-06-19
+
+文件名 02-报告-2018.05（修改部分已用红字标明）.doc
+
+大小 2,747,488 字节
+
+MD5 45d1639adb2b32be4997d24526005633
+
+行为简述 1、利用CVE-2017-11882释放%appdata%\Intel\Logs\Interactive.cpl（5d8ea0ade548218ae8a150627a461be0）
+
+2、利用控制面板程序加载Interactive.cpl计划任务长期驻留
+
+3、从资源中解密出Denis后门新变种加载执行
+
+C2 dieordaunt.com
+
+christienoll.xyz
+
+stienollmache.xyz
+
+发现时间 2018-06-04
+
+文件名 2018 Cambodia  Outlook Conference.doc（2018年柬埔寨展望会议）
+
+大小 2,978,983 字节
+
+MD5 e3e99f6d1333ca76a80ba2899a4e2587
+
+https://mp.weixin.qq.com/s/6UpfkJMTthQALZiZjkJjfw 1/2
+
+
+
+2018/7/2 腾讯御见威胁情报中心
+行为简述 1、利用CVE-2017-11882释放%appdata%\Intel\Logs\DsSvcCleanup.cpl（8c9fb42dd4569d90f70e60e250526061）
+
+2、利用控制面板程序加载DsSvcCleanup.cpl计划任务长期驻留
+
+3、从资源中解密出Denis后门新变种加载执行
+
+C2 lauradesnoyers.com
+
+ryeisasw.com
+
+ochefort.com
+
+发现时间 2018-06-04
+
+文件名 2018 COC Draft  Programme 04June2018.doc（2018 COC草案计划）
+
+大小 6,281,122 字节
+
+MD5 e9b2763cf4940c285c5396db7b0b55bd
+
+行为简述 1、利用CVE-2017-8570释放%appdata%\Intel\Logs\NetworkStateChangeTask.cpl（f64e2a40c0da47f05d9320b8
+
+0a07cda2）
+
+2、利用控制面板程序加载NetworkStateChangeTask.cpl计划任务长期驻留
+
+3、从资源中解密出Denis后门新变种加载执行
+
+C2 lauradesnoyers.com
+
+christienollmache.xyz
+
+straliaenollma.xyz
+
+海莲花APT组织近期主要更新了攻击诱饵文档及C2，其攻击行为基本没有变化。详细技术分析报告，请参考：
+
+《海莲花APT组织最新攻击样本分析》
+《境外APT组织“海莲花”(OceanLotus)最新攻击活动解析》，链接：https://s.tencent.com/research/report/490.html
+
+https://mp.weixin.qq.com/s/6UpfkJMTthQALZiZjkJjfw 2/2

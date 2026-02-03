@@ -1,0 +1,24 @@
+Russian APT28 Expands Arsenal with 'NotDoor' Outlook Backdoor
+
+Researchers at Spanish cybersecurity provider S2 Grupo have observed a new Outlook backdoor that enables threat actors to exfiltrate data, upload files and execute commands on a victim’s computer. S2 Grupo’s threat intelligence lab, LAB52, shared its findings.
+
+The threat analysts dubbed this backdoor ‘NotDoor’ due to the use of the word ‘Nothing’ within the code. They have attributed it to the Russia-backed cyber threat group APT28.
+
+NotDoor: Sophisticated VBA-Based Outlook Malware
+The NotDoor backdoor is a sophisticated Visual Basic for Applications- (VBA) based malware targeting Microsoft Outlook, designed to monitor incoming emails for specific trigger words and execute malicious commands. NotDoor abuses Outlook’s event-driven VBA triggers, such as Application_MAPILogonComplete (on startup) and Application_NewMailEx (on new emails), to activate its payload.
+
+The malware’s code is obfuscated, with randomized variable names and a custom string encoding technique that appends junk characters to Base64 data, mimicking encryption to hinder analysis. Disguised within legitimate Outlook macros, NotDoor enables attackers to exfiltrate data, upload files and run arbitrary commands on compromised systems.
+
+Notably, the malware leverages DLL side-loading via a signed Microsoft binary (OneDrive.exe), which loads a malicious DLL (SSPICLI.dll) to deploy the backdoor while evading detection. Persistence is achieved by modifying Outlook’s registry settings to disable security warnings, enable macros on startup and suppress dialog prompts, ensuring silent operation.
+
+The backdoor establishes covert communication by exfiltrating victim data to attacker-controlled email (a.matti444@proton[.]me) and verifying execution via DNS and HTTP callbacks to webhook.site. Upon infection, it creates a hidden directory (%TEMP%\Temp) to store artifacts, which are automatically emailed to the attacker and deleted.
+
+Triggered by emails containing a predefined string (e.g. "Daily Report"), NotDoor parses encrypted commands embedded in the message body, supporting multiple instructions per email, such as file theft, command execution or additional payload downloads. The malware’s modular design allows attackers to dynamically update triggers and commands, making detection and mitigation challenging.
+
+IOCs and Technical Details
+Attack Vector: Malicious VBA macros in Microsoft Outlook.
+Dropper Mechanism: DLL side-loading via `OneDrive.exe` loading a malicious `SSPICLI.dll`.
+Persistence Mechanism: Modifies Outlook registry settings to enable macros on startup and suppress security warnings.
+C2 Communication: Exfiltrates data via email to `a.matti444@proton[.]me`. Uses DNS/HTTP callbacks to `webhook.site` for verification.
+Trigger: Monitors incoming emails for specific strings (e.g., "Daily Report").
+Artifact Storage: Creates hidden directory `%TEMP%\Temp`.

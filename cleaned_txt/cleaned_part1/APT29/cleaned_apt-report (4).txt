@@ -1,0 +1,93 @@
+Sliver Implant Targets German Entities with DLL Sideloading and Proxying Techniques
+
+Cyble Research and Intelligence Labs (CRIL) has identified an ongoing cyberattack – targeting organizations in Germany.
+The attack is initiated through a deceptive LNK file embedded within an archive. When executed by an unsuspecting user, this LNK file triggers cmd.exe to copy and run wksprt.exe, a legitimate executable.
+This executable sideloads a malicious DLL that employs DLL proxying, ensuring the host application continues to operate seamlessly while executing malicious shellcode in the background.
+The shellcode ultimately decrypts and executes the final payload: Sliver, a well-known open-source Red Team/adversary emulation framework.
+Once deployed, Sliver functions as an implant, enabling threat actors to establish communication with the compromised system and conduct further malicious operations, thereby enhancing their control over the infected network.
+
+Overview
+Cyble Research & Intelligence Labs (CRIL) recently identified an ongoing campaign involving an archive file containing a deceptive LNK file. While the initial infection vector remains unclear, this attack is likely initiated via spear-phishing email.
+
+The archive file “Homeoffice-Vereinbarung-2025.7z,” once extracted, contains a shortcut (.LNK) file along with several other components, including legitimate executables (DLL and EXE files), a malicious DLL file, an encrypted DAT file, and a decoy PDF. Interestingly, the creation times of most files in the archive are about a year old, with only the lure document being recently created. This suggests that the Threat Actor (TA) has not updated their core components, opting instead to introduce a new lure document to maintain the campaign’s relevance.
+
+Upon execution, the LNK file triggers the opening of a decoy document, masquerading as a Home Office Agreement. This document serves as a lure to deceive the user. Concurrently, the LNK file also executes a legitimate executable, which subsequently performs DLL sideloading. The legitimate executable loads the malicious DLL, which is designed to retrieve and decrypt the shellcode from the DAT file stored in the same extracted archive. This entire process occurs entirely in memory, enabling the attack to evade detection by security products.
+
+The shellcode is designed to decrypt and execute an embedded payload, a Sliver implant—an open-source red teaming and command and control framework employed by the TA for further malicious actions. Upon execution, the implant establishes connections to specific remote servers/endpoints, enabling the TA to conduct additional malicious operations on the victim’s system.
+
+Technical Details
+The attack begins once the victim extracts an archive file, likely delivered via an email attachment, containing several files:
+IPHLPAPI.dll – malicious DLL file
+IPHLPLAPI.dll – renamed legitimate IPHLPAPI.DLL
+ccache.dat – Contains Encrypted Shellcode
+wksprt.lnk  – Shortcut file to load wksprt file
+00_Homeoffice-Vereinbarung-2025.pdf – Lure document
+Homeoffice-Vereinbarung-2025.pdf.lnk – Main shortcut file
+
+However, only Homeoffice-Vereinbarung-2025.pdf.lnk, disguised as a PDF, is visible, while the other files remain hidden. When the user runs this LNK file, it triggers cmd.exe to execute a series of commands, copying files to specific directories and performing additional tasks.
+
+Following the execution of the LNK file, a directory named “InteI” is created within the user’s local app data folder (%localappdata%\InteI). A legitimate Windows file, wksprt.exe, from C:\Windows\System32 is then copied into this newly created InteI directory. Subsequently, the hidden files IPHLPAPI.dll, IPHLPLAPI.dll, and ccache.dat are copied into the “InteI” directory, with their hidden attributes preserved.
+
+To establish persistence on the victim’s machine, wksprt.lnk, one of the files from the extracted folder, is copied to the Startup folder (%appdata%\Microsoft\Windows\Start Menu\Programs\Startup\). This LNK file is designed to execute wksprt.exe, which has been copied to the “InteI” directory, ensuring that the executable runs automatically upon system startup.
+
+Before the final step, the decoy file “00_Homeoffice-Vereinbarung-2025.pdf” is executed to maintain the appearance of a legitimate document being opened.
+
+The lure document is a Home Office Agreement (Homeoffice-Vereinbarung) written in German, serving as a supplementary agreement to an existing employment contract between an organization and an employee, outlining the terms for remote work. Based on the content of this lure document, we believe this campaign is designed to target individuals or organizations in Germany. Furthermore, the initial .7z file was observed to have been uploaded to VirusTotal from a German location, supporting this assessment. Finally, wksprt.exe is launched from the “InteI” directory to carry out further actions.
+
+The malicious DLL file has a very low detection rate.
+
+DLL Sideloading And DLL Proxying:
+The legitimate executable wksprt.exe sideloads a malicious DLL (IPHLPAPI.dll) from the current directory. The malicious IPHLPAPI.dll then loads a slightly renamed legitimate DLL (IPHLPLAPI.dll), designed to appear authentic. Both DLLs export the same functions.
+
+The malicious DLL acts as a proxy, intercepting function calls from the executable and forwarding them to the legitimate DLL, which contains the actual implementation of the function.
+
+The forwarding of function calls ensures that the application maintains its normal behavior while allowing the malicious DLL to execute its own code. In addition, the malicious DLL spawns a new thread to read the contents of the file ccache.dat.
+
+After the “ccache.dat” file’s content is read, the malicious thread decrypts the malicious data. It employs the following cryptographic APIs for key generation and decryption:
+CryptAcquireContextW
+CryptCreateHash
+CryptHashData
+CryptDeriveKey
+CryptDecrypt
+
+The thread now copies the decrypted content to the newly allocated memory and executes it. The decrypted content of “ccache.dat” and the control transfer to the decrypted content.
+
+The decrypted content is a shellcode that runs another decryption loop to retrieve the actual payload embedded within it.
+
+The shellcode is designed to execute the embedded Sliver implant—an open-source red teaming framework used for malicious purposes by the TAs. Once executed, the implant connects to the following endpoints to carry out additional activities on the victim’s system.
+hxxp://www.technikzwerg[.]de/auth/auth/authenticate/samples.html
+hxxp://www.technikzwerg[.]de/auth/auth/authenticate/samples.php
+
+Attribution
+While we cannot definitively attribute this campaign to any specific group at this point, the initial infection vector, stager DLL behavior, shellcode injection, and Sliver framework exhibit patterns typically associated with APT29 in past campaigns. Additionally, this group has frequently employed the DLL sideloading technique in its operations. However, the most recent sample analyzed introduces DLL proxying, a technique not previously observed in APT29’s campaigns.
+[Update 21st January – 2025]
+While these similarities are noteworthy, further investigation is needed before any definitive attribution can be made.
+
+Conclusion
+This campaign targets organizations in Germany by impersonating an employee agreement for remote working. Using this lure, the threat actors deploy a deceptive LNK file and malicious components to gain an initial foothold on the victim’s system, leading to its compromise and further exploitation.
+
+By employing advanced evasion techniques such as DLL sideloading, DLL proxying, shellcode injection, and the Sliver framework, the attackers effectively bypass traditional security measures. This multi-stage cyberattack highlights the increasing sophistication and adaptability of threat actors, underscoring the growing complexity of APT operations and the urgent need for enhanced detection and defense strategies.
+
+Our Recommendations
+The initial breach may occur via spam emails. Therefore, it’s advisable to deploy strong email filtering systems to identify and prevent the dissemination of harmful attachments.
+Exercise caution when handling email attachments or links, particularly those from unknown senders.
+Verify the sender’s identity, particularly if an email seems suspicious.
+Use application whitelisting to prevent unauthorized execution of LNK files and other suspicious components.
+Deploy Endpoint Detection and Response (EDR) solutions to identify and block malicious behaviors, such as DLL sideloading and shellcode injection.
+Monitor for anomalous network activities, such as unexpected outbound connections, to detect Sliver framework-related activities.
+
+MITRE ATT&CK® Techniques
+Tactic Technique Procedure
+Initial Access (TA0001) Phishing (T1566) The archive file may be delivered through phishing or spam emails
+Execution  (TA0002)  Command and Scripting Interpreter (T1059) TAs abuse command and script interpreters to execute commands
+Persistence  (TA0003)  Registry Run Keys / Startup Folder (T1547.001) Creates persistence by adding a lnk to a startup folder
+Privilege Escalation  (TA0004)   Hijack Execution Flow: DLL Side-Loading (T1574.002)  Execute malicious Dll using Dll Sideloading
+Defense Evasion (TA0005)  Obfuscated Files or Information (T1027.002) Binary includes encrypted data
+Command and Control (TA0011) Application Layer Protocol: Web Protocols (T1071.001) Implant communicates with its C&C server
+
+Indicators Of Compromise (IOCs)
+Indicators Indicator Type Description
+83a70162ec391fde57a9943b5270c217d63d050aae94ae3efb75de45df5298be SHA-256 Archive File
+f778825b254682ab5746d7b547df848406bb6357a74e2966b39a5fa5eae006c2 SHA-256 LNK file
+9b613f6942c378a447c7b75874a8fff0ef7d7fd37785fdb81b45d4e4e2d9e63d SHA-256 Malicious DLL
+86f8a979bd887955f0491a0ed5e00de2f3fe53e6eb5856fb823115ce43b7c0ca SHA-256 Encrypted .dat file

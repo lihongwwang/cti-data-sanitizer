@@ -1,0 +1,243 @@
+﻿2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+
+MORPHISEC CYBER SECURITY BLOG
+
+FIN7 Not Finished – Morphisec
+Spots New Campaign
+Posted by Michael Gorelik on November 21, 2018 at 5:55 PM
+
+Find me on:  
+
+Tweet Share Like 3 Share
+
+This blog was co-authored by Alon Groisman.
+
+It seems like the rumors of FIN7’s decline have been hasty. Just a few months after the
+well-publicized indictment of three high-ranking members in August, Morphisec has
+identified a new FIN7 campaign that appears to be targeting the restaurant industry.
+
+FIN7, also known as Carbanak, is one of the major threat groups tracked by Morphisec
+and numerous other security entities, and among the top three criminal computer
+intrusion cases that the FBI is currently working. FIN7 is composed of a very
+sophisticated network of developers and hackers and brings in an estimated $50 million
+a month. They target very specific industries, hospitality – hotels and restaurants –
+being one of them, and are behind a string of high-profile breaches including Red
+Robin, Chili’s, Arby’s, Burgerville, Omni Hotels and Saks Fifth Avenue, among many
+others.
+
+FIN7 is known for its stealth techniques and ability to continuously evade security
+systems. In the case of Burgerville, malware sat on the company’s network collecting
+payment data for nearly a year before it was discovered. And that was only due to an
+FBI investigation.
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 1/9
+
+
+
+2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+In this blog post, we present our findings on two campaigns, which occurred in the first
+and second weeks of November. These campaigns follow patterns similar to those
+presented by FireEye in August but with just enough variations to bypass many security
+vendors.
+
+Technical Description
+
+The initial document was probably sent within the Baltic region (or tested there). It was
+submitted to VirusTotal from Latvia. The name of the document translated from Russian
+is “new questioner”. It is password-protected with the password: “goodmorning”.
+
+Oprosnik_new.doc
+6e1230088a34678726102353c622445e1f8b8b8c9ce1f025d11bfffd5017ca82)
+
+It uses social engineering to convince the recipient to enable macros through the use of
+the images, logo and tagline of a newly launched, legitimate VPN tool InvinciBull by
+cybersecurity company Finjan.
+
+If the “enable macro” button is activated, the following obfuscated Macro runs and the
+next stage obfuscated JavaScript is extracted from the form caption, similar to the last
+several FIN7 campaigns.
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 2/9
+
+
+
+2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+
+Examining the metadata of the document, it clearly shows that the document was
+created on the 11.02.2018:
+
+Following deobfuscation of the macro, we notice known FIN7 patterns of executing
+JavaScript from VBScript with the slight modification of copying the wscript.exe file and
+renaming it to mses.exe. This may allow it to bypass some EDR solutions that are
+tracing WScript by name.
+
+Below is the obfuscated JavaScript that is written to the temp directory as error.txt file.
+The obfuscation pattern is similar to previously seen FIN7 patterns and most probably is
+a derivation of the same obfuscation toolkit.
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 3/9
+
+
+
+2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+
+Deobfuscated JavaScript
+
+The deobfuscated JavaScript is actually a backdoor component that directly
+communicates to the C2 server (in this case hxxps://bing-cdn[.]com). It executes the
+response which is yet another JavaScript command, which can be evaluated by eval.
+Although there have been slight modifications in the Macro delivery in the last couple of
+campaigns, the JavaScript backdoor stays the same, including its communication
+protocol.
+
+During the first request, the MAC address and the computer domain are also delivered
+to the target C2. We believe that the next stage is only delivered to specific targets
+based on domains as the data that is delivered in the first request is very limited.
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 4/9
+
+
+
+2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+
+Yara Rules
+
+Some additional observations that can be used to create Yara-rules for this campaign
+are the locations of the loaded VBControl files that are written in clear text as part of
+the document files:
+
+Additional Samples
+
+After this search, we identified more samples that were created just a couple of days
+ago and point to a known C2 registered to the same entity (hxxps://googleapi-
+cdn[.]com)
+
+Below is a summary of information for one of those documents:
+
+The document was submitted from Ukraine (yet another former soviet union country)
+with the name “dinners.doc”
+(f5f8ab9863dc12d04731b1932fc3609742de68252c706952f31894fc21746bb8).
+
+The document again uses the social engineering technique of spoofing a known and
+trusted entity to convince the victim to enable macros.
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 5/9
+
+
+
+2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+
+Based on the submission date and creation time, the document is sent to the target
+within 2-3 days.
+
+The macro is nearly identical to that described above except that wscript->script,
+errors->settings, has multiple captions instead of a single one.
+
+The JavaScript backdoor is decrypted into a similar backdoor:
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 6/9
+
+
+
+2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+
+Conclusion
+
+Like the Hydra, cutting off one, or even three, heads of FIN7 barely slows it down. With
+the holiday rush nearly upon us, we expect the threat group to step up its activities to
+take advantage of increased email traffic flow and seasonal staff that may be less
+security conscious. Workers in any industry should stay vigilant against social
+engineering methods – although with today’s highly targeted campaigns this can
+sometimes be tough to spot. And never enable macros unless you are 100 percent
+certain that the file is safe. 
+
+Topics: Threat Alerts, Cyber Attacks, FIN7, Attack Analysis
+
+Search this site on Google
+
+SEARCH GOOGLE
+
+Welcome to our Blog
+
+Keeping you in the loop with company updates, industry insight, cyber security trends,
+and cyber attack information.
+
+SUBSCRIBE TO THE BLOG
+
+FIRST NAME* LAST NAME*
+
+EMAIL*
+
+COMPANY NAME*
+
+STATE/REGION*
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 7/9
+
+
+
+2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+COUNTRY*
+
+Please Select
+
+SUBSCRIBE
+
+Morphisec Named a Cool Vendor 2016
+
+Each year Gartner identifies new Cool Vendors it considers innovative or transformative.
+Morphisec is honored be to named a Cool Vendor 2016. Here's more....
+
+ 
+
+Recent Posts
+
+FIN7 Not Finished – Morphisec Spots New Campaign
+How Critical Manufacturers Can Build a Better Defense Strategy
+What Is the  Current Fear Threshold for Americans for State-Sponsored Cyber
+Attacks on the Upcoming U.S. Elections?
+Healthcare Needs to Focus on Cyber Health
+Cobalt Group 2.0
+Morphisec Takes Moving Target Defense to the Next Level with Department of
+Homeland Security
+Increasing Fallout from the Fallout Exploit Kit
+Morphisec Gets Top Honors at the MES XCellence Awards
+Morphisec’s Michael Gorelik Hosts Series of Threat Analysis Meetups in Boston
+Area
+Ransomware Attacks: A Quantum Leap from Quantity to Quality
+
+Most Popular Posts
+
+CVE-2018-4878: An Analysis of the Flash Player Hack
+Flash Exploit, CVE-2018-4878, Spotted in The Wild as Part of Massive Malspam
+Campaign
+How the EPS File Exploit Works to Bypass EMET (CVE-2015-2545) – A Technical
+Exploration
+Morphisec Discovers CCleaner Backdoor Saving Millions of Avast Users
+Iranian Fileless Attack Infiltrates Israeli Organizations
+Morphisec Discovers New Fileless Attack Framework
+FIN7 Takes Another Bite at the Restaurant Industry
+Watering Hole Attack on Leading Hong Kong Telecom Site Exploiting Flash Flaw
+(CVE-2018-4878)
+
+Posts by Topic
+
+Cyber Security (73)
+Endpoint Security (57)
+Attack Analysis (36)
+Cyber Attacks (35)
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 8/9
+
+
+
+2018/11/23 FIN7 Not Finished – Morphisec Spots New Campaign
+Moving Target Defense (29)
+
+see all
+
+FOLLOW US:     
+
+© Morphisec Ltd., 2017 | Terms of Use | Privacy Policy |
+
+http://blog.morphisec.com/fin7-not-finished-morphisec-spots-new-campaign 9/9

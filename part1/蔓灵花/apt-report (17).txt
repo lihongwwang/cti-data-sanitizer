@@ -1,0 +1,476 @@
+﻿2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+作者：K&NaN@知道创宇404高级威胁情报团队
+日期：2023年8月4日
+
+2023年3月知道创宇404高级威胁情报团队全球率先捕获到一个全新APT组织的武器
+后门，我们称为“ORPCBackdoor”，并在2023年5月对外发布了该武器后门的详
+细分析：Bitter组织新攻击武器分析报告-ORPCBackdoor武器分析
+
+在该报告里，我们把该武器后门定位为 BITTER（“蔓灵花”）使用的最新武器，然
+而我们留意到，近日卡巴斯基发布报告称他们于第二季度宣称发现了一个全新的APT
+组织，该组织的主要攻击目标为巴基斯坦，将其命名为“Mysterious Elephant（神
+秘象）”。此外还发布了两篇非公开报告，第一篇报告主要描述了该组织过去几年的
+主要技战术（TTPS），第二篇描述了该组织对巴基斯坦外交相关部门的攻击行动。
+
+该组织主要特点是使用了一个全新的后门，该后门通过恶意RTF文档传递到受害者机
+器上。恶意RTF文档通过钓鱼邮件进行投递。
+
+这个全新的后门通过RPC与C2服务器进行通信，并有在受控机器上执行文件或者命
+令的能力，同时该后门也可以从C2服务器上接收文件和命令并执行。
+
+经过确认，卡巴斯基发现的后门与我们率先捕获的“ORPCBackdoor”是同一个后
+门程序。考虑到归因存在分歧差异，由此知道创宇404高级威胁情报团队把使用
+“ORPCBackdoor”的“新”组织启用全新编号：APT-K-47，中文名称“神秘
+象”。
+
+本文我们也会从样本整体攻击链及同源关系分析等进一步扩线分析，且我们也通过知
+道创宇遥测大数据观察到该组织攻击的目标除了巴基斯坦外，还有攻击其他国家的痕
+迹。
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 1/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+同时经过回溯分析，我们发现该组织最早攻击活动应当开始于2022年3月份左右。本
+文将公布该APT组织攻击细节及相关IOC。
+
+1. 整体攻击链
+
+图1
+
+在APT-K01的一次攻击活动中，攻击者通过钓鱼邮件向攻击目标发送CHM文件，
+CHM文件使用“俄中友好、和平与发展委员会”为诱饵，相关诱饵内容如下所示。
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 2/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图2
+
+从钓鱼文件的内容可以看到，该组织的攻击目标不只是卡巴斯基描述的仅针对巴基斯
+坦，根据前期知道创宇遥测大数据显示，该组织攻击目标为多个国家。
+
+CHM文件恶意部分为doc.html，该文件中存在一个OBJECT对象，该对象用于创建
+
+一个每隔15分钟运行一次的计划任务，任务用于下载并执行存放在二阶服务器中的
+
+二阶恶意程序，二阶程序为MSI文件。
+
+图3
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 3/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+二阶MSI文件中存放着一对白加黑文件，黑文件为卡巴斯基报告中提到的
+
+ORPCBackdoor，白文件为微软官方服务文件，用于启动黑文件
+
+（OLMAPI32.dll）。
+
+图4
+
+2. 同源性分析
+
+ORPCBackdoor攻击链条与印度方向所使用的技战术相重叠，其中 BITTER 组织的
+技战术与代码结构尤为相像，相关对比分析如下：
+
+BITTER 组织在往期的攻击活动中使用的 CHM 文件结构如下：
+
+图5
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 4/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+本次捕获到的 ORPCBackdoor 初始阶段的 CHM 文件结构如下：
+
+图6
+
+两者doc.htm文件对比，下图为BITTER的doc.htm文件：
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 5/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图7
+
+下图为ORPC的CHM文件中的doc.htm文件：
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 6/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图8
+
+CHM文件从代码逻辑、功能和规避技巧等方面来看几乎一致，后续下载的二阶文件
+均为msi文件。
+
+ORPCBackdoor攻击链条与南亚方向所使用的技战术相重叠，分析发现该木马曾在
+confucious组织使用过的网络资产里面出现过，同时我们发现同类木马也在 BITTER
+组织使用过的资产上出现过。
+
+南亚方向的APT组织一直以来都存在资产方向的交叉使用，我们甚至发现过
+confucious与Patchwork组织出现过部分特殊字符串的重用，很难完全将某一个组
+织彻底同其他组织分开，目前的主要区分依据还是整个木马攻击链条的区别以及部分
+网络资产的区别。
+
+综合我们对其他南亚组织Sidewinder、Patchwork、cnc、confucious、BITTER、
+APT-K-47的分析情况来看，这几个黑客组织可能是统一组织下的不同小组，存在攻
+击工具、攻击目标、网络资产方面不少重叠情况。
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 7/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+3. ORPCBackdoor描述
+
+3.1 样本功能综述
+
+ORPCBackdoor共计17个导出函数，相关导出函数名称如下所示：
+
+GetFileVersionInfoA
+
+GetFileVersionInfoByHandle
+
+GetFileVersionInfoExW
+
+GetFileVersionInfoSizeA
+
+GetFileVersionInfoSizeExW
+
+GetFileVersionInfoSizeW
+
+GetFileVersionInfoW
+
+VerFindFileA
+
+VerFindFileW
+
+VerInstallFileA
+
+VerInstallFileW
+
+VerLanguageNameA
+
+VerLanguageNameW
+
+VerQueryValueA
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 8/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+VerQueryValueW
+
+GetFileVersionInfoByHandleEx(void)
+
+DllEntryPoint
+
+从导出函数来看ORPCBackdoor使用了version.dll模版，version.dll是一个
+Windows操作系统的动态链接库文件，它主要用于管理可执行文件或者DLL文件的
+版本信息。
+
+故我们有理由猜测ORPCBackdoor使用DLL劫持技术，采用白加黑方式用于达到一定
+的免杀效果，本次发现的调用文件为MicrosoftServices，但由于调用该DLL的情况
+较多，后续BITTER组织可能会使用其他款白文件进行调用。
+
+ORPCBackdoor恶意入口有两处，第一处为GetFileVersionInfoBy-
+
+HandleEx(void)导出函数，第二处为DllEntryPoint。
+
+ORPCBackdoor从设计思路来看可分为两个模块，两个模块分别为初始化模块以及
+交互模块，整体硬编码字符采用HEX字符串保存，例如“SYSTEM INFORMATION
+\n”字符在ORPCBackdoor中保存的字符
+为"53595354454D20494E464F524D4154494F4E205C6E"，该方式可略微达到阻
+碍反检测以及对抗分析等目的。
+
+根据ORPCBackdoor所支持的功能，我们可以推断出该后门所处感染链前端，用于
+为后续行动提供基础环境。
+
+3.1.1 样本功能综述
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 9/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+初始化模块内包含多个功能模块。多个模块配合完成在与服务端交互执行的前期工
+作，前期工作包括了字符解析、首次运行测验、持久化、本机信息收集、C2在线检
+测等方面，各部分内容详述如下：
+
+字符初始化
+
+本文前面有提及ORPCBackdoor内置的关键字符均采用TOHEXStr的方式保存，
+在运行过程中ORPCBackdoor会将即将使用的字符进行解码。根据后门中的上
+下文调用来看，加密的字符中还包含了服务端下发的命令。
+
+持久化
+
+ORPCBackdoor通过判断文件是否存在，从而防止多次持久化创建，在进行持
+久化创建前，ORPCBackdoor会判断同路径下是否存在ts.dat文件，且当文件不
+存在ORPCBackdoor才会创建持久化，持久化创建方式采用COM调用
+TaskScheduler CLSID，计划任务名称为Microsoft Update，创建完成后创建
+ts.dat文件。
+
+初始信息收集
+
+初始信息收集三个部分数据，分别是进程列表、系统信息、用户信息，相关信息
+收集非常详尽，除基本信息外还会收集OS Build Type、Registered Owner、
+Install Date等信息。
+
+交互初始化
+
+交互初始化与持久化模块类似，同样通过判断文件是否存在，从而防止与服务端
+同时多进程与服务端交互，判断逻辑为判断ProgramData路径下是否存在
+$cache.dat文件，如果文件存在ORPCBackdoor将不会与服务端建立连接，否
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 10/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+则初始RPC调用，ProtSeq采用ncacn_ip_tcp。如果在尝试RPC调用后服务端无
+数据返回则休眠5分钟后继续尝试，当服务端返回命令后进入交互模块。
+
+3.1.2 交互模块描述
+
+交互模块与常见的命令处理逻辑相似，通过多层if-else来解析服务端执行并完成指定
+功能，ORPCBackdoor所支持的功能并不算多，主要为Get- Shell，其余包含一些文
+件处理、上传下载执行等操作。
+
+ORPCBackdoor相关执行及对应功能描述如下：
+
+ID
+
+ID指令所对应的功能较为少见，其功能是将服务端下发的一段0xF大小的数据即
+15位数字（eg: 818040900140701），保存在本
+地%ProgramData%/$tmp.txt文件中，根据该指令及前面代码流程中未出现
+ClientID相关生成操作，故我们猜测此步操作用于赋予受害者ID，以区分不同受
+害者。
+
+INF
+
+INF指令用于上传在初始化模块-初始信息收集子模块中所收集的详尽本机信
+息。
+
+DWN
+
+DWN指令所对应的模块属于精心设计过的功能模块，功能为下载文件，根据对
+代码的分析来看DWN功能模块设计的较为健壮，其支持在向服务端反馈每一步
+操作是否成功或错误原因，从而完成既定目标流程，由于ORPCBackdoor属于
+感染链前部分故此模块的稳定性极为重要。
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 11/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+RUN
+
+RUN指令用于执行指定文件，使用WinExecAPI启动文件。
+
+DLY
+
+DLY指令为休眠指令，休眠服务端指定时长后再次运行。
+
+CMD
+
+CMD指令为ORPCBackdoor核心指令，功能为GetShell，其所使用的处理逻辑
+为，解析服务端所下发的Shell指令，获取到服务端下发的Shell指令后进行指令
+拼接，拼接格式为cmd.exe /c |服务端下发的指令|>> c:\Users\Public\cr.dat。
+
+后续通过WinExec()API执行该条执行，执行完成后将cr.dat的内容发送至服务
+端，后续删除cr.dat文件从而达到一次与服务端Shell交互效果。
+
+在分析过程中，我们捕获到服务端首先会下发systeminfo命令再次获取系统信
+息，紧接着第二条指令为whoami。
+
+通过对ORPCBackdoor整体分析我们可以得出以下结论：ORPCBackdoor后门是一
+款较为精简且设计较为成熟的后门程序。
+
+无论是对自身字符的处理，抛弃常用的Socket调用转而使用RPC调用，还是为规避终
+端检测所采用的version.dll劫持模板，域名、程序、描述等整体一致性，我们可以看
+出本次攻击活动可以算算得上是一次经过精心设计策划的行动，同时为了防止自身暴
+露也使用了新型攻击武器从而变更了其惯用的TTP。
+
+3.2样本细节描述
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 12/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+从ORPCBackdoor相关原始信息中可以看到最早的样本创建时间是2022年2月份和3
+月份：
+
+图9
+
+图10
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 13/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图11：正常version.dll
+
+图12：ORPCBackdoor
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 14/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图13：通过文件判断是否进行持久化流程
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 15/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图14：主机当前运行的进程信息收集
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 16/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 17/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图15——18：极为详尽的系统信息收集
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 18/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图19：服务端指令初始化
+
+图20：RPC初始化
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 19/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图21：生成ClienID
+
+图22：生成的ClienID
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 20/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图23：上传前期收集的系统信息
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 21/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图24：文件下载模块
+
+图25：RUN指令-运行指定程序
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 22/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图26：休眠模块
+
+图27：核心模块-Shell模块
+
+图28：服务端下发的命令一
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 23/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+图29：服务端下发的命令二
+
+图30：通过NdrClientCall2API收发服务端消息
+
+4. IOC
+
+ORPCBackdoor
+
+8AEB7DD31C764B0CF08B38030A73AC1D22B29522FBCF512E0D24544B3D01
+
+D8B3
+
+88ecbe38dbafde7f423eb2feb6dc4a74
+
+f4cea74c8a7f850dadf1e5133ba5e396
+
+C&C
+
+msdata.ddns.net
+
+outlook-services.ddns.net
+
+msoutllook.ddns[.]net
+
+outlook-updates.ddns[.]net
+
+outlook-services.ddns[.]net
+
+108.62.118.125:443
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 24/25
+
+
+
+2024/1/19 11:41 原创Paper | 揭秘南亚新 APT 组织 APT-K-47 “神秘象”
+
+msdocs.ddns.net
+
+5. 参考链接
+
+[1]Bitter组织新攻击武器分析报告-ORPCBackdoor武器分析
+
+[2] PatchWork组织新型攻击武器报告- EyeShell武器披露
+
+[3]https://securelist.com/apt-trends-report-q2-2023/110231/
+
+https://mp.weixin.qq.com/s/9cqXdFn7erJupk9QPRhqpg 25/25

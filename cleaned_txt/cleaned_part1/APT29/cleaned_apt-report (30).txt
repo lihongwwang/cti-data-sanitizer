@@ -1,0 +1,94 @@
+攻击技术研判｜SOLARWINDS事件幕后黑手新型后门FOGGYWEB技术研判
+
+一、情报背景
+继今年3月和5月后，微软又发布了新的关于SolarWinds背后攻击者的文章，该文章中详细分析了一个新的复杂定制化后门，从中我们看到SolarWinds的攻击者保持了一贯的高
+水平能力。
+
+组织 APT29
+名称
+
+关联 UNC2452 Dark Halo NOBELIUM
+组织
+
+战术 数据渗出 持续控制
+标签
+
+技术 FoggyWeb ADFS backdoor webshell
+标签
+
+情报 https://www.microsoft.com/security/blog/2021/09/27/foggyweb-targeted-nobelium-malware-leads-to-persistent-backdoor/
+来源
+
+二、攻击技术分析
+
+此次分析的后门为一个针对AD FS的复杂后门，微软将其称之为FoggyWeb，FoggyWeb被加载能够从从受感染的AD FS服务器中窃取敏感信息，并从C2服务器接受其他恶意组
+件并执行。
+
+FoggyWeb恶意组件的加载由两部分组成：
+
+%WinDir%\ADFS\version.dll
+%WinDir%\SystemResources\Windows.Data.TimeZones\pris\Windows.Data.TimeZones.zh-PH.pri
+
+FoggyWeb恶意组件存储在Windows.Data.TimeZones.zh-PH.pri中，而恶意文件version.dll是其的加载程序，当ADFS的可执行文件Microsoft.IdentityServer.ServiceHost.exe运行
+时，根据windows dll搜索顺序加载%WinDir%\ADFS\version.dll形成dll劫持，该加载器会加载加密后的FoggyWeb后门文件，并使用自定义轻量级加密算法（LEA）来解密内存
+中的后门，解密完成后，会在ADFS应用程序的上下文中加载FoggyWeb。加载程序是一个非托管应用程序，利用clrhosting将一个托管DLL加载到合法的ADFS托管代码的同一
+应用程序域中，这使得恶意组件能够访问对ADFS的代码资源与配置数据库的完成访问权限。
+
+1 .使用clrhosting技术加载到ADFS应用域的加载器
+微软详细分析了该加载器的原理，他利用了托管应用程序的初始化过程，作为基于.NET的托管应用程序，Microsoft.IdentityServer.ServiceHost.exe会导入非托管windows dll
+mscoree.dll。
+
+而mscoree.dll会动态加载另一个非托dll mscoreei.dll，而 mscoreei.dll存在对version.dll的延迟加载（Delay import)。
+
+综上所述，攻击者在DLL加载路径上放置恶意dll后，当系统或者ADFS服务重新启动时，Microsoft.IdentityServer.ServiceHost.exe 根据DLL的搜索顺序会加载恶意文
+件%WinDir%\ADFS\version.dll形成DLL劫持，加载器运行后使用了攻击者自定义的轻量级加密算法(LEA)解密加载FoggyWeb文件。
+
+内存中解密的FoggyWeb为动态托管DLL，利用clrhosting技术将该dll加载到ADFS应用程序的域中，形成对ADFS的完成权限访问。
+
+CLR Hosting技术是指，通过native代码（通常为C++）代码实现，调用相关的windows clr相关的api，创建或检索当前程序的clr运行时，动态加载的托管代码的技术。
+
+文章中并没有给出该加载器CLR Hosting部分的反编译截图，无法猜测FoggyWeb是否包含常规CLR Hosting技术中需要规避的amsi，etw和wldp等安全组件。文章中提到观察攻
+击者删除%WinDir%\ADFS\version.dll和%WinDir%\SystemResources\Windows.Data.TimeZones\pris\Windows.Data.TimeZones.zh-PH.pri的行为，并使用自定义的加密算法来
+加密FoggyWeb恶意文件，这些都是攻击者试图掩盖其恶意行为的防御手段，但似乎FoggyWeb自身并未实现删除前面相关文件的功能。
+
+CLR Hosting技术在实战攻击中越来越普遍，使用该技术不仅可以远程加载恶意代码，并且因为其是非托管代码实现加载，可以加载到宿主程序本身应用程序域，这将给攻击者
+代码完整的访问控制并篡改宿主代码，资源的权限。
+
+2 .FoggyWeb后门
+针对ADFS的特种后门FoggyWeb加载运行后，会启动一个HTTP侦听器，侦听特定URI模式的HTTP请求，攻击者还对该URI进行了伪装，使其看起来更像是ADFS中部署的合法
+URI结构。
+
+以下URL被视为C2命令：
+
+/adfs/portal/images/theme/light01/profile.webp
+/adfs/portal/images/theme/light01/background.webp
+/adfs/portal/images/theme/light01/logo.webp
+
+接收到C2命令后，FoggyWeb后门会根据请求窃取令牌签名证书、令牌加密证书或AD FS服务配置数据，渗出的数据也被伪装为WebP合法文件的形式。
+
+当需要执行命令时，将POST请求的数据经过 XML元素 X509Certificate 和 SignatureValue进行匹配，并使用base64解密并异或。
+
+解密完成后的数据匹配MZ头并使用，ExecuteBinary进行加载。
+
+如果匹配失败，调用ExecuteSource在内存中动态编译执行有效载荷。
+
+后续该后门还提供了复杂的对令牌窃取盗用，微软对其做了详细的分析。
+
+使用WEB服务类后门进行持续控制或渗出在高级的APT攻击中逐渐变得流行，其显而易见的好处是不会有明显的反向网络连接请求，可以混杂的正常的WEB服务中，攻击者也
+不需要为自己的C2购置和维护VP*S服务器，相比CobaltStrike这类正向控制手段，在网络侧更难以发现。
+
+而在windows侧的WEB服务主要由托管程序组成，托管程序可以远程assembly加载的特性为攻击者提供了不少便利，与之对应微软增加的一些安全组件也能够方便检测到这类
+不安全代码。似乎攻击者暂时并未对FoggyWeb配置开发更为强大的功能和防御规避手段（或许在后续远程加载的assembly dll中）。
+
+三、总结
+在一场针对性的攻击活动中，FoggyWeb后门出现说明攻击者对该次行动已经到达了渗出阶段，或已经完成了整个攻击活动。
+
+针对该恶意后门，微软给出的检测建议是关注ADFS服务加载的可疑DLL文件、可疑服务的启动、文件的删除，并警惕异常的SAML令牌颁发。
+
+近些年来攻击者的手段越来越复杂，开发的web类攻击工具越来越具有针对性和复杂强大的功能，国内webshell类工具也在飞速发展，如蚁剑、哥斯拉等一些工具覆盖了更多的
+后渗透功能力。
+
+此类高隐匿web后门对蓝军武器化开发的启示则是，在完成攻击操作达成攻击目的的同时，应当在网络流测量更好的融入正常的业务请求，避免特有的请求特征。
+
+切入终端对抗的视角，蓝军操作人员应当在各阶段保持隐匿，确保操作安全：拆分主机loader与后续恶意载荷；执行时切断loader初始执行者与后续命令控制行为的联系；使落
+地文件特征尽可能的融入系统上的合法文件。

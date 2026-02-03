@@ -1,0 +1,1513 @@
+﻿2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 登录
+APT  海莲花
+
+(htt
+p://
+con
+nec
+t.q
+q.c
+om/
+wid
+get/
+sha
+req
+q/in
+de
+
+(/nodev4/vb4/rewardActivity)
+x.ht
+ml?
+url=  今⽇推
+http
+s%
+3 5条IOC
+A%
+2 【微步在线报告】越南国家
+F% “海莲花”利⽤疫情话题攻击
+2F nodev4/vb4/article?threatI
+x.th
+rea  微步情报局 (/nodev4
+tbo
+ok. userID=f6ec9a044a604a5
+c e4f2c)
+n% 33条IOC
+2F
+nod
+
+【微步在线报告】“⽩象三代
+ev
+
+击活动披露 (/nodev4/vb4/a
+4% oID=2519)
+2Fv
+b
+4%  微步情报局 (/nodev4
+2F userID=f6ec9a044a604a5
+arti
+cl e4f2c) 4条IOC
+e%
+3Ft
+hre 捕获⼀枚远控马⼉ (/nodev
+
+atIn reatInfoID=2506)
+
+foI
+D%  匿名⽤户
+3D
+252
+7&t 9条IOC
+itle
+=%
+E 双尾蝎 APT 组织的攻击活
+3% ——刺向巴勒斯坦的致命毒
+8 4/article?threatInfoID=250
+0%
+9  微步情报局 (/nodev4
+0%
+E userID=f6ec9a044a604a5
+
+5% e4f2c) 1条IOC
+B
+E%
+A 成都扬帆起航企业管理有限
+E% 彩⼊侵植⼊⼴告 (/nodev4/
+E atInfoID=2502)
+6%
+A  匿名⽤户
+D%
+A
+5%
+E
+5%
+9
+C%
+A
+8%
+E
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 1/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+7%
+B
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱
+A% 登录
+
+B
+F%
+E
+6%
+8
+A%
+A
+5%
+E
+5%
+9
+1%
+8
+A%
+E
+3%
+8
+0%
+9
+1%
+E
+8%
+B
+6%
+8
+A%
+E
+5%
+8
+D%
+9
+7%
+E
+5%
+9
+B%
+B
+D%
+E
+5%
+A
+E%
+B
+6%
+E
+8%
+8
+3%
+8
+C%
+E
+6%
+9
+9%
+AF
+AP
+T%
+E
+7%
+B
+B%
+8
+4%
+E
+7%
+B
+B%
+8
+7%
+26l
+dqu
+o%
+3
+B%
+E
+6%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 2/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+6%
+B
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 5% 登录
+B
+7%
+E
+8%
+8
+E%
+B
+2%
+E
+8%
+8
+A%
+B
+1%
+26r
+dqu
+o%
+3
+B%
+E
+5%
+8
+8%
+A
+9%
+E
+7%
+9
+4%
+A
+8%
+E
+7%
+9
+6%
+A
+B%
+E
+6%
+8
+3%
+8
+5%
+E
+8%
+A
+F%
+9
+D%
+E
+9%
+A
+2%
+9
+8%
+E
+6%
+9
+4%
+B
+B%
+E
+5%
+8
+7%
+B
+B%
+E
+6%
+8
+8%
+9
+1%
+E
+5%
+9
+B%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 3/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+B%
+B
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 D% 登录
+
+E
+6%
+9
+4%
+B
+F%
+E
+5%
+B (htt
+A% p://
+9 ser
+C% vic
+E e.w
+6% eib
+9 o.c
+C% om/
+B sha
+A% re/s
+E har
+6% e.p
+9 hp?
+E% url=
+8 http
+4% s%
+20- 3
+%2 A%
+0% 2
+E F%
+5% 2F
+B x.th
+E% rea
+A tbo
+E% ok.
+E c
+6% n%
+A 2F
+D% nod
+A ev
+5% 4%
+E 2Fv
+5% b
+9 4%
+C% 2F
+A arti
+8% cl
+E e%
+7% 3Ft
+B hre
+A% atIn
+BF foI
+X% D%
+E 3D
+6% 252
+8 7&t
+3% itle
+8 =%
+5% E
+E 3%
+6% 8
+8 0%
+A% 9
+A 0%
+5% E
+E 5%
+7% B
+A E%
+4% A
+B E%
+E% E
+E 6%
+5% A
+8 D%
+C% A
+BA 5%
+&s E
+our 5%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 4/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+ce 9
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 =% C%
+登录
+
+E A
+3% 8%
+8 E
+0% 7%
+9 B
+0% A%
+E B
+5% F%
+B E
+E% 6%
+A 8
+E% A%
+E A
+6% 5%
+A E
+D% 5%
+A 9
+5% 1%
+E 8
+5% A%
+9 E
+C% 3%
+A 8
+8% 0%
+E 9
+7% 1%
+B E
+A% 8%
+B B
+F% 6%
+E 8
+6% A%
+8 E
+A% 5%
+A 8
+5% D%
+E 9
+5% 7%
+9 E
+1% 5%
+8 9
+A% B%
+E B
+3% D%
+8 E
+0% 5%
+9 A
+1% E%
+E B
+8% 6%
+B E
+6% 8%
+8 8
+A% 3%
+E 8
+5% C%
+8 E
+D% 6%
+9 9
+7% 9%
+E AF
+5% AP
+9 T%
+B% E
+B 7%
+D% B
+E B%
+5% 8
+A 4%
+E% E
+B 7%
+6% B
+E B%
+8% 8
+8 7%
+3% 26l
+8 dqu
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 5/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+8 dqu
+C% o%
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 E 3 登录
+6% B%
+9 E
+9% 6%
+AF B
+AP 5%
+T% B
+E 7%
+7% E
+B 8%
+B% 8
+8 E%
+4% B
+E 2%
+7% E
+B 8%
+B% 8
+8 A%
+7% B
+E 1%
+2% 26r
+8 dqu
+0% o%
+9 3
+C% B%
+E E
+6% 5%
+B 8
+5% 8%
+B A
+7% 9%
+E E
+8% 7%
+8 9
+E% 4%
+B A
+2% 8%
+E E
+8% 7%
+8 9
+A% 6%
+B A
+1% B%
+E E
+2% 6%
+8 8
+0% 3%
+9 8
+D% 5%
+E E
+5% 8%
+8 A
+8% F%
+A 9
+9% D%
+E E
+7% 9%
+9 A
+4% 2%
+A 9
+8% 8%
+E E
+7% 6%
+9 9
+6% 4%
+A B
+B% B%
+E E
+6% 5%
+8 8
+3% 7%
+8 B
+5% B%
+E E
+8% 6%
+A 8
+F% 8%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 6/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+9 9
+D% 1%
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱
+E E 登录
+
+9% 5%
+A 9
+2% B%
+9 B
+8% D%
+E E
+6% 6%
+9 9
+4% 4%
+B B
+B% F%
+E E
+5% 5%
+8 B
+7% A%
+B 9
+B% C%
+E E
+6% 6%
+8 9
+8% C%
+9 B
+1% A%
+E E
+5% 6%
+9 9
+B% E%
+B 8
+D% 4%
+E 20-
+6% %2
+9 0%
+4% E
+B 5%
+F% B
+E E%
+5% A
+B E%
+A% E
+9 6%
+C% A
+E D%
+6% A
+9 5%
+C% E
+B 5%
+A% 9
+E C%
+6% A
+9 8%
+E% E
+8 7%
+4% B
+20- A%
+%2 BF
+0% X%
+E E
+6% 6%
+8 8
+3% 3%
+8 8
+5% 5%
+E E
+6% 6%
+8 8
+A% A%
+A A
+5% 5%
+E E
+8% 7%
+A A
+F% 4%
+A B
+6% E%
+E E
+6% 5%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 7/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+6% 5%
+8 8
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 3% C% 登录
+85 BA
+&d &pi
+esc c=h
+=& ttp
+pic s%
+s=h 3
+ttp A%
+s% 2
+3 F%
+A% 2F
+2 x.th
+F% rea
+2F tbo
+x.th ok.
+rea c
+tbo n%
+ok. 2Fs
+c tati
+n% c%
+2Fs 2Fi
+tati m
+c% g%
+2Fi 2F
+m 2d_
+g% cod
+2F e.jp
+2d_ g&
+cod app
+e.jp key
+
+   g)  =)
+
+【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构
+
+ 微步情报局 (/nodev4/vb4/uCenter?userID=f6ec9a044a604a53856557a66bde4f2c) 2020-03-16 18:09:24  594⼈浏览
+
+TAG：⾼级可持续攻击、海莲花、中国、APT32、OceanLotus、DenesRAT、政府
+
+TLP：⽩（报告使⽤及转发不受限制）
+
+⽇期：2020-03-05
+
+ 
+
+概述
+
+新型肺炎近期在全球范围内引起⼴泛关注，微步情报局监测发现，⾃新型肺炎爆发以来，有⼤量APT组织和⿊产团伙利
+⽤作为话题发起攻击，如⽩象、绿斑、蔓灵花、海莲花、Kimsuky和Hades等，微步在线已撰写了多篇相关报告披露来
+此类攻击活动。
+
+“海莲花”，⼜名APT32和OceanLotus，是越南背景的⿊客组织。该组织⾄少⾃2012年开始活跃，⻓期针对中国能源相关
+⾏业、海事机构、海域建设部⻔、科研院所和航运企业等进⾏⽹络攻击。除中国外，“海莲花”的⽬标还包含全球的政
+府、军事机构和⼤型企业，以及本国的媒体、⼈权和公⺠社会等相关的组织和个⼈。
+
+近期，微步情报局通过威胁狩猎系统再次捕获“海莲花”利⽤疫情话题针对我国发起攻击活动的样本⽂件，分析有如下发
+现：
+
+· 攻击者以“湖南省家禽H5N1亚型⾼致病性禽流感疫情情况”、“冠状病毒实时更新：中国正在追踪来⾃湖北的旅⾏者”
+等时事热点为诱饵进⾏⻥叉攻击，攻击活动或发⽣于今年2⽉。
+
+· 攻击者利⽤带数字签名的WPS⽂件，通过社会⼯程学诱导受害者点击执⾏，运⾏以后会通过侧加载⽅式装载恶意D
+LL，释放诱饵⽂档并且在内存中加载DenesRAT⽊⻢。
+
+· DenesRAT⽊⻢具备⽂件操作、注册表读写、设置环境变量和远程执⾏代码等功能的后⻔，该后⻔被插⼊⼤量花指
+令⽤于对抗分析。
+
+· 通过C2域名关联发现，“海莲花”此次攻击活动的⽬标或涉及我国某部委及武汉市多家政府机构，性质极为恶劣。
+
+·微步在线通过对相关样本 IP和域名的溯源分析 共提取5条相关IOC 可⽤于威胁情报检测 微步在线的威胁情
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 8/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+ 微步在线通过对相关样本、IP和域名的溯源分析，共提取5条相关IOC，可⽤于威胁情报检测。微步在线的威胁情
+报平台（TIP）、威胁检测平台（TDP）、API等均已⽀持此次攻击事件和团伙的检测。
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 登录
+
+ 
+
+详情
+
+⾃活跃以来，“海莲花”⼀直持续针对我国进⾏⽹络攻击。在攻击过程中，“海莲花”⼀直在尝试不同⽅法以实现在⽬标系统
+上执⾏恶意代码和绕过安全检测，其中经常使⽤的包含⽩利⽤和C2流量伪装等。⽩利⽤和压缩⽂件结合是“海莲花”惯⽤
+的⽊⻢投递⼿法。
+
+近⽇，微步情报局再次捕获到多个“海莲花”利⽤合法WPS可执⾏程序加载恶意DLL针对我国等⽬标的攻击样本。
+
+诱饵⼀：湖南省家禽H5N1亚型⾼致病性禽流感疫情情况.docx
+
+诱饵⼆：冠状病毒实时更新：中国正在追踪来⾃湖北的旅⾏者.doc
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 9/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 登录
+
+相关攻击的整体攻击流程如下：
+
+由于诱饵⽂档相关内容均出现于今年2⽉上旬，据此推断攻击活动或发⽣在2⽉期间。
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 10/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 登录
+
+样本分析
+
+攻击者通过带数字签名的WPS⽂件侧加载恶意DLL krpt.dll，krpt.dll执⾏后会解压DLL携带的资源⽂件并释放出诱饵⽂
+档，同时在内存中构造出后⻔DLL数据，然后修复导⼊表和重定位表。接着调⽤这个DLL的DllMain函数完成初始化，最
+后调⽤这个DLL的导出函数DllEntry执⾏后⻔功能。
+
+由于投递的两个样本代码和C2基本完全⼀致，下⽂以其中⼀个为例进⾏分析。
+
+1、 基本信息如下：
+
+恶意⽂件名称 krpt.dll
+SHA256 c0d295d414ccd0b84a0e6c9f8c42083355a92ba97182d3aed9d5e8a99e3a99b1
+
+SHA1 5ba69be6ff537224fcc1cd1090ffd0303af69d88
+
+MD5 c8ea645fc5ac975af53e568566b90131
+
+样本⼤⼩ 1.17 MB (1,230,848 字节)
+
+样本格式 DLL
+
+2、 侧加载⽅式装载“krpt.dll”⽂件并调⽤“_force_link_krpt”导出函数，然后将DLL携带的诱导⽂档资源释放到“%TEMP%”
+⽬录，相关代码：
+
+3、 释放完诱导⽂档后，加载资源⽂件中的Shellcode代码，相关代码：
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 11/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 登录
+
+4、 Shellcode头部为循环解密代码，相关代码：
+
+5、 接着会获取HTTP接⼝函数，获取计算机名和⽤户名，通过HTTP⽅式提交到“libjs.inquirerjs.com"/script/x.png?CN=
+计算机名称&UN=⽤户名称&C=Windows_N”，如下图：
+
+6、 执⾏完HTTP请求后，跳转到插⼊⼤量“海莲花”常⽤花指令的Shellcode，最终在内存中加载DenesRAT后⻔，截图为
+DLL功能⼊⼝：
+
+7、 解密后的DenesRAT的C2配置为“vitlescaux.com”，如下：
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 12/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 登录
+
+8、 然后连接C2：“vitlescaux.com:28194”，通过TCP协议发送加密后的数据到C2服务器，相关截图：
+
+9、 最终释放的DenesRAT为“海莲花”组织私有⽊⻢，能够根据C2服务器下发的指令执⾏相应的功能，主要功能有：
+
+• ⽂件操作，⽐如创建⽂件或⽬录、删除⽂件或⽬录、查找⽂件；
+
+• 注册表读写；
+
+• 远程执⾏代码，⽐如创建进程、执⾏DLL等；
+
+• 设置环境变量。
+
+关联分析
+
+综合分析此次攻击的背景、TTPs、以及所使⽤的⽊⻢和⽹络资产，确定幕后攻击者为“海莲花”。
+
+对libjs.inquirerjs.com进⾏关联分析发现，该域名曾在之前“海莲花”的攻击中被使⽤。
+
+此外，该域名近期还出现了多个可疑URL地址，涉及x****c@china*****.gov.cn 、wu****zs@wuhan.gov.cn、y****c@12
+6.com等邮箱地址。根据微步情报局对“海莲花”历史活动的分析，这些URL应是被⽤于对⽬标邮箱的探测⾏为。⽽相关
+邮箱分别属于我国某部委及武汉市多家政府机构，暴露出“海莲花”此次攻击活动的险恶⽤⼼。
+
+微步情报局
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 13/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+
+微 步情⾸页 (/)报局，即IP微步在线研究、域名、⽂件HA响S应H(M团D队5/，SH负A1责/S微HA步25在6)线安全分析与安全服务业务，主要研究内容包括威胁情报⾃动化研、URL、邮箱 登录
+发、⾼级APT组织&⿊产研究与追踪、恶意代码与⾃动化分析技术、重⼤事件应急响应等。
+
+微步情报局由精通⽊⻢分析与取证技术、Web攻击技术、溯源技术、⼤数据、AI等安全技术的资深专家组成，并通过⾃
+动化情报⽣产系统、云沙箱、⿊客画像系统、威胁狩猎系统、追踪溯源系统、威胁感知系统、⼤数据关联知识图谱等⾃
+
+主研发的系统，对微步在线每天新增的百万级样本⽂件、千万级URL、PDNS、Whois数据进⾏实时的⾃动化分析、同
+源分析及⼤数据关联分析。微步情报局⾃设⽴以来，累计率先发现了包括数⼗个境外⾼级APT组织针对我国关键基础设
+施和⾦融、能源、政府、⾼科技等⾏业的定向攻击⾏动，协助数百家各个⾏业头部客户处置了肆虐全球的WannaCry勒
+索事件、BlackTech定向攻击我国证券和⾼科技事件、海莲花⻓期定向攻击我国海事/⾼科技/⾦融的攻击活动、OldFox定
+向攻击全国上百家⼿机⾏业相关企业的事件。
+
+相关链接 ： ()
+
+威胁指标（IOC） 配置安全DNS，⾃动拦截恶意域名 > (https://www.onedns.net/trial?from=x_domain) 下载IOC表格
+
+域名(2) 威胁情报数⽬ ⼦域名 历史指向ip 相关样本 微步标签 < 1/1 >
+
+libjs.inquirerjs.com (/nod 3 5 0 3 3
+
+vitlescaux.com (/nodev 2 1 0 3 4
+
+Hash(2) 检测结果 关联样本 微步标签 < 1/1 >
+
+36be872b74680305cb6 4/25 0 0
+
+c0d295d414ccd0b84a0 3/25 0 0
+
+URL(1) < 1/1 >
+
+ libjs.inquirerjs.com"/script/x.png?CN=%计算机名称%&amp;UN=%…
+
+ 1
+(htt
+p://
+con
+
+评论 1  发表评论 nec
+t.q
+
+ (/nodev4/vb4/uCenter?userID=35adc4c07c064723b198a6c80b264d26) Timelife   2020-03-16 21:36:03 q.c
+om/
+
+ 回复
+该样本可能是 fc04dbc983111ec0df4d347cdc742c7d3c1e85e3d0d9b4fd7f24f342b8fabb0a wid
+
+的变种
+从释放⼿段与攻击⼿法，解密⽅式loop与上述描述的配置，dll get/
+
+⼊⼝点所属⼀致
+sha
+req
+q/in
+de
+x.ht
+ml?
+url=
+http
+s%
+3
+A%
+2
+F%
+2F
+x.th
+rea
+tbo
+ok.
+c
+n%
+2F
+nod
+ev
+4%
+2Fv
+b
+4%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 14/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+2F
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL arti
+、邮箱
+
+cl 登录
+
+e%
+3Ft
+hre
+atIn
+foI
+D%
+3D
+252
+7&t
+itle
+=%
+E
+3%
+8
+0%
+9
+0%
+E
+5%
+B
+E%
+A
+E%
+E
+6%
+A
+D%
+A
+5%
+E
+5%
+9
+C%
+A
+8%
+E
+7%
+B
+A%
+B
+F%
+E
+6%
+8
+A%
+A
+5%
+E
+5%
+9
+1%
+8
+A%
+E
+3%
+8
+0%
+9
+1%
+E
+8%
+B
+6%
+8
+A%
+E
+5%
+8
+D%
+9
+7%
+E
+5%
+9
+B%
+B
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 15/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+B
+D%
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 E 登录
+5%
+A
+E%
+B
+6%
+E
+8%
+8
+3%
+8
+C%
+E
+6%
+9
+9%
+AF
+AP
+T%
+E
+7%
+B
+B%
+8
+4%
+E
+7%
+B
+B%
+8
+7%
+26l
+dqu
+o%
+3
+B%
+E
+6%
+B
+5%
+B
+7%
+E
+8%
+8
+E%
+B
+2%
+E
+8%
+8
+A%
+B
+1%
+26r
+dqu
+o%
+3
+B%
+E
+5%
+8
+8%
+A
+9%
+E
+7%
+9
+4%
+A
+8%
+E
+7%
+9
+6%
+A
+B%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 E 16/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+E
+6%
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 8 登录
+
+3%
+8
+5%
+E
+8%
+A
+F%
+9
+D%
+E
+9%
+A
+2%
+9
+8%
+E
+6%
+9
+4%
+B
+B%
+E
+5%
+8
+7%
+B
+B%
+E
+6%
+8
+8%
+9
+1%
+E
+5%
+9
+B%
+B
+D%
+E
+6%
+9
+4%
+B
+F%
+E
+5%
+B (htt
+A% p://
+9 ser
+C% vic
+E e.w
+6% eib
+9 o.c
+C% om/
+B sha
+A% re/s
+E har
+6% e.p
+9 hp?
+E% url=
+8 http
+4% s%
+20- 3
+%2 A%
+0% 2
+E F%
+5% 2F
+B x.th
+E% rea
+A tbo
+E% ok.
+E c
+6% n%
+A 2F
+D% nod
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 17/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+A ev
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 5% 4%
+登录
+
+E 2Fv
+5% b
+9 4%
+C% 2F
+A arti
+8% cl
+E e%
+7% 3Ft
+B hre
+A% atIn
+BF foI
+X% D%
+E 3D
+6% 252
+8 7&t
+3% itle
+8 =%
+5% E
+E 3%
+6% 8
+8 0%
+A% 9
+A 0%
+5% E
+E 5%
+7% B
+A E%
+4% A
+B E%
+E% E
+E 6%
+5% A
+8 D%
+C% A
+BA 5%
+&s E
+our 5%
+ce 9
+=% C%
+E A
+3% 8%
+8 E
+0% 7%
+9 B
+0% A%
+E B
+5% F%
+B E
+E% 6%
+A 8
+E% A%
+E A
+6% 5%
+A E
+D% 5%
+A 9
+5% 1%
+E 8
+5% A%
+9 E
+C% 3%
+A 8
+8% 0%
+E 9
+7% 1%
+B E
+A% 8%
+B B
+F% 6%
+E 8
+6% A%
+8 E
+A% 5%
+A 8
+5% D%
+E 9
+5% 7%
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 18/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+5% 7%
+9 E
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 1% 5% 登录
+
+8 9
+A% B%
+E B
+3% D%
+8 E
+0% 5%
+9 A
+1% E%
+E B
+8% 6%
+B E
+6% 8%
+8 8
+A% 3%
+E 8
+5% C%
+8 E
+D% 6%
+9 9
+7% 9%
+E AF
+5% AP
+9 T%
+B% E
+B 7%
+D% B
+E B%
+5% 8
+A 4%
+E% E
+B 7%
+6% B
+E B%
+8% 8
+8 7%
+3% 26l
+8 dqu
+C% o%
+E 3
+6% B%
+9 E
+9% 6%
+AF B
+AP 5%
+T% B
+E 7%
+7% E
+B 8%
+B% 8
+8 E%
+4% B
+E 2%
+7% E
+B 8%
+B% 8
+8 A%
+7% B
+E 1%
+2% 26r
+8 dqu
+0% o%
+9 3
+C% B%
+E E
+6% 5%
+B 8
+5% 8%
+B A
+7% 9%
+E E
+8% 7%
+8 9
+E% 4%
+B A
+2% 8%
+E E
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 19/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+8% 7%
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL 8 9
+、邮箱
+
+A% 6% 登录
+
+B A
+1% B%
+E E
+2% 6%
+8 8
+0% 3%
+9 8
+D% 5%
+E E
+5% 8%
+8 A
+8% F%
+A 9
+9% D%
+E E
+7% 9%
+9 A
+4% 2%
+A 9
+8% 8%
+E E
+7% 6%
+9 9
+6% 4%
+A B
+B% B%
+E E
+6% 5%
+8 8
+3% 7%
+8 B
+5% B%
+E E
+8% 6%
+A 8
+F% 8%
+9 9
+D% 1%
+E E
+9% 5%
+A 9
+2% B%
+9 B
+8% D%
+E E
+6% 6%
+9 9
+4% 4%
+B B
+B% F%
+E E
+5% 5%
+8 B
+7% A%
+B 9
+B% C%
+E E
+6% 6%
+8 9
+8% C%
+9 B
+1% A%
+E E
+5% 6%
+9 9
+B% E%
+B 8
+D% 4%
+E 20-
+6% %2
+9 0%
+4% E
+B 5%
+F% B
+E E%
+5% A
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 20/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+5% A
+B E%
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 A% E 登录
+9 6%
+C% A
+E D%
+6% A
+9 5%
+C% E
+B 5%
+A% 9
+E C%
+6% A
+9 8%
+E% E
+8 7%
+4% B
+20- A%
+%2 BF
+0% X%
+E E
+6% 6%
+8 8
+3% 3%
+8 8
+5% 5%
+E E
+6% 6%
+8 8
+A% A%
+A A
+5% 5%
+E E
+8% 7%
+A A
+F% 4%
+A B
+6% E%
+E E
+6% 5%
+8 8
+3% C%
+85 BA
+&d &pi
+esc c=h
+=& ttp
+pic s%
+s=h 3
+ttp A%
+s% 2
+3 F%
+A% 2F
+2 x.th
+F% rea
+2F tbo
+x.th ok.
+rea c
+tbo n%
+ok. 2Fs
+c tati
+n% c%
+2Fs 2Fi
+tati m
+c% g%
+2Fi 2F
+m 2d_
+g% cod
+2F e.jp
+2d_ g&
+cod app
+e.jp key
+ g)  =)
+
+写下你的评论...
+
+ 匿名 评论
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 21/22
+
+
+
+2020/3/17 【微步在线报告】越南国家背景APT组织“海莲花”利⽤疫情话题攻击我国政府机构 - 情报详情
+
+ ⾸页 (/) IP、域名、⽂件HASH(MD5/SHA1/SHA256)、URL、邮箱 登录
+
+https://x.threatbook.cn/nodev4/vb4/article?threatInfoID=2527 22/22
